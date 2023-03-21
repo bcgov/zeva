@@ -1,5 +1,5 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 
 const AssessmentSupplierInformationMakes = (props) => {
   const {
@@ -11,7 +11,7 @@ const AssessmentSupplierInformationMakes = (props) => {
     handleDeleteMake,
     handleSubmitMake,
     supplierMakes
-  } = props;
+  } = props
 
   return (
     <>
@@ -71,7 +71,7 @@ const AssessmentSupplierInformationMakes = (props) => {
                         <div className="col-1 delete">
                           <button
                             onClick={() => {
-                              handleDeleteMake(item);
+                              handleDeleteMake(item)
                             }}
                             type="button"
                           >
@@ -88,10 +88,10 @@ const AssessmentSupplierInformationMakes = (props) => {
         </tbody>
       </table>
     </>
-  );
-};
+  )
+}
 
-AssessmentSupplierInformationMakes.defaultProps = {};
+AssessmentSupplierInformationMakes.defaultProps = {}
 
 AssessmentSupplierInformationMakes.propTypes = {
   details: PropTypes.shape({
@@ -105,5 +105,5 @@ AssessmentSupplierInformationMakes.propTypes = {
   handleDeleteMake: PropTypes.func.isRequired,
   handleSubmitMake: PropTypes.func.isRequired,
   make: PropTypes.string.isRequired
-};
-export default AssessmentSupplierInformationMakes;
+}
+export default AssessmentSupplierInformationMakes

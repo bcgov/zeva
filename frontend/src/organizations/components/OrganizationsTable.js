@@ -1,13 +1,13 @@
 /*
  * Presentational component
  */
-import PropTypes from 'prop-types';
-import React from 'react';
+import PropTypes from 'prop-types'
+import React from 'react'
 
-import ReactTable from '../../app/components/ReactTable';
-import history from '../../app/History';
-import formatNumeric from '../../app/utilities/formatNumeric';
-import VehicleSupplierClass from './VehicleSupplierClass';
+import ReactTable from '../../app/components/ReactTable'
+import history from '../../app/History'
+import formatNumeric from '../../app/utilities/formatNumeric'
+import VehicleSupplierClass from './VehicleSupplierClass'
 
 const OrganizationsTable = (props) => {
   const columns = [
@@ -42,9 +42,9 @@ const OrganizationsTable = (props) => {
       Header: 'B-Credits',
       id: 'b-credits'
     }
-  ];
+  ]
 
-  const { filtered, items, setFiltered } = props;
+  const { filtered, items, setFiltered } = props
   return (
     <ReactTable
       columns={columns}
@@ -59,22 +59,22 @@ const OrganizationsTable = (props) => {
         if (row && row.original) {
           return {
             onClick: () => {
-              const { id } = row.original;
+              const { id } = row.original
 
-              history.push(`/organizations/${id}`, filtered);
+              history.push(`/organizations/${id}`, filtered)
             },
             className: 'clickable'
-          };
+          }
         }
 
-        return {};
+        return {}
       }}
       setFiltered={setFiltered}
     />
-  );
-};
+  )
+}
 
-OrganizationsTable.defaultProps = {};
+OrganizationsTable.defaultProps = {}
 
 OrganizationsTable.propTypes = {
   filtered: PropTypes.arrayOf(PropTypes.shape()).isRequired,
@@ -98,6 +98,6 @@ OrganizationsTable.propTypes = {
     })
   ).isRequired,
   setFiltered: PropTypes.func.isRequired
-};
+}
 
-export default OrganizationsTable;
+export default OrganizationsTable

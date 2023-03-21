@@ -172,7 +172,7 @@ def notifications_credit_transfers(transfer: object):
     if notifications:
         subscribed_users(notifications, transfer, request_type, email_type)
 
-def notifications_model_year_report(validation_status, request):
+def notifications_model_year_report(validation_status, request, previous_status = 'NA'):
     request_type = 'model_year_report'
     email_type = '<b>model year report update</b>'
     notifications = None
@@ -187,6 +187,9 @@ def notifications_model_year_report(validation_status, request):
         notifications = Notification.objects.values_list('id', flat=True).filter(
             notification_code='MODEL_YEAR_REPORT_RECOMMENDED') 
     elif validation_status == ModelYearReportStatuses.RETURNED.name:
+        notifications = Notification.objects.values_list('id', flat=True).filter(
+            notification_code='MODEL_YEAR_REPORT_RETURNED') 
+    elif validation_status == ModelYearReportStatuses.DRAFT.name and previous_status == ModelYearReportStatuses.ASSESSED.name:
         notifications = Notification.objects.values_list('id', flat=True).filter(
             notification_code='MODEL_YEAR_REPORT_RETURNED') 
 
@@ -277,6 +280,7 @@ def subscribed_users(notifications: list, request: object, request_type: str, em
           )
         if subscribed_users:
             govt_org = Organization.objects.filter(is_government=True).first()
+
             if request_type == 'credit_transfer':
                 user_email = UserProfile.objects.values_list('email', flat=True).filter(
                     Q(organization_id__in=[request.debit_from_id,
@@ -285,10 +289,16 @@ def subscribed_users(notifications: list, request: object, request_type: str, em
                     Q(id__in=subscribed_users)).exclude(email__isnull=True).exclude(email__exact='').exclude(username=request.update_user)
 
             else:
-                user_email = UserProfile.objects.values_list('email', flat=True).filter(
-                    Q(organization_id__in=[request.organization,
+                if request_type == 'model_year_report':
+                    user_email = UserProfile.objects.values_list('email', flat=True).filter(
+                        Q(organization_id__in=[request.user.organization.id,
                                            govt_org.id]) &
-                    Q(id__in=subscribed_users)).exclude(email__isnull=True).exclude(email__exact='').exclude(username=request.update_user)
+                        Q(id__in=subscribed_users)).exclude(email__isnull=True).exclude(email__exact='').exclude(username=request.user.update_user)
+                else:        
+                    user_email = UserProfile.objects.values_list('email', flat=True).filter(
+                        Q(organization_id__in=[request.organization,
+                                            govt_org.id]) &
+                        Q(id__in=subscribed_users)).exclude(email__isnull=True).exclude(email__exact='').exclude(username=request.update_user)
                     
             if user_email:
                 send_email(list(user_email), email_type)

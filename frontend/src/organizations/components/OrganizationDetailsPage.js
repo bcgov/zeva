@@ -1,19 +1,19 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from 'react'
+import PropTypes from 'prop-types'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-import history from '../../app/History';
-import Loading from '../../app/components/Loading';
-import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations';
-import CustomPropTypes from '../../app/utilities/props';
+import history from '../../app/History'
+import Loading from '../../app/components/Loading'
+import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations'
+import CustomPropTypes from '../../app/utilities/props'
 
-import UsersTable from './UsersTable';
+import UsersTable from './UsersTable'
 
 const OrganizationDetailsPage = (props) => {
-  const { details, filtered, loading, members, setFiltered, user } = props;
+  const { details, filtered, loading, members, setFiltered, user } = props
 
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
   return (
     <div id="organization-details" className="page">
@@ -75,7 +75,7 @@ const OrganizationDetailsPage = (props) => {
             <button
               className="button primary"
               onClick={() => {
-                history.push(ROUTES_ORGANIZATIONS.MINE_ADD_USER);
+                history.push(ROUTES_ORGANIZATIONS.MINE_ADD_USER)
               }}
               type="button"
             >
@@ -96,12 +96,12 @@ const OrganizationDetailsPage = (props) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 OrganizationDetailsPage.defaultProps = {
   members: []
-};
+}
 
 OrganizationDetailsPage.propTypes = {
   details: CustomPropTypes.organizationDetails.isRequired,
@@ -110,6 +110,6 @@ OrganizationDetailsPage.propTypes = {
   members: PropTypes.arrayOf(PropTypes.shape()),
   setFiltered: PropTypes.func.isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default OrganizationDetailsPage;
+export default OrganizationDetailsPage

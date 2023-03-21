@@ -245,6 +245,11 @@ class ModelYearReportListSerializer(ModelSerializer, EnumSupportSerializerMixin)
             .filter(~Q(status=ModelYearReportStatuses.DELETED))
             .order_by("-create_timestamp")
         )
+        SubQuery = UserProfile.objects.filter(organization__is_government=True).values_list('username', flat=True)
+        if not request.user.is_government:
+            supplementals = supplementals.exclude(Q(status__in=[
+                ModelYearReportStatuses.DRAFT, ModelYearReportStatuses.RECOMMENDED
+            ] ) & Q(create_user__in=SubQuery) )
         supplementals_length = len(supplementals)
         if supplementals_length > 0:
             latest_supplemental = supplementals[0]
@@ -404,18 +409,20 @@ class ModelYearReportListSerializer(ModelSerializer, EnumSupportSerializerMixin)
 
         def get_supplemental_id(obj):
             if latest_supplemental:
-                if not request.user.is_government:
-                    user = UserProfile.objects.filter(
+                create_user = UserProfile.objects.filter(
                         username=latest_supplemental.create_user
                     ).first()
-
+                if request.user.is_government:
+                    if  latest_supplemental.status.value == 'DRAFT' and not create_user.is_government:
+                        return None
+                if not request.user.is_government:
                     if (
-                        user
-                        and not user.is_government
+                        create_user
+                        and not create_user.is_government
                         and latest_supplemental.status.value == "ASSESSED"
                     ) or (
-                        user
-                        and user.is_government
+                        create_user
+                        and create_user.is_government
                         and latest_supplemental.status.value != "ASSESSED"
                     ):
                         for supplemental in supplementals:

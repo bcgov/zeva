@@ -14,18 +14,15 @@ module.exports = {
     '^.+\\.(css|less|scss)$': '<rootDir>/__mocks__/style.js'
   },
   setupFiles: ['./jest.setup.js'],
-  testURL: 'http://localhost/',
+  testEnvironmentOptions: {
+    url: 'http://localhost/'
+  },
   transform: {
     '^.+\\.(js|jsx)$': 'babel-jest'
   },
   coveragePathIgnorePatterns: ['node_modules/'],
   verbose: true,
   globals: {
-    __APIBASE__: '/',
-    __KEYCLOAK_CLIENT_ID__: '',
-    __KEYCLOAK_LOGOUT_REDIRECT_URL__: '',
-    __KEYCLOAK_REALM_NAME__: '',
-    __KEYCLOAK_URL__: '',
     __VERSION__: ''
   }
-};
+}

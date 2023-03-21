@@ -1,14 +1,15 @@
-FROM node:8-jessie
-RUN apt-get update && apt-get install -y vim
-RUN mkdir /app
-WORKDIR /app
-COPY . .
-RUN rm package-lock.json && \
-    npm install && \
-    npm rebuild node-sass
-CMD npm run start
-#RUN curl -sSL -o /usr/local/bin/caddy2 -f https://github.com/caddyserver/caddy/releases/download/v2.0.0-beta.20/caddy2_beta20_linux_amd64 && \
-    chmod +x /usr/local/bin/caddy2 
-# COPY ./Caddyfile /etc/caddy/Caddyfile
-# RUN chmod +x ./Dockerfile-Openshift-entrypoint.sh
-# CMD ["./Dockerfile-Openshift-entrypoint.sh"]
+# Stage 1: Use yarn to build the app
+FROM artifacts.developer.gov.bc.ca/docker-remote/node:16 as builder
+WORKDIR /usr/src/app
+COPY ./ ./
+RUN npm install -g npm@9.1.1 \
+    && npm install --omit=dev \
+    && npm install -D webpack webpack-cli
+RUN yes | npm run dist
+
+# Stage 2: Copy the JS React SPA into the Nginx HTML directory
+FROM artifacts.developer.gov.bc.ca/docker-remote/bitnami/nginx:1.21.6
+COPY ./nginx.conf /opt/bitnami/nginx/conf/
+COPY --from=builder /usr/src/app/public/build /app
+EXPOSE 8080
+CMD ["nginx", "-g", "daemon off;"]

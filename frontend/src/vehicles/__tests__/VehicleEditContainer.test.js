@@ -1,8 +1,8 @@
-import React from 'react';
-import { render, cleanup } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import React from 'react'
+import { render, cleanup } from '@testing-library/react'
+import { BrowserRouter } from 'react-router-dom'
 
-import VehicleEditContainer from '../VehicleEditContainer';
+import VehicleEditContainer from '../VehicleEditContainer'
 
 jest.mock('axios', () => ({
   __esModule: true,
@@ -11,16 +11,16 @@ jest.mock('axios', () => ({
     get: jest.fn(() => Promise.resolve({ data: 'data' })),
     spread: jest.fn(() => Promise.resolve({ data: 'data' }))
   }
-}));
+}))
 
-afterEach(cleanup);
+afterEach(cleanup)
 
 describe('VehicleEditContainer', () => {
-  const keycloak = {};
-  const location = {};
+  const keycloak = {}
+  const location = {}
   const user = {
     isGovernment: false
-  };
+  }
 
   it('renders without crashing', () => {
     render(
@@ -31,6 +31,6 @@ describe('VehicleEditContainer', () => {
           user={user}
         />
       </BrowserRouter>
-    );
-  });
-});
+    )
+  })
+})

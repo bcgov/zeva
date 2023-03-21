@@ -1,7 +1,7 @@
-import React from 'react';
-import { render } from '@testing-library/react';
-import ActionBarNonGov from '../ActionBarNonGov';
+import React from 'react'
+import { render } from '@testing-library/react'
+import ActionBarNonGov from '../ActionBarNonGov'
 
 it('renders without crashing', () => {
-  render(<ActionBarNonGov filtered={[]} />);
-});
+  render(<ActionBarNonGov filtered={[]} />)
+})

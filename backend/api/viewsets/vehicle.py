@@ -20,6 +20,7 @@ from api.serializers.vehicle import ModelYearSerializer, \
 from api.services.minio import minio_put_object
 from auditable.views import AuditableMixin
 from api.models.vehicle import VehicleDefinitionStatuses
+from api.services.send_email import notifications_zev_model
 
 class VehicleViewSet(
     AuditableMixin, viewsets.GenericViewSet, mixins.CreateModelMixin,
@@ -138,6 +139,11 @@ class VehicleViewSet(
             return Response(serializer.errors)
 
         serializer.save()
+        vehicle = Vehicle.objects.filter(id=pk).first()
+        request.organization = vehicle.organization
+        request.update_user = vehicle.update_user
+
+        notifications_zev_model(request, request.data['validation_status'])
 
         return Response(serializer.data)
 

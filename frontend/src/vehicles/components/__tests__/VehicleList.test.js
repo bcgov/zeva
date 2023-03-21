@@ -1,15 +1,15 @@
-import React from 'react';
-import { render, cleanup } from '@testing-library/react';
+import React from 'react'
+import { render, cleanup } from '@testing-library/react'
 
-import VehicleList from '../VehicleList';
+import VehicleList from '../VehicleList'
 
-afterEach(cleanup);
+afterEach(cleanup)
 
 describe('Vehicle List', () => {
   it('renders without crashing', () => {
     const user = {
       isGovernment: false
-    };
+    }
 
     render(
       <VehicleList
@@ -20,6 +20,6 @@ describe('Vehicle List', () => {
         setFiltered={() => {}}
         handleClear={() => {}}
       />
-    );
-  });
-});
+    )
+  })
+})

@@ -1,11 +1,11 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import CustomPropTypes from '../utilities/props';
-import history from '../History';
-import ROUTES_ORGANIZATIONS from '../routes/Organizations';
+import PropTypes from 'prop-types'
+import React from 'react'
+import CustomPropTypes from '../utilities/props'
+import history from '../History'
+import ROUTES_ORGANIZATIONS from '../routes/Organizations'
 
 const VehicleSupplierTabs = (props) => {
-  const { active, locationState, supplierId, user } = props;
+  const { active, locationState, supplierId, user } = props
   return (
     <ul className="nav nav-tabs" key="tabs" role="tablist">
       <li
@@ -17,7 +17,7 @@ const VehicleSupplierTabs = (props) => {
             history.push(
               ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/g, supplierId),
               locationState
-            );
+            )
           }}
           type="button"
         >
@@ -33,7 +33,7 @@ const VehicleSupplierTabs = (props) => {
             history.push(
               ROUTES_ORGANIZATIONS.USERS.replace(/:id/g, supplierId),
               locationState
-            );
+            )
           }}
           type="button"
         >
@@ -52,7 +52,7 @@ const VehicleSupplierTabs = (props) => {
               history.push(
                 ROUTES_ORGANIZATIONS.VEHICLES.replace(/:id/g, supplierId),
                 locationState
-              );
+              )
             }}
             type="button"
           >
@@ -72,7 +72,7 @@ const VehicleSupplierTabs = (props) => {
               history.push(
                 ROUTES_ORGANIZATIONS.TRANSACTIONS.replace(/:id/g, supplierId),
                 locationState
-              );
+              )
             }}
             type="button"
           >
@@ -92,7 +92,7 @@ const VehicleSupplierTabs = (props) => {
               history.push(
                 ROUTES_ORGANIZATIONS.REPORTS.replace(/:id/g, supplierId),
                 locationState
-              );
+              )
             }}
             type="button"
           >
@@ -101,19 +101,19 @@ const VehicleSupplierTabs = (props) => {
         </li>
       )}
     </ul>
-  );
-};
+  )
+}
 
 VehicleSupplierTabs.defaultProps = {
   locationState: undefined,
   supplierId: null
-};
+}
 
 VehicleSupplierTabs.propTypes = {
   active: PropTypes.string.isRequired,
   locationState: PropTypes.arrayOf(PropTypes.shape()),
   supplierId: PropTypes.number,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default VehicleSupplierTabs;
+export default VehicleSupplierTabs

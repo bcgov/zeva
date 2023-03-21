@@ -1,20 +1,20 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useParams } from 'react-router-dom';
-import CustomPropTypes from '../../app/utilities/props';
-import Button from '../../app/components/Button';
-import History from '../../app/History';
-import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations';
-import Loading from '../../app/components/Loading';
-import UsersTable from './UsersTable';
+import React from 'react'
+import PropTypes from 'prop-types'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { useParams } from 'react-router-dom'
+import CustomPropTypes from '../../app/utilities/props'
+import Button from '../../app/components/Button'
+import History from '../../app/History'
+import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations'
+import Loading from '../../app/components/Loading'
+import UsersTable from './UsersTable'
 
 const VehicleSupplierUserListPage = (props) => {
-  const { id } = useParams();
+  const { id } = useParams()
   const { loading, locationState, members, filtered, user, setFiltered } =
-    props;
+    props
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
   return (
     <div className="page">
@@ -31,14 +31,14 @@ const VehicleSupplierUserListPage = (props) => {
                 onClick={() => {
                   History.push(
                     ROUTES_ORGANIZATIONS.ADD_USER.replace(/:id/gi, id)
-                  );
+                  )
                 }}
                 type="button"
               >
                 <FontAwesomeIcon icon="user-plus" /> <span>New User</span>
               </button>
             </div>
-          )}
+        )}
       </div>
 
       <div className="row">
@@ -67,13 +67,13 @@ const VehicleSupplierUserListPage = (props) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 VehicleSupplierUserListPage.defaultProps = {
   locationState: undefined,
   members: []
-};
+}
 
 VehicleSupplierUserListPage.propTypes = {
   filtered: PropTypes.arrayOf(PropTypes.shape()).isRequired,
@@ -82,6 +82,6 @@ VehicleSupplierUserListPage.propTypes = {
   members: PropTypes.arrayOf(PropTypes.shape({})),
   setFiltered: PropTypes.func.isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default VehicleSupplierUserListPage;
+export default VehicleSupplierUserListPage

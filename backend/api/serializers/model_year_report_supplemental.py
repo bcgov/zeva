@@ -77,7 +77,7 @@ class SupplementalReportAssessmentCommentSerializer(ModelSerializer):
     class Meta:
         model = SupplementalReportAssessmentComment
         fields = (
-            'id', 'comment', 'create_timestamp', 'create_user', 'to_director'
+            'id', 'comment', 'create_timestamp', 'update_timestamp', 'create_user', 'to_director'
         )
         read_only_fields = (
             'id',
@@ -271,8 +271,10 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
         if reassessment_report:
             reassessment_report_id = reassessment_report.id
 
+        # if the reassessment report exists and is not associated with a supplier-created supplementary report, obj.id should be None
         return {
             'is_reassessment': False,
+            "supplementary_report_id": obj.id,
             'reassessment_report_id': reassessment_report_id,
             'status': obj.status.value
         }

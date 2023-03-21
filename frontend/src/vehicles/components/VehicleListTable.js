@@ -1,31 +1,31 @@
 /*
  * Presentational component
  */
-import PropTypes from 'prop-types';
-import React from 'react';
-import history from '../../app/History';
-import ReactTable from '../../app/components/ReactTable';
-import ROUTES_VEHICLES from '../../app/routes/Vehicles';
-import formatNumeric from '../../app/utilities/formatNumeric';
-import formatStatus from '../../app/utilities/formatStatus';
+import PropTypes from 'prop-types'
+import React from 'react'
+import history from '../../app/History'
+import ReactTable from '../../app/components/ReactTable'
+import ROUTES_VEHICLES from '../../app/routes/Vehicles'
+import formatNumeric from '../../app/utilities/formatNumeric'
+import formatStatus from '../../app/utilities/formatStatus'
 
 const VehicleListTable = (props) => {
-  const { items, user, filtered, setFiltered, showSupplier } = props;
+  const { items, user, filtered, setFiltered, showSupplier } = props
   const toComma = (value) => {
-    let newValue = value;
+    let newValue = value
     if (typeof newValue === 'number') {
-      newValue = newValue.toString();
+      newValue = newValue.toString()
     }
-    newValue = newValue.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
-    return newValue;
-  };
+    newValue = newValue.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+    return newValue
+  }
   const columns = [
     {
       accessor: (row) => {
         if (row.organization) {
-          return row.organization.shortName || row.organization.name;
+          return row.organization.shortName || row.organization.name
         }
-        return '';
+        return ''
       },
       Header: 'Supplier',
       id: 'col-supplier',
@@ -89,17 +89,17 @@ const VehicleListTable = (props) => {
     {
       accessor: (row) => {
         if (row.validationStatus !== 'VALIDATED') {
-          return '-';
+          return '-'
         }
 
-        return row.isActive === true ? 'Yes' : 'No';
+        return row.isActive === true ? 'Yes' : 'No'
       },
       className: 'text-center',
       Header: 'Active',
       id: 'is-active',
       width: 100
     }
-  ];
+  ]
 
   return (
     <ReactTable
@@ -115,7 +115,7 @@ const VehicleListTable = (props) => {
         if (row && row.original && user) {
           return {
             onClick: () => {
-              const { id, validationStatus } = row.original;
+              const { id, validationStatus } = row.original
 
               if (
                 ['CHANGES_REQUESTED', 'DRAFT'].indexOf(validationStatus) >= 0 &&
@@ -124,30 +124,30 @@ const VehicleListTable = (props) => {
                 history.push(
                   ROUTES_VEHICLES.EDIT.replace(/:id/g, id),
                   filtered
-                );
+                )
               } else {
                 history.push(
                   ROUTES_VEHICLES.DETAILS.replace(/:id/g, id),
                   filtered
-                );
+                )
               }
             },
             className: 'clickable'
-          };
+          }
         }
 
-        return {};
+        return {}
       }}
       setFiltered={setFiltered}
     />
-  );
-};
+  )
+}
 
 VehicleListTable.defaultProps = {
   filtered: undefined,
   setFiltered: undefined,
   showSupplier: false
-};
+}
 
 VehicleListTable.propTypes = {
   filtered: PropTypes.arrayOf(PropTypes.object),
@@ -161,6 +161,6 @@ VehicleListTable.propTypes = {
   user: PropTypes.shape({
     isGovernment: PropTypes.bool
   }).isRequired
-};
+}
 
-export default VehicleListTable;
+export default VehicleListTable

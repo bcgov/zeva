@@ -1,18 +1,18 @@
-import React from 'react';
-import { render, cleanup } from '@testing-library/react';
-import AutocompleteInput from '../AutocompleteInput';
+import React from 'react'
+import { render, cleanup } from '@testing-library/react'
+import AutocompleteInput from '../AutocompleteInput'
 
-require('@babel/core');
-require('@babel/polyfill');
+require('@babel/core')
+require('@babel/polyfill')
 
-afterEach(cleanup);
+afterEach(cleanup)
 
 describe('autocomplete input', () => {
   const handleInputChange = (event) => {
-    const { value, name } = event.target;
-    const input = value.trim();
-    return { name: input };
-  };
+    const { value } = event.target
+    const input = value.trim()
+    return { name: input }
+  }
 
   it('renders without crashing', () => {
     render(
@@ -25,6 +25,6 @@ describe('autocomplete input', () => {
         possibleChoicesList={['one', 'two', 'three']}
         handleInputChange={handleInputChange}
       />
-    );
-  });
-});
+    )
+  })
+})

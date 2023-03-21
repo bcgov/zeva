@@ -1,15 +1,15 @@
-import React from 'react';
-import { render, cleanup } from '@testing-library/react';
+import React from 'react'
+import { render, cleanup } from '@testing-library/react'
 
-import VehicleDetailsPage from '../VehicleDetailsPage';
+import VehicleDetailsPage from '../VehicleDetailsPage'
 
-afterEach(cleanup);
+afterEach(cleanup)
 
 describe('VehicleDetailsPage', () => {
-  const details = {};
+  const details = {}
   const user = {
     isGovernment: false
-  };
+  }
 
   it('renders without crashing', () => {
     render(
@@ -19,6 +19,6 @@ describe('VehicleDetailsPage', () => {
         requestStateChange={() => {}}
         user={user}
       />
-    );
-  });
-});
+    )
+  })
+})

@@ -6,7 +6,6 @@ __pycache__/
 *.py[cod]
 build/
 node_modules/
-public/
 TEST-*xml
 venv/
 
@@ -18,8 +17,12 @@ backend/minio/
 backend/db.json
 minio/minio_files/.minio.sys/
 
+frontend/src/app/components/__tests__/__snapshots__/
+
 package-lock.json
 
 storybook-static/
 
 minio/minio_files/zeva
+
+*.sql

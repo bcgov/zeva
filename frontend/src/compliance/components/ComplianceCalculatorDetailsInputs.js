@@ -1,5 +1,5 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 
 const ComplianceCalculatorDetailsInputs = (props) => {
   const {
@@ -8,12 +8,12 @@ const ComplianceCalculatorDetailsInputs = (props) => {
     modelYearList,
     selectedYearOption,
     supplierSize
-  } = props;
+  } = props
   const selectionList = modelYearList.map((obj) => (
     <option key={`${obj.id}-${obj.name}`} value={obj.name}>
       {obj.name}
     </option>
-  ));
+  ))
   return (
     <div className="col-lg-5 col-sm-12 col-12 compliance-calculator-grey pl-0 m-lg-2">
       <fieldset>
@@ -28,7 +28,7 @@ const ComplianceCalculatorDetailsInputs = (props) => {
               name="model-year"
               value={selectedYearOption}
               onChange={(event) => {
-                handleInputChange(event);
+                handleInputChange(event)
               }}
             >
               {selectedYearOption === '--' && <option disabled>--</option>}
@@ -54,7 +54,7 @@ const ComplianceCalculatorDetailsInputs = (props) => {
               name="supplier-size"
               value="medium"
               onChange={(event) => {
-                handleInputChange(event);
+                handleInputChange(event)
               }}
             />
             <span className="text-blue">
@@ -67,7 +67,7 @@ const ComplianceCalculatorDetailsInputs = (props) => {
               name="supplier-size"
               value="large"
               onChange={(event) => {
-                handleInputChange(event);
+                handleInputChange(event)
               }}
             />
             <span className="text-blue">
@@ -108,20 +108,20 @@ const ComplianceCalculatorDetailsInputs = (props) => {
               id="total-sales-number"
               className="col-10 col-lg-3 text-right"
               onChange={(event) => {
-                handleInputChange(event);
+                handleInputChange(event)
               }}
             />
           </div>
         </div>
       </fieldset>
     </div>
-  );
-};
+  )
+}
 ComplianceCalculatorDetailsInputs.defaultProps = {
   supplierSize: '',
   selectedYearOption: '--',
   complianceNumbers: { total: '', classA: '', remaining: '' }
-};
+}
 ComplianceCalculatorDetailsInputs.propTypes = {
   complianceNumbers: PropTypes.shape({
     total: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
@@ -136,6 +136,6 @@ ComplianceCalculatorDetailsInputs.propTypes = {
   modelYearList: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   selectedYearOption: PropTypes.string,
   supplierSize: PropTypes.string
-};
+}
 
-export default ComplianceCalculatorDetailsInputs;
+export default ComplianceCalculatorDetailsInputs

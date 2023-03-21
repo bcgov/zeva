@@ -1,0 +1,22 @@
+window.zeva_config = {
+  api_base: 'http://localhost:8000/api',
+  'keycloak.realm': 'standard',
+  'keycloak.client_id': 'zeva-on-gold-4543',
+  'keycloak.auth_url': 'https://dev.loginproxy.gov.bc.ca/auth',
+  'keycloak.callback_url': 'http://localhost:3000/',
+  'keycloak.post_logout_url': 'http://localhost:3000/',
+  'keycloak.siteminder_logout_url': 'https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=',
+  'compliance_report.enabled': true,
+  'compliance_calculator.enabled': true,
+  'compliance_ratios.enabled': true,
+  'credit_transfers.enabled': true,
+  'credit_transactions.enabled': true,
+  'credit_agreements.enabled': true,
+  'initiative_agreements.enabled': false,
+  'model_year_report.enabled': true,
+  'notifications.enabled': true,
+  'purchase_requests.enabled': false,
+  'roles.enabled': false,
+  'supplemental.enabled': true,
+  'model_year_report.years': [2020, 2021, 2022, 2023]
+}

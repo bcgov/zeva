@@ -2,34 +2,34 @@
  * Container component
  * All data handling & manipulation should be handled here.
  */
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import axios from 'axios'
+import React, { useEffect, useState } from 'react'
 
-import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
-import CustomPropTypes from '../app/utilities/props';
-import OrganizationDetailsPage from './components/OrganizationDetailsPage';
+import ROUTES_ORGANIZATIONS from '../app/routes/Organizations'
+import CustomPropTypes from '../app/utilities/props'
+import OrganizationDetailsPage from './components/OrganizationDetailsPage'
 
 const OrganizationDetailsContainer = (props) => {
-  const { keycloak, user } = props;
-  const [filtered, setFiltered] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [members, setMembers] = useState([]);
+  const { keycloak, user } = props
+  const [filtered, setFiltered] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [members, setMembers] = useState([])
 
   const refreshDetails = () => {
-    setLoading(true);
+    setLoading(true)
 
     axios.get(ROUTES_ORGANIZATIONS.MINE).then((response) => {
-      const { users } = response.data;
+      const { users } = response.data
 
-      setMembers(users);
+      setMembers(users)
 
-      setLoading(false);
-    });
-  };
+      setLoading(false)
+    })
+  }
 
   useEffect(() => {
-    refreshDetails();
-  }, [keycloak.authenticated]);
+    refreshDetails()
+  }, [keycloak.authenticated])
 
   return (
     <OrganizationDetailsPage
@@ -40,12 +40,12 @@ const OrganizationDetailsContainer = (props) => {
       setFiltered={setFiltered}
       user={user}
     />
-  );
-};
+  )
+}
 
 OrganizationDetailsContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default OrganizationDetailsContainer;
+export default OrganizationDetailsContainer

@@ -1,44 +1,44 @@
-import axios from 'axios';
-import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { withRouter } from 'react-router';
+import axios from 'axios'
+import PropTypes from 'prop-types'
+import React, { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { withRouter } from 'react-router'
 
-import CONFIG from '../app/config';
-import CustomPropTypes from '../app/utilities/props';
-import ROUTES_COMPLIANCE from '../app/routes/Compliance';
-import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
-import VehicleSupplierTabs from '../app/components/VehicleSupplierTabs';
-import ComplianceReportListPage from '../compliance/components/ComplianceReportListPage';
+import CONFIG from '../app/config'
+import CustomPropTypes from '../app/utilities/props'
+import ROUTES_COMPLIANCE from '../app/routes/Compliance'
+import ROUTES_ORGANIZATIONS from '../app/routes/Organizations'
+import VehicleSupplierTabs from '../app/components/VehicleSupplierTabs'
+import ComplianceReportListPage from '../compliance/components/ComplianceReportListPage'
 
 const VehicleSupplierReportListContainer = (props) => {
-  const { id } = useParams();
-  const { location, user } = props;
-  const { state: locationState } = location;
+  const { id } = useParams()
+  const { location, user } = props
+  const { state: locationState } = location
 
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true)
+  const [data, setData] = useState([])
   const [availableYears, setAvailableYears] = useState(
     CONFIG.FEATURES.MODEL_YEAR_REPORT.YEARS
-  );
-  const [details, setDetails] = useState({});
-  const [filtered, setFiltered] = useState([]);
-  const [ratios, setRatios] = useState({});
+  )
+  const [details, setDetails] = useState({})
+  const [filtered, setFiltered] = useState([])
+  const [ratios, setRatios] = useState({})
 
   const refreshList = () => {
-    setLoading(true);
+    setLoading(true)
 
     const detailsPromise = axios
       .get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id))
       .then((response) => {
-        setDetails(response.data);
-      });
+        setDetails(response.data)
+      })
 
     const ratiosPromise = axios
       .get(ROUTES_COMPLIANCE.RATIOS)
       .then((response) => {
-        setRatios(response.data);
-      });
+        setRatios(response.data)
+      })
 
     const reportsPromise = axios
       .get(ROUTES_COMPLIANCE.REPORTS, {
@@ -47,26 +47,26 @@ const VehicleSupplierReportListContainer = (props) => {
         }
       })
       .then((response) => {
-        setData(response.data);
+        setData(response.data)
 
         const filteredYears = availableYears.filter(
           (year) =>
             response.data.findIndex(
               (item) => parseInt(item.modelYear.name, 10) === parseInt(year, 10)
             ) < 0
-        );
+        )
 
-        setAvailableYears(filteredYears);
-      });
+        setAvailableYears(filteredYears)
+      })
 
     Promise.all([detailsPromise, reportsPromise, ratiosPromise]).then(() => {
-      setLoading(false);
-    });
-  };
+      setLoading(false)
+    })
+  }
 
   useEffect(() => {
-    refreshList();
-  }, []);
+    refreshList()
+  }, [])
 
   return (
     <div className="page">
@@ -87,11 +87,11 @@ const VehicleSupplierReportListContainer = (props) => {
         user={user}
       />
     </div>
-  );
-};
+  )
+}
 VehicleSupplierReportListContainer.propTypes = {
   location: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default withRouter(VehicleSupplierReportListContainer);
+export default withRouter(VehicleSupplierReportListContainer)

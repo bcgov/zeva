@@ -1,35 +1,33 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import React, { useEffect, useState } from 'react'
+import axios from 'axios'
+import { useParams } from 'react-router-dom'
 
-import CONFIG from '../app/config';
-import history from '../app/History';
-import CustomPropTypes from '../app/utilities/props';
-import ComplianceReportTabs from './components/ComplianceReportTabs';
-import ConsumerSalesDetailsPage from './components/ConsumerSalesDetailsPage';
-import ROUTES_COMPLIANCE from '../app/routes/Compliance';
-import ROUTES_VEHICLES from '../app/routes/Vehicles';
-import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions';
+import CONFIG from '../app/config'
+import history from '../app/History'
+import CustomPropTypes from '../app/utilities/props'
+import ComplianceReportTabs from './components/ComplianceReportTabs'
+import ConsumerSalesDetailsPage from './components/ConsumerSalesDetailsPage'
+import ROUTES_COMPLIANCE from '../app/routes/Compliance'
+import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions'
 
 const ConsumerSalesContainer = (props) => {
-  const { keycloak, user } = props;
-  const [loading, setLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState([]);
-  const [vehicles, setVehicles] = useState([]);
-  const [assertions, setAssertions] = useState([]);
-  const [confirmed, setConfirmed] = useState(false);
-  const [checked, setChecked] = useState(false);
-  const [checkboxes, setCheckboxes] = useState([]);
-  const [disabledCheckboxes, setDisabledCheckboxes] = useState('');
+  const { keycloak, user } = props
+  const [loading, setLoading] = useState(true)
+  const [errorMessage, setErrorMessage] = useState([])
+  const [vehicles, setVehicles] = useState([])
+  const [assertions, setAssertions] = useState([])
+  const [confirmed, setConfirmed] = useState(false)
+  const [checked, setChecked] = useState(false)
+  const [checkboxes, setCheckboxes] = useState([])
   const [modelYear, setModelYear] = useState(
     CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR
-  );
-  const [details, setDetails] = useState({});
-  const [statuses, setStatuses] = useState({});
-  const { id } = useParams();
+  )
+  const [details, setDetails] = useState({})
+  const [statuses, setStatuses] = useState({})
+  const { id } = useParams()
 
   const refreshDetails = (showLoading) => {
-    setLoading(showLoading);
+    setLoading(showLoading)
 
     axios
       .all([
@@ -44,10 +42,10 @@ const ConsumerSalesContainer = (props) => {
             organizationName,
             modelYearReportHistory,
             validationStatus
-          } = consumerSalesResponse.data;
+          } = consumerSalesResponse.data
 
           if (vehicleList.length > 0) {
-            setVehicles(vehicleList);
+            setVehicles(vehicleList)
           }
 
           setDetails({
@@ -58,67 +56,67 @@ const ConsumerSalesContainer = (props) => {
               history: modelYearReportHistory,
               validationStatus
             }
-          });
+          })
 
           if (confirmations.length > 0) {
-            setConfirmed(true);
-            setCheckboxes(confirmations);
+            setConfirmed(true)
+            setCheckboxes(confirmations)
           }
 
           const { modelYear: reportModelYear, statuses: reportStatuses } =
-            statusesResponse.data;
+            statusesResponse.data
 
-          const year = parseInt(reportModelYear.name, 10);
+          const year = parseInt(reportModelYear.name, 10)
 
-          setModelYear(year);
-          setStatuses(reportStatuses);
+          setModelYear(year)
+          setStatuses(reportStatuses)
 
-          setLoading(false);
+          setLoading(false)
         })
-      );
+      )
 
     axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST).then((response) => {
       const filteredAssertions = response.data.filter(
         (data) => data.module === 'consumer_sales'
-      );
-      setAssertions(filteredAssertions);
-    });
-  };
+      )
+      setAssertions(filteredAssertions)
+    })
+  }
 
   const handleCancelConfirmation = () => {
     const data = {
       delete_confirmations: true,
       module: 'consumer_sales'
-    };
+    }
 
     axios
       .patch(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id), data)
       .then((response) => {
-        history.push(ROUTES_COMPLIANCE.REPORTS);
+        history.push(ROUTES_COMPLIANCE.REPORTS)
         history.replace(
           ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(
             ':id',
             response.data.id
           )
-        );
-      });
-  };
+        )
+      })
+  }
 
   const handleCheckboxClick = (event) => {
     if (!event.target.checked) {
       const checked = checkboxes.filter(
         (each) => Number(each) !== Number(event.target.id)
-      );
-      setCheckboxes(checked);
-      setChecked(false);
+      )
+      setCheckboxes(checked)
+      setChecked(false)
     }
 
     if (event.target.checked) {
-      const checked = checkboxes.concat(event.target.id);
-      setCheckboxes(checked);
-      setChecked(true);
+      const checked = checkboxes.concat(event.target.id)
+      setCheckboxes(checked)
+      setChecked(true)
     }
-  };
+  }
 
   const handleSave = () => {
     axios
@@ -128,22 +126,22 @@ const ConsumerSalesContainer = (props) => {
         confirmation: checkboxes
       })
       .then(() => {
-        history.push(ROUTES_COMPLIANCE.REPORTS);
+        history.push(ROUTES_COMPLIANCE.REPORTS)
         history.replace(
           ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', id)
-        );
+        )
       })
       .catch((error) => {
-        const { response } = error;
+        const { response } = error
         if (response.status === 400) {
-          setErrorMessage(error.response.data.status);
+          setErrorMessage(error.response.data.status)
         }
-      });
-  };
+      })
+  }
 
   useEffect(() => {
-    refreshDetails(true);
-  }, [keycloak.authenticated, modelYear]);
+    refreshDetails(true)
+  }, [keycloak.authenticated, modelYear])
 
   return (
     <>
@@ -160,7 +158,7 @@ const ConsumerSalesContainer = (props) => {
         confirmed={confirmed}
         assertions={assertions}
         checkboxes={checkboxes}
-        disabledCheckboxes={disabledCheckboxes}
+        disabledCheckboxes={''}
         handleCheckboxClick={handleCheckboxClick}
         details={details}
         modelYear={modelYear}
@@ -171,12 +169,12 @@ const ConsumerSalesContainer = (props) => {
         checked={checked}
       />
     </>
-  );
-};
+  )
+}
 
 ConsumerSalesContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default ConsumerSalesContainer;
+export default ConsumerSalesContainer

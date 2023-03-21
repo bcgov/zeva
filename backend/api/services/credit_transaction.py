@@ -1,6 +1,6 @@
 from datetime import date, datetime
 from decimal import Decimal
-from django.db.models import Case, Count, Sum, Value, F, Q, When, Max
+from django.db.models import Case, Count, Sum, Value, F, Q, When, Max, FloatField, ExpressionWrapper
 from django.db.models.functions import Coalesce
 from django.db import transaction
 from rest_framework.serializers import ValidationError
@@ -27,11 +27,11 @@ from api.services.credit_transfer import aggregate_credit_transfer_details
 def aggregate_credit_balance_details(organization):
     balance_credits = Coalesce(Sum('total_value', filter=Q(
         credit_to=organization
-    )), Value(0))
+    )), Value(0), output_field=FloatField())
 
     balance_debits = Coalesce(Sum('total_value', filter=Q(
         debit_from=organization
-    )), Value(0))
+    )), Value(0), output_field=FloatField())
 
     balance = CreditTransaction.objects.filter(
         Q(credit_to=organization) | Q(debit_from=organization)
@@ -40,7 +40,7 @@ def aggregate_credit_balance_details(organization):
     ).annotate(
         credit=balance_credits,
         debit=balance_debits,
-        total_value=F('credit') - F('debit')
+        total_value=ExpressionWrapper(F('credit') - F('debit'), output_field=FloatField())
     ).order_by('model_year_id', 'credit_class_id', 'weight_class_id')
 
     return balance
@@ -221,11 +221,11 @@ def award_credits(submission):
 def aggregate_transactions_by_submission(organization):
     balance_credits = Coalesce(Sum('total_value', filter=Q(
         credit_to=organization
-    )), Value(0))
+    )), Value(0), output_field=FloatField())
 
     balance_debits = Coalesce(Sum('total_value', filter=Q(
         debit_from=organization
-    )), Value(0))
+    )), Value(0), output_field=FloatField())
 
     detail_transaction_type = Case(
         When(transaction_type=CreditTransactionType.objects.get(
@@ -281,7 +281,7 @@ def aggregate_transactions_by_submission(organization):
         credit=balance_credits,
         debit=balance_debits,
         foreign_key=foreign_key,
-        total_value=F('credit') - F('debit'),
+        total_value=ExpressionWrapper(F('credit') - F('debit'), output_field=FloatField()),
         transaction_timestamp=Max('transaction_timestamp'),
         detail_transaction_type=detail_transaction_type
     ).order_by(
@@ -342,7 +342,7 @@ def validate_transfer(transfer):
                     record['weight_class_id'] == weight_type
             ):
                 found = True
-                record['total_value'] -= credit_value
+                record['total_value'] -= float(credit_value)
                 if record['total_value'] < 0:
                     has_enough = False
         if not found:

@@ -1,7 +1,7 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import PropTypes from 'prop-types';
-import React, { useState } from 'react';
-import { useDropzone } from 'react-dropzone';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import PropTypes from 'prop-types'
+import React, { useState } from 'react'
+import { useDropzone } from 'react-dropzone'
 
 const FileDrop = (props) => {
   const {
@@ -10,24 +10,24 @@ const FileDrop = (props) => {
     maxFiles,
     allowedFileTypes,
     getExistingFilesCount
-  } = props;
-  const [dropMessage, setDropMessage] = useState('');
+  } = props
+  const [dropMessage, setDropMessage] = useState('')
   const onDrop = (acceptedFiles) => {
     if (acceptedFiles.length > maxFiles - getExistingFilesCount()) {
       setDropMessage(
         `Please select only ${maxFiles} file${maxFiles !== 1 ? 's' : ''}.`
-      );
+      )
     } else {
-      setDropMessage('');
-      setErrorMessage('');
-      setFiles(acceptedFiles);
+      setDropMessage('')
+      setErrorMessage('')
+      setFiles(acceptedFiles)
     }
-  };
+  }
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: allowedFileTypes
-  });
+  })
   return (
     <div {...getRootProps()}>
       <input {...getInputProps()} />
@@ -42,14 +42,14 @@ const FileDrop = (props) => {
         {dropMessage && <div id="danger-text">{dropMessage}</div>}
       </div>
     </div>
-  );
-};
+  )
+}
 
 FileDrop.defaultProps = {
   setErrorMessage: () => {},
   allowedFileTypes: null,
   getExistingFilesCount: () => {}
-};
+}
 
 FileDrop.propTypes = {
   setErrorMessage: PropTypes.func,
@@ -57,6 +57,6 @@ FileDrop.propTypes = {
   maxFiles: PropTypes.number.isRequired,
   allowedFileTypes: PropTypes.string,
   getExistingFilesCount: PropTypes.func
-};
+}
 
-export default FileDrop;
+export default FileDrop

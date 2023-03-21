@@ -2,95 +2,95 @@
  * Container component
  * All data handling & manipulation should be handled here.
  */
-import axios from 'axios';
-import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import axios from 'axios'
+import PropTypes from 'prop-types'
+import React, { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 
-import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
-import CustomPropTypes from '../app/utilities/props';
-import VehicleSupplierEditForm from './components/VehicleSupplierEditForm';
-import history from '../app/History';
-import parseErrorResponse from '../app/utilities/parseErrorResponse';
+import ROUTES_ORGANIZATIONS from '../app/routes/Organizations'
+import CustomPropTypes from '../app/utilities/props'
+import VehicleSupplierEditForm from './components/VehicleSupplierEditForm'
+import history from '../app/History'
+import parseErrorResponse from '../app/utilities/parseErrorResponse'
 
 const VehicleSupplierEditContainer = (props) => {
-  const { id } = useParams();
-  const [details, setDetails] = useState({});
-  const [display, setDisplay] = useState({});
-  const [errorFields, setErrorFields] = useState({});
-  const [loading, setLoading] = useState(true);
-  const { keycloak, newSupplier } = props;
-  const [serviceSame, setServiceSame] = useState(false);
+  const { id } = useParams()
+  const [details, setDetails] = useState({})
+  const [display, setDisplay] = useState({})
+  const [errorFields, setErrorFields] = useState({})
+  const [loading, setLoading] = useState(true)
+  const { keycloak, newSupplier } = props
+  const [serviceSame, setServiceSame] = useState(false)
   const refreshDetails = () => {
     if (newSupplier) {
-      setLoading(false);
+      setLoading(false)
       setDetails({
         organizationAddress: {}
-      });
+      })
     }
 
     if (!newSupplier) {
-      setLoading(true);
+      setLoading(true)
       axios
         .get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id))
         .then((response) => {
-          const addresses = {};
+          const addresses = {}
           response.data.organizationAddress.forEach((element) => {
             if (element.addressType.addressType === 'Service') {
               addresses[
                 `${element.addressType.addressType}_representativeName`
-              ] = element.representativeName;
+              ] = element.representativeName
             }
             addresses[`${element.addressType.addressType}_addressLine_1`] =
-              element.addressLine1;
+              element.addressLine1
             addresses[`${element.addressType.addressType}_addressLine_2`] =
-              element.addressLine2;
+              element.addressLine2
             addresses[`${element.addressType.addressType}_addressLine_3`] =
-              element.addressLine3;
-            addresses[`${element.addressType.addressType}_city`] = element.city;
+              element.addressLine3
+            addresses[`${element.addressType.addressType}_city`] = element.city
             addresses[`${element.addressType.addressType}_state`] =
-              element.state;
+              element.state
             addresses[`${element.addressType.addressType}_country`] =
-              element.country;
+              element.country
             addresses[`${element.addressType.addressType}_postalCode`] =
-              element.postalCode;
-          });
+              element.postalCode
+          })
 
           setDetails({
             ...response.data,
             organizationAddress: addresses
-          });
-          setDisplay({ ...response.data, organizationAddress: addresses });
-          setLoading(false);
-        });
+          })
+          setDisplay({ ...response.data, organizationAddress: addresses })
+          setLoading(false)
+        })
     }
-  };
+  }
 
   useEffect(() => {
-    refreshDetails();
-  }, [keycloak.authenticated]);
+    refreshDetails()
+  }, [keycloak.authenticated])
 
   const handleInputChange = (event) => {
-    const { value, name } = event.target;
+    const { value, name } = event.target
     setDetails({
       ...details,
       [name]: value
-    });
-  };
+    })
+  }
 
   const handleAddressChange = (event) => {
-    const { value, name } = event.target;
+    const { value, name } = event.target
     setDetails({
       ...details,
       organizationAddress: {
         ...details.organizationAddress,
         [name]: value
       }
-    });
-  };
+    })
+  }
 
   const handleSubmit = () => {
-    let formData = {};
+    let formData = {}
     const serviceAddress = {
       representativeName:
         details.organizationAddress.Service_representativeName,
@@ -101,12 +101,12 @@ const VehicleSupplierEditContainer = (props) => {
       state: 'BC',
       country: 'Canada',
       postalCode: details.organizationAddress.Service_postalCode
-    };
+    }
 
-    let recordsAddress;
+    let recordsAddress
 
     if (serviceSame) {
-      recordsAddress = { ...serviceAddress, addressType: 'Records' };
+      recordsAddress = { ...serviceAddress, addressType: 'Records' }
     } else {
       recordsAddress = {
         addressType: 'Records',
@@ -116,12 +116,12 @@ const VehicleSupplierEditContainer = (props) => {
         state: details.organizationAddress.Records_state,
         country: details.organizationAddress.Records_country,
         postalCode: details.organizationAddress.Records_postalCode
-      };
+      }
     }
     formData = {
       ...details,
       organizationAddress: [serviceAddress, recordsAddress]
-    };
+    }
 
     if (newSupplier) {
       axios
@@ -129,38 +129,38 @@ const VehicleSupplierEditContainer = (props) => {
         .then((response) => {
           history.push(
             ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, response.data.id)
-          );
+          )
         })
         .catch((errors) => {
           if (!errors.response) {
-            return;
+            return
           }
 
-          const { data } = errors.response;
-          const err = {};
+          const { data } = errors.response
+          const err = {}
 
-          parseErrorResponse(err, data);
-          setErrorFields(err);
-        });
+          parseErrorResponse(err, data)
+          setErrorFields(err)
+        })
     } else {
       axios
         .patch(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id), formData)
         .then(() => {
-          history.push(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id));
+          history.push(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id))
         })
         .catch((errors) => {
           if (!errors.response) {
-            return;
+            return
           }
 
-          const { data } = errors.response;
-          const err = {};
+          const { data } = errors.response
+          const err = {}
 
-          parseErrorResponse(err, data);
-          setErrorFields(err);
-        });
+          parseErrorResponse(err, data)
+          setErrorFields(err)
+        })
     }
-  };
+  }
 
   return (
     <VehicleSupplierEditForm
@@ -176,16 +176,16 @@ const VehicleSupplierEditContainer = (props) => {
       serviceSame={serviceSame}
       setServiceSame={setServiceSame}
     />
-  );
-};
+  )
+}
 
 VehicleSupplierEditContainer.defaultProps = {
   newSupplier: false
-};
+}
 
 VehicleSupplierEditContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   newSupplier: PropTypes.bool
-};
+}
 
-export default VehicleSupplierEditContainer;
+export default VehicleSupplierEditContainer

@@ -1,9 +1,9 @@
-import React from 'react';
-import { render, cleanup } from '@testing-library/react';
+import React from 'react'
+import { render, cleanup } from '@testing-library/react'
 
-import VehicleForm from '../VehicleForm';
+import VehicleForm from '../VehicleForm'
 
-afterEach(cleanup);
+afterEach(cleanup)
 
 describe('Vehicle Form', () => {
   it('renders without crashing', () => {
@@ -20,6 +20,6 @@ describe('Vehicle Form', () => {
         fields={{ make: 'testcar' }}
         formTitle="test"
       />
-    );
-  });
-});
+    )
+  })
+})

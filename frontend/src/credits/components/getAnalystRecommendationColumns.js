@@ -1,40 +1,37 @@
-import _ from 'lodash';
-
 const analystRecommendationColumns = (props) => {
-  const { submission, user } = props;
+  const { submission, user } = props
 
   return [
     {
       accessor: (item) => {
         if (!submission.eligible) {
-          return '-';
+          return '-'
         }
 
         const eligibleSales = submission.eligible.find(
           (eligible) => eligible.vehicleId === item.vehicle.id
-        );
+        )
 
         if (!eligibleSales) {
-          return '-';
+          return '-'
         }
 
-        return eligibleSales.vinCount;
+        return eligibleSales.vinCount
       },
       className: 'text-right eligible-sales',
       Footer: (reactTable) => {
-        const sum = _.sumBy(reactTable.data, (item) => {
+        const sum = reactTable.data.map(item => {
           if (isNaN(item['eligible-sales'])) {
-            return 0;
+            return 0
           }
-
-          return item['eligible-sales'];
-        });
+          return Number(item['eligible-sales'])
+        }).reduce((a, b) => a + b)
 
         if (sum === 0) {
-          return '-';
+          return '-'
         }
 
-        return sum;
+        return sum
       },
       Header: 'Eligible Sales',
       headerClassName: ' eligible-sales',
@@ -44,43 +41,41 @@ const analystRecommendationColumns = (props) => {
     },
     {
       accessor: (item) => {
-        const { vehicle } = item;
+        const { vehicle } = item
 
         if (!submission.eligible) {
-          return '-';
+          return '-'
         }
 
         const eligibleSales = submission.eligible.find(
           (eligible) => eligible.vehicleId === vehicle.id
-        );
+        )
 
         if (!eligibleSales) {
-          return '-';
+          return '-'
         }
 
         if (vehicle && vehicle.creditValue && vehicle.creditValue !== 0) {
-          return (
-            eligibleSales.vinCount * _.round(vehicle.creditValue, 2)
-          ).toFixed(2);
+          return (eligibleSales.vinCount *
+            (Math.round((vehicle.creditValue + Number.EPSILON) * 100) / 100)).toFixed(2)
         }
 
-        return '-';
+        return '-'
       },
       className: 'text-right eligible-zev-credits',
       Footer: (reactTable) => {
-        const sum = _.sumBy(reactTable.data, (item) => {
+        const sum = reactTable.data.map(item => {
           if (isNaN(item['eligible-zev-credits'])) {
-            return 0;
+            return 0
           }
-
-          return Number(item['eligible-zev-credits']);
-        });
+          return Number(item['eligible-zev-credits'])
+        }).reduce((a, b) => a + b)
 
         if (sum === 0) {
-          return '-';
+          return '-'
         }
 
-        return _.round(sum, 2).toFixed(2);
+        return (Math.round((sum + Number.EPSILON) * 100) / 100).toFixed(2)
       },
       Header: 'Eligible ZEV Credits',
       headerClassName: ' eligible-sales',
@@ -88,7 +83,7 @@ const analystRecommendationColumns = (props) => {
       show: user.isGovernment || submission.validationStatus === 'VALIDATED',
       width: 200
     }
-  ];
-};
+  ]
+}
 
-export default analystRecommendationColumns;
+export default analystRecommendationColumns

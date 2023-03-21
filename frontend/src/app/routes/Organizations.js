@@ -1,4 +1,4 @@
-const API_BASE_PATH = '/organizations';
+const API_BASE_PATH = '/organizations'
 
 const ORGANIZATIONS = {
   ADD_USER: `${API_BASE_PATH}/:id/users/add`,
@@ -16,6 +16,6 @@ const ORGANIZATIONS = {
   TRANSACTIONS: `${API_BASE_PATH}/:id/credit-transactions`,
   USERS: `${API_BASE_PATH}/:id/users`,
   VEHICLES: `${API_BASE_PATH}/:id/vehicles`
-};
+}
 
-export default ORGANIZATIONS;
+export default ORGANIZATIONS

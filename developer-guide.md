@@ -4,16 +4,19 @@
 
 There is a docker-compose file in the root directory that will spin up the local development environment for you. If you don't have docker installed then head over to the docker homepage to get that started.
 
-There are 7 services that make up the ZEVA application:
+There are 6 services that make up the ZEVA application:
 
 zeva_api_1  
 zeva_db_1  
 zeva_web_1  
-zeva_keycloak_1  
 zeva_minio_1  
 zeva_rabbitmq_1  
 zeva_mailslurper_1
 
+
+## Running on an M1 Macbook
+M1 macbooks run on a different chip than intel macbooks and pcs, which can cause problems with Docker. Currently it should be fine for either but if there's an issue in the future we may need to specify the source of some images.
+ 
 ## Code style and Linting
 
 We use [Eslint](https://eslint.org/) to lint the app's code and [Prettier](https://prettier.io/) to format it. The following npm scripts can be used to trigger linting and formatting:
@@ -51,10 +54,9 @@ This will only run tests that match the test name pattern you provide.
 
 ## User Authentication
 
-The application requires users to be authenticated using keycloak.
+The application requires users to be authenticated using IDIR or BCeID.
 
-to access keycloak console on local, go to localhost:8888
-when developing locally, you may want to assign different users to different profiles, for example, have a 'government' profile as well as a 'supplier' profile. To update keycloak profiles, go to the keycloak console (8888), then click users, then view all users. select one, then click attributes. Look at the database user_profiles table, find one that has an organization that matches what you want, or update one, then use that username as the 'Value' on keycloak. Different users have different permissions to view pages and complete actions.
+When developing locally, you may want to assign different users to different profiles, for example, have a 'government' profile as well as a 'supplier' profile. Your IDIR should be used for your government account and your BCeID account should be used for supplier accounts. You can insert your own user_profile objects into the database according to which identity provider you are loggin in with. The user_creation_request table is used to map external users to Zeva users. A user_creation_request entry will have to exist with your keycloak_email and external_username in order to map your IDIR/BCeID account within the system. You can also update the user_role's for your user by adding to the cross table between user_profile and role (user_role). Please reach out to a team member if you have any questions.
 
 ## Code Changes
 
@@ -73,7 +75,15 @@ We also extend this prefix convention to the naming of **branches**, eg: `docs/a
 ### Database Postgres
 
 to view the database via docker use:
-docker-compose exec db psql -U postgres postgres
+docker-compose exec db psql -U postgres zeva
+
+### To insert your first idir user
+
+INSERT INTO user_profile (
+    create_timestamp,    update_timestamp,    username,    first_name,    last_name,    is_active,    keycloak_email,    display_name,    organization_id,    create_user  
+VALUES (
+    NOW(),    NOW(),    'idirusername',    'Firstname',    'Lastname',    TRUE,    
+    'idir.email@gov.bc.ca',    'displayname',    1,    'SYSTEM'  );
 
 #### Copy down Test/Prod data from Openshift
 

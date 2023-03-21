@@ -1,16 +1,16 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 
-import CustomPropTypes from '../../app/utilities/props';
-import ComplianceReportAlert from './ComplianceReportAlert';
-import Button from '../../app/components/Button';
-import Loading from '../../app/components/Loading';
-import AssessmentSupplierInformationMakes from './AssessmentSupplierInformationMakes';
-import ConsumerLDVSales from './ConsumerLDVSales';
-import getTotalReduction from '../../app/utilities/getTotalReduction';
-import getClassACredits from '../../app/utilities/getClassAReduction';
-import getUnspecifiedClassReduction from '../../app/utilities/getUnspecifiedClassReduction';
-import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
+import CustomPropTypes from '../../app/utilities/props'
+import ComplianceReportAlert from './ComplianceReportAlert'
+import Button from '../../app/components/Button'
+import Loading from '../../app/components/Loading'
+import AssessmentSupplierInformationMakes from './AssessmentSupplierInformationMakes'
+import ConsumerLDVSales from './ConsumerLDVSales'
+import getTotalReduction from '../../app/utilities/getTotalReduction'
+import getClassACredits from '../../app/utilities/getClassAReduction'
+import getUnspecifiedClassReduction from '../../app/utilities/getUnspecifiedClassReduction'
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
 
 const AssessmentEditPage = (props) => {
   const {
@@ -31,25 +31,25 @@ const AssessmentEditPage = (props) => {
     sales,
     supplierMakes,
     enableSave
-  } = props;
+  } = props
 
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
 
   const totalReduction = getTotalReduction(
     details.ldvSales,
     ratios.complianceRatio
-  );
+  )
   const classAReduction = getClassACredits(
     details.ldvSales,
     ratios.zevClassA,
     details.supplierClass
-  );
+  )
   const leftoverReduction = getUnspecifiedClassReduction(
     totalReduction,
     classAReduction
-  );
+  )
 
   const actionbar = (
     <div className="row">
@@ -70,14 +70,14 @@ const AssessmentEditPage = (props) => {
               optionalClassname="button primary"
               buttonType="save"
               action={(event) => {
-                handleSubmit(event);
+                handleSubmit(event)
               }}
             />
           </span>
         </div>
       </div>
     </div>
-  );
+  )
   return (
     <div id="assessment-edit" className="page">
       <div className="row mt-3">
@@ -97,7 +97,7 @@ const AssessmentEditPage = (props) => {
                   status={statuses.assessment}
                   type="Assessment"
                 />
-              )}
+            )}
           </div>
         </div>
       </div>
@@ -146,9 +146,9 @@ const AssessmentEditPage = (props) => {
         </div>
       </div>
     </div>
-  );
-};
-AssessmentEditPage.defaultProps = {};
+  )
+}
+AssessmentEditPage.defaultProps = {}
 
 AssessmentEditPage.propTypes = {
   details: PropTypes.shape().isRequired,
@@ -167,5 +167,5 @@ AssessmentEditPage.propTypes = {
   make: PropTypes.string.isRequired,
   sales: PropTypes.shape().isRequired,
   ratios: PropTypes.shape().isRequired
-};
-export default AssessmentEditPage;
+}
+export default AssessmentEditPage

@@ -1,17 +1,17 @@
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import axios from 'axios';
-import ExcelFileDrop from '../../app/components/FileDrop';
-import getFileSize from '../../app/utilities/getFileSize';
+import React from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import axios from 'axios'
+import ExcelFileDrop from '../../app/components/FileDrop'
+import getFileSize from '../../app/utilities/getFileSize'
 
 const UploadEvidence = (props) => {
-  const { details, setUploadFiles, files, setDeleteFiles, deleteFiles } = props;
+  const { details, setUploadFiles, files, setDeleteFiles, deleteFiles } = props
 
   const removeFile = (removedFile) => {
-    const found = files.findIndex((file) => file === removedFile);
-    files.splice(found, 1);
-    setUploadFiles([...files]);
-  };
+    const found = files.findIndex((file) => file === removedFile)
+    files.splice(found, 1)
+    setUploadFiles([...files])
+  }
 
   return (
     <>
@@ -55,13 +55,13 @@ const UploadEvidence = (props) => {
                           .then((response) => {
                             const objectURL = window.URL.createObjectURL(
                               new Blob([response.data])
-                            );
-                            const link = document.createElement('a');
-                            link.href = objectURL;
-                            link.setAttribute('download', attachment.filename);
-                            document.body.appendChild(link);
-                            link.click();
-                          });
+                            )
+                            const link = document.createElement('a')
+                            link.href = objectURL
+                            link.setAttribute('download', attachment.filename)
+                            document.body.appendChild(link)
+                            link.click()
+                          })
                       }}
                       type="button"
                     >
@@ -75,7 +75,7 @@ const UploadEvidence = (props) => {
                     <button
                       className="delete"
                       onClick={() => {
-                        setDeleteFiles([...deleteFiles, attachment.id]);
+                        setDeleteFiles([...deleteFiles, attachment.id])
                       }}
                       type="button"
                     >
@@ -94,7 +94,7 @@ const UploadEvidence = (props) => {
                 <button
                   className="delete"
                   onClick={() => {
-                    removeFile(file);
+                    removeFile(file)
                   }}
                   type="button"
                 >
@@ -106,7 +106,7 @@ const UploadEvidence = (props) => {
         </div>
       )}
     </>
-  );
-};
+  )
+}
 
-export default UploadEvidence;
+export default UploadEvidence

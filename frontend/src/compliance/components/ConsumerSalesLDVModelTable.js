@@ -1,10 +1,11 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import _ from 'lodash';
-import ReactTable from '../../app/components/ReactTable';
+import PropTypes from 'prop-types'
+import React from 'react'
+import ReactTable from '../../app/components/ReactTable'
 
 const ConsumerSalesLDVModalTable = (props) => {
-  const { vehicles } = props;
+  const { vehicles } = props
+  const totalPendingSales = vehicles.map(v => v.pendingSales).reduce((a, b) => a + b)
+  const totalSalesIssued = vehicles.map(v => v.salesIssued).reduce((a, b) => a + b)
 
   const columns = [
     {
@@ -16,7 +17,7 @@ const ConsumerSalesLDVModalTable = (props) => {
       maxWidth: 200,
       Footer: (
         <span>
-          <b>{_.sum(_.map(vehicles, (d) => d.pendingSales))}</b>
+          <b>{totalPendingSales}</b>
         </span>
       )
     },
@@ -29,7 +30,7 @@ const ConsumerSalesLDVModalTable = (props) => {
       maxWidth: 200,
       Footer: (
         <span>
-          <b>{_.sum(_.map(vehicles, (d) => d.salesIssued))}</b>
+          <b>{totalSalesIssued}</b>
         </span>
       )
     },
@@ -81,7 +82,7 @@ const ConsumerSalesLDVModalTable = (props) => {
       id: 'zev-class',
       maxWidth: 200
     }
-  ];
+  ]
 
   return (
     <ReactTable
@@ -90,13 +91,13 @@ const ConsumerSalesLDVModalTable = (props) => {
       data={vehicles}
       filterable={false}
     />
-  );
-};
+  )
+}
 
-ConsumerSalesLDVModalTable.defaultProps = {};
+ConsumerSalesLDVModalTable.defaultProps = {}
 
 ConsumerSalesLDVModalTable.propTypes = {
   vehicles: PropTypes.arrayOf(PropTypes.shape({})).isRequired
-};
+}
 
-export default ConsumerSalesLDVModalTable;
+export default ConsumerSalesLDVModalTable

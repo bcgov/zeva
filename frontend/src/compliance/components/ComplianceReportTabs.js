@@ -1,22 +1,22 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { Link, useParams } from 'react-router-dom';
+import PropTypes from 'prop-types'
+import React from 'react'
+import { Link, useParams } from 'react-router-dom'
 
-import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
 
 const ComplianceReportTabs = (props) => {
-  const { active, reportStatuses, user } = props;
-  const { id } = useParams();
+  const { active, reportStatuses, user } = props
+  const { id } = useParams()
   const disableOtherTabs =
     reportStatuses.supplierInformation &&
-    reportStatuses.supplierInformation.status === 'UNSAVED';
+    reportStatuses.supplierInformation.status === 'UNSAVED'
   const disableAssessment =
     (reportStatuses.reportSummary &&
       ['DRAFT'].indexOf(reportStatuses.reportSummary.status) >= 0 &&
       user.isGovernment) ||
     (reportStatuses.assessment &&
       reportStatuses.assessment.status !== 'ASSESSED' &&
-      !user.isGovernment);
+      !user.isGovernment)
 
   return (
     <ul
@@ -122,8 +122,8 @@ const ComplianceReportTabs = (props) => {
         )}
       </li>
     </ul>
-  );
-};
+  )
+}
 
 ComplianceReportTabs.defaultProps = {
   reportStatuses: {
@@ -133,12 +133,12 @@ ComplianceReportTabs.defaultProps = {
     reportSummary: '',
     supplierInformation: ''
   }
-};
+}
 
 ComplianceReportTabs.propTypes = {
   active: PropTypes.string.isRequired,
   reportStatuses: PropTypes.shape(),
   user: PropTypes.shape().isRequired
-};
+}
 
-export default ComplianceReportTabs;
+export default ComplianceReportTabs

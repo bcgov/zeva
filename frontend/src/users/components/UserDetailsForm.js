@@ -1,12 +1,12 @@
-import React from 'react';
-import ReactTooltip from 'react-tooltip';
-import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from 'react'
+import ReactTooltip from 'react-tooltip'
+import PropTypes from 'prop-types'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-import Button from '../../app/components/Button';
-import CustomPropTypes from '../../app/utilities/props';
-import Loading from '../../app/components/Loading';
-import TextInput from '../../app/components/TextInput';
+import Button from '../../app/components/Button'
+import CustomPropTypes from '../../app/utilities/props'
+import Loading from '../../app/components/Loading'
+import TextInput from '../../app/components/TextInput'
 
 const UserDetailsForm = (props) => {
   const {
@@ -17,28 +17,28 @@ const UserDetailsForm = (props) => {
     handleInputChange,
     handleSubmit,
     roles
-  } = props;
+  } = props
 
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
 
   const disableEditing = (permissions) => {
-    let editPermission;
+    let editPermission
     if (permissions) {
       permissions.forEach((each) => {
         if (each.permissionCode === 'EDIT_USERS') {
-          editPermission = true;
+          editPermission = true
         }
-      });
+      })
     } else if (
       !permissions &&
       typeof user.hasPermission === 'function' &&
       user.hasPermission('EDIT_USERS')
     ) {
-      editPermission = true;
+      editPermission = true
     } else {
-      editPermission = false;
+      editPermission = false
     }
 
     if (
@@ -46,20 +46,20 @@ const UserDetailsForm = (props) => {
       details.username === user.username &&
       !user.isGovernment
     ) {
-      return true;
+      return true
     }
-    return false;
-  };
+    return false
+  }
 
   const checked = (role) => {
     if (!details || !details.roles) {
-      return false;
+      return false
     }
 
     return (
       details.roles.filter((detailRole) => detailRole.id === role.id).length > 0
-    );
-  };
+    )
+  }
 
   const rolesCheckboxes = roles
     .filter(
@@ -78,9 +78,11 @@ const UserDetailsForm = (props) => {
         {role.roleCode}{' '}
         <FontAwesomeIcon data-tip={role.description} icon="info-circle" />
       </ul>
-    ));
+    ))
 
-  const accountType = details.organization.isGovernment ? 'IDIR' : 'BCeID';
+  const accountType = details.organization.isGovernment ? 'IDIR' : 'BCeID'
+
+  const activationText = details.isMapped ? 'User account is mapped.' : 'User account has not been mapped.'
 
   return (
     <div id="form" className="page">
@@ -216,7 +218,7 @@ const UserDetailsForm = (props) => {
                           Inactive, user cannot log in to ZEVA
                         </div>
                       </div>
-                    )}
+                  )}
                   {typeof user.hasPermission === 'function' &&
                     (user.hasPermission('ASSIGN_BCEID_ROLES') ||
                       user.hasPermission('ASSIGN_IDIR_ROLES')) && (
@@ -229,7 +231,15 @@ const UserDetailsForm = (props) => {
                         </label>
                         <div className="col-sm-8">{rolesCheckboxes}</div>
                       </div>
-                    )}
+                  )}
+                  <div className="form-group">
+                    <label
+                      className="col-sm-4 col-form-label"
+                    >
+                      Account
+                    </label>
+                    <div className="col-sm-8">{activationText}</div>
+                  </div>
                 </span>
               </div>
             </fieldset>
@@ -254,12 +264,12 @@ const UserDetailsForm = (props) => {
         </div>
       </form>
     </div>
-  );
-};
+  )
+}
 
 UserDetailsForm.defaultProps = {
   errorFields: {}
-};
+}
 
 UserDetailsForm.propTypes = {
   details: PropTypes.shape({
@@ -289,6 +299,6 @@ UserDetailsForm.propTypes = {
     })
   ).isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default UserDetailsForm;
+export default UserDetailsForm

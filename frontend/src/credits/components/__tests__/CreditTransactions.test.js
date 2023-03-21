@@ -1,8 +1,8 @@
-import React from 'react';
-import { render } from '@testing-library/react';
-import CreditTransactions from '../CreditTransactions';
-import '@testing-library/jest-dom/extend-expect';
-import { BrowserRouter as Router } from 'react-router-dom';
+import React from 'react'
+import { render } from '@testing-library/react'
+import CreditTransactions from '../CreditTransactions'
+import '@testing-library/jest-dom/extend-expect'
+import { BrowserRouter as Router } from 'react-router-dom'
 
 const data = [
   {
@@ -26,7 +26,7 @@ const data = [
     transactionType: { transactionType: 'Validation' },
     id: 4
   }
-];
+]
 
 const balance = [
   {
@@ -43,7 +43,7 @@ const balance = [
       description: 'Light Duty Vehicle'
     }
   }
-];
+]
 
 const user = {
   organization: {
@@ -52,12 +52,12 @@ const user = {
       B: 0
     }
   }
-};
+}
 
 it('renders without crashing', () => {
   render(
     <Router>
       <CreditTransactions items={data} user={user} balances={balance} />
     </Router>
-  );
-});
+  )
+})

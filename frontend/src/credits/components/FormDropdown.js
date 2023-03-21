@@ -1,5 +1,5 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 
 const FormDropdown = (props) => {
   const {
@@ -12,13 +12,13 @@ const FormDropdown = (props) => {
     labelClassname,
     inputClassname,
     rowClassname
-  } = props;
+  } = props
 
   const selectionList = dropdownData.map((obj) => (
     <option key={accessor(obj)} value={accessor(obj)}>
       {obj.name || obj.description || obj.modelYear}
     </option>
-  ));
+  ))
   return (
     <div className={rowClassname}>
       <label className={labelClassname} htmlFor={dropdownName}>
@@ -37,15 +37,15 @@ const FormDropdown = (props) => {
         </select>
       </div>
     </div>
-  );
-};
+  )
+}
 
 FormDropdown.defaultProps = {
   accessor: (obj) => obj.id,
   labelClassname: 'col-sm-3 col-form-label',
   inputClassname: 'col-sm-8',
   rowClassname: 'form-group row'
-};
+}
 
 FormDropdown.propTypes = {
   accessor: PropTypes.func,
@@ -65,5 +65,5 @@ FormDropdown.propTypes = {
   labelClassname: PropTypes.string,
   inputClassname: PropTypes.string,
   rowClassname: PropTypes.string
-};
-export default FormDropdown;
+}
+export default FormDropdown

@@ -1,0 +1,23 @@
+replicaCount: 3
+
+envName: prod
+suffix: -prod
+
+autoscaling:
+  minReplicas: 3
+  maxReplicas: 5
+  cpuAverageUtilization: 80
+
+healthCheckDelay:  30
+
+resources:
+  limits:
+    cpu: 160m
+    memory: 400Mi
+  requests:
+    cpu: 80m
+    memory: 200Mi
+    
+backendRoute: 
+  create: false
+  hostName: zeva-backend-prod.apps.silver.devops.gov.bc.ca

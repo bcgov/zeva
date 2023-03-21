@@ -1,0 +1,23 @@
+replicaCount: 2
+
+envName: test
+suffix: -test
+
+autoscaling:
+  minReplicas: 2
+  maxReplicas: 3
+  cpuAverageUtilization: 80
+
+healthCheckDelay:  30
+
+resources:
+  limits:
+    cpu: 160m
+    memory: 400Mi
+  requests:
+    cpu: 80m
+    memory: 200Mi
+    
+backendRoute: 
+  create: true
+  hostName: zeva-backend-test.apps.silver.devops.gov.bc.ca

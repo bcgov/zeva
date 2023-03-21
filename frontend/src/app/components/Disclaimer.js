@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 const Disclaimer = () => (
   <div id="content">
@@ -6,10 +6,10 @@ const Disclaimer = () => (
     responsible for ensuring compliance with the{' '}
     <i>Zero-Emissions Vehicles Act</i> and <i>Regulations.</i>
   </div>
-);
+)
 
-Disclaimer.defaultProps = {};
+Disclaimer.defaultProps = {}
 
-Disclaimer.propTypes = {};
+Disclaimer.propTypes = {}
 
-export default Disclaimer;
+export default Disclaimer

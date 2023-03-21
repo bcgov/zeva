@@ -1,9 +1,9 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
-import PropTypes from 'prop-types';
-import FileDrop from './FileDrop';
-import FileDropEvidence from './FileDropEvidence';
-import getFileSize from '../utilities/getFileSize';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import React from 'react'
+import PropTypes from 'prop-types'
+import FileDrop from './FileDrop'
+import FileDropEvidence from './FileDropEvidence'
+import getFileSize from '../utilities/getFileSize'
 
 const FileDropArea = (props) => {
   const {
@@ -18,19 +18,19 @@ const FileDropArea = (props) => {
     submission,
     type,
     wholePageWidth
-  } = props;
+  } = props
   const removeFile = (removedFile) => {
-    const found = files.findIndex((file) => file === removedFile);
-    files.splice(found, 1);
-    setErrorMessage('');
-    setUploadFiles([...files]);
+    const found = files.findIndex((file) => file === removedFile)
+    files.splice(found, 1)
+    setErrorMessage('')
+    setUploadFiles([...files])
     if (type === 'pdf') {
-      const uploadedIds = submission.evidence.map((each) => each.id);
+      const uploadedIds = submission.evidence.map((each) => each.id)
       if (uploadedIds.includes(removedFile.id)) {
-        setEvidenceDeleteList([...evidenceDeleteList, removedFile.id]);
+        setEvidenceDeleteList([...evidenceDeleteList, removedFile.id])
       }
     }
-  };
+  }
 
   return (
     <div className="row">
@@ -109,14 +109,14 @@ const FileDropArea = (props) => {
                           {submissionFile.filename || submissionFile.name}
                         </div>
                         {!showProgressBars && [
-                          <div className="col-3 size">
+                          <div className="col-3 size" key="filesize-key">
                             {getFileSize(submissionFile.size)}
                           </div>,
-                          <div className="col-1 actions">
+                          <div className="col-1 actions" key="file-key">
                             <button
                               className="delete"
                               onClick={() => {
-                                removeFile(submissionFile);
+                                removeFile(submissionFile)
                               }}
                               type="button"
                             >
@@ -135,14 +135,14 @@ const FileDropArea = (props) => {
                       {file.filename || file.name}
                     </div>
                     {!showProgressBars && [
-                      <div className="col-3 size">
+                      <div className="col-3 size" key="filesize-key-delete">
                         {getFileSize(file.size)}
                       </div>,
-                      <div className="col-1 actions">
+                      <div className="col-1 actions" key="file-key-delete">
                         <button
                           className="delete"
                           onClick={() => {
-                            removeFile(file);
+                            removeFile(file)
                           }}
                           type="button"
                         >
@@ -176,8 +176,8 @@ const FileDropArea = (props) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 FileDropArea.defaultProps = {
   errorMessage: '',
@@ -188,7 +188,7 @@ FileDropArea.defaultProps = {
   submission: {},
   setEvidenceDeleteList: () => {},
   wholePageWidth: false
-};
+}
 
 FileDropArea.propTypes = {
   errorMessage: PropTypes.string,
@@ -202,6 +202,6 @@ FileDropArea.propTypes = {
   submission: PropTypes.shape(),
   type: PropTypes.string.isRequired,
   wholePageWidth: PropTypes.bool
-};
+}
 
-export default FileDropArea;
+export default FileDropArea

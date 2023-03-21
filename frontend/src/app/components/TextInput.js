@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState, useEffect } from 'react'
+import PropTypes from 'prop-types'
 
 const TextInput = (props) => {
   const {
@@ -21,43 +21,43 @@ const TextInput = (props) => {
     readonly,
     serviceSame,
     addressType
-  } = props;
+  } = props
 
-  let type;
+  let type
   if (!num) {
-    type = 'text';
+    type = 'text'
   } else {
-    type = 'number';
+    type = 'number'
   }
 
-  const [validationErrors, setValidationErrors] = useState('');
-  const [rowClass, setRowClass] = useState(rowSize);
+  const [validationErrors, setValidationErrors] = useState('')
+  const [rowClass, setRowClass] = useState(rowSize)
 
   useEffect(() => {
     // this is for the service address side of the organization edit form
     // to remove the error if service address checkbox clicked
     if (serviceSame && addressType === 'Service') {
-      setValidationErrors('');
-      setRowClass(rowSize);
+      setValidationErrors('')
+      setRowClass(rowSize)
     }
-  });
+  })
 
   const handleOnBlur = (event) => {
-    const { value } = event.target;
+    const { value } = event.target
     if (value === '' && mandatory === true) {
-      setValidationErrors(`${label} cannot be left blank`);
-      setRowClass(`${rowSize} error`);
+      setValidationErrors(`${label} cannot be left blank`)
+      setRowClass(`${rowSize} error`)
     }
 
     if (value !== '' || !mandatory) {
-      setValidationErrors('');
-      setRowClass(rowSize);
+      setValidationErrors('')
+      setRowClass(rowSize)
     }
     if (num && maxnum && value > maxnum) {
-      setValidationErrors(`Cannot be greater than ${maxnum}`);
-      setRowClass(`${rowSize} error`);
+      setValidationErrors(`Cannot be greater than ${maxnum}`)
+      setRowClass(`${rowSize} error`)
     }
-  };
+  }
 
   return (
     <div className={rowClass}>
@@ -91,8 +91,8 @@ const TextInput = (props) => {
         </small>
       </div>
     </div>
-  );
-};
+  )
+}
 
 TextInput.defaultProps = {
   defaultValue: '',
@@ -109,7 +109,7 @@ TextInput.defaultProps = {
   readonly: false,
   addressType: 'none',
   serviceSame: false
-};
+}
 
 TextInput.propTypes = {
   defaultValue: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
@@ -130,6 +130,6 @@ TextInput.propTypes = {
   readonly: PropTypes.bool,
   addressType: PropTypes.string,
   serviceSame: PropTypes.bool
-};
+}
 
-export default TextInput;
+export default TextInput

@@ -19,7 +19,7 @@ const devServerOptions = {
   allowedHosts: 'all',
   historyApiFallback: {
     verbose: true,
-    index: '/generated_index.html',
+    index: '/index.html',
     rewrites: [
       {
         from: /\/api/,
@@ -28,7 +28,7 @@ const devServerOptions = {
     ]
   },
   devMiddleware: {
-    index: '/generated_index.html',
+    index: '/index.html',
     publicPath: '/'
   },
   port: 3000,

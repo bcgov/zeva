@@ -1,10 +1,10 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import ReactTable from '../../app/components/ReactTable';
-import formatNumeric from '../../app/utilities/formatNumeric';
+import React from 'react'
+import PropTypes from 'prop-types'
+import ReactTable from '../../app/components/ReactTable'
+import formatNumeric from '../../app/utilities/formatNumeric'
 
 const CreditAgreementsDetailsTable = (props) => {
-  const { items } = props;
+  const { items } = props
 
   const creditColumns = [
     {
@@ -28,7 +28,7 @@ const CreditAgreementsDetailsTable = (props) => {
       id: 'zev-class',
       className: 'text-center'
     }
-  ];
+  ]
   return (
     <div className="row mb-3">
       <div className="col-sm-11">
@@ -40,11 +40,11 @@ const CreditAgreementsDetailsTable = (props) => {
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
 CreditAgreementsDetailsTable.propTypes = {
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired
-};
+}
 
-export default CreditAgreementsDetailsTable;
+export default CreditAgreementsDetailsTable

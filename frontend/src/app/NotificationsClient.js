@@ -1,56 +1,56 @@
-import React, { useEffect, useState } from 'react';
-import { hot } from 'react-hot-loader/root';
-import io from 'socket.io-client';
-import CustomPropTypes from './utilities/props';
+import React, { useEffect, useState } from 'react'
+import { hot } from 'react-hot-loader/root'
+import io from 'socket.io-client'
+import CustomPropTypes from './utilities/props'
 
 const NotificationsClient = (props) => {
-  const { keycloak } = props;
+  const { keycloak } = props
 
-  const [connectionState, setConnectionState] = useState('NEW');
-  const [messages, setMessages] = useState([]);
+  const [connectionState, setConnectionState] = useState('NEW')
+  const [messages, setMessages] = useState([])
 
   const connectToNotificationsService = () => {
-    setConnectionState('CONNECTING');
+    setConnectionState('CONNECTING')
 
     if (keycloak.authenticated) {
       // eslint-disable-next-line new-cap
-      const sock = new io('/');
+      const sock = new io('/')
 
       sock.on('connect', () => {
-        setConnectionState('CONNECTED, AUTHENTICATING');
+        setConnectionState('CONNECTED, AUTHENTICATING')
         sock.emit('action', {
           type: 'socketio/AUTHENTICATE',
           token: keycloak.idToken
-        });
-      });
+        })
+      })
 
       sock.on('disconnect', () => {
-        setConnectionState('DISCONNECTED');
-      });
+        setConnectionState('DISCONNECTED')
+      })
 
       sock.on('error', (error) => {
-        setConnectionState('ERROR');
-        console.log(error);
-      });
+        setConnectionState('ERROR')
+        console.log(error)
+      })
 
       sock.on('action', (action) => {
         switch (action.type) {
           case 'socketio/AUTHENTICATE_SUCCESS':
-            setConnectionState('CONNECTED AND AUTHENTICATED');
-            break;
+            setConnectionState('CONNECTED AND AUTHENTICATED')
+            break
           case 'message':
-            setMessages(messages.concat([action.data]));
-            break;
+            setMessages(messages.concat([action.data]))
+            break
           default:
-            console.log(action);
+            console.log(action)
         }
-      });
+      })
     }
-  };
+  }
 
   useEffect(() => {
-    connectToNotificationsService();
-  }, [keycloak.authenticated]);
+    connectToNotificationsService()
+  }, [keycloak.authenticated])
 
   return (
     <div>
@@ -70,11 +70,11 @@ const NotificationsClient = (props) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
 NotificationsClient.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired
-};
+}
 
-export default hot(NotificationsClient);
+export default hot(NotificationsClient)

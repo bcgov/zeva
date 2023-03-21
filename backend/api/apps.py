@@ -10,7 +10,6 @@ from amqp import AMQPError
 from django.apps import AppConfig
 from django.db.models.signals import post_migrate
 
-from api.services.keycloak_api import list_users, get_token
 from db_comments.db_actions import create_db_comments, \
     create_db_comments_from_models
 from zeva.settings import RUNSERVER, AMQP_CONNECTION_PARAMETERS, KEYCLOAK, \
@@ -55,16 +54,6 @@ def check_external_services():
     except AMQPError as _error:
         logger.error(_error)
         raise RuntimeError('AMQP connection failed')
-
-    if KEYCLOAK['ENABLED']:
-        logger.info('Keycloak enabled. Checking connection')
-
-        try:
-            list_users(get_token())
-        except Exception as _error:
-            logger.error(_error)
-            raise RuntimeError('Keycloak connection failed')
-
 
 
 def post_migration_callback(sender, **kwargs):

@@ -1,8 +1,8 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 
-import Button from '../../app/components/Button';
-import CustomPropTypes from '../../app/utilities/props';
+import Button from '../../app/components/Button'
+import CustomPropTypes from '../../app/utilities/props'
 
 const CreditTransfersDetailsActionBar = (props) => {
   const {
@@ -14,13 +14,13 @@ const CreditTransfersDetailsActionBar = (props) => {
     setShowModal,
     transferRole,
     user
-  } = props;
+  } = props
 
   let submitTooltip =
-    'You must acknowledge the three confirmation checkboxes prior to submitting this transfer.';
+    'You must acknowledge the three confirmation checkboxes prior to submitting this transfer.'
 
   if (!user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')) {
-    submitTooltip = 'You do not have the permission to submit this transfer.';
+    submitTooltip = 'You do not have the permission to submit this transfer.'
   }
 
   const actionBar = (
@@ -28,16 +28,16 @@ const CreditTransfersDetailsActionBar = (props) => {
       <div className="col-sm-12">
         <div className="action-bar">
           <span className="left-content">
-            <Button buttonType="back" locationRoute="/credit-transfers" />
+            <Button buttonType="back" locationRoute="/credit-transfers" data-testid="back-to"/>
             {transferRole.tradePartner && (
               <Button
-                testid="reject-transfer"
+                data-testid="reject-transfer"
                 buttonType="reject"
                 optionalText="Reject Notice"
                 disabled={comment.length === 0 || allChecked}
                 action={() => {
-                  setModalType('partner-reject');
-                  setShowModal(true);
+                  setModalType('partner-reject')
+                  setShowModal(true)
                 }}
               />
             )}
@@ -46,30 +46,30 @@ const CreditTransfersDetailsActionBar = (props) => {
                 buttonType="rescind"
                 disabled={comment.length === 0}
                 action={() => {
-                  setModalType('rescind');
-                  setShowModal(true);
+                  setModalType('rescind')
+                  setShowModal(true)
                 }}
               />
             )}
             {transferRole.governmentAnalyst && (
               <Button
-                testid="recommend-reject-transfer"
+                data-testid="recommend-reject-transfer"
                 buttonType="reject"
                 optionalText="Recommend Rejection"
                 action={() => {
-                  setModalType('recommend-reject');
-                  setShowModal(true);
+                  setModalType('recommend-reject')
+                  setShowModal(true)
                 }}
               />
             )}
             {transferRole.governmentDirector && (
               <Button
-                testid="director-return-transfer"
+                data-testid="director-return-transfer"
                 buttonType="reject"
                 optionalText="Return to Analyst"
                 action={() => {
-                  setModalType('return');
-                  setShowModal(true);
+                  setModalType('return')
+                  setShowModal(true)
                 }}
               />
             )}
@@ -78,11 +78,11 @@ const CreditTransfersDetailsActionBar = (props) => {
             {transferRole.initiatingSupplier &&
               user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL') && (
                 <Button
-                  testid="submit-to-partner"
+                  data-testid="submit-to-partner"
                   buttonType="submit"
                   action={() => {
-                    setModalType('initiating-submit');
-                    setShowModal(true);
+                    setModalType('initiating-submit')
+                    setShowModal(true)
                   }}
                   optionalText="Submit Notice"
                   disabled={
@@ -92,26 +92,26 @@ const CreditTransfersDetailsActionBar = (props) => {
                     comment.length > 0
                   }
                 />
-              )}
+            )}
             {transferRole.governmentAnalyst && (
               <Button
                 testid="recommend-approve-transfer"
                 buttonType="approve"
                 optionalText="Recommend transfer"
                 action={() => {
-                  setModalType('recommend-transfer');
-                  setShowModal(true);
+                  setModalType('recommend-transfer')
+                  setShowModal(true)
                 }}
               />
             )}
             {transferRole.tradePartner && (
               <Button
-                testid="submit-to-gov"
+                data-testid="submit-to-gov"
                 buttonTooltip={submitTooltip}
                 buttonType="submit"
                 action={() => {
-                  setModalType('partner-accept');
-                  setShowModal(true);
+                  setModalType('partner-accept')
+                  setShowModal(true)
                 }}
                 optionalText="Submit Notice"
                 disabled={
@@ -127,8 +127,8 @@ const CreditTransfersDetailsActionBar = (props) => {
                 buttonType="reject"
                 optionalText="Reject Transfer"
                 action={() => {
-                  setModalType('director-reject');
-                  setShowModal(true);
+                  setModalType('director-reject')
+                  setShowModal(true)
                 }}
               />
             )}
@@ -138,8 +138,8 @@ const CreditTransfersDetailsActionBar = (props) => {
                 buttonType="approve"
                 optionalText="Record Transfer"
                 action={() => {
-                  setModalType('director-record');
-                  setShowModal(true);
+                  setModalType('director-record')
+                  setShowModal(true)
                 }}
               />
             )}
@@ -147,13 +147,13 @@ const CreditTransfersDetailsActionBar = (props) => {
         </div>
       </div>
     </div>
-  );
-  return <>{actionBar}</>;
-};
+  )
+  return <>{actionBar}</>
+}
 CreditTransfersDetailsActionBar.defaultProps = {
   assertions: [],
   comment: ''
-};
+}
 
 CreditTransfersDetailsActionBar.propTypes = {
   allChecked: PropTypes.bool.isRequired,
@@ -166,5 +166,5 @@ CreditTransfersDetailsActionBar.propTypes = {
   setModalType: PropTypes.func.isRequired,
   setShowModal: PropTypes.func.isRequired,
   user: CustomPropTypes.user.isRequired
-};
-export default CreditTransfersDetailsActionBar;
+}
+export default CreditTransfersDetailsActionBar

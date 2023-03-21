@@ -1,9 +1,9 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import formatNumeric from '../../app/utilities/formatNumeric';
+import React from 'react'
+import PropTypes from 'prop-types'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import formatNumeric from '../../app/utilities/formatNumeric'
 
-import CustomPropTypes from '../../app/utilities/props';
+import CustomPropTypes from '../../app/utilities/props'
 
 const ComplianceObligationReductionOffsetTable = (props) => {
   const {
@@ -17,7 +17,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
     user,
     assessment,
     reportYear
-  } = props;
+  } = props
 
   return (
     <>
@@ -106,8 +106,8 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                         type="radio"
                         id="A"
                         onChange={(event) => {
-                          const { id: radioId } = event.target;
-                          handleUnspecifiedCreditReduction(radioId);
+                          const { id: radioId } = event.target
+                          handleUnspecifiedCreditReduction(radioId)
                         }}
                         name="creditOption"
                         value="A"
@@ -118,7 +118,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                       statuses.assessment.status === 'ASSESSED' &&
                       creditReductionSelection === 'A' && (
                         <FontAwesomeIcon icon="check" />
-                      )}
+                    )}
                   </td>
                   <td className="text-center">
                     {statuses &&
@@ -136,19 +136,19 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                           type="radio"
                           id="B"
                           onChange={(event) => {
-                            const { id: radioId } = event.target;
-                            handleUnspecifiedCreditReduction(radioId);
+                            const { id: radioId } = event.target
+                            handleUnspecifiedCreditReduction(radioId)
                           }}
                           name="creditOption"
                           value="B"
                         />
-                      )}
+                    )}
                     {statuses &&
                       statuses.assessment &&
                       statuses.assessment.status === 'ASSESSED' &&
                       creditReductionSelection === 'B' && (
                         <FontAwesomeIcon icon="check" />
-                      )}
+                    )}
                   </td>
                 </tr>
                 {deductions
@@ -263,14 +263,14 @@ const ComplianceObligationReductionOffsetTable = (props) => {
         </div>
       )}
     </>
-  );
-};
+  )
+}
 
 ComplianceObligationReductionOffsetTable.defaultProps = {
   creditReductionSelection: null,
   pendingBalanceExist: false,
   handleUnspecifiedCreditReduction: () => {}
-};
+}
 
 ComplianceObligationReductionOffsetTable.propTypes = {
   creditReductionSelection: PropTypes.string,
@@ -283,6 +283,6 @@ ComplianceObligationReductionOffsetTable.propTypes = {
   supplierClass: PropTypes.string.isRequired,
   updatedBalances: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default ComplianceObligationReductionOffsetTable;
+export default ComplianceObligationReductionOffsetTable

@@ -24,6 +24,7 @@ from api.models.weight_class import WeightClass
 from api.models.organization import Organization
 from api.models.account_balance import AccountBalance
 from api.models.model_year_report_credit_transaction import ModelYearReportCreditTransaction
+from api.services.send_email import notifications_model_year_report
 
 
 def get_model_year_report_statuses(report, request_user=None):
@@ -111,14 +112,17 @@ def get_model_year_report_statuses(report, request_user=None):
 
     if report.validation_status == ModelYearReportStatuses.RECOMMENDED:
         assessment_status = 'RECOMMENDED'
+        supplier_information_status = 'RECOMMENDED'
+        consumer_sales_status = 'RECOMMENDED'
+        compliance_obligation_status = 'RECOMMENDED'
+        summary_status = 'RECOMMENDED'
 
         if not request_user.is_government:
             assessment_status = 'SUBMITTED'
-
-        supplier_information_status = 'SUBMITTED'
-        consumer_sales_status = 'SUBMITTED'
-        compliance_obligation_status = 'SUBMITTED'
-        summary_status = 'SUBMITTED'
+            supplier_information_status = 'SUBMITTED'
+            consumer_sales_status = 'SUBMITTED'
+            compliance_obligation_status = 'SUBMITTED'
+            summary_status = 'SUBMITTED'
 
         user_profile = UserProfile.objects.filter(username=report.update_user)
         if user_profile.exists():
@@ -131,9 +135,16 @@ def get_model_year_report_statuses(report, request_user=None):
 
     if report.validation_status == ModelYearReportStatuses.RETURNED:
         assessment_status = 'RETURNED'
-
+        supplier_information_status = 'RETURNED'
+        consumer_sales_status = 'RETURNED'
+        compliance_obligation_status = 'RETURNED'
+        summary_status = 'RETURNED'
         if not request_user.is_government:
             assessment_status = 'SUBMITTED'
+            supplier_information_status = 'SUBMITTED'
+            consumer_sales_status = 'SUBMITTED'
+            compliance_obligation_status = 'SUBMITTED'
+            summary_status = 'SUBMITTED'
 
         user_profile = UserProfile.objects.filter(username=report.update_user)
         if user_profile.exists():
@@ -363,3 +374,12 @@ def adjust_credits(id, request):
                 organization_id=organization_id,
                 model_year_id=model_year_id
             ).delete()
+
+def check_validation_status_change(current_status, new_status, request):
+        if type(current_status) is ModelYearReportStatuses:
+            current_status = current_status.name
+        elif type(new_status) is ModelYearReportStatuses:
+            new_status = new_status.name
+            
+        if new_status != current_status or new_status == ModelYearReportStatuses.ASSESSED.name and current_status == ModelYearReportStatuses.ASSESSED.name:
+            notifications_model_year_report(new_status, request, current_status)

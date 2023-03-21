@@ -1,31 +1,31 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import formatNumeric from '../../app/utilities/formatNumeric';
+import React from 'react'
+import PropTypes from 'prop-types'
+import formatNumeric from '../../app/utilities/formatNumeric'
 
 const ComplianceCalculatorModelTable = (props) => {
-  const { models, estimatedModelSales, setEstimatedModelSales } = props;
+  const { models, estimatedModelSales, setEstimatedModelSales } = props
   const findModelIndex = (model) =>
-    estimatedModelSales.findIndex((sale) => model.id === sale.id);
+    estimatedModelSales.findIndex((sale) => model.id === sale.id)
   const handleInputChange = (event, model) => {
-    const { value } = event.target;
-    const index = findModelIndex(model);
-    const totalValue = model.creditValue * value;
+    const { value } = event.target
+    const index = findModelIndex(model)
+    const totalValue = model.creditValue * value
     // make copy of estimatedModelSales and modify that instead
-    const estimatedSalesCopy = estimatedModelSales.map((each) => ({ ...each }));
+    const estimatedSalesCopy = estimatedModelSales.map((each) => ({ ...each }))
     if (index >= 0) {
-      estimatedSalesCopy[index].value = totalValue;
-      estimatedSalesCopy[index].estimatedSalesNum = value;
-      estimatedSalesCopy[index].creditClass = model.creditClass;
+      estimatedSalesCopy[index].value = totalValue
+      estimatedSalesCopy[index].estimatedSalesNum = value
+      estimatedSalesCopy[index].creditClass = model.creditClass
     } else {
       estimatedSalesCopy.push({
         id: model.id,
         value: totalValue,
         estimatedSalesNum: value,
         creditClass: model.creditClass
-      });
+      })
     }
-    setEstimatedModelSales(estimatedSalesCopy);
-  };
+    setEstimatedModelSales(estimatedSalesCopy)
+  }
   return (
     <div id="form" className="my-3">
       <div className="row">
@@ -66,7 +66,7 @@ const ComplianceCalculatorModelTable = (props) => {
                           type="number"
                           min="0"
                           onChange={(event) => {
-                            handleInputChange(event, each);
+                            handleInputChange(event, each)
                           }}
                         />
                       </td>
@@ -89,8 +89,8 @@ const ComplianceCalculatorModelTable = (props) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 ComplianceCalculatorModelTable.propTypes = {
   models: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
@@ -101,6 +101,6 @@ ComplianceCalculatorModelTable.propTypes = {
     })
   ).isRequired,
   setEstimatedModelSales: PropTypes.func.isRequired
-};
+}
 
-export default ComplianceCalculatorModelTable;
+export default ComplianceCalculatorModelTable

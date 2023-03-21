@@ -1,55 +1,55 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+import PropTypes from 'prop-types'
+import React from 'react'
 
-import ReactTable from '../../app/components/ReactTable';
-import CustomPropTypes from '../../app/utilities/props';
-import history from '../../app/History';
-import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
-import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport';
-import formatNumeric from '../../app/utilities/formatNumeric';
-import getClassAReduction from '../../app/utilities/getClassAReduction';
-import getTotalReduction from '../../app/utilities/getTotalReduction';
-import formatStatus from '../../app/utilities/formatStatus';
+import ReactTable from '../../app/components/ReactTable'
+import CustomPropTypes from '../../app/utilities/props'
+import history from '../../app/History'
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
+import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport'
+import formatNumeric from '../../app/utilities/formatNumeric'
+import getClassAReduction from '../../app/utilities/getClassAReduction'
+import getTotalReduction from '../../app/utilities/getTotalReduction'
+import formatStatus from '../../app/utilities/formatStatus'
 
 const ComplianceReportsTable = (props) => {
-  const { user, data, showSupplier, filtered, ratios, setFiltered } = props;
+  const { user, data, showSupplier, filtered, ratios, setFiltered } = props
 
   const supplierClass = (paramClass) => {
     if (paramClass === 'L') {
-      return 'Large';
+      return 'Large'
     }
 
     if (paramClass === 'M') {
-      return 'Medium';
+      return 'Medium'
     }
 
     if (paramClass === 'S') {
-      return 'Small';
+      return 'Small'
     }
 
     if (paramClass === 'Large Volume Supplier') {
-      return 'Large';
+      return 'Large'
     }
 
     if (paramClass === 'Medium Volume Supplier') {
-      return 'Medium';
+      return 'Medium'
     }
 
     if (paramClass === 'Small Volume Supplier') {
-      return 'Small';
+      return 'Small'
     }
 
-    return '-';
-  };
+    return '-'
+  }
 
   const calculateClassAReduction = (item) => {
     if (item.validationStatus !== 'ASSESSED') {
-      return '-';
+      return '-'
     }
 
     const filteredRatio = ratios.find(
       (each) => Number(each.modelYear) === Number(item.modelYear.name)
-    );
+    )
 
     if (filteredRatio && item.ldvSales > 0) {
       return formatNumeric(
@@ -59,30 +59,30 @@ const ComplianceReportsTable = (props) => {
           item.supplierClass
         ),
         0
-      );
+      )
     }
 
-    return '-';
-  };
+    return '-'
+  }
 
   const calculateTotalReduction = (item) => {
     if (item.validationStatus !== 'ASSESSED') {
-      return '-';
+      return '-'
     }
 
     const filteredRatio = ratios.find(
       (each) => Number(each.modelYear) === Number(item.modelYear.name)
-    );
+    )
 
     if (filteredRatio && item.ldvSales > 0) {
       return formatNumeric(
         getTotalReduction(item.ldvSales, filteredRatio.complianceRatio),
         0
-      );
+      )
     }
 
-    return '-';
-  };
+    return '-'
+  }
 
   const columns = [
     {
@@ -108,19 +108,19 @@ const ComplianceReportsTable = (props) => {
     {
       accessor: (row) => formatStatus(row.supplementalStatus),
       filterMethod: (filter, row) => {
-        const filterValues = filter.value.split(',');
+        const filterValues = filter.value.split(',')
 
-        let returnValue = false;
+        let returnValue = false
 
         filterValues.forEach((filterValue) => {
-          const value = filterValue.toLowerCase().trim();
+          const value = filterValue.toLowerCase().trim()
 
           if (value !== '' && !returnValue) {
-            returnValue = row[filter.id].toLowerCase().includes(value);
+            returnValue = row[filter.id].toLowerCase().includes(value)
           }
-        });
+        })
 
-        return returnValue;
+        return returnValue
       },
       className: 'text-center text-capitalize',
       Header: 'Status',
@@ -171,7 +171,7 @@ const ComplianceReportsTable = (props) => {
       show: !showSupplier,
       maxWidth: 260
     }
-  ];
+  ]
 
   return (
     <ReactTable
@@ -190,7 +190,7 @@ const ComplianceReportsTable = (props) => {
                 validationStatus,
                 supplementalId,
                 supplementalStatus
-              } = row.original;
+              } = row.original
 
               if (
                 supplementalStatus === 'SUPPLEMENTARY SUBMITTED' &&
@@ -203,8 +203,8 @@ const ComplianceReportsTable = (props) => {
                     id
                   ).replace(/:supplementaryId/g, supplementalId),
                   search: '?reassessment=Y'
-                });
-                return;
+                })
+                return
               }
 
               if (supplementalId) {
@@ -214,12 +214,12 @@ const ComplianceReportsTable = (props) => {
                     /:id/g,
                     id
                   ).replace(/:supplementaryId/g, supplementalId)
-                );
+                )
               } else if (validationStatus === 'ASSESSED') {
                 // If there is no supplementary report then we default to the first myr
                 history.push(
                   ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, id)
-                );
+                )
               } else {
                 // Default show the supplier information page
                 history.push(
@@ -227,23 +227,23 @@ const ComplianceReportsTable = (props) => {
                     /:id/g,
                     id
                   )
-                );
+                )
               }
             },
             className: 'clickable'
-          };
+          }
         }
 
-        return {};
+        return {}
       }}
     />
-  );
-};
+  )
+}
 
 ComplianceReportsTable.defaultProps = {
   filtered: [],
   setFiltered: () => {}
-};
+}
 
 ComplianceReportsTable.propTypes = {
   data: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
@@ -252,6 +252,6 @@ ComplianceReportsTable.propTypes = {
   user: CustomPropTypes.user.isRequired,
   setFiltered: PropTypes.func,
   showSupplier: PropTypes.bool.isRequired
-};
+}
 
-export default ComplianceReportsTable;
+export default ComplianceReportsTable

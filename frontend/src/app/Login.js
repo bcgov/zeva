@@ -1,8 +1,10 @@
-import React from 'react';
-import CustomPropTypes from './utilities/props';
+import React from 'react'
+import CONFIG from './config'
+import { IDENTITY_PROVIDERS } from './constants/auth'
+import CustomPropTypes from './utilities/props'
 
 const Login = (props) => {
-  const { keycloak } = props;
+  const { keycloak } = props
 
   return (
     <div id="login-page">
@@ -18,7 +20,11 @@ const Login = (props) => {
               Vehicle Suppliers
               <button
                 type="button"
-                onClick={() => keycloak.login({ idpHint: 'bceid' })}
+                onClick={() => keycloak.login({
+                  pkceMethod: 'S256',
+                  redirectUri: CONFIG.KEYCLOAK.CALLBACK_URL,
+                  idpHint: IDENTITY_PROVIDERS.BCEID_BUSINESS
+                })}
                 id="link-bceid"
                 className="button"
               >
@@ -33,7 +39,11 @@ const Login = (props) => {
               Government
               <button
                 type="button"
-                onClick={() => keycloak.login({ idpHint: 'idir' })}
+                onClick={() => keycloak.login({
+                  pkceMethod: 'S256',
+                  redirectUri: CONFIG.KEYCLOAK.CALLBACK_URL,
+                  idpHint: IDENTITY_PROVIDERS.IDIR
+                })}
                 id="link-idir"
                 className="button"
               >
@@ -45,11 +55,11 @@ const Login = (props) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 Login.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired
-};
+}
 
-export default Login;
+export default Login

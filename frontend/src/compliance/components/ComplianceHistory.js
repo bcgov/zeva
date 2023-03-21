@@ -1,48 +1,51 @@
 /* eslint-disable react/no-array-index-key */
-import axios from 'axios';
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import moment from 'moment-timezone';
-import { useParams } from 'react-router-dom';
-import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
-import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport';
-import history from '../../app/History';
+import axios from 'axios'
+import React, { useState, useEffect } from 'react'
+import PropTypes from 'prop-types'
+import moment from 'moment-timezone'
+import { useParams } from 'react-router-dom'
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
+import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport'
+import history from '../../app/History'
 
-require('bootstrap/js/dist/collapse.js');
+require('bootstrap/js/dist/collapse.js')
 
 const ComplianceHistory = (props) => {
-  const { id, activePage, supplementaryId: detailsId, reportYear, newReassessment } = props;
+  const {
+    id, activePage, supplementaryId: detailsId,
+    reportYear, isReassessment, tabName
+  } = props
 
-  let { supplementaryId } = useParams();
+  let { supplementaryId } = useParams()
 
   if (!supplementaryId && detailsId) {
-    supplementaryId = detailsId;
+    supplementaryId = detailsId
   }
 
   const [supplementalReportHistory, setSupplementalReportHistory] = useState(
     []
-  );
+  )
 
   useEffect(() => {
     axios
       .get(ROUTES_COMPLIANCE.SUPPLEMENTAL_HISTORY.replace(/:id/g, id))
       .then((response) => {
-        setSupplementalReportHistory(response.data);
-      });
-  }, []);
+        setSupplementalReportHistory(response.data)
+      })
+  }, [])
 
   const getHistory = (itemHistory) => {
-    const tempHistory = [];
+    const tempHistory = []
 
     if (itemHistory) {
       itemHistory.forEach((obj) => {
         if (['SUBMITTED', 'DRAFT'].indexOf(obj.status) >= 0) {
           const found = tempHistory.findIndex(
             (each) => ['SUBMITTED', 'DRAFT'].indexOf(each.status) >= 0
-          );
+          )
 
           if (found < 0) {
-            tempHistory.push(obj);
+            tempHistory.push(obj)
           }
         }
 
@@ -51,93 +54,93 @@ const ComplianceHistory = (props) => {
         ) {
           const found = tempHistory.findIndex(
             (each) => obj.status === each.status
-          );
+          )
 
           if (found < 0) {
-            tempHistory.push(obj);
+            tempHistory.push(obj)
           }
         }
-      });
+      })
     }
 
-    return tempHistory;
-  };
+    return tempHistory
+  }
 
   const getStatus = (item, each) => {
-    let status = each.status.toLowerCase();
+    let status = each.status.toLowerCase()
 
     if (status === 'draft') {
-      status = ' saved ';
+      status = ' saved '
     }
     if (status === 'recommended') {
       if (item.isSupplementary) {
-        status = ' recommended to Director ';
+        status = ' recommended to Director '
       } else {
-        status = ' assessment recommended to Director ';
+        status = ' assessment recommended to Director '
       }
     }
     if (status === 'submitted') {
-      status = ' signed and submitted to the Government of B.C. ';
+      status = ' signed and submitted to the Government of B.C. '
     }
 
-    let byUser = '';
+    let byUser = ''
     if (each.createUser) {
-      byUser = ` by ${each.createUser.displayName} `;
+      byUser = ` by ${each.createUser.displayName} `
     }
 
     if (status === 'assessed') {
-      status = ' assessed ';
-      byUser = ' by Government of B.C. ';
+      status = ' assessed '
+      byUser = ' by Government of B.C. '
     }
 
-    let reportType = 'Model year report ';
+    let reportType = 'Model year report '
 
     if (item.isSupplementary) {
       if (each.isReassessment) {
-        reportType = 'Reassessment ';
+        reportType = 'Reassessment '
       } else {
-        reportType = 'Supplementary report ';
+        reportType = 'Supplementary report '
       }
 
       if (status === 'assessed') {
-        status = 'reassessed';
-        reportType = 'Supplementary report ';
-        byUser = ' by Government of B.C. ';
+        status = 'reassessed'
+        reportType = 'Supplementary report '
+        byUser = ' by Government of B.C. '
       }
     }
 
     return `${reportType} ${status} ${moment(each.updateTimestamp).format(
       'MMM D, YYYY'
-    )} ${byUser}`;
-  };
+    )} ${byUser}`
+  }
 
   const getColor = (status) => {
-    let classname = '';
+    let classname = ''
     switch (status) {
       case 'DRAFT':
-        classname = 'alert-warning';
-        break;
+        classname = 'alert-warning'
+        break
       case 'UNSAVED':
-        classname = 'alert-warning';
-        break;
+        classname = 'alert-warning'
+        break
       case 'SUBMITTED':
-        classname = 'alert-primary';
-        break;
+        classname = 'alert-primary'
+        break
       case 'RECOMMENDED':
-        classname = 'alert-primary';
-        break;
+        classname = 'alert-primary'
+        break
       case 'RETURNED':
-        classname = 'alert-primary';
-        break;
+        classname = 'alert-primary'
+        break
       case 'ASSESSED':
-        classname = 'alert-success';
-        break;
+        classname = 'alert-success'
+        break
       default:
-        classname = '';
+        classname = ''
     }
 
-    return classname;
-  };
+    return classname
+  }
 
   const getShow = (item) => {
     if (
@@ -145,15 +148,15 @@ const ComplianceHistory = (props) => {
       item.isSupplementary &&
       Number(item.id) === Number(detailsId)
     ) {
-      return 'show';
+      return 'show'
     }
 
     if (activePage === 'assessment' && !item.isSupplementary) {
-      return 'show';
+      return 'show'
     }
 
-    return '';
-  };
+    return ''
+  }
 
   return (
     Object.keys(supplementalReportHistory).length > 0 && (
@@ -182,15 +185,18 @@ const ComplianceHistory = (props) => {
                             ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
                               ':id',
                               id
-                            ).replace(':supplementaryId', item.id) + (newReassessment ? '?reassessment=Y' : '')
-                          );
+                            ).replace(':supplementaryId', item.id) +
+                              (isReassessment ? '?reassessment=Y' : '') +
+                              `?tab=${tabName}`
+                          )
                         } else {
                           history.push(
                             ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(
                               ':id',
                               id
-                            ) + (newReassessment ? '?reassessment=Y' : '')
-                          );
+                            ) + (isReassessment ? '?reassessment=Y' : '') +
+                              `?tab=${tabName}`
+                          )
                         }
                       }}
                     >
@@ -226,19 +232,19 @@ const ComplianceHistory = (props) => {
         </div>
       </div>
     )
-  );
-};
+  )
+}
 
 ComplianceHistory.defaultProps = {
   supplementaryId: null
-};
+}
 
 ComplianceHistory.propTypes = {
   id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   activePage: PropTypes.string.isRequired,
-  newReassessment: PropTypes.bool,
+  isReassessment: PropTypes.bool,
   supplementaryId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   reportYear: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
     .isRequired
-};
-export default ComplianceHistory;
+}
+export default ComplianceHistory

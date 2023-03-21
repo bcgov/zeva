@@ -1,11 +1,11 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+import PropTypes from 'prop-types'
+import React from 'react'
 
-import CreditBalanceTable from './CreditBalanceTable';
-import CreditTransactionListTable from './CreditTransactionListTable';
+import CreditBalanceTable from './CreditBalanceTable'
+import CreditTransactionListTable from './CreditTransactionListTable'
 
 const CreditTransactions = (props) => {
-  const { balances, items, reports, user } = props;
+  const { balances, items, reports, user } = props
 
   return (
     <div id="credit-transaction" className="page">
@@ -27,8 +27,8 @@ const CreditTransactions = (props) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 CreditTransactions.propTypes = {
   balances: PropTypes.arrayOf(PropTypes.shape()).isRequired,
@@ -38,6 +38,6 @@ CreditTransactions.propTypes = {
     isGovernment: PropTypes.bool,
     organization: PropTypes.shape()
   }).isRequired
-};
+}
 
-export default CreditTransactions;
+export default CreditTransactions

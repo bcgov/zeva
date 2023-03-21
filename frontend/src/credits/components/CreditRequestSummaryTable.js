@@ -1,12 +1,12 @@
 /*
  * Presentational component
  */
-import PropTypes from 'prop-types';
-import React from 'react';
-import getCreditRequestSummary from '../../app/utilities/getCreditRequestSummary';
-import ReactTable from '../../app/components/ReactTable';
-import formatNumeric from '../../app/utilities/formatNumeric';
-import CustomPropTypes from '../../app/utilities/props';
+import PropTypes from 'prop-types'
+import React from 'react'
+import getCreditRequestSummary from '../../app/utilities/getCreditRequestSummary'
+import ReactTable from '../../app/components/ReactTable'
+import formatNumeric from '../../app/utilities/formatNumeric'
+import CustomPropTypes from '../../app/utilities/props'
 
 const CreditRequestSummaryTable = (props) => {
   const columns = [
@@ -68,10 +68,10 @@ const CreditRequestSummaryTable = (props) => {
         }
       ]
     }
-  ];
+  ]
 
-  const { submission, validationStatus, user } = props;
-  const data = getCreditRequestSummary(submission, validationStatus, user);
+  const { submission, validationStatus, user } = props
+  const data = getCreditRequestSummary(submission, validationStatus, user)
   return (
     <ReactTable
       className="credit-summary-table"
@@ -79,15 +79,15 @@ const CreditRequestSummaryTable = (props) => {
       data={data}
       filterable={false}
     />
-  );
-};
+  )
+}
 
-CreditRequestSummaryTable.defaultProps = {};
+CreditRequestSummaryTable.defaultProps = {}
 
 CreditRequestSummaryTable.propTypes = {
   submission: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
   validationStatus: PropTypes.string.isRequired
-};
+}
 
-export default CreditRequestSummaryTable;
+export default CreditRequestSummaryTable

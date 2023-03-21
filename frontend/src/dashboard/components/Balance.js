@@ -1,9 +1,9 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
-import CustomPropTypes from '../../app/utilities/props';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import React from 'react'
+import CustomPropTypes from '../../app/utilities/props'
 
 const Balance = (props) => {
-  const { organization } = props;
+  const { organization } = props
 
   return (
     <div className="dashboard-card">
@@ -26,13 +26,13 @@ const Balance = (props) => {
         </a>
       </div>
     </div>
-  );
-};
+  )
+}
 
-Balance.defaultProps = {};
+Balance.defaultProps = {}
 
 Balance.propTypes = {
   organization: CustomPropTypes.organizationDetails.isRequired
-};
+}
 
-export default Balance;
+export default Balance

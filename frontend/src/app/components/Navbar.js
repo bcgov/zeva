@@ -1,66 +1,66 @@
-import React, { Component } from 'react';
-import { Link, NavLink } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import formatNumeric from '../utilities/formatNumeric';
-import CONFIG from '../config';
-import CustomPropTypes from '../utilities/props';
-import ROUTES_CREDITS from '../routes/Credits';
-import ROUTES_CREDIT_REQUESTS from '../routes/CreditRequests';
-import ROUTES_ORGANIZATIONS from '../routes/Organizations';
-import ROUTES_ROLES from '../routes/Roles';
-import ROUTES_VEHICLES from '../routes/Vehicles';
-import ROUTES_COMPLIANCE from '../routes/Compliance';
+import React, { Component } from 'react'
+import { Link, NavLink } from 'react-router-dom'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import formatNumeric from '../utilities/formatNumeric'
+import CONFIG from '../config'
+import CustomPropTypes from '../utilities/props'
+import ROUTES_CREDITS from '../routes/Credits'
+import ROUTES_CREDIT_REQUESTS from '../routes/CreditRequests'
+import ROUTES_ORGANIZATIONS from '../routes/Organizations'
+import ROUTES_ROLES from '../routes/Roles'
+import ROUTES_VEHICLES from '../routes/Vehicles'
+import ROUTES_COMPLIANCE from '../routes/Compliance'
 
 class Navbar extends Component {
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super(props)
 
     this.state = {
       collapsed: true,
       userMenuCollapsed: true
-    };
+    }
 
-    this.collapseNavBar = this.collapseNavBar.bind(this);
-    this.collapseUserMenu = this.collapseUserMenu.bind(this);
+    this.collapseNavBar = this.collapseNavBar.bind(this)
+    this.collapseUserMenu = this.collapseUserMenu.bind(this)
   }
 
-  componentDidMount() {
+  componentDidMount () {
     window.addEventListener('click', (e) => {
       if (!document.getElementById('navbarDropdown').contains(e.target)) {
-        const { userMenuCollapsed } = this.state;
+        const { userMenuCollapsed } = this.state
 
         if (!userMenuCollapsed) {
           this.setState({
             userMenuCollapsed: true
-          });
+          })
         }
       }
-    });
+    })
   }
 
-  collapseNavBar() {
-    let { collapsed } = this.state;
+  collapseNavBar () {
+    let { collapsed } = this.state
 
-    collapsed = !collapsed;
+    collapsed = !collapsed
 
     this.setState({
       collapsed
-    });
+    })
   }
 
-  collapseUserMenu() {
-    let { userMenuCollapsed } = this.state;
+  collapseUserMenu () {
+    let { userMenuCollapsed } = this.state
 
-    userMenuCollapsed = !userMenuCollapsed;
+    userMenuCollapsed = !userMenuCollapsed
 
     this.setState({
       userMenuCollapsed
-    });
+    })
   }
 
-  render() {
-    const { user, keycloak } = this.props;
-    const { collapsed, userMenuCollapsed } = this.state;
+  render () {
+    const { user, logout } = this.props
+    const { collapsed, userMenuCollapsed } = this.state
 
     return (
       <div id="navbar">
@@ -143,9 +143,7 @@ class Navbar extends Component {
                 <div className="dropdown-item">
                   <button
                     onClick={() =>
-                      keycloak.logout({
-                        redirectUri: CONFIG.KEYCLOAK.LOGOUT_URL
-                      })
+                      logout()
                     }
                     type="button"
                   >
@@ -183,14 +181,14 @@ class Navbar extends Component {
                             .toLowerCase()
                             .indexOf('compliance') === 1
                         ) {
-                          return true;
+                          return true
                         }
 
                         if (!match) {
-                          return false;
+                          return false
                         }
 
-                        return true;
+                        return true
                       }}
                       to={
                         CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED
@@ -201,7 +199,7 @@ class Navbar extends Component {
                       <span>Compliance Reporting</span>
                     </NavLink>
                   </li>
-                )}
+              )}
               {CONFIG.FEATURES.CREDIT_TRANSACTIONS.ENABLED &&
                 typeof user.hasPermission === 'function' &&
                 ((!user.isGovernment && user.hasPermission('EDIT_SALES')) ||
@@ -214,14 +212,14 @@ class Navbar extends Component {
                           location.pathname.toLowerCase().indexOf('credit-') ===
                           1
                         ) {
-                          return true;
+                          return true
                         }
 
                         if (!match) {
-                          return false;
+                          return false
                         }
 
-                        return true;
+                        return true
                       }}
                       to={
                         user.isGovernment
@@ -232,7 +230,7 @@ class Navbar extends Component {
                       <span>Credit Transactions</span>
                     </NavLink>
                   </li>
-                )}
+              )}
 
               {typeof user.hasPermission === 'function' &&
                 user.hasPermission('VIEW_ZEV') && (
@@ -241,7 +239,7 @@ class Navbar extends Component {
                       <span>ZEV Models</span>
                     </NavLink>
                   </li>
-                )}
+              )}
 
               {typeof user.hasPermission === 'function' &&
                 user.hasPermission('VIEW_ORGANIZATIONS') &&
@@ -251,21 +249,21 @@ class Navbar extends Component {
                       activeClassName="active"
                       isActive={(match, location) => {
                         if (!match) {
-                          return false;
+                          return false
                         }
 
                         if (location.pathname.includes('/organizations/mine')) {
-                          return false;
+                          return false
                         }
 
-                        return true;
+                        return true
                       }}
                       to={ROUTES_ORGANIZATIONS.LIST}
                     >
                       <span>Vehicle Suppliers</span>
                     </NavLink>
                   </li>
-                )}
+              )}
               {typeof user.hasPermission === 'function' &&
                 (user.hasPermission('EDIT_ORGANIZATIONS') ||
                   user.hasPermission('EDIT_ORGANIZATION_INFORMATION')) && (
@@ -279,25 +277,25 @@ class Navbar extends Component {
                             .toLowerCase()
                             .includes('organizations/')
                         ) {
-                          return true;
+                          return true
                         }
 
                         if (location.pathname.toLowerCase().includes('sales')) {
-                          return true;
+                          return true
                         }
 
                         if (!match) {
-                          return false;
+                          return false
                         }
 
-                        return true;
+                        return true
                       }}
                       to={ROUTES_ORGANIZATIONS.MINE}
                     >
                       <span>Administration</span>
                     </NavLink>
                   </li>
-                )}
+              )}
 
               {CONFIG.FEATURES.ROLES.ENABLED &&
                 typeof user.hasPermission === 'function' &&
@@ -307,20 +305,20 @@ class Navbar extends Component {
                       <span>Roles</span>
                     </NavLink>
                   </li>
-                )}
+              )}
             </ul>
           </div>
         </div>
       </div>
-    );
+    )
   }
 }
 
-Navbar.defaultProps = {};
+Navbar.defaultProps = {}
 
 Navbar.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default Navbar;
+export default Navbar

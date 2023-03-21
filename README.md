@@ -42,6 +42,7 @@ Add this entry to your `/etc/hosts` file:
 to view the database use:
 docker-compose exec db psql -U postgres postgres
 
+
 #### Django
 
 Django offers many helpful [mangement commands](https://docs.djangoproject.com/en/4.0/ref/django-admin/) out of the box. To be able to use these with docker you can access the python environment with bash:
@@ -121,3 +122,26 @@ Once Jenkins is up and running, it automatically builds pull requests and promot
 # License
 
 Code released under the [Apache License, Version 2.0](./LICENSE).
+
+# List of Dev Work | What to do before bringing in a new ticket into a Sprint
+
+This is a list that was created on 2023-02-01 with all Zelda Devs to provide alternative work instead of bringing in a new ticket.  
+
+**Team Rule* Do not bring in ticket After Friday* 
+
+1. Help another Dev - see if other Devs need help to finish their ticket 
+
+2. PR Reviews – linked to the task above 
+
+3. Writing additional tests – for both tront and back end 
+
+4. Take a look at Tech Debt tickets - If we bring in tickets let's bring in Tech Debt first 
+
+5. Learning time: 
+
+- Take the opportunity to familiarize yourself with business logic, tech (anything around work we do) 
+
+- New learning and applying it to our work 
+
+- Innovation work 
+

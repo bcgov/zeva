@@ -7,6 +7,7 @@ from rest_framework import exceptions
 from api.keycloak_authentication import UserAuthentication
 import jwt
 from .base_test_case import BaseTestCase
+from api.models.user_profile import UserProfile
 
 
 class TestAuthentication(BaseTestCase):
@@ -23,10 +24,12 @@ class TestAuthentication(BaseTestCase):
 
         request = self.factory.get('/')
         request.META = {
-            'HTTP_AUTHORIZATION': 'garbage'
+            'HTTP_AUTHORIZATION': {
+                'preferred_username': 'garbage'
+            }
         }
 
-        with self.assertRaises(exceptions.AuthenticationFailed):
+        with self.assertRaises(UserProfile.DoesNotExist):
             _user, _auth = self.userauth.authenticate(request)
 
     def test_jwt_no_token(self):
@@ -40,19 +43,10 @@ class TestAuthentication(BaseTestCase):
     def test_jwt_valid_token(self):
         request = self.factory.get('/')
 
-        payload = {
-            'user_id': 'RTAN',
-            'iss': 'zeva-test',
-            'aud': 'zeva-app'
-        }
-        key = self.private_key
-
         request.META = {
-            'HTTP_AUTHORIZATION': 'Bearer {}'.format(
-                jwt.encode(
-                    payload, key, algorithm='RS256'
-                ).decode('utf-8')
-            )
+            'HTTP_AUTHORIZATION': {
+                'preferred_username': 'RTAN'
+            }
         }
 
         _user, _auth = self.userauth.authenticate(request)

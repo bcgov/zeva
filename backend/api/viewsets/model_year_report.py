@@ -3,7 +3,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, HttpResponseForbidden
 from rest_framework.response import Response
-from rest_framework import mixins, viewsets
+from rest_framework import mixins, viewsets, status
 from rest_framework.decorators import action
 
 from auditable.views import AuditableMixin
@@ -42,7 +42,7 @@ from api.services.model_year_report import (
     get_model_year_report_statuses,
     adjust_credits,
 )
-from api.services.send_email import notifications_model_year_report
+from api.services.model_year_report import check_validation_status_change
 from api.serializers.organization_ldv_sales import OrganizationLDVSalesSerializer
 from api.serializers.model_year_report import (
     ModelYearReportSerializer,
@@ -60,6 +60,7 @@ from api.serializers.model_year_report_assessment import (
 from api.serializers.model_year_report_supplemental import (
     ModelYearReportSupplementalSerializer,
     SupplementalReportAssessmentSerializer,
+    SupplementalReportAssessmentCommentSerializer,
 )
 from api.serializers.model_year_report_noa import (
     ModelYearReportNoaSerializer,
@@ -418,8 +419,12 @@ class ModelYearReportViewset(
         remove_submission_confirmation = request.data.get("remove_confirmation", None)
 
         model_year_report_update = ModelYearReport.objects.filter(
-            id=model_year_report_id
+            id=model_year_report_id,
         )
+
+        model_year_report_check = ModelYearReport.objects.filter(
+            id=model_year_report_id,
+        ).first()
 
         if remove_submission_confirmation:
             assertion_id = SigningAuthorityAssertion.objects.filter(
@@ -436,6 +441,7 @@ class ModelYearReportViewset(
                 # returning a 200 to bypass the rest of the update
                 return HttpResponse(status=200, content="Recommendation is required")
 
+            check_validation_status_change(model_year_report_check.validation_status, validation_status, request)
             model_year_report_update.update(validation_status=validation_status)
             model_year_report_update.update(update_user=request.user.username)
 
@@ -465,8 +471,6 @@ class ModelYearReportViewset(
 
             if validation_status == "ASSESSED":
                 adjust_credits(model_year_report_id, request)
-
-            notifications_model_year_report(validation_status, request.user)
 
         if confirmations:
             for confirmation in confirmations:
@@ -556,6 +560,8 @@ class ModelYearReportViewset(
                         ).delete()
 
         report = get_object_or_404(ModelYearReport, pk=pk)
+
+        check_validation_status_change(report.validation_status, request.data.get('validation_status'), request)
 
         serializer = ModelYearReportSerializer(report, context={"request": request})
 
@@ -688,16 +694,18 @@ class ModelYearReportViewset(
             if not data:
                 return HttpResponse(status=404, content=None)
 
+            create_user = UserProfile.objects.get(username=data.create_user)
             if data.status == ModelYearReportStatuses.DELETED:
                 return HttpResponse(status=404, content=None)
 
-            if not request.user.is_government and data.status not in [
+            if (not request.user.is_government and data.status not in [
                 ModelYearReportStatuses.DRAFT,
                 ModelYearReportStatuses.SUBMITTED,
                 ModelYearReportStatuses.ASSESSED,
                 ModelYearReportStatuses.REASSESSED,
                 ModelYearReportStatuses.RETURNED,
-            ]:
+            ]) or (request.user.is_government and data.status == ModelYearReportStatuses.DRAFT
+                   and not create_user.is_government):
                 return HttpResponse(status=404, content=None)
         else:
             data = report.get_latest_supplemental(request)
@@ -779,6 +787,8 @@ class ModelYearReportViewset(
 
         create_user = None
         supplemental_id = None
+
+        check_validation_status_change(report.validation_status, validation_status, request)
 
         # update the existing supplemental if it exists
         supplemental_report = report.get_latest_supplemental(request)
@@ -937,7 +947,7 @@ class ModelYearReportViewset(
                 create_user=request.user.username,
             )
 
-            if validation_status == "RECOMMENDED" and description:
+            if (validation_status == "RECOMMENDED" or validation_status == "DRAFT") and description:
                 penalty = request.data.get("penalty")
                 SupplementalReportAssessment.objects.create(
                     supplemental_report_id=supplemental_id,
@@ -1124,6 +1134,34 @@ class ModelYearReportViewset(
                 )
 
         return Response({"status": "Saved"})
+
+    @action(detail=True, methods=["patch"])
+    def supplemental_comment_edit(self, request, pk):
+        comment_id = request.data.get("comment_id")
+        comment_text = request.data.get("comment")
+        username = request.user.username
+        comment = SupplementalReportAssessmentComment.objects.get(
+            id=comment_id
+        )
+        if username == comment.create_user:
+            serializer = SupplementalReportAssessmentCommentSerializer(comment, data={'comment': comment_text}, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+    @action(detail=True, methods=["patch"])
+    def supplemental_comment_delete(self, request, pk):
+        comment_id = request.data.get("comment_id")
+        username = request.user.username
+        comment = SupplementalReportAssessmentComment.objects.get(
+            id=comment_id
+        )
+        if username == comment.create_user:
+            comment.delete()
+            return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
 
     @action(detail=True, methods=["get"])
     def assessed_supplementals(self, request, pk):

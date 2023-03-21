@@ -1,9 +1,9 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
-import CustomPropTypes from '../../app/utilities/props';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import React from 'react'
+import CustomPropTypes from '../../app/utilities/props'
 
 const OrganizationDetails = (props) => {
-  const { details } = props;
+  const { details } = props
 
   return (
     <div id="organization-details" className="dashboard-fieldset">
@@ -57,13 +57,13 @@ const OrganizationDetails = (props) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-OrganizationDetails.defaultProps = {};
+OrganizationDetails.defaultProps = {}
 
 OrganizationDetails.propTypes = {
   details: CustomPropTypes.organizationDetails.isRequired
-};
+}
 
-export default OrganizationDetails;
+export default OrganizationDetails

@@ -1,7 +1,7 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import ReactQuill from 'react-quill';
-import ReactTooltip from 'react-tooltip';
+import React from 'react'
+import PropTypes from 'prop-types'
+import ReactQuill from 'react-quill'
+import ReactTooltip from 'react-tooltip'
 
 const CommentInput = (props) => {
   const {
@@ -12,14 +12,17 @@ const CommentInput = (props) => {
     defaultComment,
     disable,
     buttonDisable,
-    tooltip
-  } = props;
+    tooltip,
+    testid,
+    buttontestid
+  } = props
   return (
     <div className="text-editor no-print">
       <label htmlFor="comment" className="text-blue">
         <b>{title}</b>
       </label>
       <ReactQuill
+        data-testid={testid}
         readOnly={disable}
         defaultValue={defaultComment ? defaultComment.comment : ''}
         theme="snow"
@@ -40,9 +43,10 @@ const CommentInput = (props) => {
           {tooltip !== '' && buttonDisable && <ReactTooltip />}
           <span data-tip={(buttonDisable && tooltip) || ''}>
             <button
+              data-testid={buttontestid}
               className="button mt-2"
               onClick={() => {
-                handleAddComment();
+                handleAddComment()
               }}
               type="button"
               disabled={buttonDisable}
@@ -53,8 +57,8 @@ const CommentInput = (props) => {
         </>
       )}
     </div>
-  );
-};
+  )
+}
 
 CommentInput.defaultProps = {
   buttonText: null,
@@ -62,7 +66,7 @@ CommentInput.defaultProps = {
   disable: false,
   handleAddComment: () => {},
   tooltip: ''
-};
+}
 CommentInput.propTypes = {
   handleAddComment: PropTypes.func,
   handleCommentChange: PropTypes.func.isRequired,
@@ -70,6 +74,8 @@ CommentInput.propTypes = {
   buttonText: PropTypes.string,
   title: PropTypes.string.isRequired,
   disable: PropTypes.bool,
-  tooltip: PropTypes.string
-};
-export default CommentInput;
+  tooltip: PropTypes.string,
+  buttontestid: PropTypes.string,
+  testid: PropTypes.string
+}
+export default CommentInput

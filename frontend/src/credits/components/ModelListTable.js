@@ -1,18 +1,17 @@
 /*
  * Presentational component
  */
-import PropTypes from 'prop-types';
-import React from 'react';
-import _ from 'lodash';
+import PropTypes from 'prop-types'
+import React from 'react'
 
-import ReactTable from '../../app/components/ReactTable';
-import CustomPropTypes from '../../app/utilities/props';
-import AnalystRecommendationHeader from './AnalystRecommendationHeader';
-import getAnalystRecommendationColumns from './getAnalystRecommendationColumns';
-import CreditApplicationHeader from './CreditApplicationHeader';
+import ReactTable from '../../app/components/ReactTable'
+import CustomPropTypes from '../../app/utilities/props'
+import AnalystRecommendationHeader from './AnalystRecommendationHeader'
+import getAnalystRecommendationColumns from './getAnalystRecommendationColumns'
+import CreditApplicationHeader from './CreditApplicationHeader'
 
 const ModelListTable = (props) => {
-  const { submission, user, handleCheckboxClick, issueAsMY } = props;
+  const { submission, user, handleCheckboxClick, issueAsMY } = props
 
   const columns = [
     {
@@ -37,19 +36,18 @@ const ModelListTable = (props) => {
           accessor: 'sales',
           className: 'text-right gap-left sales-submitted',
           Footer: (reactTable) => {
-            const sum = _.sumBy(reactTable.data, (item) => {
+            const sum = reactTable.data.map(item => {
               if (isNaN(item.sales)) {
-                return 0;
+                return 0
               }
-
-              return item.sales;
-            });
+              return item.sales
+            }).reduce((a, b) => a + b)
 
             if (sum === 0) {
-              return '-';
+              return '-'
             }
 
-            return sum;
+            return sum
           },
           Header: 'Sales Submitted',
           headerClassName: 'gap-left',
@@ -58,35 +56,34 @@ const ModelListTable = (props) => {
         },
         {
           accessor: (item) => {
-            const { vehicle, sales } = item;
+            const { vehicle, sales } = item
 
             if (!sales) {
-              return '-';
+              return '-'
             }
 
             if (vehicle && vehicle.creditValue && vehicle.creditValue !== 0) {
-              return (sales * _.round(vehicle.creditValue, 2)).toFixed(2);
+              return (sales * (Math.round((vehicle.creditValue + Number.EPSILON) * 100) / 100)).toFixed(2)
             }
 
-            return '-';
+            return '-'
           },
           className: `text-right credits-applied-for ${
             !user.isGovernment ? 'd-none' : ''
           }`,
           Footer: (reactTable) => {
-            const sum = _.sumBy(reactTable.data, (item) => {
+            const sum = reactTable.data.map(item => {
               if (isNaN(item['credits-applied-for'])) {
-                return 0;
+                return 0
               }
-
-              return Number(item['credits-applied-for']);
-            });
+              return Number(item['credits-applied-for'])
+            }).reduce((a, b) => a + b)
 
             if (sum === 0) {
-              return '-';
+              return '-'
             }
 
-            return _.round(sum, 2).toFixed(2);
+            return (Math.round((sum + Number.EPSILON) * 100) / 100).toFixed(2)
           },
           Header: 'Credits Applied For',
           headerClassName: `${!user.isGovernment ? 'd-none' : ''}`,
@@ -96,18 +93,18 @@ const ModelListTable = (props) => {
         {
           accessor: (item) => {
             if (!submission.eligible) {
-              return '-';
+              return '-'
             }
 
             const eligibleSales = submission.eligible.find(
               (eligible) => eligible.vehicleId === item.vehicle.id
-            );
+            )
 
             if (!eligibleSales) {
-              return '-';
+              return '-'
             }
 
-            return eligibleSales.vinCount;
+            return eligibleSales.vinCount
           },
           className: 'text-right no-footer',
           Header: 'Eligible Sales',
@@ -118,27 +115,27 @@ const ModelListTable = (props) => {
         },
         {
           accessor: (item) => {
-            const { vehicle } = item;
+            const { vehicle } = item
 
             if (!submission.eligible) {
-              return '-';
+              return '-'
             }
 
             const eligibleSales = submission.eligible.find(
               (eligible) => eligible.vehicleId === vehicle.id
-            );
+            )
 
             if (!eligibleSales) {
-              return '-';
+              return '-'
             }
 
             if (vehicle && vehicle.creditValue && vehicle.creditValue !== 0) {
               return (
-                eligibleSales.vinCount * _.round(vehicle.creditValue, 2)
-              ).toFixed(2);
+                eligibleSales.vinCount * (Math.round((vehicle.creditValue + Number.EPSILON) * 100) / 100)
+              ).toFixed(2)
             }
 
-            return '-';
+            return '-'
           },
           className: 'text-right no-footer',
           Header: 'Eligible ZEV Credits',
@@ -156,13 +153,13 @@ const ModelListTable = (props) => {
         },
         {
           accessor: (item) => {
-            const { vehicle } = item;
+            const { vehicle } = item
 
             if (vehicle) {
-              return vehicle.creditClass;
+              return vehicle.creditClass
             }
 
-            return '';
+            return ''
           },
           className: 'text-center no-footer',
           Header: 'ZEV Class',
@@ -171,13 +168,13 @@ const ModelListTable = (props) => {
         },
         {
           accessor: (item) => {
-            const { vehicle } = item;
+            const { vehicle } = item
 
             if (vehicle && vehicle.creditValue && vehicle.creditValue !== 0) {
-              return _.round(vehicle.creditValue, 2).toFixed(2);
+              return (Math.round((vehicle.creditValue + Number.EPSILON) * 100) / 100).toFixed(2)
             }
 
-            return '-';
+            return '-'
           },
           className: 'text-right no-footer',
           Header: 'Credit Entitlement',
@@ -198,7 +195,7 @@ const ModelListTable = (props) => {
         }
       ]
     }
-  ];
+  ]
 
   return (
     <div
@@ -222,18 +219,18 @@ const ModelListTable = (props) => {
           ) {
             return {
               className: 'danger'
-            };
+            }
           }
 
-          return {};
+          return {}
         }}
         key="table"
       />
     </div>
-  );
-};
+  )
+}
 
-ModelListTable.defaultProps = {};
+ModelListTable.defaultProps = {}
 
 ModelListTable.propTypes = {
   submission: PropTypes.shape({
@@ -247,6 +244,6 @@ ModelListTable.propTypes = {
   user: CustomPropTypes.user.isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
   issueAsMY: PropTypes.bool.isRequired
-};
+}
 
-export default ModelListTable;
+export default ModelListTable

@@ -1,7 +1,7 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 
-import TextInput from '../../app/components/TextInput';
+import TextInput from '../../app/components/TextInput'
 
 const AddressForm = (props) => {
   const {
@@ -11,16 +11,16 @@ const AddressForm = (props) => {
     type,
     serviceSame,
     setServiceSame
-  } = props;
+  } = props
   const handleCheckboxClick = (event) => {
-    const { checked } = event.target;
-    setServiceSame(checked);
-  };
-  let title;
+    const { checked } = event.target
+    setServiceSame(checked)
+  }
+  let title
   if (type === 'Service') {
-    title = 'Service Address';
+    title = 'Service Address'
   } else {
-    title = 'Records Address';
+    title = 'Records Address'
   }
   return (
     <>
@@ -64,7 +64,7 @@ const AddressForm = (props) => {
                 type="checkbox"
                 id="records-address-checkbox"
                 onChange={(event) => {
-                  handleCheckboxClick(event);
+                  handleCheckboxClick(event)
                 }}
               />
               <span className="d-inline-block" htmlFor="records-address">
@@ -175,13 +175,13 @@ const AddressForm = (props) => {
         serviceSame={serviceSame}
       />
     </>
-  );
-};
+  )
+}
 AddressForm.defaultProps = {
   setServiceSame: () => {},
   type: '',
   serviceSame: false
-};
+}
 AddressForm.propTypes = {
   type: PropTypes.string,
   serviceSame: PropTypes.bool,
@@ -195,6 +195,6 @@ AddressForm.propTypes = {
   }).isRequired,
   handleAddressChange: PropTypes.func.isRequired,
   addressDetails: PropTypes.shape({}).isRequired
-};
+}
 
-export default AddressForm;
+export default AddressForm

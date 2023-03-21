@@ -1,7 +1,7 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import ReactTooltip from 'react-tooltip';
-import CustomPropTypes from '../../app/utilities/props';
+import PropTypes from 'prop-types'
+import React from 'react'
+import ReactTooltip from 'react-tooltip'
+import CustomPropTypes from '../../app/utilities/props'
 
 const ComplianceReportSignOff = (props) => {
   const {
@@ -11,7 +11,7 @@ const ComplianceReportSignOff = (props) => {
     disabledCheckboxes,
     hoverText,
     user
-  } = props;
+  } = props
 
   return (
     <div id="compliance-sign-off" className="my-3">
@@ -30,7 +30,7 @@ const ComplianceReportSignOff = (props) => {
                 id={assertion.id}
                 name="confirmations"
                 onChange={(event) => {
-                  handleCheckboxClick(event);
+                  handleCheckboxClick(event)
                 }}
                 type="checkbox"
                 disabled={disabledCheckboxes}
@@ -52,15 +52,15 @@ const ComplianceReportSignOff = (props) => {
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
 ComplianceReportSignOff.defaultProps = {
   assertions: [],
   checkboxes: [],
   disabledCheckboxes: '',
   hoverText: ''
-};
+}
 ComplianceReportSignOff.propTypes = {
   assertions: PropTypes.arrayOf(PropTypes.shape()),
   user: CustomPropTypes.user.isRequired,
@@ -70,6 +70,6 @@ ComplianceReportSignOff.propTypes = {
   handleCheckboxClick: PropTypes.func.isRequired,
   hoverText: PropTypes.string,
   disabledCheckboxes: PropTypes.oneOfType([PropTypes.bool, PropTypes.string])
-};
+}
 
-export default ComplianceReportSignOff;
+export default ComplianceReportSignOff

@@ -1,12 +1,12 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
-import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import React from 'react'
+import PropTypes from 'prop-types'
 
-import Alert from '../../app/components/Alert';
-import Button from '../../app/components/Button';
-import ExcelFileDrop from '../../app/components/FileDrop';
-import Loading from '../../app/components/Loading';
-import getFileSize from '../../app/utilities/getFileSize';
+import Alert from '../../app/components/Alert'
+import Button from '../../app/components/Button'
+import ExcelFileDrop from '../../app/components/FileDrop'
+import Loading from '../../app/components/Loading'
+import getFileSize from '../../app/utilities/getFileSize'
 
 const UploadVerificationData = (props) => {
   const {
@@ -20,18 +20,18 @@ const UploadVerificationData = (props) => {
     title,
     upload,
     uploadProgress
-  } = props;
+  } = props
 
   const removeFile = (removedFile) => {
-    const found = files.findIndex((file) => file === removedFile);
-    files.splice(found, 1);
-    setUploadFiles([...files]);
-  };
+    const found = files.findIndex((file) => file === removedFile)
+    files.splice(found, 1)
+    setUploadFiles([...files])
+  }
 
   const handleCalendarChange = (event) => {
-    const { value } = event.target;
-    setDateCurrentTo(value);
-  };
+    const { value } = event.target
+    setDateCurrentTo(value)
+  }
 
   if (showProgressBar) {
     return (
@@ -65,7 +65,7 @@ const UploadVerificationData = (props) => {
           </div>
         )}
       </div>
-    );
+    )
   }
 
   return (
@@ -117,7 +117,7 @@ const UploadVerificationData = (props) => {
                         <button
                           className="delete"
                           onClick={() => {
-                            removeFile(file);
+                            removeFile(file)
                           }}
                           type="button"
                         >
@@ -165,13 +165,13 @@ const UploadVerificationData = (props) => {
         </span>
       </div>
     </div>
-  );
-};
+  )
+}
 
 UploadVerificationData.defaultProps = {
   alertMessage: '',
   previousDateCurrentTo: ''
-};
+}
 
 UploadVerificationData.propTypes = {
   alertMessage: PropTypes.string,
@@ -185,6 +185,6 @@ UploadVerificationData.propTypes = {
   upload: PropTypes.func.isRequired,
   uploadProgress: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
     .isRequired
-};
+}
 
-export default UploadVerificationData;
+export default UploadVerificationData

@@ -3,53 +3,53 @@
  * All data handling & manipulation should be handled here.
  */
 
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { withRouter } from 'react-router';
+import React, { useEffect, useState } from 'react'
+import PropTypes from 'prop-types'
+import { useParams } from 'react-router-dom'
+import axios from 'axios'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { withRouter } from 'react-router'
 
-import ROUTES_COMPLIANCE from '../app/routes/Compliance';
-import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
-import CustomPropTypes from '../app/utilities/props';
-import VehicleSupplierDetailsPage from './components/VehicleSupplierDetailsPage';
-import VehicleSupplierTabs from '../app/components/VehicleSupplierTabs';
-import History from '../app/History';
+import ROUTES_COMPLIANCE from '../app/routes/Compliance'
+import ROUTES_ORGANIZATIONS from '../app/routes/Organizations'
+import CustomPropTypes from '../app/utilities/props'
+import VehicleSupplierDetailsPage from './components/VehicleSupplierDetailsPage'
+import VehicleSupplierTabs from '../app/components/VehicleSupplierTabs'
+import History from '../app/History'
 
 const VehicleSupplierDetailsContainer = (props) => {
-  const { id } = useParams();
-  const [details, setDetails] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [display, setDisplay] = useState({});
-  const { keycloak, location, user } = props;
-  const { state: locationState } = location;
-  const [modelYears, setModelYears] = useState([]);
-  const [fields, setFields] = useState({});
-  const [ldvSales, setLDVSales] = useState([]);
-  const [isEditable, setIsEditable] = useState(false);
+  const { id } = useParams()
+  const [details, setDetails] = useState({})
+  const [loading, setLoading] = useState(true)
+  const [display, setDisplay] = useState({})
+  const { keycloak, location, user } = props
+  const { state: locationState } = location
+  const [modelYears, setModelYears] = useState([])
+  const [fields, setFields] = useState({})
+  const [ldvSales, setLDVSales] = useState([])
+  const [isEditable, setIsEditable] = useState(false)
 
   const refreshDetails = () => {
-    setLoading(true);
+    setLoading(true)
 
     Promise.all([
       axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)),
       axios.get(ROUTES_COMPLIANCE.YEARS)
     ]).then(([response, yearsResponse]) => {
-      setDetails(response.data);
-      setDisplay(response.data);
-      setModelYears(yearsResponse.data);
+      setDetails(response.data)
+      setDisplay(response.data)
+      setModelYears(yearsResponse.data)
 
-      const { ldvSales: responseLDVSales } = response.data;
-      setLDVSales(responseLDVSales);
+      const { ldvSales: responseLDVSales } = response.data
+      setLDVSales(responseLDVSales)
 
-      setLoading(false);
-    });
-  };
+      setLoading(false)
+    })
+  }
 
   useEffect(() => {
-    refreshDetails();
-  }, [keycloak.authenticated]);
+    refreshDetails()
+  }, [keycloak.authenticated])
 
   const editButton = () => {
     if (
@@ -61,26 +61,26 @@ const VehicleSupplierDetailsContainer = (props) => {
         <button
           className="button primary"
           onClick={() => {
-            History.push(ROUTES_ORGANIZATIONS.EDIT.replace(/:id/gi, id));
+            History.push(ROUTES_ORGANIZATIONS.EDIT.replace(/:id/gi, id))
           }}
           type="button"
         >
           <FontAwesomeIcon icon="edit" /> Edit
         </button>
-      );
+      )
     }
 
-    return false;
-  };
+    return false
+  }
 
   const handleInputChange = (event) => {
-    const { value, name } = event.target;
+    const { value, name } = event.target
 
     setFields({
       ...fields,
       [name]: value
-    });
-  };
+    })
+  }
 
   const handleDeleteSale = (sale) => {
     axios
@@ -88,23 +88,23 @@ const VehicleSupplierDetailsContainer = (props) => {
         id: sale.id
       })
       .then(() => {
-        History.push(ROUTES_ORGANIZATIONS.LIST);
-        History.replace(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id));
-      });
-  };
+        History.push(ROUTES_ORGANIZATIONS.LIST)
+        History.replace(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id))
+      })
+  }
 
   const handleSubmit = (event) => {
-    event.preventDefault();
+    event.preventDefault()
 
     axios
       .put(ROUTES_ORGANIZATIONS.LDV_SALES.replace(/:id/gi, id), {
         ...fields
       })
       .then(() => {
-        History.push(ROUTES_ORGANIZATIONS.LIST);
-        History.replace(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id));
-      });
-  };
+        History.push(ROUTES_ORGANIZATIONS.LIST)
+        History.replace(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id))
+      })
+  }
 
   return (
     <div className="page">
@@ -132,12 +132,12 @@ const VehicleSupplierDetailsContainer = (props) => {
         setIsEditable={setIsEditable}
       />
     </div>
-  );
-};
+  )
+}
 VehicleSupplierDetailsContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   location: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default withRouter(VehicleSupplierDetailsContainer);
+export default withRouter(VehicleSupplierDetailsContainer)

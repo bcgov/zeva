@@ -1,4 +1,4 @@
-const API_BASE_PATH = '/compliance';
+const API_BASE_PATH = '/compliance'
 
 const COMPLIANCE = {
   LDVSALES: `${API_BASE_PATH}/ldv-sales`,
@@ -29,6 +29,6 @@ const COMPLIANCE = {
   SUPPLEMENTAL_CREATE: `${API_BASE_PATH}/reports/:id/supplemental_save`,
   NOA_HISTORY: `${API_BASE_PATH}/reports/:id/noa_history`,
   SUPPLEMENTAL_HISTORY: `${API_BASE_PATH}/reports/:id/supplemental_history`
-};
+}
 
-export default COMPLIANCE;
+export default COMPLIANCE

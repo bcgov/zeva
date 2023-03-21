@@ -1,0 +1,68 @@
+---
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  template: zeva-network-policy
+metadata:
+  name: zeva-network-policy
+parameters:
+  - name: SUFFIX
+    displayName: null
+    description: such as -dev or -dev-1513
+    required: true  
+  - name: ENVIRONMENT
+    displayName: null
+    description: such as dev, test or prod
+    required: true  
+objects:
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-backend-accepts-frontend
+    spec:
+      ## Allow backend to accept communication from frontend
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/instance: zeva-backend
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  app.kubernetes.io/instance: zeva-frontend
+          ports:
+            - protocol: TCP
+              port: 8080
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-minio-accepts-backend
+    spec:
+      ## Allow minio to accept communication from backend
+      podSelector:
+        matchLabels:
+          app: zeva-minio-${ENVIRONMENT}
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  app.kubernetes.io/instance: zeva-backend
+          ports:
+            - protocol: TCP
+              port: 9000                  
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-backend-accepts-schemaspy
+    spec:
+      ## Allow backend to accept communication from schemaspy
+      podSelector:
+        matchLabels:
+           app.kubernetes.io/instance: zeva-backend
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  name: schemaspy-public-${ENVIRONMENT}
+          ports:
+            - protocol: TCP
+              port: 8080

@@ -1,17 +1,39 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import PropTypes from 'prop-types'
+import React, { useEffect } from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-import ComplianceObligationTableCreditsIssued from '../../compliance/components/ComplianceObligationTableCreditsIssued';
-import Loading from '../../app/components/Loading';
-import formatNumeric from '../../app/utilities/formatNumeric';
-import getComplianceObligationDetails from '../../app/utilities/getComplianceObligationDetails';
-import calculateCreditReduction from '../../app/utilities/calculateCreditReduction';
-import getClassAReduction from '../../app/utilities/getClassAReduction';
-import getTotalReduction from '../../app/utilities/getTotalReduction';
-import getUnspecifiedClassReduction from '../../app/utilities/getUnspecifiedClassReduction';
+import ComplianceObligationTableCreditsIssued from '../../compliance/components/ComplianceObligationTableCreditsIssued'
+import Loading from '../../app/components/Loading'
+import formatNumeric from '../../app/utilities/formatNumeric'
+import getComplianceObligationDetails from '../../app/utilities/getComplianceObligationDetails'
+import calculateCreditReduction from '../../app/utilities/calculateCreditReduction'
+import getClassAReduction from '../../app/utilities/getClassAReduction'
+import getTotalReduction from '../../app/utilities/getTotalReduction'
+import getUnspecifiedClassReduction from '../../app/utilities/getUnspecifiedClassReduction'
 
 const CreditActivity = (props) => {
+
+  useEffect(() => {
+    let structuredProvisionalBalance = {}
+
+    structuredProvisionalBalance.title = "ProvisionalBalanceAfterCreditReduction"
+    
+    let index = null
+    updatedBalances.balances.forEach((obj, i) => {
+      if(obj.modelYear === reportYear){
+        index = i
+      }
+    })
+    if(index !== null) {
+      structuredProvisionalBalance.modelYear = updatedBalances.balances[index].modelYear
+      structuredProvisionalBalance.creditA = updatedBalances.balances[index].newCreditA
+      structuredProvisionalBalance.creditB = updatedBalances.balances[index].newCreditB
+      structuredProvisionalBalance.originalAValue = updatedBalances.balances[index].creditA
+      structuredProvisionalBalance.originalBValue = updatedBalances.balances[index].creditB
+    }
+    handleSupplementalChange(structuredProvisionalBalance)
+  }, [newLdvSales])
+
   const {
     creditReductionSelection,
     details,
@@ -20,21 +42,24 @@ const CreditActivity = (props) => {
     ldvSales,
     newBalances,
     newData,
-    newLdvSales,
     obligationDetails,
     ratios,
     supplierClass,
     isEditable
-  } = props;
-
-  let reportYear = false;
+  } = props
+  let newLdvSales =
+    newData && newData.supplierInfo && newData.supplierInfo.ldvSales
+  if (newLdvSales === null || !newLdvSales) {
+    newLdvSales = ldvSales
+  }
+  let reportYear = false
 
   if (details && details.assessmentData) {
-    reportYear = Number(details.assessmentData.modelYear);
+    reportYear = Number(details.assessmentData.modelYear)
   }
 
   if (!reportYear) {
-    return <Loading />;
+    return <Loading />
   }
 
   const {
@@ -50,7 +75,7 @@ const CreditActivity = (props) => {
     administrativeAllocation,
     administrativeReduction,
     automaticAdministrativePenalty
-  } = getComplianceObligationDetails(obligationDetails);
+  } = getComplianceObligationDetails(obligationDetails)
 
   const reportDetails = {
     creditBalanceStart,
@@ -67,38 +92,38 @@ const CreditActivity = (props) => {
       administrativeReduction,
       automaticAdministrativePenalty
     }
-  };
+  }
 
-  const totalReduction = getTotalReduction(ldvSales, ratios.complianceRatio);
+  const totalReduction = getTotalReduction(ldvSales, ratios.complianceRatio)
   const classAReduction = getClassAReduction(
     ldvSales,
     ratios.zevClassA,
     supplierClass
-  );
+  )
   const leftoverReduction = getUnspecifiedClassReduction(
     totalReduction,
     classAReduction
-  );
+  )
   const newTotalReduction = getTotalReduction(
     newLdvSales,
     ratios.complianceRatio
-  );
+  )
   const newClassAReduction = getClassAReduction(
     newLdvSales,
     ratios.zevClassA,
     supplierClass
-  );
+  )
   const newLeftoverReduction = getUnspecifiedClassReduction(
     newTotalReduction,
     newClassAReduction
-  );
+  )
 
   const classAReductions = [
     {
       modelYear: Number(reportYear),
       value: Number(classAReduction)
     }
-  ];
+  ]
 
   const newClassAReductions = [
     {
@@ -108,14 +133,14 @@ const CreditActivity = (props) => {
           ? Number(newClassAReduction)
           : Number(classAReduction)
     }
-  ];
+  ]
 
   const unspecifiedReductions = [
     {
       modelYear: Number(reportYear),
       value: Number(leftoverReduction)
     }
-  ];
+  ]
 
   const newUnspecifiedReductions = [
     {
@@ -125,93 +150,92 @@ const CreditActivity = (props) => {
           ? Number(newLeftoverReduction)
           : Number(leftoverReduction)
     }
-  ];
+  ]
 
-  const tempBalances = [];
-  const newTempBalances = [];
+  const tempBalances = []
+  const newTempBalances = []
 
   Object.keys(provisionalBalance).forEach((year) => {
-    const { A: creditA, B: creditB } = provisionalBalance[year];
+    const { A: creditA, B: creditB } = provisionalBalance[year]
 
     tempBalances.push({
       modelYear: Number(year),
       creditA,
       creditB
-    });
-  });
-
+    })
+  })
   Object.keys(newBalances).forEach((year) => {
-    const { A: creditA, B: creditB } = newBalances[year];
+    const { A: creditA, B: creditB } = newBalances[year]
     newTempBalances.push({
       modelYear: Number(year),
       creditA,
       creditB
-    });
-  });
+    })
+  })
 
   const creditReduction = calculateCreditReduction(
     tempBalances,
     classAReductions,
     unspecifiedReductions,
     creditReductionSelection
-  );
+  )
 
   const newCreditReduction = calculateCreditReduction(
     newTempBalances,
     newClassAReductions,
     newUnspecifiedReductions,
     creditReductionSelection
-  );
+  )
 
-  const { deductions } = creditReduction;
-  const { deductions: newDeductions } = newCreditReduction;
+  const { deductions } = creditReduction
+  const { deductions: newDeductions } = newCreditReduction
 
   const getNewDeduction = (deduction, arr) => {
     const values = {
       creditA: deduction.creditA,
       creditB: deduction.creditB
-    };
+    }
 
     const found = arr.find(
       (each) =>
         Number(each.modelYear) === Number(deduction.modelYear) &&
         each.type === deduction.type
-    );
+    )
 
     if (found) {
-      values.creditA = found.creditA;
-      values.creditB = found.creditB;
+      values.creditA = found.creditA
+      values.creditB = found.creditB
     }
 
-    return values;
-  };
+    return values
+  }
 
   const updatedBalances = {
     balances: [],
     deficits: []
-  };
-  const { balances, deficits } = creditReduction;
+  }
+  const { balances, deficits } = creditReduction
 
   balances.forEach((balance) => {
-    const tempBalance = balance;
+    const tempBalance = balance
 
     const found = newCreditReduction.balances.find(
       (each) => each.modelYear === balance.modelYear
-    );
+    )
 
     if (found && newTempBalances.length > 0) {
-      tempBalance.newCreditA = found.creditA;
-      tempBalance.newCreditB = found.creditB;
+      tempBalance.newCreditA = found.creditA
+      tempBalance.newCreditB = found.creditB
     }
 
-    updatedBalances.balances.push(tempBalance);
-  });
+    updatedBalances.balances.push(tempBalance)
+  })
 
   if (newTempBalances.length > 0) {
     newCreditReduction.balances.forEach((each) => {
       const index = updatedBalances.balances.findIndex(
         (balance) => balance.modelYear === each.modelYear
-      );
+      )
 
       if (index < 0) {
         updatedBalances.balances.push({
@@ -220,31 +244,31 @@ const CreditActivity = (props) => {
           creditB: 0,
           newCreditA: each.creditA,
           newCreditB: each.creditB
-        });
+        })
       }
-    });
+    })
   }
 
   deficits.forEach((balance) => {
-    const tempBalance = balance;
+    const tempBalance = balance
 
     const found = newCreditReduction.deficits.find(
       (each) => each.modelYear === balance.modelYear
-    );
+    )
 
     if (found && newTempBalances.length > 0) {
-      tempBalance.newCreditA = found.creditA;
-      tempBalance.newCreditB = found.creditB;
+      tempBalance.newCreditA = found.creditA
+      tempBalance.newCreditB = found.creditB
     }
 
-    updatedBalances.deficits.push(tempBalance);
-  });
+    updatedBalances.deficits.push(tempBalance)
+  })
 
   if (newTempBalances.length > 0) {
     newCreditReduction.deficits.forEach((each) => {
       const index = updatedBalances.deficits.findIndex(
         (balance) => balance.modelYear === each.modelYear
-      );
+      )
 
       if (index < 0) {
         updatedBalances.deficits.push({
@@ -253,9 +277,9 @@ const CreditActivity = (props) => {
           creditB: 0,
           newCreditA: each.creditA,
           newCreditB: each.creditB
-        });
+        })
       }
-    });
+    })
   }
 
   return (
@@ -290,7 +314,7 @@ const CreditActivity = (props) => {
                       name="supplierInfo"
                       type="text"
                       onChange={handleInputChange}
-                      defaultValue={newLdvSales || ldvSales}
+                      defaultValue={newLdvSales}
                       readOnly={!isEditable}
                     />
                   </td>
@@ -305,7 +329,7 @@ const CreditActivity = (props) => {
                       totalReduction !== newTotalReduction ? 'highlight' : ''
                     }`}
                   >
-                    {newLdvSales && (
+                    {newLdvSales >= 0 && (
                       <span>{formatNumeric(newTotalReduction, 2)}</span>
                     )}
                   </td>
@@ -314,7 +338,8 @@ const CreditActivity = (props) => {
                   <td className="text-blue">{reportYear} Compliance Ratio:</td>
                   <td className="text-right">{ratios.complianceRatio} %</td>
                   <td />
-                  {supplierClass === 'L' ? (
+                  {supplierClass === 'L'
+                    ? (
                     <>
                       <td className="text-blue">
                         &bull; ZEV Class A Credit Reduction:
@@ -329,12 +354,13 @@ const CreditActivity = (props) => {
                             : ''
                         }`}
                       >
-                        {newLdvSales && (
+                        {newLdvSales >= 0 && (
                           <span>{formatNumeric(newClassAReduction, 2)}</span>
                         )}
                       </td>
                     </>
-                  ) : (
+                      )
+                    : (
                     <>
                       <td className="text-blue">
                         &bull; Unspecified ZEV Class Credit Reduction:
@@ -349,12 +375,12 @@ const CreditActivity = (props) => {
                             : ''
                         }`}
                       >
-                        {newLdvSales && (
+                        {newLdvSales >= 0 && (
                           <span>{formatNumeric(newLeftoverReduction, 2)}</span>
                         )}
                       </td>
                     </>
-                  )}
+                      )}
                 </tr>
                 {supplierClass === 'L' && (
                   <tr>
@@ -376,7 +402,7 @@ const CreditActivity = (props) => {
                           : ''
                       }`}
                     >
-                      {newLdvSales && (
+                      {newLdvSales >= 0 && (
                         <span>{formatNumeric(newLeftoverReduction, 2)}</span>
                       )}
                     </td>
@@ -532,18 +558,22 @@ const CreditActivity = (props) => {
                       <th className="text-center small-column">A</th>
                       <th className="text-center small-column">B</th>
                       <th className="text-center small-column">
-                        {creditReductionSelection === 'A' ? (
+                        {creditReductionSelection === 'A'
+                          ? (
                           <FontAwesomeIcon icon="check" />
-                        ) : (
-                          'A'
-                        )}
+                            )
+                          : (
+                              'A'
+                            )}
                       </th>
                       <th className="text-center small-column">
-                        {creditReductionSelection === 'B' ? (
+                        {creditReductionSelection === 'B'
+                          ? (
                           <FontAwesomeIcon icon="check" />
-                        ) : (
-                          'B'
-                        )}
+                            )
+                          : (
+                              'B'
+                            )}
                       </th>
                     </tr>
                   )}
@@ -741,15 +771,14 @@ const CreditActivity = (props) => {
         )}
       </div>
     </>
-  );
-};
+  )
+}
 
 CreditActivity.defaultProps = {
   creditReductionSelection: '',
   isEditable: false,
-  newLdvSales: null,
   supplierClass: ''
-};
+}
 
 CreditActivity.propTypes = {
   creditReductionSelection: PropTypes.string,
@@ -761,10 +790,9 @@ CreditActivity.propTypes = {
     .isRequired,
   newBalances: PropTypes.shape().isRequired,
   newData: PropTypes.shape().isRequired,
-  newLdvSales: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   obligationDetails: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   ratios: PropTypes.shape().isRequired,
   supplierClass: PropTypes.string
-};
+}
 
-export default CreditActivity;
+export default CreditActivity

@@ -2,29 +2,28 @@
  * Container component
  * All data handling & manipulation should be handled here.
  */
-import axios from 'axios';
-import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
-import { withRouter } from 'react-router';
+import axios from 'axios'
+import PropTypes from 'prop-types'
+import React, { useEffect, useState } from 'react'
+import { withRouter } from 'react-router'
 
-import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
-import Loading from '../app/components/Loading';
-import history from '../app/History';
-import ROUTES_CREDIT_TRANSFERS from '../app/routes/CreditTransfers';
-import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions';
-import CustomPropTypes from '../app/utilities/props';
-import CreditTransfersDetailsPage from './components/CreditTransfersDetailsPage';
+import CreditTransactionTabs from '../app/components/CreditTransactionTabs'
+import Loading from '../app/components/Loading'
+import history from '../app/History'
+import ROUTES_CREDIT_TRANSFERS from '../app/routes/CreditTransfers'
+import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions'
+import CustomPropTypes from '../app/utilities/props'
+import CreditTransfersDetailsPage from './components/CreditTransfersDetailsPage'
 
 const CreditTransfersDetailsContainer = (props) => {
-  const { location, user, match } = props;
-  const { state: locationState } = location;
-  const [errorMessage, setErrorMessage] = useState([]);
-  const [assertions, setAssertions] = useState([]);
-  const [checkboxes, setCheckboxes] = useState([]);
-  const [sufficientCredit, setSufficientCredit] = useState(true);
-  const { id } = match.params;
-  const [submission, setSubmission] = useState({});
-  const [loading, setLoading] = useState(true);
+  const { user, match } = props
+  const [errorMessage, setErrorMessage] = useState([])
+  const [assertions, setAssertions] = useState([])
+  const [checkboxes, setCheckboxes] = useState([])
+  const [sufficientCredit, setSufficientCredit] = useState(true)
+  const { id } = match.params
+  const [submission, setSubmission] = useState({})
+  const [loading, setLoading] = useState(true)
 
   const refreshDetails = () => {
     axios
@@ -35,42 +34,42 @@ const CreditTransfersDetailsContainer = (props) => {
       .then(
         axios.spread((response, assertionsResponse) => {
           const filteredAssertions = assertionsResponse.data.filter(
-            (data) => data.module == 'credit_transfer'
-          );
-          setAssertions(filteredAssertions);
-          setSubmission(response.data);
-          setSufficientCredit(response.data.sufficientCredits);
+            (data) => data.module === 'credit_transfer'
+          )
+          setAssertions(filteredAssertions)
+          setSubmission(response.data)
+          setSufficientCredit(response.data.sufficientCredits)
 
-          setLoading(false);
+          setLoading(false)
         })
-      );
-  };
+      )
+  }
 
   useEffect(() => {
-    refreshDetails();
-  }, [id]);
+    refreshDetails()
+  }, [id])
 
   const handleCheckboxClick = (event) => {
     if (!event.target.checked) {
       const checked = checkboxes.filter(
         (each) => Number(each) !== Number(event.target.id)
-      );
-      setCheckboxes(checked);
+      )
+      setCheckboxes(checked)
     }
 
     if (event.target.checked) {
-      const checked = checkboxes.concat(event.target.id);
-      setCheckboxes(checked);
+      const checked = checkboxes.concat(event.target.id)
+      setCheckboxes(checked)
     }
-  };
+  }
 
   const handleSubmit = (status, comment = '') => {
-    const submissionContent = { status };
+    const submissionContent = { status }
     if (comment.length > 0) {
-      submissionContent.creditTransferComment = { comment };
+      submissionContent.creditTransferComment = { comment }
     }
     if (checkboxes.length > 0) {
-      submissionContent.signingConfirmation = checkboxes;
+      submissionContent.signingConfirmation = checkboxes
     }
     axios
       .patch(
@@ -78,27 +77,27 @@ const CreditTransfersDetailsContainer = (props) => {
         submissionContent
       )
       .then(() => {
-        history.push(ROUTES_CREDIT_TRANSFERS.EDIT.replace(':id', id));
+        history.push(ROUTES_CREDIT_TRANSFERS.EDIT.replace(':id', id))
         if (status === 'RESCINDED' || status === 'DRAFT') {
-          history.replace(ROUTES_CREDIT_TRANSFERS.EDIT.replace(':id', id));
+          history.replace(ROUTES_CREDIT_TRANSFERS.EDIT.replace(':id', id))
         } else {
-          history.replace(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(':id', id));
+          history.replace(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(':id', id))
         }
       })
       .catch((error) => {
-        const { response } = error;
+        const { response } = error
         if (response.status === 400) {
           if (typeof response.data === 'object') {
-            setErrorMessage(Object.values(response.data));
+            setErrorMessage(Object.values(response.data))
           } else {
-            setErrorMessage(response.data.status);
+            setErrorMessage(response.data.status)
           }
         }
-      });
-  };
+      })
+  }
 
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
   return [
     <CreditTransactionTabs active="credit-transfers" key="tabs" user={user} />,
@@ -113,17 +112,17 @@ const CreditTransfersDetailsContainer = (props) => {
       user={user}
       errorMessage={errorMessage}
     />
-  ];
-};
+  ]
+}
 
 CreditTransfersDetailsContainer.defaultProps = {
   validatedOnly: false
-};
+}
 
 CreditTransfersDetailsContainer.propTypes = {
   match: CustomPropTypes.routeMatch.isRequired,
   user: CustomPropTypes.user.isRequired,
   validatedOnly: PropTypes.bool
-};
+}
 
-export default withRouter(CreditTransfersDetailsContainer);
+export default withRouter(CreditTransfersDetailsContainer)

@@ -1,60 +1,60 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { withRouter } from 'react-router';
-import Loading from '../app/components/Loading';
-import CONFIG from '../app/config';
-import history from '../app/History';
-import ROUTES_COMPLIANCE from '../app/routes/Compliance';
-import CustomPropTypes from '../app/utilities/props';
-import getClassAReduction from '../app/utilities/getClassAReduction';
-import AssessmentDetailsPage from './components/AssessmentDetailsPage';
-import calculateCreditReduction from '../app/utilities/calculateCreditReduction';
-import getComplianceObligationDetails from '../app/utilities/getComplianceObligationDetails';
-import getTotalReduction from '../app/utilities/getTotalReduction';
-import getUnspecifiedClassReduction from '../app/utilities/getUnspecifiedClassReduction';
-import ROUTES_SUPPLEMENTARY from '../app/routes/SupplementaryReport';
+import axios from 'axios'
+import React, { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { withRouter } from 'react-router'
+import Loading from '../app/components/Loading'
+import CONFIG from '../app/config'
+import history from '../app/History'
+import ROUTES_COMPLIANCE from '../app/routes/Compliance'
+import CustomPropTypes from '../app/utilities/props'
+import getClassAReduction from '../app/utilities/getClassAReduction'
+import AssessmentDetailsPage from './components/AssessmentDetailsPage'
+import calculateCreditReduction from '../app/utilities/calculateCreditReduction'
+import getComplianceObligationDetails from '../app/utilities/getComplianceObligationDetails'
+import getTotalReduction from '../app/utilities/getTotalReduction'
+import getUnspecifiedClassReduction from '../app/utilities/getUnspecifiedClassReduction'
+import ROUTES_SUPPLEMENTARY from '../app/routes/SupplementaryReport'
 
 const AssessmentContainer = (props) => {
-  const { keycloak, user } = props;
-  const { id } = useParams();
-  const [balances, setBalances] = useState([]);
-  const [bceidComment, setBceidComment] = useState('');
-  const [changedValue, setChangedValue] = useState(false);
-  const [classAReductions, setClassAReductions] = useState([]);
-  const [creditDetails, setCreditDetails] = useState({});
-  const [deductions, setDeductions] = useState([]);
-  const [details, setDetails] = useState({});
-  const [idirComment, setIdirComment] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [makes, setMakes] = useState([]);
-  const [pendingBalanceExist, setPendingBalanceExist] = useState(false);
+  const { keycloak, user } = props
+  const { id } = useParams()
+  const [balances, setBalances] = useState([])
+  const [bceidComment, setBceidComment] = useState('')
+  // const [changedValue, setChangedValue] = useState(false)
+  const [classAReductions, setClassAReductions] = useState([])
+  const [creditDetails, setCreditDetails] = useState({})
+  const [deductions, setDeductions] = useState([])
+  const [details, setDetails] = useState({})
+  const [idirComment, setIdirComment] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [makes, setMakes] = useState([])
+  const [pendingBalanceExist, setPendingBalanceExist] = useState(false)
   const [radioDescriptions, setRadioDescriptions] = useState([
     { id: 0, description: '' }
-  ]);
-  const [ratios, setRatios] = useState({});
+  ])
+  const [ratios, setRatios] = useState({})
   const [reportYear, setReportYear] = useState(
     CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR
-  );
-  const [sales, setSales] = useState(0);
-  const [supplementaryStatus, setSupplementaryStatus] = useState('');
-  const [supplementaryId, setSupplementaryId] = useState('');
-  const [createdByGov, setCreatedByGov] = useState(false);
+  )
+  const [sales, setSales] = useState(0)
+  const [supplementaryStatus, setSupplementaryStatus] = useState('')
+  const [supplementaryId, setSupplementaryId] = useState('')
+  const [createdByGov, setCreatedByGov] = useState(false)
   const [statuses, setStatuses] = useState({
     assessment: {
       status: 'UNSAVED',
       confirmedBy: null
     }
-  });
-  const [supplierClass, setSupplierClass] = useState('S');
-  const [totalReduction, setTotalReduction] = useState(0);
-  const [unspecifiedReductions, setUnspecifiedReductions] = useState([]);
-  const [updatedBalances, setUpdatedBalances] = useState({});
-  const [reassessmentExists, setReassessmentExists] = useState(false);
-  const [reassessmentTooltip, setReassessmentTooltip] = useState('');
+  })
+  const [supplierClass, setSupplierClass] = useState('S')
+  const [totalReduction, setTotalReduction] = useState(0)
+  const [unspecifiedReductions, setUnspecifiedReductions] = useState([])
+  const [updatedBalances, setUpdatedBalances] = useState({})
+  const [reassessmentExists, setReassessmentExists] = useState(false)
+  const [reassessmentTooltip, setReassessmentTooltip] = useState('')
   const handleCommentChangeBceid = (text) => {
-    setBceidComment(text);
-  };
+    setBceidComment(text)
+  }
   const handleCancelConfirmation = () => {
     const data = {
       delete_confirmations: true,
@@ -64,41 +64,41 @@ const AssessmentContainer = (props) => {
         'supplier_information',
         'compliance_summary'
       ]
-    };
+    }
 
     axios
       .patch(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id), data)
       .then((response) => {
-        history.push(ROUTES_COMPLIANCE.REPORTS);
-        history.replace(ROUTES_COMPLIANCE.REPORT_SUMMARY.replace(':id', id));
-      });
-  };
+        history.push(ROUTES_COMPLIANCE.REPORTS)
+        history.replace(ROUTES_COMPLIANCE.REPORT_SUMMARY.replace(':id', id))
+      })
+  }
 
   const handleAddIdirComment = () => {
-    const comment = { comment: idirComment, director: true };
+    const comment = { comment: idirComment, director: true }
     axios
       .post(
         ROUTES_COMPLIANCE.ASSESSMENT_COMMENT_SAVE.replace(':id', id),
         comment
       )
       .then(() => {
-        history.push(ROUTES_COMPLIANCE.REPORTS);
-        history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
-      });
-  };
+        history.push(ROUTES_COMPLIANCE.REPORTS)
+        history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id))
+      })
+  }
 
   const handleAddBceidComment = () => {
-    const comment = { comment: bceidComment, director: false };
+    const comment = { comment: bceidComment, director: false }
     axios
       .post(
         ROUTES_COMPLIANCE.ASSESSMENT_COMMENT_SAVE.replace(':id', id),
         comment
       )
       .then(() => {
-        history.push(ROUTES_COMPLIANCE.REPORTS);
-        history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
-      });
-  };
+        history.push(ROUTES_COMPLIANCE.REPORTS)
+        history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id))
+      })
+  }
 
   const handleEditComment = (comment) => {
     axios
@@ -107,10 +107,10 @@ const AssessmentContainer = (props) => {
         comment
       )
       .then(() => {
-        history.push(ROUTES_COMPLIANCE.REPORTS);
-        history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
-      });
-  };
+        history.push(ROUTES_COMPLIANCE.REPORTS)
+        history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id))
+      })
+  }
 
   const handleDeleteComment = (comment) => {
     axios
@@ -119,10 +119,10 @@ const AssessmentContainer = (props) => {
         comment
       )
       .then(() => {
-        history.push(ROUTES_COMPLIANCE.REPORTS);
-        history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
-      });
-  };
+        history.push(ROUTES_COMPLIANCE.REPORTS)
+        history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id))
+      })
+  }
 
   const refreshDetails = () => {
     if (id) {
@@ -159,11 +159,11 @@ const AssessmentContainer = (props) => {
                 supplementaryResponse.data.status
               ) {
                 if (supplementaryResponse.data.reassessment && supplementaryResponse.data.reassessment.reassessmentReportId) {
-                  setReassessmentExists(true);
-                    setReassessmentTooltip('at this time its not possible as government has begun a reassessment')
-                  }
-                setSupplementaryId(supplementaryResponse.data.id);
-                setSupplementaryStatus(supplementaryResponse.data.status);
+                  setReassessmentExists(true)
+                  setReassessmentTooltip('at this time it is not possible as government has begun a reassessment')
+                }
+                setSupplementaryId(supplementaryResponse.data.id)
+                setSupplementaryStatus(supplementaryResponse.data.status)
                 if (
                   supplementaryResponse.data.createUser &&
                   supplementaryResponse.data.createUser.roles
@@ -171,20 +171,20 @@ const AssessmentContainer = (props) => {
                   supplementaryResponse.data.createUser.roles.forEach(
                     (each) => {
                       if (
-                        each.roleCode == 'Administrator' ||
-                        each.roleCode == 'Director' ||
-                        each.roleCode == 'Engineer/Analyst'
+                        each.roleCode === 'Administrator' ||
+                        each.roleCode === 'Director' ||
+                        each.roleCode === 'Engineer/Analyst'
                       ) {
-                        setCreatedByGov(true);
+                        setCreatedByGov(true)
                       } else {
-                        setCreatedByGov(false);
+                        setCreatedByGov(false)
                       }
                     }
-                  );
+                  )
                 }
               }
-              const idirCommentArrayResponse = [];
-              let bceidCommentResponse = {};
+              const idirCommentArrayResponse = []
+              let bceidCommentResponse = {}
               const {
                 assessment: {
                   penalty: assessmentPenalty,
@@ -193,15 +193,15 @@ const AssessmentContainer = (props) => {
                   inCompliance
                 },
                 descriptions: assessmentDescriptions
-              } = assessmentResponse.data;
-              setRadioDescriptions(assessmentDescriptions);
+              } = assessmentResponse.data
+              setRadioDescriptions(assessmentDescriptions)
               assessmentResponse.data.assessmentComment.forEach((item) => {
                 if (item.toDirector === true) {
-                  idirCommentArrayResponse.push(item);
+                  idirCommentArrayResponse.push(item)
                 } else {
-                  bceidCommentResponse = item;
+                  bceidCommentResponse = item
                 }
-              });
+              })
 
               const {
                 makes: modelYearReportMakes,
@@ -215,38 +215,38 @@ const AssessmentContainer = (props) => {
                 changelog,
                 creditReductionSelection,
                 supplierClass: tempSupplierClass
-              } = reportDetailsResponse.data;
+              } = reportDetailsResponse.data
 
-              setSupplierClass(tempSupplierClass);
+              setSupplierClass(tempSupplierClass)
 
-              if (changelog.ldvChanges !== '') {
-                setChangedValue(true);
-              }
+              // if (changelog.ldvChanges !== '') {
+              //   setChangedValue(true)
+              // }
 
-              const currentReportYear = Number(modelYear.name);
-              setReportYear(currentReportYear);
+              const currentReportYear = Number(modelYear.name)
+              setReportYear(currentReportYear)
 
               const filteredRatios = ratioResponse.data.find(
                 (data) => Number(data.modelYear) === Number(currentReportYear)
-              );
-              setRatios(filteredRatios);
+              )
+              setRatios(filteredRatios)
               const makesChanges = {
                 additions: []
                 // deletions: [],
                 // edits: []
-              };
+              }
               if (modelYearReportMakes) {
                 const currentMakes = modelYearReportMakes.map(
                   (each) => each.make
-                );
+                )
                 const makesAdditions = modelYearReportMakes.filter(
                   (each) => each.fromGov
-                );
-                makesChanges.additions = makesAdditions;
-                setMakes(currentMakes);
+                )
+                makesChanges.additions = makesAdditions
+                setMakes(currentMakes)
               }
-              setStatuses(reportStatuses);
-              setSales(ldvSales);
+              setStatuses(reportStatuses)
+              setSales(ldvSales)
               setDetails({
                 changelog,
                 bceidComment: bceidCommentResponse,
@@ -268,10 +268,10 @@ const AssessmentContainer = (props) => {
                   history: modelYearReportHistory,
                   validationStatus
                 }
-              });
+              })
               // CREDIT ACTIVITY
               const complianceResponseDetails =
-                creditActivityResponse.data.complianceObligation;
+                creditActivityResponse.data.complianceObligation
 
               const {
                 creditBalanceEnd,
@@ -287,9 +287,9 @@ const AssessmentContainer = (props) => {
                 administrativeAllocation,
                 administrativeReduction,
                 automaticAdministrativePenalty
-              } = getComplianceObligationDetails(complianceResponseDetails);
+              } = getComplianceObligationDetails(complianceResponseDetails)
 
-              setPendingBalanceExist(tempPendingBalanceExist);
+              setPendingBalanceExist(tempPendingBalanceExist)
 
               setCreditDetails({
                 creditBalanceStart,
@@ -306,98 +306,98 @@ const AssessmentContainer = (props) => {
                   administrativeReduction,
                   automaticAdministrativePenalty
                 }
-              });
+              })
 
               const tempTotalReduction = getTotalReduction(
                 ldvSales,
                 filteredRatios.complianceRatio
-              );
+              )
               const classAReduction = getClassAReduction(
                 ldvSales,
                 filteredRatios.zevClassA,
                 tempSupplierClass
-              );
+              )
               const leftoverReduction = getUnspecifiedClassReduction(
                 tempTotalReduction,
                 classAReduction
-              );
-              setTotalReduction(tempTotalReduction);
+              )
+              setTotalReduction(tempTotalReduction)
 
-              const tempBalances = [];
+              const tempBalances = []
 
               Object.keys(provisionalBalance).forEach((year) => {
-                const { A: creditA, B: creditB } = provisionalBalance[year];
+                const { A: creditA, B: creditB } = provisionalBalance[year]
                 tempBalances.push({
                   modelYear: Number(year),
                   creditA,
                   creditB
-                });
-              });
+                })
+              })
 
-              setBalances(tempBalances);
+              setBalances(tempBalances)
 
               const tempClassAReductions = [
                 {
                   modelYear: Number(modelYear.name),
                   value: Number(classAReduction)
                 }
-              ];
+              ]
 
               const tempUnspecifiedReductions = [
                 {
                   modelYear: Number(modelYear.name),
                   value: Number(leftoverReduction)
                 }
-              ];
+              ]
 
-              setClassAReductions(tempClassAReductions);
-              setUnspecifiedReductions(tempUnspecifiedReductions);
+              setClassAReductions(tempClassAReductions)
+              setUnspecifiedReductions(tempUnspecifiedReductions)
 
               const creditReduction = calculateCreditReduction(
                 tempBalances,
                 tempClassAReductions,
                 tempUnspecifiedReductions,
                 creditReductionSelection
-              );
+              )
 
-              setDeductions(creditReduction.deductions);
+              setDeductions(creditReduction.deductions)
 
               setUpdatedBalances({
                 balances: creditReduction.balances,
                 deficits: creditReduction.deficits
-              });
+              })
 
-              setLoading(false);
+              setLoading(false)
             }
           )
-        );
+        )
     }
-  };
+  }
 
   useEffect(() => {
-    refreshDetails();
-  }, [keycloak.authenticated]);
+    refreshDetails()
+  }, [keycloak.authenticated])
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
 
   const handleCommentChangeIdir = (text) => {
-    setIdirComment(text);
-  };
+    setIdirComment(text)
+  }
 
   const directorAction =
     user.isGovernment &&
     ['RECOMMENDED'].indexOf(details.assessment.validationStatus) >= 0 &&
-    user.hasPermission('SIGN_COMPLIANCE_REPORT');
+    user.hasPermission('SIGN_COMPLIANCE_REPORT')
 
   const analystAction =
     user.isGovernment &&
     ['SUBMITTED', 'RETURNED'].indexOf(details.assessment.validationStatus) >=
       0 &&
-    user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
+    user.hasPermission('RECOMMEND_COMPLIANCE_REPORT')
 
   const handleSubmit = (status) => {
-    const comment = { comment: bceidComment, director: false };
+    const comment = { comment: bceidComment, director: false }
 
     axios
       .post(
@@ -406,40 +406,40 @@ const AssessmentContainer = (props) => {
       )
       .then(() => {
         if (status === 'RECOMMENDED') {
-          const reportDetailsArray = [];
+          const reportDetailsArray = []
           Object.keys(creditDetails).forEach((each) => {
             Object.keys(creditDetails[each]).forEach((year) => {
               if (each !== 'transactions' && each !== 'pendingBalance') {
-                const a = creditDetails[each][year].A;
-                const b = creditDetails[each][year].B;
+                const a = creditDetails[each][year].A
+                const b = creditDetails[each][year].B
                 reportDetailsArray.push({
                   category: each,
                   year,
                   a,
                   b
-                });
+                })
               } else if (each === 'pendingBalance') {
                 reportDetailsArray.push({
                   category: each,
                   year: creditDetails[each][year].modelYear,
                   A: creditDetails[each][year].A,
                   B: creditDetails[each][year].B
-                });
+                })
               } else {
-                const category = year;
+                const category = year
                 creditDetails[each][year].forEach((record) => {
-                  const A = parseFloat(record.A) || 0;
-                  const B = parseFloat(record.B) || 0;
+                  const A = parseFloat(record.A) || 0
+                  const B = parseFloat(record.B) || 0
                   reportDetailsArray.push({
                     category,
                     year: record.modelYear,
                     A,
                     B
-                  });
-                });
+                  })
+                })
               }
-            });
-          });
+            })
+          })
 
           if (deductions) {
             // zev class A reductions
@@ -451,8 +451,8 @@ const AssessmentContainer = (props) => {
                   year: deduction.modelYear,
                   a: deduction.creditA,
                   b: deduction.creditB
-                });
-              });
+                })
+              })
 
             // unspecified reductions
             deductions
@@ -463,8 +463,8 @@ const AssessmentContainer = (props) => {
                   year: deduction.modelYear,
                   a: deduction.creditA,
                   b: deduction.creditB
-                });
-              });
+                })
+              })
           }
 
           if (updatedBalances) {
@@ -476,8 +476,8 @@ const AssessmentContainer = (props) => {
                   year: balance.modelYear,
                   a: balance.creditA || 0,
                   b: balance.creditB || 0
-                });
-              });
+                })
+              })
             }
 
             // deficits
@@ -488,45 +488,45 @@ const AssessmentContainer = (props) => {
                   year: balance.modelYear,
                   a: balance.creditA || 0,
                   b: balance.creditB || 0
-                });
-              });
+                })
+              })
             }
           }
 
           const ObligationData = {
             reportId: id,
             creditActivity: reportDetailsArray
-          };
+          }
 
-          axios.patch(ROUTES_COMPLIANCE.OBLIGATION_SAVE, ObligationData);
+          axios.patch(ROUTES_COMPLIANCE.OBLIGATION_SAVE, ObligationData)
         }
 
         const data = {
           modelYearReportId: id,
           validation_status: status,
           modelYear: reportYear
-        };
+        }
 
         if (analystAction) {
-          data.penalty = details.assessment.assessmentPenalty;
-          data.description = details.assessment.decision.id;
+          data.penalty = details.assessment.assessmentPenalty
+          data.description = details.assessment.decision.id
           if (status === 'DRAFT') {
-            data.removeConfirmation = true;
+            data.removeConfirmation = true
           }
         }
 
         axios.patch(ROUTES_COMPLIANCE.REPORT_SUBMISSION, data).then(() => {
           if (status === 'DRAFT' && analystAction) {
-            history.push(ROUTES_COMPLIANCE.REPORTS);
+            history.push(ROUTES_COMPLIANCE.REPORTS)
           } else {
-            history.push(ROUTES_COMPLIANCE.REPORTS);
+            history.push(ROUTES_COMPLIANCE.REPORTS)
             history.replace(
               ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id)
-            );
+            )
           }
-        });
-      });
-  };
+        })
+      })
+  }
 
   return (
     <>
@@ -568,12 +568,12 @@ const AssessmentContainer = (props) => {
         reassessmentTooltip={reassessmentTooltip}
       />
     </>
-  );
-};
+  )
+}
 
 AssessmentContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default withRouter(AssessmentContainer);
+export default withRouter(AssessmentContainer)

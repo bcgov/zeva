@@ -1,12 +1,12 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from 'react'
+import PropTypes from 'prop-types'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-import CustomPropTypes from '../../app/utilities/props';
-import ComplianceReportsTable from './ComplianceReportsTable';
-import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
-import Loading from '../../app/components/Loading';
-import history from '../../app/History';
+import CustomPropTypes from '../../app/utilities/props'
+import ComplianceReportsTable from './ComplianceReportsTable'
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
+import Loading from '../../app/components/Loading'
+import history from '../../app/History'
 
 const ComplianceReportListPage = (props) => {
   const {
@@ -18,10 +18,10 @@ const ComplianceReportListPage = (props) => {
     setFiltered,
     showSupplier,
     user
-  } = props;
+  } = props
 
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
 
   return (
@@ -37,7 +37,7 @@ const ComplianceReportListPage = (props) => {
               onClick={() => {
                 history.push(
                   `${ROUTES_COMPLIANCE.NEW}?year=${availableYears[0]}`
-                );
+                )
               }}
               type="button"
             >
@@ -78,12 +78,12 @@ const ComplianceReportListPage = (props) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 ComplianceReportListPage.defaultProps = {
   showSupplier: false
-};
+}
 
 ComplianceReportListPage.propTypes = {
   availableYears: PropTypes.arrayOf(
@@ -95,5 +95,5 @@ ComplianceReportListPage.propTypes = {
   loading: PropTypes.bool.isRequired,
   setFiltered: PropTypes.func.isRequired,
   showSupplier: PropTypes.bool
-};
-export default ComplianceReportListPage;
+}
+export default ComplianceReportListPage

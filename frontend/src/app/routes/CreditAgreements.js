@@ -1,4 +1,4 @@
-const API_BASE_PATH = '/credit-agreements';
+const API_BASE_PATH = '/credit-agreements'
 
 const CREDIT_AGREEMENTS = {
   NEW: `${API_BASE_PATH}/new`,
@@ -9,6 +9,6 @@ const CREDIT_AGREEMENTS = {
   TRANSACTION_TYPES: `${API_BASE_PATH}/transaction_types`,
   MODEL_YEAR_REPORTS: `${API_BASE_PATH}/model_year_reports`,
   COMMENT_SAVE: `${API_BASE_PATH}/:id/comment_save`
-};
+}
 
-export default CREDIT_AGREEMENTS;
+export default CREDIT_AGREEMENTS
