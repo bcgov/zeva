@@ -19,5 +19,5 @@ resources:
     memory: 200Mi
     
 backendRoute: 
-  create: true
+  create: false
   hostName: zeva-backend-prod.apps.silver.devops.gov.bc.ca
