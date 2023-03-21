@@ -253,9 +253,34 @@ jobs:
           minimum-approvals: 2
           issue-title: "ZEVA ${{ env.VERSION }} Prod Deployment"
       
-     - name: Tag Frontend Image from tools to Prod
-       run: |
+      - name: Tag Frontend Image from tools to Prod
+        run: |
           oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-frontend:build-${{ env.VERSION }}-${{ env.PR_NUMBER }} ${{ env.PROD_NAMESPACE }}/zeva-frontend:prod-${{ env.VERSION }}
           oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-backend:build-${{ env.VERSION }}-${{ env.PR_NUMBER }} ${{ env.PROD_NAMESPACE }}/zeva-backend:prod-${{ env.VERSION }}
 
+      - name: Deply zeva-frontend on Prod
+        shell: bash {0}
+        run: |
+          cd charts/zeva-apps/charts/zeva-frontend
+          helm status -n ${{ env.PROD_NAMESPACE }} zeva-frontend-prod
+          if [ $? -eq 0 ]; then
+            echo "zeva-frontend-prod release exists already"
+            helm upgrade --set frontendImageTagname=prod-${{ env.VERSION }},openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }} -n ${{ env.PROD_NAMESPACE }} -f ./values-prod.yaml zeva-frontend-prod .
+          else
+            echo "zeva-frontend-prod release does not exist"
+            helm install --set frontendImageTagname=prod-${{ env.VERSION }},openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }} -n ${{ env.PROD_NAMESPACE }} -f ./values-prod.yaml zeva-frontend-prod .
+          fi
+          
+      - name: Deply zeva-backend on Prod
+        shell: bash {0}
+        run: |
+          cd charts/zeva-apps/charts/zeva-backend
+          helm status -n ${{ env.PROD_NAMESPACE }} zeva-backend-prod
+          if [ $? -eq 0 ]; then
+            echo "zeva-backend-prod release exists already"
+            helm upgrade --set backendImageTagname=prod-${{ env.VERSION }} -n ${{ env.PROD_NAMESPACE }} -f ./values-prod.yaml zeva-backend-prod .
+          else
+            echo "zeva-backend-prod release does not exist"
+            helm install --set backendImageTagname=prod-${{ env.VERSION }} -n ${{ env.PROD_NAMESPACE }} -f ./values-prod.yaml zeva-backend-prod .
+          fi
                                         
