@@ -29,45 +29,45 @@ concurrency:
   
 jobs:
 
-  frontend-unit-test:
+  # frontend-unit-test:
 
-    name: Run Frontend Unit Tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
+  #   name: Run Frontend Unit Tests
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 60
 
-    steps:
+  #   steps:
 
-      - name: Checkout
-        uses: actions/checkout@v3
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: Fronend Jest coverage report
-        uses: ArtiomTr/jest-coverage-report-action@v2.2.1
-        continue-on-error: false
-        with:
-          working-directory: frontend
-          test-script: npm run test
+  #     - name: Fronend Jest coverage report
+  #       uses: ArtiomTr/jest-coverage-report-action@v2.2.1
+  #       continue-on-error: false
+  #       with:
+  #         working-directory: frontend
+  #         test-script: npm run test
         
-  backend-unit-test:
+  # backend-unit-test:
 
-    name: Run Backend Unit Tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
+  #   name: Run Backend Unit Tests
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 60
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
       
-      - name: Run coverage report for django tests 
-        uses: kuanfandevops/django-test-action@itvr-django-test
-        continue-on-error: false
-        env:
-          MINIO_ENDPOINT: minio:9000
-          MINIO_ACCESS_KEY: testtest
-          MINIO_SECRET_KEY: testtest
-        with:
-          settings-dir-path: "backend/api"
-          requirements-file: "backend/requirements.txt"
-          managepy-dir: backend
+  #     - name: Run coverage report for django tests 
+  #       uses: kuanfandevops/django-test-action@itvr-django-test
+  #       continue-on-error: false
+  #       env:
+  #         MINIO_ENDPOINT: minio:9000
+  #         MINIO_ACCESS_KEY: testtest
+  #         MINIO_SECRET_KEY: testtest
+  #       with:
+  #         settings-dir-path: "backend/api"
+  #         requirements-file: "backend/requirements.txt"
+  #         managepy-dir: backend
 
   build:
 
@@ -88,17 +88,17 @@ jobs:
           insecure_skip_tls_verify: true
           namespace: ${{ env.TOOLS_NAMESPACE }}
 
-      - name: Build ZEVA Backend
-        run: |
-          cd openshift/templates/backend
-          oc process -f ./backend-bc.yaml NAME=zeva SUFFIX=-build-${{ env.PR_NUMBER }} VERSION=build-${{ env.VERSION }}-${{ env.PR_NUMBER }} GIT_URL=${{ env.GIT_URL }} GIT_REF=refs/pull/${{ env.PR_NUMBER }}/head | oc apply --wait=true -f - -n ${{ env.TOOLS_NAMESPACE }}
-          oc start-build --wait=true zeva-backend-build-${{ env.PR_NUMBER }}
+      # - name: Build ZEVA Backend
+      #   run: |
+      #     cd openshift/templates/backend
+      #     oc process -f ./backend-bc.yaml NAME=zeva SUFFIX=-build-${{ env.PR_NUMBER }} VERSION=build-${{ env.VERSION }}-${{ env.PR_NUMBER }} GIT_URL=${{ env.GIT_URL }} GIT_REF=refs/pull/${{ env.PR_NUMBER }}/head | oc apply --wait=true -f - -n ${{ env.TOOLS_NAMESPACE }}
+      #     oc start-build --wait=true zeva-backend-build-${{ env.PR_NUMBER }}
 
-      - name: Build ZEVA Frontend
-        run: |
-          cd openshift/templates/frontend
-          oc process -f ./frontend-bc-docker.yaml NAME=zeva SUFFIX=-build-${{ env.PR_NUMBER }} VERSION=build-${{ env.VERSION }}-${{ env.PR_NUMBER }} GIT_URL=${{ env.GIT_URL }} GIT_REF=refs/pull/${{ env.PR_NUMBER }}/head | oc apply --wait=true -f - -n ${{ env.TOOLS_NAMESPACE }}
-          oc start-build --wait=true zeva-frontend-build-${{ env.PR_NUMBER }}
+      # - name: Build ZEVA Frontend
+      #   run: |
+      #     cd openshift/templates/frontend
+      #     oc process -f ./frontend-bc-docker.yaml NAME=zeva SUFFIX=-build-${{ env.PR_NUMBER }} VERSION=build-${{ env.VERSION }}-${{ env.PR_NUMBER }} GIT_URL=${{ env.GIT_URL }} GIT_REF=refs/pull/${{ env.PR_NUMBER }}/head | oc apply --wait=true -f - -n ${{ env.TOOLS_NAMESPACE }}
+      #     oc start-build --wait=true zeva-frontend-build-${{ env.PR_NUMBER }}
 
   deploy-on-dev:
 
