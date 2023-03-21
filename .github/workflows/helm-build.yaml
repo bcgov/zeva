@@ -253,4 +253,8 @@ jobs:
           minimum-approvals: 2
           issue-title: "ZEVA ${{ env.VERSION }} Prod Deployment"
       
-                     
+     - name: Tag Frontend Image from tools to Prod
+       run: |
+         oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-frontend:build-${{ env.VERSION }}-${{ env.PR_NUMBER }} ${{ env.PROD_NAMESPACE }}/zeva-frontend:prod-${{ env.VERSION }}
+         oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-backend:build-${{ env.VERSION }}-${{ env.PR_NUMBER }} ${{ env.PROD_NAMESPACE }}/zeva-backend:prod-${{ env.VERSION }}
+
