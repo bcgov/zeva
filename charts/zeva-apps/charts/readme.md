@@ -25,13 +25,15 @@
 1. done - Create zeva-django secret same as zeva-django-prod
 2. done - Create zeva-patroni-admin secret
 3. done - Create zeva-patroni-app secret
-4. Add allow-all-internal network policies
-5. Remove DC/zeva-backend DC/zeva-frontend
-6. Remove service/zeva-backend-prod, service/zeva-frontend-prod
-7. helm deploy
-8. update route to use the new services
-9. cleanup: remove configmap/zeva-config-prod configmap/zeva-frnotend-config-prod
-10. cleanup: network policies
+4. done - Add allow-all-internal network policies
+5. done - Backup configmap/zeva-config-prod configmap/zeva-frontend-config-prod
+6. done - Backup prod route
+7. Remove DC/zeva-backend DC/zeva-frontend
+8. Remove above two configmaps
+9. Remove service/zeva-backend-prod, service/zeva-frontend-prod
+10. Run pipeline 
+11. update route to use the new services
+12. cleanup: network policies
 
 ## Explaination of Helm chart
 
