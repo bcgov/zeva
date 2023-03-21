@@ -1,5 +1,4 @@
-## For each release, please update the value of workflow name, PR_NUMBER and VERSION (the version this pr will be merged into)
-## Also update frontend/package.json version
+# Please refer to ./readme.md for how to build single pull request
 
 name: PR-1513
 
@@ -106,7 +105,6 @@ jobs:
           approvers: AlexZorkin,kuanfandevops,tim738745,emi-hi,JulianForeman,jig-patel,vibhiquartech
           minimum-approvals: 1
           issue-title: "Please confirm ZEVA database on Dev has been setup properly"
-          timeout-minutes: 60
 
       - name: Check out repository
         uses: actions/checkout@v3
