@@ -173,31 +173,11 @@ objects:
               secretKeyRef:
                 name: ${NAME}-minio-${ENV_NAME}
                 key: MINIO_SECRET_KEY
-          - name: KEYCLOAK_SA_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                name: zeva-keycloak
-                key: KEYCLOAK_SA_CLIENT_SECRET
           - name: KEYCLOAK_CLIENT_ID
             valueFrom:
               configMapKeyRef:
                 name: ${NAME}-config-${ENV_NAME}
                 key: keycloak_client_id
-          - name: KEYCLOAK_SA_REALM
-            valueFrom:
-              configMapKeyRef:
-                name: ${NAME}-config-${ENV_NAME}
-                key: keycloak_sa_realm
-          - name: KEYCLOAK_SA_CLIENT_ID
-            valueFrom:
-              configMapKeyRef:
-                name: ${NAME}-config-${ENV_NAME}
-                key: keycloak_sa_client_id
-          - name: KEYCLOAK_SA_BASEURL
-            valueFrom:
-              configMapKeyRef:
-                name: ${NAME}-config-${ENV_NAME}
-                key: keycloak_sa_baseurl
           - name: KEYCLOAK_REALM
             valueFrom:
               configMapKeyRef:
