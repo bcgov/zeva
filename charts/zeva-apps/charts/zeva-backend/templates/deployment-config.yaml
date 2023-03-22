@@ -107,31 +107,11 @@ spec:
                 configMapKeyRef:
                   name: zeva-config{{ .Values.suffix }}
                   key: keycloak_client_id
-            - name: KEYCLOAK_SA_BASEURL
-              valueFrom:
-                configMapKeyRef:
-                  name: zeva-config{{ .Values.suffix }}
-                  key: keycloak_sa_baseurl
-            - name: KEYCLOAK_SA_REALM
-              valueFrom:
-                configMapKeyRef:
-                  name: zeva-config{{ .Values.suffix }}
-                  key: keycloak_sa_realm
-            - name: KEYCLOAK_SA_CLIENT_ID
-              valueFrom:
-                configMapKeyRef:
-                  name: zeva-config{{ .Values.suffix }}
-                  key: keycloak_sa_client_id
             - name: WELL_KNOWN_ENDPOINT
               valueFrom:
                 configMapKeyRef:
                   name: zeva-config{{ .Values.suffix }}
                   key: well_known_endpoint     
-            - name: KEYCLOAK_SA_CLIENT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: zeva-keycloak
-                  key: KEYCLOAK_SA_CLIENT_SECRET
             - name: DJANGO_DEBUG
               valueFrom:
                 configMapKeyRef:

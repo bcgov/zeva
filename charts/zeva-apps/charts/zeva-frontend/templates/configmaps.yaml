@@ -22,9 +22,6 @@ data:
   keycloak_realm_name: {{ .Values.appConfigMap.keycloakRealm }}
   keycloak_realm_url: https://{{ .Values.appConfigMap.ssoName }}/auth/realms/{{ .Values.appConfigMap.keycloakRealm }}
   keycloak_realm: https://{{ .Values.appConfigMap.ssoName }}/auth/realms/{{ .Values.appConfigMap.keycloakRealm }}
-  keycloak_sa_baseurl: https://{{ .Values.appConfigMap.ssoName }}
-  keycloak_sa_client_id: zeva-on-gold-4543
-  keycloak_sa_realm: {{ .Values.appConfigMap.keycloakRealm }}
   keycloak_url: https://{{ .Values.appConfigMap.ssoName }}/auth
   keycloak_callback_url: https://{{ .Values.appConfigMap.hostName }}/
   keycloak_siteminder_logout_redirect_url: https://{{ .Values.appConfigMap.logoutHostName }}/clp-cgi/logoff.cgi?retnow=1&returl=
