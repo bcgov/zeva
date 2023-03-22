@@ -236,8 +236,8 @@ const ComplianceHistory = (props) => {
                       {item.history &&
                         getHistory(item.history).map((each, eachIndex) => (
                           <li
-                          id={`each-${eachIndex}`}
-                          key={`each-${eachIndex}`}
+                            id={`each-${eachIndex}`}
+                            key={`each-${eachIndex}`}
                           >
                             {getStatus(item, each)}
                           </li>
