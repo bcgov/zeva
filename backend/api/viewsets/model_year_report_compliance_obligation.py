@@ -406,7 +406,7 @@ class ModelYearReportComplianceObligationViewset(
             previous_report_latest_supplemental = None
             if(previous_report):
                 previous_report_latest_supplemental = previous_report.get_latest_supplemental(request)
-                
+
             prior_year_balance_a = 0
             prior_year_balance_b = 0
             prior_year = report_year - 1
@@ -442,6 +442,21 @@ class ModelYearReportComplianceObligationViewset(
                 ).order_by(
                     'model_year__name'
                 )
+
+            if starting_balances:
+                for balance in starting_balances:
+                    if balance and (
+                            balance.credit_a_value > 0 or
+                            balance.credit_b_value > 0
+                    ):
+                        content.append({
+                            'credit_a_value': balance.credit_a_value,
+                            'credit_b_value': balance.credit_b_value,
+                            'category': 'creditBalanceStart',
+                            'model_year': {
+                                'name': balance.model_year.name
+                            }
+                        })
 
             deficits = OrganizationDeficits.objects.filter(
                 organization_id=organization.id
