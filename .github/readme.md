@@ -12,8 +12,3 @@
 
 # How to build single pull request
 
-Create 1573-build.yaml
-Create charts/zeva-apps/charts/zeva-backend/values-dev-1513.yaml
-Create charts/zeva-apps/charts/zeva-frontend/values-dev-1513.yam
-add a change
-
