@@ -31,7 +31,6 @@ from api.models.model_year_report_ldv_sales import \
     ModelYearReportLDVSales
 from api.permissions.model_year_report import ModelYearReportPermissions
 from api.serializers.model_year_report_compliance_obligation import \
-    ModelYearReportComplianceObligationDetailsSerializer, \
     ModelYearReportComplianceObligationSnapshotSerializer, \
     ModelYearReportComplianceObligationOffsetSerializer
 from api.serializers.credit_transaction import \
@@ -54,8 +53,7 @@ class ModelYearReportComplianceObligationViewset(
     http_method_names = ['get', 'post', 'put', 'patch']
 
     serializer_classes = {
-        'default': ModelYearReportComplianceObligationDetailsSerializer,
-        'details': ModelYearReportComplianceObligationDetailsSerializer,
+
     }
 
     def get_queryset(self):
