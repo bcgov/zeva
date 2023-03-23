@@ -1,14 +1,14 @@
 # Please refer to ./readme.md for how to build single pull request
 
-name: PR-1513
+name: PR-1573
 
 on:
   workflow_dispatch:
 
 env:
   ## The pull request number of the Tracking pull request to merge the release branch to main
-  PR_NUMBER: 1513
-  VERSION: 1.46.0
+  PR_NUMBER: 1573
+  VERSION: 1.47.0
   GIT_URL: https://github.com/bcgov/zeva.git 
   TOOLS_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
   DEV_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
@@ -132,10 +132,28 @@ jobs:
           helm status -n ${{ env.DEV_NAMESPACE }} zeva-frontend-dev-${{ env.PR_NUMBER }}
           if [ $? -eq 0 ]; then
             echo "zeva-frontend-dev-${{ env.PR_NUMBER }} release exists already"
-            helm upgrade --set frontendImageTagname=dev-${{ env.VERSION }}-${{ env.PR_NUMBER }},openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev-${{ env.PR_NUMBER }}.yaml zeva-frontend-dev-${{ env.PR_NUMBER }} .
+            helm upgrade --set frontendImageTagname=dev-${{ env.VERSION }}-${{ env.PR_NUMBER }},\
+              openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }},\
+              suffix=-dev-${{ env.PR_NUMBER }},\
+              frontendConfigMap.apiBase=https://zeva-backend-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca/api,\
+              frontendConfigMap.keycloakCallbackUrl=https://zeva-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca,\
+              frontendConfigMap.keycloakPostLogoutUrl=https://zeva-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca,\
+              appConfigMap.backendHostName=zeva-backend-dev-{{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca \
+              appConfigMap.databaseServiceName: zeva-spilo-dev-{{ env.PR_NUMBER }},\
+              appConfigMap.hostName=zeva-dev-{{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca \
+              -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-frontend-dev-${{ env.PR_NUMBER }} .
           else
             echo "zeva-frontend-dev-${{ env.PR_NUMBER }} release does not exist"
-            helm install --set frontendImageTagname=dev-${{ env.VERSION }}-${{ env.PR_NUMBER }},openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev-${{ env.PR_NUMBER }}.yaml zeva-frontend-dev-${{ env.PR_NUMBER }} .
+            helm install --set frontendImageTagname=dev-${{ env.VERSION }}-${{ env.PR_NUMBER }},\
+              openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }},\
+              suffix=-dev-${{ env.PR_NUMBER }},\
+              frontendConfigMap.apiBase=https://zeva-backend-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca/api,\
+              frontendConfigMap.keycloakCallbackUrl=https://zeva-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca,\
+              frontendConfigMap.keycloakPostLogoutUrl=https://zeva-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca,\
+              appConfigMap.backendHostName=zeva-backend-dev-{{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca \
+              appConfigMap.databaseServiceName: zeva-spilo-dev-{{ env.PR_NUMBER }},\
+              appConfigMap.hostName=zeva-dev-{{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca \
+              -n ${{ env.DEV_NAMESPACE }} -f ./values-dev-${{ env.PR_NUMBER }}.yaml zeva-frontend-dev-${{ env.PR_NUMBER }} .
           fi
           
       # helm status will show an error if the helm release doesn't exist. The error will be ignored.
@@ -146,10 +164,16 @@ jobs:
           helm status -n ${{ env.DEV_NAMESPACE }} zeva-backend
           if [ $? -eq 0 ]; then
             echo "zeva-backend-dev-${{ env.PR_NUMBER }} release exists already"
-            helm upgrade --set backendImageTagname=dev-${{ env.VERSION }}-${{ env.PR_NUMBER }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev-${{ env.PR_NUMBER }}.yaml zeva-backend-dev-${{ env.PR_NUMBER }} .
+            helm upgrade --set backendImageTagname=dev-${{ env.VERSION }}-${{ env.PR_NUMBER }},\
+              suffix=-dev-${{ env.PR_NUMBER }},\
+              backendRoute.hostName=zeva-backend-dev.apps.silver.devops.gov.bc.ca \
+              -n ${{ env.DEV_NAMESPACE }} -f ./values-dev-${{ env.PR_NUMBER }}.yaml zeva-backend-dev-${{ env.PR_NUMBER }} .
           else
             echo "zeva-backend-dev-${{ env.PR_NUMBER }} release does not exist"
-            helm install --set backendImageTagname=dev-${{ env.VERSION }}-${{ env.PR_NUMBER }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev-${{ env.PR_NUMBER }}.yaml zeva-backend-dev-${{ env.PR_NUMBER }} .
+            helm install --set backendImageTagname=dev-${{ env.VERSION }}-${{ env.PR_NUMBER }} \
+              suffix=-dev-${{ env.PR_NUMBER }},\
+              backendRoute.hostName=zeva-backend-dev.apps.silver.devops.gov.bc.ca \
+              -n ${{ env.DEV_NAMESPACE }} -f ./values-dev-${{ env.PR_NUMBER }}.yaml zeva-backend-dev-${{ env.PR_NUMBER }} .
           fi
           
 
