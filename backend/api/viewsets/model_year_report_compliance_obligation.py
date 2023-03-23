@@ -405,9 +405,11 @@ class ModelYearReportComplianceObligationViewset(
             previous_report = report.get_previous_model_report()
             previous_report_latest_supplemental = None
             if(previous_report):
-                prior_year = report_year - 1
-
+                previous_report_latest_supplemental = previous_report.get_latest_supplemental(request)
                 
+            prior_year_balance_a = 0
+            prior_year_balance_b = 0
+            prior_year = report_year - 1
             starting_balances = []
 
             if previous_report_latest_supplemental and report.validation_status == ModelYearReportStatuses.DRAFT and current_supplemental is None:
