@@ -82,10 +82,10 @@ def send_email(recipient_email: str, email_type: str, test_info: dict) -> {}:
     
     if settings.ENV_NAME != "prod":
         body + """\
-            <p>User: """ + test_info.user + """</p>
-            <p>Action: """ + test_info.action + """</p>
-            <p>Description: """ + test_info.action_description + """</p>
-            <p>Time: """ + test_info.time + """</p>
+            <p>User: """ + test_info['user'] + """</p>
+            <p>Action: """ + test_info['action'] + """</p>
+            <p>Description: """ + test_info['action_description'] + """</p>
+            <p>Time: """ + test_info['time'] + """</p>
             </body>
             </html>
             """
@@ -318,10 +318,10 @@ def subscribed_users(notifications: list, request: object, request_type: str, em
 
             notification_object = Notification.objects.filter(id=notifications).first()
 
-            test_info.user = request.update_user
-            test_info.action = notification_object.name
-            test_info.action_description = notification_object.description
-            test_info.time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+            test_info['user'] = request.update_user
+            test_info['action'] = notification_object.name
+            test_info['action_description'] = notification_object.description
+            test_info['time'] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
                     
             if user_email:
                 send_email(list(user_email), email_type, test_info)
