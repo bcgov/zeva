@@ -178,19 +178,6 @@ class ModelYearReportComplianceObligationSnapshotSerializer(serializers.ModelSer
     #         'report_year_balance', 'pending_balance', 'prior_year_balance', 'report_year_transactions'
     #     )
 
-# class ModelYearReportComplianceObligationSaveSerializer(serializers.ModelSerializer):
-#     model_year = ModelYearSerializer()
-
-#     def create(self, validated_data):
-#         return obj
-
-#     class Meta:
-#         model = ModelYearReportComplianceObligation
-#         fields = ('model_year_report', 'model_year', 'credit_a_value',
-#                   'credit_b_value', 'category')
-       
-
-
 
 ## CAN BE REMOVED LATER
 # class ModelYearReportComplianceObligationSaveSerializer(serializers.ModelSerializer):
