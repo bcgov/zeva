@@ -132,26 +132,26 @@ jobs:
           helm status -n ${{ env.DEV_NAMESPACE }} zeva-frontend-dev-${{ env.PR_NUMBER }}
           if [ $? -eq 0 ]; then
             echo "zeva-frontend-dev-${{ env.PR_NUMBER }} release exists already"
-            helm upgrade --set frontendImageTagname=dev-${{ env.VERSION }}-${{ env.PR_NUMBER }},\
-              openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }},\
-              suffix=-dev-${{ env.PR_NUMBER }},\
-              frontendConfigMap.apiBase=https://zeva-backend-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca/api,\
-              frontendConfigMap.keycloakCallbackUrl=https://zeva-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca,\
-              frontendConfigMap.keycloakPostLogoutUrl=https://zeva-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca,\
-              appConfigMap.backendHostName=zeva-backend-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca,\
-              appConfigMap.databaseServiceName: zeva-spilo-dev-${{ env.PR_NUMBER }},\
-              appConfigMap.hostName=zeva-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca \
+            helm upgrade --set frontendImageTagname=dev-${{ env.VERSION }}-${{ env.PR_NUMBER }} \
+              --set openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }} \
+              --set suffix=-dev-${{ env.PR_NUMBER }} \
+              --set frontendConfigMap.apiBase=https://zeva-backend-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca/api \
+              --set frontendConfigMap.keycloakCallbackUrl=https://zeva-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca\
+              --set frontendConfigMap.keycloakPostLogoutUrl=https://zeva-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca\
+              --set appConfigMap.backendHostName=zeva-backend-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca \
+              --set appConfigMap.databaseServiceName=zeva-spilo-dev-${{ env.PR_NUMBER }} \
+              --set appConfigMap.hostName=zeva-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca \
               -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-frontend-dev-${{ env.PR_NUMBER }} .
           else
             echo "zeva-frontend-dev-${{ env.PR_NUMBER }} release does not exist"
-            helm install --set frontendImageTagname=dev-${{ env.VERSION }}-${{ env.PR_NUMBER }},\
-              --set openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }},\
-              --set suffix=-dev-${{ env.PR_NUMBER }},\
-              --set frontendConfigMap.apiBase=https://zeva-backend-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca/api,\
-              --set frontendConfigMap.keycloakCallbackUrl=https://zeva-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca,\
-              --set frontendConfigMap.keycloakPostLogoutUrl=https://zeva-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca,\
-              --set appConfigMap.backendHostName=zeva-backend-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca,\
-              --set appConfigMap.databaseServiceName: zeva-spilo-dev-${{ env.PR_NUMBER }},\
+            helm install --set frontendImageTagname=dev-${{ env.VERSION }}-${{ env.PR_NUMBER }} \
+              --set openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }} \
+              --set suffix=-dev-${{ env.PR_NUMBER }} \
+              --set frontendConfigMap.apiBase=https://zeva-backend-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca/api \
+              --set frontendConfigMap.keycloakCallbackUrl=https://zeva-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca \
+              --set frontendConfigMap.keycloakPostLogoutUrl=https://zeva-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca \
+              --set appConfigMap.backendHostName=zeva-backend-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca \
+              --set appConfigMap.databaseServiceName=zeva-spilo-dev-${{ env.PR_NUMBER }} \
               --set appConfigMap.hostName=zeva-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca \
               -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-frontend-dev-${{ env.PR_NUMBER }} .
           fi
@@ -164,16 +164,16 @@ jobs:
           helm status -n ${{ env.DEV_NAMESPACE }} zeva-backend
           if [ $? -eq 0 ]; then
             echo "zeva-backend-dev-${{ env.PR_NUMBER }} release exists already"
-            helm upgrade --set backendImageTagname=dev-${{ env.VERSION }}-${{ env.PR_NUMBER }},\
-              suffix=-dev-${{ env.PR_NUMBER }},\
-              backendRoute.hostName=zeva-backend-dev.apps.silver.devops.gov.bc.ca \
-              -n ${{ env.DEV_NAMESPACE }} -f ./values-dev-${{ env.PR_NUMBER }}.yaml zeva-backend-dev-${{ env.PR_NUMBER }} .
+            helm upgrade --set backendImageTagname=dev-${{ env.VERSION }}-${{ env.PR_NUMBER }} \
+              --set suffix=-dev-${{ env.PR_NUMBER }} \
+              --set backendRoute.hostName=zeva-backend-dev.apps.silver.devops.gov.bc.ca \
+              -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-backend-dev-${{ env.PR_NUMBER }} .
           else
             echo "zeva-backend-dev-${{ env.PR_NUMBER }} release does not exist"
             helm install --set backendImageTagname=dev-${{ env.VERSION }}-${{ env.PR_NUMBER }} \
-              suffix=-dev-${{ env.PR_NUMBER }},\
-              backendRoute.hostName=zeva-backend-dev.apps.silver.devops.gov.bc.ca \
-              -n ${{ env.DEV_NAMESPACE }} -f ./values-dev-${{ env.PR_NUMBER }}.yaml zeva-backend-dev-${{ env.PR_NUMBER }} .
+              --set suffix=-dev-${{ env.PR_NUMBER }} \
+              --set backendRoute.hostName=zeva-backend-dev.apps.silver.devops.gov.bc.ca \
+              -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-backend-dev-${{ env.PR_NUMBER }} .
           fi
           
 
