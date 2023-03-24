@@ -138,7 +138,7 @@ jobs:
               frontendConfigMap.apiBase=https://zeva-backend-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca/api,\
               frontendConfigMap.keycloakCallbackUrl=https://zeva-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca,\
               frontendConfigMap.keycloakPostLogoutUrl=https://zeva-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca,\
-              appConfigMap.backendHostName=zeva-backend-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca \
+              appConfigMap.backendHostName=zeva-backend-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca,\
               appConfigMap.databaseServiceName: zeva-spilo-dev-${{ env.PR_NUMBER }},\
               appConfigMap.hostName=zeva-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca \
               -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-frontend-dev-${{ env.PR_NUMBER }} .
@@ -150,7 +150,7 @@ jobs:
               frontendConfigMap.apiBase=https://zeva-backend-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca/api,\
               frontendConfigMap.keycloakCallbackUrl=https://zeva-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca,\
               frontendConfigMap.keycloakPostLogoutUrl=https://zeva-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca,\
-              appConfigMap.backendHostName=zeva-backend-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca \
+              appConfigMap.backendHostName=zeva-backend-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca,\
               appConfigMap.databaseServiceName: zeva-spilo-dev-${{ env.PR_NUMBER }},\
               appConfigMap.hostName=zeva-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca \
               -n ${{ env.DEV_NAMESPACE }} -f ./values-dev-${{ env.PR_NUMBER }}.yaml zeva-frontend-dev-${{ env.PR_NUMBER }} .
