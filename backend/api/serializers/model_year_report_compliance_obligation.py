@@ -4,22 +4,23 @@ from api.models.model_year_report_credit_offset import ModelYearReportCreditOffs
 from api.serializers.vehicle import ModelYearSerializer
 
 
-class ModelYearReportComplianceObligationOutputSerializer(serializers.ModelSerializer):
-    model_year = ModelYearSerializer(read_only=True)
-    A = serializers.SerializerMethodField()
-    B = serializers.SerializerMethodField()
+## CAN BE REMOVED LATER
+# class ModelYearReportComplianceObligationOutputSerializer(serializers.ModelSerializer):
+#     model_year = ModelYearSerializer(read_only=True)
+#     A = serializers.SerializerMethodField()
+#     B = serializers.SerializerMethodField()
 
-    def get_A(self, obj, *args, **kwargs):
-        return obj.credit_a_value
+#     def get_A(self, obj, *args, **kwargs):
+#         return obj.credit_a_value
 
-    def get_B(self, obj, *args, **kwargs):
-        return obj.credit_b_value
+#     def get_B(self, obj, *args, **kwargs):
+#         return obj.credit_b_value
 
-    class Meta:
-        model = ModelYearReportComplianceObligation
-        fields = (
-            'model_year', 'A', 'B'
-        )
+#     class Meta:
+#         model = ModelYearReportComplianceObligation
+#         fields = (
+#             'model_year', 'A', 'B'
+#         )
 
 
 class ModelYearReportComplianceObligationOffsetSerializer(serializers.ModelSerializer):
@@ -43,13 +44,14 @@ class ModelYearReportComplianceObligationSnapshotSerializer(serializers.ModelSer
             'category', 'model_year', 'update_timestamp',
         )
 
-class ModelYearReportComplianceObligationSaveSerializer(serializers.ModelSerializer):
-    model_year = ModelYearSerializer()
+## CAN BE REMOVED LATER
+# class ModelYearReportComplianceObligationSaveSerializer(serializers.ModelSerializer):
+#     model_year = ModelYearSerializer()
 
-    def create(self, obj, validated_data):
-        return obj
+#     def create(self, obj, validated_data):
+#         return obj
 
-    class Meta:
-        model = ModelYearReportComplianceObligation
-        fields = ('model_year_report', 'model_year', 'credit_a_value',
-                  'credit_b_value', 'category')
+#     class Meta:
+#         model = ModelYearReportComplianceObligation
+#         fields = ('model_year_report', 'model_year', 'credit_a_value',
+#                   'credit_b_value', 'category')
