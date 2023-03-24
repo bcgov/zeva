@@ -33,6 +33,18 @@ class ModelYearReportComplianceObligationOffsetSerializer(serializers.ModelSeria
             'model_year', 'model_year_report'
         )
 
+
+class ModelYearReportComplianceObligationSnapshotSerializer(serializers.ModelSerializer):
+    model_year = ModelYearSerializer(read_only=True)
+
+    class Meta:
+        model = ModelYearReportComplianceObligation
+        fields = (
+            'credit_a_value',  'credit_b_value',
+            'category', 'model_year', 'update_timestamp',
+        )
+
+
 # class ModelYearReportComplianceObligationDetailsSerializer(serializers.ModelSerializer):
 #     """
 #     """
@@ -178,15 +190,7 @@ class ModelYearReportComplianceObligationOffsetSerializer(serializers.ModelSeria
 #                   'credit_b_value', 'category')
        
 
-class ModelYearReportComplianceObligationSnapshotSerializer(serializers.ModelSerializer):
-    model_year = ModelYearSerializer(read_only=True)
 
-    class Meta:
-        model = ModelYearReportComplianceObligation
-        fields = (
-            'credit_a_value',  'credit_b_value',
-            'category', 'model_year', 'update_timestamp',
-        )
 
 ## CAN BE REMOVED LATER
 # class ModelYearReportComplianceObligationSaveSerializer(serializers.ModelSerializer):
