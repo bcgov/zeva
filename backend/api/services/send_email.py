@@ -81,7 +81,7 @@ def send_email(recipient_email: str, email_type: str, test_info: dict) -> {}:
                 """
     
     if settings.ENV_NAME != "prod":
-        body + """\
+        body = body + """\
             <p>User: """ + test_info['user'] + """</p>
             <p>Action: """ + test_info['action'] + """</p>
             <p>Description: """ + test_info['action_description'] + """</p>
@@ -90,7 +90,7 @@ def send_email(recipient_email: str, email_type: str, test_info: dict) -> {}:
             </html>
             """
     else:
-        body + """\
+        body = body  + """\
         </body>
         </html>
         """
