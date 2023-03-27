@@ -1,17 +1,11 @@
-from datetime import date
-from django.db.models import Sum, Value, Q
 from rest_framework.serializers import ModelSerializer, \
-    SerializerMethodField, SlugRelatedField, CharField, \
-    ListField
-from api.models.account_balance import AccountBalance
-from api.models.credit_transaction import CreditTransaction
+    SerializerMethodField
 from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_assessment import ModelYearReportAssessment
 from api.models.model_year_report_assessment_comment import ModelYearReportAssessmentComment
 from api.serializers.model_year_report_assessment_comment import ModelYearReportAssessmentCommentSerializer
 from api.models.model_year_report_assessment_descriptions import ModelYearReportAssessmentDescriptions
 from api.models.model_year_report_compliance_obligation import ModelYearReportComplianceObligation
-from api.serializers.vehicle import ModelYearSerializer
 from api.models.model_year import ModelYear
 
 

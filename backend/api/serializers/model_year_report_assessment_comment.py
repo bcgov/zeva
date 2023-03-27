@@ -1,16 +1,8 @@
-from datetime import date
-from django.db.models import Sum, Value, Q
-from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer, \
-    SerializerMethodField, SlugRelatedField, CharField, \
-    ListField
-from api.models.account_balance import AccountBalance
-from api.models.credit_transaction import CreditTransaction
-from api.models.model_year import ModelYear
-from api.models.model_year_report import ModelYearReport
+    SerializerMethodField
 from api.models.model_year_report_assessment_comment import ModelYearReportAssessmentComment
 from api.models.user_profile import UserProfile
-from api.serializers.user import MemberSerializer, UserSerializer
+from api.serializers.user import MemberSerializer
 
 
 class ModelYearReportAssessmentCommentSerializer(ModelSerializer):

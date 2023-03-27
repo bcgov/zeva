@@ -3,7 +3,6 @@ from django.db import models
 from django.db.models import F
 
 from auditable.models import Auditable
-from .account_balance import AccountBalance
 from .credit_class import CreditClass
 from .organization_address import OrganizationAddress
 from .organization_deficits import OrganizationDeficits
@@ -12,7 +11,7 @@ from .model_year_report import ModelYearReport
 from .model_year_report_statuses import ModelYearReportStatuses
 from .user_profile import UserProfile
 from ..managers.organization import OrganizationManager
-
+from ..services.credit_transaction import aggregate_credit_balance_details
 
 class Organization(Auditable):
     name = models.CharField(
@@ -47,19 +46,14 @@ class Organization(Auditable):
         Gets the class A and B balance for the current
         organization
         """
-        balance = {'A': 0, 'B': 0}
-        account_balances = AccountBalance.objects.filter(
-            organization_id=self.id,
-            expiration_date=None
-        ).order_by('-id')
+        aggregate_transactions = aggregate_credit_balance_details(self.id)
+        org_total = {'A': 0, 'B': 0}
 
-        credit_class = CreditClass.objects.filter(credit_class="A").first()
-        for account_balance in account_balances:
-            if account_balance.credit_class_id == credit_class.id:
-                balance['A'] = account_balance.balance
-            else:
-                balance['B'] = account_balance.balance
-        return balance
+        for each in aggregate_transactions:
+            credit_class = CreditClass.objects.filter(id=each['credit_class_id']).first()
+            org_total[credit_class.credit_class] += each['total_value']
+
+        return org_total
 
     @property
     def members(self):
