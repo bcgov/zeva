@@ -28,6 +28,15 @@ const ComplianceHistory = (props) => {
     axios
       .get(ROUTES_COMPLIANCE.SUPPLEMENTAL_HISTORY.replace(/:id/g, id))
       .then((response) => {
+        response.data.forEach(report => {
+          for(let i = 0; i <= report.history.length; i++){
+            if(i !== 0){
+              if(report.history[i] == null || report.history[i].status === report.history[i - 1].status){
+                report.history.splice(i, 1)
+              }
+            }
+          }
+        })
         setSupplementalReportHistory(response.data)
         response.data.forEach((report) => {
           if (report.isSupplementary === true) {
@@ -93,7 +102,7 @@ const ComplianceHistory = (props) => {
     let status = each.status.toLowerCase()
 
     if (status === 'draft') {
-      status = ' saved '
+      status = ' created '
     }
     if (status === 'recommended') {
       if (item.isSupplementary) {
