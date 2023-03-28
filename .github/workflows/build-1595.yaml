@@ -5,11 +5,6 @@ name: PR-1596
 on:
   workflow_dispatch:
 
-env:
-  ## The pull request number of the Tracking pull request to merge the release branch to main
-  PR_NUMBER: 1596
-  VERSION: 1.47.0
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
