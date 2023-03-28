@@ -9,6 +9,11 @@ on:
       version:
         required: true
         type: string
+      secrets:
+        tools-namespace:
+          required: true
+        dev-namespace:
+          required: true
         
 env:
   GIT_URL: https://github.com/bcgov/zeva.git 
