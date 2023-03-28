@@ -172,7 +172,7 @@ jobs:
             echo "zeva-backend-dev-${{ inputs.pr-number }} release does not exist"
             helm install --set backendImageTagname=dev-${{ inputs.version }}-${{ inputs.pr-number }} \
               --set suffix=-dev-${{ inputs.pr-number }} \
-              --set backendRoute.hostName=zeva-backend-dev.apps.silver.devops.gov.bc.ca \
+              --set backendRoute.hostName=zeva-backend-dev-${{ inputs.pr-number }}.apps.silver.devops.gov.bc.ca \
               -n ${{ secrets.dev-namespace }} -f ./values-dev.yaml zeva-backend-dev-${{ inputs.pr-number }} .
           fi
           
