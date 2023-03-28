@@ -1,13 +1,13 @@
 # Please refer to ./readme.md for how to build single pull request
 
-name: PR-1595
+name: PR-1596
 
 on:
   workflow_dispatch:
 
 env:
   ## The pull request number of the Tracking pull request to merge the release branch to main
-  PR_NUMBER: 1595
+  PR_NUMBER: 1596
   VERSION: 1.47.0
 
 concurrency:
@@ -19,7 +19,7 @@ jobs:
   call-pr-build:
     uses: ./.github/workflows/pr-build.yaml
     with:
-      pr-number: 1595
+      pr-number: 1596
       version: 1.47.0
     secrets:
       tools-namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
