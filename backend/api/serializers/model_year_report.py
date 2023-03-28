@@ -330,9 +330,8 @@ class ModelYearReportListSerializer(ModelSerializer, EnumSupportSerializerMixin)
 
                 if create_user.is_government:
                     if sup_status == "RETURNED":
-                        # this record was created by idir but
-                        # should show up as supplementary returned
-                        return ("SUPPLEMENTARY {}").format(sup_status)
+                        return ("REASSESSMENT {}").format(sup_status)
+
                     if sup_status == "REASSESSED" or sup_status == "ASSESSED":
                         # bceid and idir can see just 'reassessed' as status
                         return "REASSESSED"

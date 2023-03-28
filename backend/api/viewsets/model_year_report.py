@@ -729,7 +729,6 @@ class ModelYearReportViewset(
     @action(detail=True, methods=["get"])
     def supplemental_assessment(self, request, pk):
         report = get_object_or_404(ModelYearReport, pk=pk)
-
         if report.supplemental is None:
             serializer = SupplementalReportAssessmentSerializer(
                 0, context={"request": request}
@@ -756,11 +755,11 @@ class ModelYearReportViewset(
                 ):
                     supplemental_id = 0
 
-                if supplemental_report.status.value in ["RETURNED", "DELETED"]:
+                if supplemental_report.status.value in ["DELETED"]:
                     supplemental_id = 0
             elif supplemental_report and not request.user.is_government:
                 if (
-                    supplemental_report.status.value == "DRAFT"
+                    supplemental_report.status.value in ["DRAFT", "RETURNED"]
                     and create_user.is_government
                 ):
                     supplemental_id = 0
