@@ -1,5 +1,6 @@
 # Please refer to ./readme.md for how to build single pull request
 
+# Update this workflow name per pull request
 name: PR-1596
 
 on:
@@ -14,7 +15,9 @@ jobs:
   call-pr-build:
     uses: ./.github/workflows/pr-build.yaml
     with:
+      # Update pr-number per pull request
       pr-number: 1596
+      # Update pr-number per release
       version: 1.47.0
     secrets:
       tools-namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
