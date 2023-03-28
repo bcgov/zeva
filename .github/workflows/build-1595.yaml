@@ -21,3 +21,10 @@ jobs:
     with:
       pr-number: 1595
       version: 1.47.0
+    secrets:
+      tools-namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
+      dev-namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
+      zeva-dev-username: ${{ secrets.ZEVA_DEV_USERNAME }}
+      zeva-dev-password: ${{ secrets.PASSWORD }}
+      openshift-server: ${{ secrets.OPENSHIFT_SERVER }}
+      openshift-token: ${{ secrets.OPENSHIFT_TOKEN }}

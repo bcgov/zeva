@@ -9,16 +9,22 @@ on:
       version:
         required: true
         type: string
-      secrets:
-        tools-namespace:
-          required: true
-        dev-namespace:
-          required: true
+    secrets:
+      tools-namespace:
+        required: true
+      dev-namespace:
+        required: true
+      zeva-dev-username:
+        required: true
+      zeva-dev-password:
+        required: true       
+      openshift-server:
+         required: true 
+      openshift-token:   
+         required: true       
         
 env:
   GIT_URL: https://github.com/bcgov/zeva.git 
-  TOOLS_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
-  DEV_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
   
 jobs:
 
@@ -38,24 +44,24 @@ jobs:
       - name: Log in to Openshift
         uses: redhat-actions/oc-login@v1.2
         with:
-          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
-          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          openshift_server_url: ${{ secrets.openshift-server }}
+          openshift_token: ${{ secrets.openshift-token }}
           insecure_skip_tls_verify: true
-          namespace: ${{ env.TOOLS_NAMESPACE }}    
+          namespace: ${{ secrets.tools-namespace }}    
 
       - name: Setup Database
         shell: bash {0}
         run: |
           cd charts/zeva-spilo
-          helm status -n ${{ env.DEV_NAMESPACE }} zeva-spilo-dev-${{ inputs.pr-number }}
+          helm status -n ${{ secrets.dev-namespace }} zeva-spilo-dev-${{ inputs.pr-number }}
           if [ $? -eq 0 ]; then
             echo "zeva-spilo-dev-${{ inputs.pr-number }} exists already"
           else
             echo "Installing zeva-spilo-dev-${{ inputs.pr-number }}"
-            helm install -n ${{ env.DEV_NAMESPACE }} -f ./values-dev-pr.yaml --wait zeva-spilo-dev-${{ inputs.pr-number }} .
-            oc -n ${{ env.DEV_NAMESPACE }} wait --for=condition=Ready pod/zeva-spilo-dev-${{ inputs.pr-number }}-0
-            oc -n ${{ env.DEV_NAMESPACE }} exec zeva-spilo-dev-${{ inputs.pr-number }}-0 -- psql -c "create user ${{ secrets.ZEVA_DEV_USERNAME }} WITH PASSWORD '${{ secrets.ZEVA_DEV_PASSWORD }}'"
-            oc -n ${{ env.DEV_NAMESPACE }} exec zeva-spilo-dev-${{ inputs.pr-number }}-0 -- psql -c "create database zeva owner ${{ secrets.ZEVA_DEV_USERNAME }} ENCODING 'UTF8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE = 'en_US.UTF-8'"
+            helm install -n ${{ secrets.dev-namespace }} -f ./values-dev-pr.yaml --wait zeva-spilo-dev-${{ inputs.pr-number }} .
+            oc -n ${{ secrets.dev-namespace }} wait --for=condition=Ready pod/zeva-spilo-dev-${{ inputs.pr-number }}-0
+            oc -n ${{ secrets.dev-namespace }} exec zeva-spilo-dev-${{ inputs.pr-number }}-0 -- psql -c "create user ${{ secrets.zeva-dev-username }} WITH PASSWORD '${{ secrets.zeva-dev-password }}'"
+            oc -n ${{ secrets.dev-namespace }} exec zeva-spilo-dev-${{ inputs.pr-number }}-0 -- psql -c "create database zeva owner ${{ secrets.zeva-dev-username }} ENCODING 'UTF8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE = 'en_US.UTF-8'"
           fi
 
   build:
@@ -75,21 +81,21 @@ jobs:
       - name: Log in to Openshift
         uses: redhat-actions/oc-login@v1.2
         with:
-          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
-          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          openshift_server_url: ${{ secrets.openshift-server }}
+          openshift_token: ${{ secrets.openshift-token }}
           insecure_skip_tls_verify: true
-          namespace: ${{ env.TOOLS_NAMESPACE }}
+          namespace: ${{ secrets.tools-namespace }}
 
       - name: Build ZEVA Backend
         run: |
           cd openshift/templates/backend
-          oc process -f ./backend-bc.yaml NAME=zeva SUFFIX=-build-${{ inputs.pr-number }} VERSION=build-${{ inputs.version }}-${{ inputs.pr-number }} GIT_URL=${{ env.GIT_URL }} GIT_REF=refs/pull/${{ inputs.pr-number }}/head | oc apply --wait=true -f - -n ${{ env.TOOLS_NAMESPACE }}
+          oc process -f ./backend-bc.yaml NAME=zeva SUFFIX=-build-${{ inputs.pr-number }} VERSION=build-${{ inputs.version }}-${{ inputs.pr-number }} GIT_URL=${{ env.GIT_URL }} GIT_REF=refs/pull/${{ inputs.pr-number }}/head | oc apply --wait=true -f - -n ${{ secrets.tools-namespace }}
           oc start-build --wait=true zeva-backend-build-${{ inputs.pr-number }}
 
       - name: Build ZEVA Frontend
         run: |
           cd openshift/templates/frontend
-          oc process -f ./frontend-bc-docker.yaml NAME=zeva SUFFIX=-build-${{ inputs.pr-number }} VERSION=build-${{ inputs.version }}-${{ inputs.pr-number }} GIT_URL=${{ env.GIT_URL }} GIT_REF=refs/pull/${{ inputs.pr-number }}/head | oc apply --wait=true -f - -n ${{ env.TOOLS_NAMESPACE }}
+          oc process -f ./frontend-bc-docker.yaml NAME=zeva SUFFIX=-build-${{ inputs.pr-number }} VERSION=build-${{ inputs.version }}-${{ inputs.pr-number }} GIT_URL=${{ env.GIT_URL }} GIT_REF=refs/pull/${{ inputs.pr-number }}/head | oc apply --wait=true -f - -n ${{ secrets.tools-namespace }}
           oc start-build --wait=true zeva-frontend-build-${{ inputs.pr-number }}
 
   deploy-on-dev:
@@ -109,21 +115,21 @@ jobs:
       - name: Log in to Openshift
         uses: redhat-actions/oc-login@v1.2
         with:
-          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
-          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          openshift_server_url: ${{ secrets.openshift-server }}
+          openshift_token: ${{ secrets.openshift-token }}
           insecure_skip_tls_verify: true
-          namespace: ${{ env.TOOLS_NAMESPACE }}  
+          namespace: ${{ secrets.tools-namespace }}  
       
       - name: Tag Frontend Image from tools to dev
         run: |
-          oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-frontend:build-${{ inputs.version }}-${{ inputs.pr-number }} ${{ env.DEV_NAMESPACE }}/zeva-frontend:dev-${{ inputs.version }}-${{ inputs.pr-number }}
-          oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-backend:build-${{ inputs.version }}-${{ inputs.pr-number }} ${{ env.DEV_NAMESPACE }}/zeva-backend:dev-${{ inputs.version }}-${{ inputs.pr-number }}
+          oc tag ${{ secrets.tools-namespace }}/zeva-frontend:build-${{ inputs.version }}-${{ inputs.pr-number }} ${{ secrets.dev-namespace }}/zeva-frontend:dev-${{ inputs.version }}-${{ inputs.pr-number }}
+          oc tag ${{ secrets.tools-namespace }}/zeva-backend:build-${{ inputs.version }}-${{ inputs.pr-number }} ${{ secrets.dev-namespace }}/zeva-backend:dev-${{ inputs.version }}-${{ inputs.pr-number }}
 
       - name: Deply zeva-frontend on Dev
         shell: bash {0}
         run: |
           cd charts/zeva-apps/charts/zeva-frontend
-          helm status -n ${{ env.DEV_NAMESPACE }} zeva-frontend-dev-${{ inputs.pr-number }}
+          helm status -n ${{ secrets.dev-namespace }} zeva-frontend-dev-${{ inputs.pr-number }}
           if [ $? -eq 0 ]; then
             echo "zeva-frontend-dev-${{ inputs.pr-number }} release exists already"
             helm upgrade --set frontendImageTagname=dev-${{ inputs.version }}-${{ inputs.pr-number }} \
@@ -135,7 +141,7 @@ jobs:
               --set appConfigMap.backendHostName=zeva-backend-dev-${{ inputs.pr-number }}.apps.silver.devops.gov.bc.ca \
               --set appConfigMap.databaseServiceName=zeva-spilo-dev-${{ inputs.pr-number }} \
               --set appConfigMap.hostName=zeva-dev-${{ inputs.pr-number }}.apps.silver.devops.gov.bc.ca \
-              -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-frontend-dev-${{ inputs.pr-number }} .
+              -n ${{ secrets.dev-namespace }} -f ./values-dev.yaml zeva-frontend-dev-${{ inputs.pr-number }} .
           else
             echo "zeva-frontend-dev-${{ inputs.pr-number }} release does not exist"
             helm install --set frontendImageTagname=dev-${{ inputs.version }}-${{ inputs.pr-number }} \
@@ -147,7 +153,7 @@ jobs:
               --set appConfigMap.backendHostName=zeva-backend-dev-${{ inputs.pr-number }}.apps.silver.devops.gov.bc.ca \
               --set appConfigMap.databaseServiceName=zeva-spilo-dev-${{ inputs.pr-number }} \
               --set appConfigMap.hostName=zeva-dev-${{ inputs.pr-number }}.apps.silver.devops.gov.bc.ca \
-              -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-frontend-dev-${{ inputs.pr-number }} .
+              -n ${{ secrets.dev-namespace }} -f ./values-dev.yaml zeva-frontend-dev-${{ inputs.pr-number }} .
           fi
           
       # helm status will show an error if the helm release doesn't exist. The error will be ignored.
@@ -155,18 +161,18 @@ jobs:
         shell: bash {0}
         run: |
           cd charts/zeva-apps/charts/zeva-backend
-          helm status -n ${{ env.DEV_NAMESPACE }} zeva-backend
+          helm status -n ${{ secrets.dev-namespace }} zeva-backend
           if [ $? -eq 0 ]; then
             echo "zeva-backend-dev-${{ inputs.pr-number }} release exists already"
             helm upgrade --set backendImageTagname=dev-${{ inputs.version }}-${{ inputs.pr-number }} \
               --set suffix=-dev-${{ inputs.pr-number }} \
               --set backendRoute.hostName=zeva-backend-dev.apps.silver.devops.gov.bc.ca \
-              -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-backend-dev-${{ inputs.pr-number }} .
+              -n ${{ secrets.dev-namespace }} -f ./values-dev.yaml zeva-backend-dev-${{ inputs.pr-number }} .
           else
             echo "zeva-backend-dev-${{ inputs.pr-number }} release does not exist"
             helm install --set backendImageTagname=dev-${{ inputs.version }}-${{ inputs.pr-number }} \
               --set suffix=-dev-${{ inputs.pr-number }} \
               --set backendRoute.hostName=zeva-backend-dev.apps.silver.devops.gov.bc.ca \
-              -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-backend-dev-${{ inputs.pr-number }} .
+              -n ${{ secrets.dev-namespace }} -f ./values-dev.yaml zeva-backend-dev-${{ inputs.pr-number }} .
           fi
           
