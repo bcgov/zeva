@@ -1,0 +1,26 @@
+# Please refer to ./readme.md for how to build single pull request
+
+name: PR-1595
+
+on:
+  workflow_dispatch:
+
+env:
+  ## The pull request number of the Tracking pull request to merge the release branch to main
+  PR_NUMBER: 1595
+  VERSION: 1.47.0
+  GIT_URL: https://github.com/bcgov/zeva.git 
+  TOOLS_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
+  DEV_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+  
+jobs:
+
+  call-pr-build:
+    uses: ./.github/workflows/pr-build.yaml
+    with:
+      pr-number: ${{ env.PR_NUMBER }}
+      version: ${{ env.VERSION }}
