@@ -14,27 +14,26 @@ concurrency:
   cancel-in-progress: true
   
 jobs:
-  run_if:
+  # run_if:
+  #   if: startsWith( github.event.pull_request.title, 'build-on-dev' )
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - run: |
+  #         echo "=== test single pr build"
+  #         echo "${{ github.event.pull_request.title }}"
+
+  call-pr-build:
     if: startsWith( github.event.pull_request.title, 'build-on-dev' )
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          echo "=== test single pr build"
-          echo "${{ github.event.pull_request.title }}"
-
-
-
-  # call-pr-build:
-  #   uses: ./.github/workflows/pr-build.yaml
-  #   with:
-  #     # Update pr-number per pull request
-  #     pr-number: 1596
-  #     # Update pr-number per release
-  #     version: 1.47.0
-  #   secrets:
-  #     tools-namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
-  #     dev-namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
-  #     zeva-dev-username: ${{ secrets.ZEVA_DEV_USERNAME }}
-  #     zeva-dev-password: ${{ secrets.PASSWORD }}
-  #     openshift-server: ${{ secrets.OPENSHIFT_SERVER }}
-  #     openshift-token: ${{ secrets.OPENSHIFT_TOKEN }}
+    uses: ./.github/workflows/pr-build.yaml
+    with:
+      # Update pr-number per pull request
+      pr-number: 1596
+      # Update pr-number per release
+      version: 1.47.0
+    secrets:
+      tools-namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
+      dev-namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
+      zeva-dev-username: ${{ secrets.ZEVA_DEV_USERNAME }}
+      zeva-dev-password: ${{ secrets.PASSWORD }}
+      openshift-server: ${{ secrets.OPENSHIFT_SERVER }}
+      openshift-token: ${{ secrets.OPENSHIFT_TOKEN }}
