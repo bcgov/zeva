@@ -105,11 +105,10 @@ const SupplementaryCreate = (props) => {
 
   return (
     <div id="supplementary" className="page">
-
       <div className="row">
         <div className="col">
           <h2 className="mb-2 mt-3">
-              {`${reportYear} Model Year Reassessment Report`}
+            {`${reportYear} Model Year Reassessment Report`}
           </h2>
         </div>
       </div>
@@ -153,19 +152,23 @@ const SupplementaryCreate = (props) => {
             isEditable={true}
           />
         </div>
-        <div id="comment-input">
-          <CommentInput
-            defaultComment={
-              details &&
-              details.fromSupplierComments &&
-              details.fromSupplierComments.length > 0
-                ? details.fromSupplierComments[0]
-                : {}
-            }
-            handleCommentChange={handleCommentChange}
-            title="Provide details in the comment box below for any changes above."
-          />
-        </div>
+        {!user.isGovernment && (
+          <>
+            <div id="comment-input">
+              <CommentInput
+                defaultComment={
+                  details &&
+                  details.fromSupplierComments &&
+                  details.fromSupplierComments.length > 0
+                    ? details.fromSupplierComments[0]
+                    : {}
+                }
+                handleCommentChange={handleCommentChange}
+                title="Provide details in the comment box below for any changes above."
+              />
+            </div>
+          </>
+        )}
         <UploadEvidence
           details={details}
           deleteFiles={deleteFiles}
@@ -173,7 +176,6 @@ const SupplementaryCreate = (props) => {
           setDeleteFiles={setDeleteFiles}
           setUploadFiles={setUploadFiles}
         />
-
       </div>
 
       {/* TODO CHECK IS GOV HAS THIS PERMISSION */}
@@ -208,17 +210,16 @@ const SupplementaryCreate = (props) => {
                   id
                 )}
               />
-
             </span>
             <span className="right-content">
-              {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
+              {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED && (
                 <Button
                   buttonType="save"
                   action={() => {
                     handleSubmit('DRAFT', true)
                   }}
                 />
-              }
+              )}
             </span>
           </div>
         </div>

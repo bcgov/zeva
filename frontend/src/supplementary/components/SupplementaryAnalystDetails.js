@@ -405,7 +405,7 @@ const SupplementaryAnalystDetails = (props) => {
                 details.attachments &&
                 details.attachments.length > 0 && (
                   <div className="supplier-attachment mt-2">
-                    <h4>Supplementary Report Attachments</h4>
+                    <h4>Attachments</h4>
                     {details.attachments
                       .filter(
                         (attachment) => deleteFiles.indexOf(attachment.id) < 0

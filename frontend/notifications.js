@@ -84,7 +84,7 @@ const connect = (io) => {
 
 const client = jwksClient({ jwksUri: jwksURI })
 
-function getSigningKey(header, callback) {
+function getSigningKey (header, callback) {
   client.getSigningKey(header.kid, (err, key) => {
     if (err) {
       callback({ error: 'certificate download failed' }, null)
