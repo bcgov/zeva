@@ -31,6 +31,6 @@ jobs:
       - name: Undeploy on Dev
         shell: bash {0}
         run: |
-          helm -n ${{ env.DEV_NAMESPACE }}-dev uninstall zeva-backend-dev-${{ github.event.pull_request.number }} || true
-          helm -n ${{ env.DEV_NAMESPACE }}-dev uninstall zeva-frontend-dev-${{ github.event.pull_request.number }} || true
-          helm -n ${{ env.DEV_NAMESPACE }}-dev uninstall zeva-spilo-dev-${{ github.event.pull_request.number }} || true
+          helm -n ${{ env.DEV_NAMESPACE }} uninstall zeva-backend-dev-${{ github.event.pull_request.number }} || true
+          helm -n ${{ env.DEV_NAMESPACE }} uninstall zeva-frontend-dev-${{ github.event.pull_request.number }} || true
+          helm -n ${{ env.DEV_NAMESPACE }} uninstall zeva-spilo-dev-${{ github.event.pull_request.number }} || true

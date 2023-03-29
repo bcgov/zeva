@@ -175,18 +175,3 @@ jobs:
               -n ${{ secrets.dev-namespace }} -f ./values-dev.yaml zeva-backend-dev-${{ inputs.pr-number }} .
           fi
           
-      - name: Plase confirm if the the testing of this pull request is completed.
-        uses: trstringer/manual-approval@v1.9.0
-        with:
-          secret: ${{ github.TOKEN }}
-          approvers: AlexZorkin,emi-hi,tim738745,vibhiquartech,kuanfandevops,jig-patel,JulianForeman
-          minimum-approvals: 1
-          issue-title: "Please confirm if the testing of this pull request is completed."
-          issue-body: "If you choose yes, the deployment of this pull request on Zeva Dev will be removed."
-
-      - name: Undeploy on Dev
-        shell: bash {0}
-        run: |
-          helm -n ${{ secrets.dev-namespace }} uninstall zeva-backend-dev-${{ inputs.pr-number }}
-          helm -n ${{ secrets.dev-namespace }} uninstall zeva-frontend-dev-${{ inputs.pr-number }}
-          helm -n ${{ secrets.dev-namespace }} uninstall zeva-spilo-dev-${{ inputs.pr-number }}
