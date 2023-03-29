@@ -18,7 +18,7 @@ fi
 
 # defaults set to test
 project_name='e52f12-test'
-pod_name='patroni-test-0'
+pod_name='zeva-spilo-test-0'
 env='test'
 
 local_container=$2

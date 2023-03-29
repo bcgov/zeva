@@ -567,7 +567,7 @@ const AssessmentDetailsPage = (props) => {
                   Return to Analyst
                 </button>
               )}
-              {analystAction && (
+              {analystAction && !createdByGov && (
                 <button
                   className="button text-danger"
                   onClick={() => {
