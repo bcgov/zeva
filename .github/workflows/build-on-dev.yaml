@@ -13,7 +13,7 @@ jobs:
 
   call-pr-build:
     if: endsWith( github.event.pull_request.title, 'build-on-dev' )
-    uses: ./.github/workflows/pr-build.yaml
+    uses: ./.github/workflows/pr-build-template.yaml
     with:
       # Update pr-number per pull request
       pr-number: ${{ github.event.pull_request.number }}
