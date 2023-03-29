@@ -1,7 +1,7 @@
 # Please refer to ./readme.md for how to build single pull request
 
 # Update this workflow name per pull request
-name: PR-Build
+name: Build PR on Dev
 
 on:
   pull_request:
@@ -10,13 +10,6 @@ on:
           - 'release-*'
   
 jobs:
-  # run_if:
-  #   if: startsWith( github.event.pull_request.title, 'build-on-dev' )
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - run: |
-  #         echo "=== test single pr build"
-  #         echo "${{ github.event.pull_request.title }}"
 
   call-pr-build:
     if: endsWith( github.event.pull_request.title, 'build-on-dev' )
