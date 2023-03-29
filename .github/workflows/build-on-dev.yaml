@@ -19,8 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-        echo "=== test single pr build"
-        echo "${{ github.event.pull_request.title }}"
+          echo "=== test single pr build"
+          echo "${{ github.event.pull_request.title }}"
 
 
 
