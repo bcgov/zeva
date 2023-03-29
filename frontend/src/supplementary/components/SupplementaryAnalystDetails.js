@@ -584,6 +584,7 @@ const SupplementaryAnalystDetails = (props) => {
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
                 selectedTab === tabNames[1] &&
                 ['DRAFT'].indexOf(details.status) < 0 &&
+                !supplementaryReportId === null &&
                 (isEditable ||
                   ['SUBMITTED'].indexOf(details.status) >= 0) &&
                     <button
