@@ -609,7 +609,7 @@ const SupplementaryAnalystDetails = (props) => {
               )}
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
                 isEditable &&
-                ['DRAFT', 'SUBMITTED'].indexOf(details.status) >= 0 &&
+                ['DRAFT', 'SUBMITTED', 'RETURNED'].indexOf(details.status) >= 0 &&
                 (
                   <Button
                     buttonTooltip={recommendTooltip}

@@ -729,7 +729,6 @@ class ModelYearReportViewset(
     @action(detail=True, methods=["get"])
     def supplemental_assessment(self, request, pk):
         report = get_object_or_404(ModelYearReport, pk=pk)
-
         if report.supplemental is None:
             serializer = SupplementalReportAssessmentSerializer(
                 0, context={"request": request}
@@ -756,11 +755,11 @@ class ModelYearReportViewset(
                 ):
                     supplemental_id = 0
 
-                if supplemental_report.status.value in ["RETURNED", "DELETED"]:
+                if supplemental_report.status.value in ["DELETED"]:
                     supplemental_id = 0
             elif supplemental_report and not request.user.is_government:
                 if (
-                    supplemental_report.status.value == "DRAFT"
+                    supplemental_report.status.value in ["DRAFT", "RETURNED"]
                     and create_user.is_government
                 ):
                     supplemental_id = 0
@@ -798,23 +797,27 @@ class ModelYearReportViewset(
             ).first()
             supplemental_id = supplemental_report.id
 
-        if request.data.get("status") == "RETURNED":
-            SupplementalReportHistory.objects.create(
-                supplemental_report_id=supplemental_id,
-                validation_status=validation_status,
-                update_user=request.user.username,
-                create_user=request.user.username,
-            )
+        if validation_status == "RETURNED":
+            previous_status = SupplementalReportHistory.objects.filter(
+                supplemental_report_id=supplemental_id
+            ).order_by('-update_timestamp').first().validation_status
+            if previous_status == validation_status:
+                SupplementalReportHistory.objects.create(
+                    supplemental_report_id=supplemental_id,
+                    validation_status=validation_status,
+                    update_user=request.user.username,
+                    create_user=request.user.username,
+                )
 
-            serializer = ModelYearReportSupplementalSerializer(
-                supplemental_report, data=request.data, context={"request": request}
-            )
-            serializer.is_valid(raise_exception=True)
-            serializer.save(
-                model_year_report_id=report.id, update_user=request.user.username
-            )
+                serializer = ModelYearReportSupplementalSerializer(
+                    supplemental_report, data=request.data, context={"request": request}
+                )
+                serializer.is_valid(raise_exception=True)
+                serializer.save(
+                    model_year_report_id=report.id, update_user=request.user.username
+                )
 
-            return Response(serializer.data)
+                return Response(serializer.data)
         if (
             create_user
             and create_user.is_government == request.user.is_government
@@ -872,7 +875,7 @@ class ModelYearReportViewset(
                 if (
                     validation_status == "RECOMMENDED"
                     and analyst_action
-                    or (validation_status in ["DRAFT", "SUBMITTED"] and description)
+                    or (validation_status in ["DRAFT", "SUBMITTED", "RETURNED"] and description)
                 ):
                     # do "update or create" to create the assessment object
                     penalty = request.data.get("penalty")
@@ -963,6 +966,7 @@ class ModelYearReportViewset(
             supplemental_id = supplemental_report.id
 
         supplier_information = request.data.get("supplier_info")
+  
         if supplier_information:
             SupplementalReportSupplierInformation.objects.filter(
                 supplemental_report_id=supplemental_id
