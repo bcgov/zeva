@@ -1,3 +1,4 @@
+to be updated
 # How to build a pull request and deploy on Openshift Dev environment
 
 The workflows/build-1596.yaml is the sample workflow for the pull request 1596.
@@ -32,3 +33,5 @@ Notes: the change may take about 20 minutes to be promoted to Zeva development e
 ## Rebuild and redeploy the same pull request
 
 Yes, you can. Just go through the same steps, a pull request can be built and deployed multiple times.
+   
+
