@@ -8,10 +8,6 @@ on:
     types: [opened, edited, reopened]
     branches:
           - 'release-*'
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
   
 jobs:
   # run_if:
@@ -23,7 +19,7 @@ jobs:
   #         echo "${{ github.event.pull_request.title }}"
 
   call-pr-build:
-    if: startsWith( github.event.pull_request.title, 'build-on-dev' )
+    if: endsWith( github.event.pull_request.title, 'build-on-dev' )
     uses: ./.github/workflows/pr-build.yaml
     with:
       # Update pr-number per pull request

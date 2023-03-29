@@ -1,0 +1,24 @@
+name: PR Teardown
+
+on:
+  pull_request:
+    types: closed
+    branches:
+          - 'release-*'
+  
+jobs:
+
+  teardown-on-dev:
+    if: endsWith( github.event.pull_request.title, 'build-on-dev' )
+    name: Tear ZEVA down on Dev
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+ 
+    steps:
+
+      - name: Undeploy on Dev
+        shell: bash {0}
+        run: |
+          helm -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev uninstall zeva-backend-dev-${{ github.event.pull_request.number }} || true
+          helm -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev uninstall zeva-frontend-dev-${{ github.event.pull_request.number }} || true
+          helm -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev uninstall zeva-spilo-dev-${{ github.event.pull_request.number }} || true
