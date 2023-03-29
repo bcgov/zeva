@@ -27,9 +27,9 @@ jobs:
     uses: ./.github/workflows/pr-build.yaml
     with:
       # Update pr-number per pull request
-      pr-number: 1596
+      pr-number: ${{ github.event.pull_request.number }}
       # Update pr-number per release
-      version: 1.47.0
+      version: ${{ github.event.pull_request.base.ref }}
     secrets:
       tools-namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
       dev-namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
