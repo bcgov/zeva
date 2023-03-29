@@ -34,6 +34,6 @@ jobs:
       tools-namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
       dev-namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
       zeva-dev-username: ${{ secrets.ZEVA_DEV_USERNAME }}
-      zeva-dev-password: ${{ secrets.PASSWORD }}
+      zeva-dev-password: ${{ secrets.ZEVA_DEV_PASSWORD }}
       openshift-server: ${{ secrets.OPENSHIFT_SERVER }}
       openshift-token: ${{ secrets.OPENSHIFT_TOKEN }}
