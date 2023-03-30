@@ -1,4 +1,4 @@
-name: PR Teardown
+name: Teardown PR on Dev
 
 on:
   pull_request:
