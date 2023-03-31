@@ -160,6 +160,7 @@ class VehicleListSerializer(
     credit_class = SerializerMethodField()
     model_year = SerializerMethodField()
     vehicle_zev_type = SerializerMethodField()
+    sales_issued = SerializerMethodField()
 
     def get_organization(self, obj):
         organization = Organization.objects.get(id=obj.organization_id)
@@ -180,13 +181,20 @@ class VehicleListSerializer(
     def get_vehicle_zev_type(self, obj):
         zev_type = ZevType.objects.filter(id=obj.vehicle_zev_type_id).first()
         return zev_type.vehicle_zev_code
+    
+    def get_sales_issued(self, instance):
+        return RecordOfSale.objects.filter(
+            vehicle_id=instance.id,
+            submission__validation_status="VALIDATED"  # Validated actually means issued
+        ).count()
 
     class Meta:
         model = Vehicle
         fields = ('id', 'organization',  'validation_status',
                   'credit_value', 'credit_class',
                   'model_year', 'model_name', 'make',
-                  'range', 'vehicle_zev_type', 'is_active'
+                  'range', 'vehicle_zev_type', 'is_active',
+                  'sales_issued'
                   )
 
 

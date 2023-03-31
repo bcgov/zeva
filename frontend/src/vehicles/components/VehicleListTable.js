@@ -87,6 +87,13 @@ const VehicleListTable = (props) => {
       width: 100
     },
     {
+      accessor: (row) => (row.salesIssued ? row.salesIssued : '-'),
+      className: 'text-center',
+      Header: 'Sales',
+      id: 'sales',
+      width: 100
+    },
+    {
       accessor: (row) => {
         if (row.validationStatus !== 'VALIDATED') {
           return '-'
