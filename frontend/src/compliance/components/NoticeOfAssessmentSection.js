@@ -23,10 +23,11 @@ const NoticeOfAssessmentSection = ({
     let formattedAddress
     addresses.forEach((address) => {
       if (address.addressType.addressType === type) {
-        formattedAddress = (<div key={addresses.id}>
-          {address.representativeName && (
-            <div> {address.representativeName} </div>
-          )}
+        formattedAddress = (
+          <div key={addresses.id}>
+            {address.representativeName && (
+              <div> {address.representativeName} </div>
+            )}
             <div> {address.addressLine1} </div>
             <div> {address.addressLine2} </div>
             <div>
@@ -34,7 +35,7 @@ const NoticeOfAssessmentSection = ({
               {address.city} {address.state} {address.country}{' '}
             </div>
             <div> {address.postalCode} </div>
-            </div>
+          </div>
         )
       }
     }
