@@ -32,7 +32,7 @@ helm uninstall -n e52f12-test zeva-spilo-test
 ### Run a final backup on backup container
 
 ### Create zeva database user and database
-* Login to the zeva-spilo leader pod
+* Login to the zeva-spilo-test leader pod
 * If the username contains upper case letters, should be double quoted
     * create user for zeva database, the username should be the same on v10 otherwise the restore may encounter issue
         * create user [username] with password '[password]'
@@ -40,14 +40,14 @@ helm uninstall -n e52f12-test zeva-spilo-test
     * create zeva database
         * create database zeva owner [username] ENCODING 'UTF8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE = 'en_US.UTF-8'
 ### Reset postgresql logging
-* login zeva-spilo leader pod, run the following psql to only keep 24 hours log files, otherwise they take too much space
+* login zeva-spilo-testleader pod, run the following psql to only keep 24 hours log files, otherwise they take too much space
     ALTER SYSTEM SET log_filename='postgresql-%H.log';
     ALTER SYSTEM SET log_connections='off';
     ALTER SYSTEM SET log_disconnections='off';
     ALTER SYSTEM SET log_checkpoints='off';
     select pg_reload_conf();
 ### Create metabase user
-* login zeva-spilo leader pod
+* login zeva-spilo-test leader pod
     CREATE USER metabaseuser WITH PASSWORD 'xxxxxx';
     GRANT CONNECT ON DATABASE zeva TO metabaseuser;
     GRANT USAGE ON SCHEMA public TO metabaseuser;
