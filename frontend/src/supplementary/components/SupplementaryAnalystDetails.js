@@ -96,10 +96,6 @@ const SupplementaryAnalystDetails = (props) => {
     isEditable = false
   }
 
-  const formattedPenalty = details.assessment
-    ? formatNumeric(details.assessment.assessmentPenalty, 0)
-    : 0
-
   const assessmentDecision =
     supplementaryAssessmentData.supplementaryAssessment.decision &&
     supplementaryAssessmentData.supplementaryAssessment.decision.description
@@ -109,7 +105,7 @@ const SupplementaryAnalystDetails = (props) => {
           details.assessmentData.legalName
         )
         .replace(/{modelYear}/g, details.assessmentData.modelYear)
-        .replace(/{penalty}/g, `$${formattedPenalty} CAD`)
+        .replace(/{penalty}/g, `$${formatNumeric(supplementaryAssessmentData.supplementaryAssessment.assessmentPenalty, 0) || 0} CAD`)
       : ''
 
   const showDescription = (each) => {
