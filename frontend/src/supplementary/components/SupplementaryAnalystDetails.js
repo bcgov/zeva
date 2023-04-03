@@ -147,7 +147,7 @@ const SupplementaryAnalystDetails = (props) => {
                 details.assessmentData.legalName
               )
               .replace(/{modelYear}/g, details.assessmentData.modelYear)
-              .replace(/{penalty}/g, `$${formattedPenalty} CAD`)}
+              .replace(/{penalty}/g, `$${formatNumeric(supplementaryAssessmentData.supplementaryAssessment.assessmentPenalty, 0) || 0} CAD`)}
           </label>
         )}
       </div>
