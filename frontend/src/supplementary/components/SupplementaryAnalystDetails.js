@@ -129,6 +129,7 @@ const SupplementaryAnalystDetails = (props) => {
           disabled={
             ['RECOMMENDED', 'ASSESSED'].indexOf(currentStatus) >= 0
           }
+          data-testid={'recommendation-' + each.id}
           onChange={() => {
             setSupplementaryAssessmentData({
               ...supplementaryAssessmentData,
@@ -584,7 +585,7 @@ const SupplementaryAnalystDetails = (props) => {
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
                 selectedTab === tabNames[1] &&
                 ['DRAFT'].indexOf(details.status) < 0 &&
-                !supplementaryReportId === null &&
+                supplementaryReportId !== null &&
                 (isEditable ||
                   ['SUBMITTED'].indexOf(details.status) >= 0) &&
                     <button
@@ -593,6 +594,7 @@ const SupplementaryAnalystDetails = (props) => {
                         handleSubmit('DRAFT')
                       }}
                       type="button"
+                      data-testid="return-button"
                     >
                       Return to Vehicle Supplier
                     </button>
@@ -606,6 +608,7 @@ const SupplementaryAnalystDetails = (props) => {
                     action={() => {
                       handleSubmit(currentStatus, false)
                     }}
+                    testid="save-button"
                   />
               )}
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
@@ -621,6 +624,7 @@ const SupplementaryAnalystDetails = (props) => {
                     action={() => {
                       handleSubmit('RECOMMENDED')
                     }}
+                    testid="recommend-button"
                   />
                 )}
 
