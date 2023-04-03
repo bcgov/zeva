@@ -3,10 +3,11 @@ import React from 'react'
 const NoticeOfAssessmentSection = ({
   name,
   addresses,
-  addressesAreStrings,
   makes,
   supplierClass,
-  disabledInputs
+  disabledInputs,
+  reassessmentServiceAddress,
+  reassessmentRecordsAddress
 }) => {
   const getClassDescriptions = (_supplierClass) => {
     switch (_supplierClass) {
@@ -18,64 +19,58 @@ const NoticeOfAssessmentSection = ({
         return 'Small'
     }
   }
+  const getAddress = (type) => {
+    let formattedAddress
+    addresses.forEach((address) => {
+      if (address.addressType.addressType === type) {
+        formattedAddress = (
+          <div key={addresses.id}>
+            {address.representativeName && (
+              <div> {address.representativeName} </div>
+            )}
+            <div> {address.addressLine1} </div>
+            <div> {address.addressLine2} </div>
+            <div>
+              {' '}
+              {address.city} {address.state} {address.country}{' '}
+            </div>
+            <div> {address.postalCode} </div>
+          </div>
+        )
+      }
+    }
+    )
+    return formattedAddress
+  }
+
   return (
     <>
       <h3>Notice of Assessment</h3>
       <div className="mt-3">
         <h3> {name} </h3>
       </div>
-      {addressesAreStrings && addresses && addresses.length > 0 && (
+      {(addresses || reassessmentRecordsAddress || reassessmentServiceAddress) && (
         <div>
           <div className="d-inline-block mr-5 mt-3 col-5 text-blue">
             <h4>Service Address</h4>
-            <div>{addresses[0]}</div>
-          </div>
-          <div className="d-inline-block mr-5 mt-3 col-5 text-blue">
-            <h4>Records Address</h4>
-            <div>{addresses[1]}</div>
-          </div>
-        </div>
-      )}
-      {!addressesAreStrings && addresses && addresses.length > 0 && (
-        <div>
-          <div className="d-inline-block mr-5 mt-3 col-5 text-blue">
-            <h4>Service Address</h4>
-            {addresses.map(
-              (address) =>
-                address.addressType.addressType === 'Service' && (
-                  <div key={address.id}>
-                    {address.representativeName && (
-                      <div> {address.representativeName} </div>
-                    )}
-                    <div> {address.addressLine1} </div>
-                    <div> {address.addressLine2} </div>
-                    <div>
-                      {' '}
-                      {address.city} {address.state} {address.country}{' '}
-                    </div>
-                    <div> {address.postalCode} </div>
-                  </div>
-                )
+            {reassessmentServiceAddress && (
+              <div>{reassessmentServiceAddress}</div>
+            )}
+            {!reassessmentServiceAddress && (
+              <>
+              {getAddress('Service')}
+              </>
             )}
           </div>
           <div className="d-inline-block mt-3 col-xs-12 col-sm-5 text-blue">
             <h4>Records Address</h4>
-            {addresses.map(
-              (address) =>
-                address.addressType.addressType === 'Records' && (
-                  <div key={address.id}>
-                    {address.representativeName && (
-                      <div> {address.representativeName} </div>
-                    )}
-                    <div> {address.addressLine1} </div>
-                    <div> {address.addressLine2} </div>
-                    <div>
-                      {' '}
-                      {address.city} {address.state} {address.country}{' '}
-                    </div>
-                    <div> {address.postalCode} </div>
-                  </div>
-                )
+            {reassessmentRecordsAddress && (
+              <div>{reassessmentRecordsAddress}</div>
+            )}
+            {!reassessmentRecordsAddress && (
+              <>
+                {getAddress('Records')}
+              </>
             )}
           </div>
         </div>

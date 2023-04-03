@@ -400,7 +400,6 @@ const AssessmentDetailsPage = (props) => {
             <NoticeOfAssessmentSection
               name={details.organization.name}
               addresses={details.organization.organizationAddress}
-              addressesAreStrings={false}
               makes={makes}
               supplierClass={supplierClass}
               disabledInputs={disabledInputs}
