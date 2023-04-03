@@ -340,11 +340,19 @@ describe('SupplementaryAnalystDetails', () => {
     })
   })
 
-  describe('as an analyst, if i view a supplemental report in submitted status under any tab, it should be editable', () => {
+  describe('as an analyst, if i view a supplemental report in submitted status, it should non-editable under the supplemental and reassessment tabs, and editable under the recommendation tab', () => {
     const tabs = ['supplemental', 'recommendation', 'reassessment']
     const details = { ...baseDetails, actualStatus: 'SUBMITTED', status: 'SUBMITTED' }
     tabs.forEach((tab) => {
-      test('as an analyst, if i view a supplemental report in submitted status and under tab ' + tab + ', it should be editable', () => {
+      let editable
+      if (tab === tabs[0]) {
+        editable = false
+      } else if (tab === tabs[1]) {
+        editable = true
+      } else if (tab === tabs[2]) {
+        editable = false
+      }
+      test(`as an analyst, if i view a supplemental report in submitted status and under the ${tab} tab, it should be${editable ? ' ' : ' not '}editable`, () => {
         const props = { ...baseProps, details, query: { tab }, supplementaryReportId: 1, isReassessment: false }
         render(
           <Router>
@@ -355,17 +363,17 @@ describe('SupplementaryAnalystDetails', () => {
         )
         expect(mockSupplierInformationPropsTracker).toHaveBeenCalledWith(
           expect.objectContaining({
-            isEditable: true
+            isEditable: editable
           })
         )
         expect(mockZevSalesPropsTracker).toHaveBeenCalledWith(
           expect.objectContaining({
-            isEditable: true
+            isEditable: editable
           })
         )
         expect(mockCreditActivityPropsTracker).toHaveBeenCalledWith(
           expect.objectContaining({
-            isEditable: true
+            isEditable: editable
           })
         )
       })
