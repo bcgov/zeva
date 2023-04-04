@@ -183,6 +183,7 @@ const SupplementaryCreate = (props) => {
             defaultChecked={checkboxConfirmed}
             className="mr-2"
             id="supplier-confirm-checkbox"
+            data-testid="supplier-confirm-checkbox"
             name="confirmations"
             onChange={(event) => {
               handleCheckboxClick(event)
@@ -190,7 +191,7 @@ const SupplementaryCreate = (props) => {
             type="checkbox"
           />
           <label htmlFor="supplier-confirm-checkbox">
-            On behalf of {details.assessmentData.legalName} I confirm the
+            On behalf of {details.assessmentData && details.assessmentData.legalName} I confirm the
             information included in the this Supplementary Report is complete
             and correct.
           </label>
@@ -217,6 +218,7 @@ const SupplementaryCreate = (props) => {
                   action={() => {
                     handleSubmit('DRAFT', true)
                   }}
+                  testid="supplementary-create-button"
                 />
               }
             </span>
