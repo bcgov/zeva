@@ -3,7 +3,7 @@ import { render, cleanup, queryByTestId, findByTestId } from '@testing-library/r
 import { BrowserRouter } from 'react-router-dom'
 import Router from '../router'
 import axios from 'axios'
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom/extend-expect'
 
 afterEach(cleanup)
 

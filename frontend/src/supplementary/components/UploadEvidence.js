@@ -18,7 +18,7 @@ const UploadEvidence = (props) => {
       <div className="row mt-3 mb-2">
         <div className="col-12 text-blue">
           <h3 className="mb-2">
-            Supplementary Report Attachments<span> (optional)</span>
+            Attachments<span> (optional)</span>
           </h3>
           <p>Upload evidence supporting any of the changes made above.</p>
         </div>

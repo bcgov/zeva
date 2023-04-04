@@ -1,10 +1,10 @@
-const Webpack = require('webpack');
-const DevServer = require('webpack-dev-server');
-const path = require('path');
-const http = require('http');
+const Webpack = require('webpack')
+const DevServer = require('webpack-dev-server')
+const path = require('path')
+const http = require('http')
 
-const webpackConfig = require('./webpack.config');
-const notifications = require('./notifications');
+const webpackConfig = require('./webpack.config')
+const notifications = require('./notifications')
 
 const devServerOptions = {
   static: {
@@ -34,23 +34,23 @@ const devServerOptions = {
   port: 3000,
   hot: false,
   client: false
-};
+}
 
-const compiler = Webpack(webpackConfig);
-const devServer = new DevServer(devServerOptions, compiler);
+const compiler = Webpack(webpackConfig)
+const devServer = new DevServer(devServerOptions, compiler)
 
 const websocketServer = http.createServer((req, res) => {
-  res.end();
-});
+  res.end()
+})
 
-const io = require('socket.io')(websocketServer);
+const io = require('socket.io')(websocketServer)
 
-notifications.setup(io);
+notifications.setup(io)
 
 websocketServer.listen(5002, '0.0.0.0');
 
 (async () => {
-  await devServer.start();
+  await devServer.start()
 
-  console.log('Running');
-})();
+  console.log('Running')
+})()

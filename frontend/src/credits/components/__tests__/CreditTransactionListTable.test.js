@@ -71,8 +71,8 @@ it('rounds the credit balance correctly', () => {
     </Router>
   )
   const totalValue = getAllByText(/10\.14/)
-  expect(totalValue).toHaveLength(2);
+  expect(totalValue).toHaveLength(2)
   totalValue.forEach((value) => {
-    expect(value).toBeInTheDocument();
-  });
+    expect(value).toBeInTheDocument()
+  })
 })
