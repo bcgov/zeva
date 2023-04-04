@@ -79,8 +79,8 @@ const SupplementaryAnalystDetails = (props) => {
     ? details.actualStatus
     : details.status
 
+  const { supplementaryAssessment } = supplementaryAssessmentData
   const isAssessed = currentStatus === 'ASSESSED' || currentStatus === 'REASSESSED'
-  const supplementaryAssessment = supplementaryAssessmentData && supplementaryAssessmentData.supplementaryAssessment
 
   const tabNames = ['supplemental', 'recommendation', 'reassessment']
   const selectedTab = query?.tab ? query.tab : isAssessed ? tabNames[2] : tabNames[1]
