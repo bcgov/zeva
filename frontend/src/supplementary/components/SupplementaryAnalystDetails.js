@@ -79,6 +79,7 @@ const SupplementaryAnalystDetails = (props) => {
     ? details.actualStatus
     : details.status
 
+  const { supplementaryAssessment } = supplementaryAssessmentData
   const isAssessed = currentStatus === 'ASSESSED' || currentStatus === 'REASSESSED'
 
   const tabNames = ['supplemental', 'recommendation', 'reassessment']
@@ -95,30 +96,24 @@ const SupplementaryAnalystDetails = (props) => {
   if (selectedTab === tabNames[2]) {
     isEditable = false
   }
-
-  const formattedPenalty = details.assessment
-    ? formatNumeric(details.assessment.assessmentPenalty, 0)
-    : 0
-
   const assessmentDecision =
-    supplementaryAssessmentData.supplementaryAssessment.decision &&
-    supplementaryAssessmentData.supplementaryAssessment.decision.description
-      ? supplementaryAssessmentData.supplementaryAssessment.decision.description
+    supplementaryAssessment &&
+    supplementaryAssessment.decision &&
+    supplementaryAssessment.decision.description
+      ? supplementaryAssessment.decision.description
         .replace(
           /{user.organization.name}/g,
           details.assessmentData.legalName
         )
         .replace(/{modelYear}/g, details.assessmentData.modelYear)
-        .replace(/{penalty}/g, `$${formattedPenalty} CAD`)
+        .replace(/{penalty}/g, `$${formatNumeric(supplementaryAssessment.assessmentPenalty, 0) || 0} CAD`)
       : ''
 
   const showDescription = (each) => {
     const selectedId =
-      supplementaryAssessmentData &&
-      supplementaryAssessmentData.supplementaryAssessment &&
-      supplementaryAssessmentData.supplementaryAssessment.decision &&
-      supplementaryAssessmentData.supplementaryAssessment.decision.id
-
+      supplementaryAssessment &&
+      supplementaryAssessment.decision &&
+      supplementaryAssessment.decision.id
     return (
       <div className="mb-3" key={each.id}>
         <input
@@ -151,7 +146,7 @@ const SupplementaryAnalystDetails = (props) => {
                 details.assessmentData.legalName
               )
               .replace(/{modelYear}/g, details.assessmentData.modelYear)
-              .replace(/{penalty}/g, `$${formattedPenalty} CAD`)}
+              .replace(/{penalty}/g, `$${formatNumeric(supplementaryAssessment.assessmentPenalty, 0) || 0} CAD`)}
           </label>
         )}
       </div>
@@ -451,9 +446,9 @@ const SupplementaryAnalystDetails = (props) => {
             </div>
         )}
       </div>
-      {supplementaryAssessmentData.supplementaryAssessment &&
-        supplementaryAssessmentData.supplementaryAssessment.decision &&
-        supplementaryAssessmentData.supplementaryAssessment.decision.description &&
+      {supplementaryAssessment &&
+        supplementaryAssessment.decision &&
+        supplementaryAssessment.decision.description &&
           (['ASSESSED', 'RECOMMENDED'].indexOf(currentStatus) >= 0) && (
           <>
             <h3 className="mt-4 mb-1">Director Reassessment</h3>
@@ -510,8 +505,7 @@ const SupplementaryAnalystDetails = (props) => {
                             type="number"
                             className="ml-4 mr-1"
                             defaultValue={
-                              supplementaryAssessmentData
-                                .supplementaryAssessment.assessmentPenalty
+                              supplementaryAssessment.assessmentPenalty
                             }
                             name="penalty-amount"
                             onChange={(e) => {
