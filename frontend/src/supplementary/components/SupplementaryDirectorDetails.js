@@ -74,7 +74,7 @@ const SupplementaryDirectorDetails = (props) => {
   if (currentStatus === 'ASSESSED' && newReport) {
     currentStatus = 'DRAFT'
   }
-  const supplementaryAssessment = supplementaryAssessmentData && supplementaryAssessmentData.supplementaryAssessment
+  const { supplementaryAssessment } = supplementaryAssessmentData
 
   const isAssessed =
     currentStatus === 'ASSESSED' || currentStatus === 'REASSESSED'
@@ -436,10 +436,9 @@ const SupplementaryDirectorDetails = (props) => {
             </div>
         )}
       </div>
-      {supplementaryAssessmentData.supplementaryAssessment &&
-        supplementaryAssessmentData.supplementaryAssessment.decision &&
-        supplementaryAssessmentData.supplementaryAssessment.decision
-          .description &&
+      {supplementaryAssessment &&
+        supplementaryAssessment.decision &&
+        supplementaryAssessment.decision.description &&
         ['ASSESSED', 'RECOMMENDED'].indexOf(currentStatus) >= 0 && (
           <>
             <h3 className="mt-4 mb-1">Director Reassessment</h3>
