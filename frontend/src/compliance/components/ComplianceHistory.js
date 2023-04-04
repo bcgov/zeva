@@ -28,27 +28,6 @@ const ComplianceHistory = (props) => {
     axios
       .get(ROUTES_COMPLIANCE.SUPPLEMENTAL_HISTORY.replace(/:id/g, id))
       .then((response) => {
-        response.data.forEach(report => {
-          latestReturn = 0
-          submitted = null
-          // Loop over report history to find the latest returned status to use as a starting point
-          for(let i = 0; i <= report.history.length; i++){
-            if(report.history[i].status === "SUBMITTED"){
-              submitted = i
-            }
-            if(report.history[i].status === "RETURNED"){
-              latestReturn = i
-            }
-          }
-          // If there is a return status, then filter out old entries but keep the original submission
-          if(latestReturn > 0){
-            report.history.filter((value, index) => index === submitted || index >= latestReturn)
-          }
-          // Otherwise use the original submission index as the starting point and remove anything prior if they exist
-          else{
-            report.history.filter((value, index) => index >= submitted)
-          }
-        })
         setSupplementalReportHistory(response.data)
         response.data.forEach((report) => {
           if (report.isSupplementary === true) {
@@ -114,7 +93,7 @@ const ComplianceHistory = (props) => {
     let status = each.status.toLowerCase()
 
     if (status === 'draft') {
-      status = ' created '
+      status = ' saved '
     }
     if (status === 'recommended') {
       if (item.isSupplementary) {
