@@ -82,11 +82,18 @@ const SupplementaryDirectorDetails = (props) => {
   const isRecommended = currentStatus === 'RECOMMENDED'
 
   const tabNames = ['supplemental', 'recommendation', 'reassessment']
-  const selectedTab = query?.tab
-    ? query.tab
-    : isAssessed || isRecommended
-      ? tabNames[2]
-      : tabNames[1]
+  let selectedTab;
+
+  if (query?.tab) {
+    selectedTab = query.tab;
+  } else {
+    if (isAssessed || isRecommended) {
+      selectedTab = tabNames[2];
+    } else {
+      selectedTab = tabNames[1];
+    }
+  }
+
 
   const formattedPenalty = details.assessment
     ? formatNumeric(details.assessment.assessmentPenalty, 0)
