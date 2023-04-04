@@ -478,50 +478,33 @@ const SupplementaryContainer = (props) => {
           if (data.supplierInfo.ldvSales === '') {
             data.supplierInfo.ldvSales = ldvSales
           }
-          if (isDirector) {
-            axios
-              .post(
-                ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id),
-                commentData
-              )
-              .then(() => {
+          axios
+            .patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data)
+            .then((response) => {
+              const { id: supplementalId } = response.data
+              if (status === 'DELETED' || status === 'RETURNED') {
                 history.push(ROUTES_COMPLIANCE.REPORTS)
-                history.replace(
-                  ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
-                    ':id',
-                    id
-                  ).replace(':supplementaryId', supplementalId)
-                )
-              })
-          } else {
-            axios
-              .patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data)
-              .then((response) => {
-                const { id: supplementalId } = response.data
-                if (status === 'DELETED' || status === 'RETURNED') {
-                  history.push(ROUTES_COMPLIANCE.REPORTS)
-                } else {
-                  const commentData = {
-                    fromGovtComment: bceidComment,
-                    director: false
-                  }
-                  axios
-                    .post(
-                      ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id),
-                      commentData
-                    )
-                    .then(() => {
-                      history.push(ROUTES_COMPLIANCE.REPORTS)
-                      history.replace(
-                        ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
-                          ':id',
-                          id
-                        ).replace(':supplementaryId', supplementalId)
-                      )
-                    })
+              } else {
+                const commentData = {
+                  fromGovtComment: bceidComment,
+                  director: false
                 }
-              })
-          }
+                axios
+                  .post(
+                    ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id),
+                    commentData
+                  )
+                  .then(() => {
+                    history.push(ROUTES_COMPLIANCE.REPORTS)
+                    history.replace(
+                      ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
+                        ':id',
+                        id
+                      ).replace(':supplementaryId', supplementalId)
+                    )
+                  })
+              }
+            })
         }
       })
       .catch((e) => {
