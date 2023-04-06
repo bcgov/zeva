@@ -6,6 +6,10 @@ labels:
 metadata:
   name: zeva-spilo-network-policy
 parameters:
+  - name: SUFFIX
+    displayName: null
+    description: such as -dev or -dev-1513
+    required: true  
   - name: ENVIRONMENT
     displayName: null
     description: such as dev, test or prod
@@ -24,12 +28,12 @@ objects:
       ## Allow zeva-spilo to accept communications from metabase from cthub
       podSelector:
         matchLabels:
-          app.kubernetes.io/instance: zeva-spilo
+          app.kubernetes.io/instance: zeva-spilo${SUFFIX}
       ingress:
         - from:
             - podSelector:
                 matchLabels:
-                  app.kubernetes.io/instance: zeva-backend
+                  app.kubernetes.io/instance: zeva-backend${SUFFIX}
           ports:
             - protocol: TCP
               port: 5432       
