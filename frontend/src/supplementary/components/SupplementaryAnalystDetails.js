@@ -133,7 +133,9 @@ const SupplementaryAnalystDetails = (props) => {
                 decision: {
                   description: each.description,
                   id: each.id
-                }
+                },
+                assessmentPenalty: ''
+
               }
             })
           }}
@@ -498,15 +500,13 @@ const SupplementaryAnalystDetails = (props) => {
                         <div>
                           <input
                             disabled={
-                              assessmentDecision.indexOf(
+                              !assessmentDecision.includes(
                                 'Section 10 (3) applies'
-                              ) < 0
+                              )
                             }
                             type="number"
                             className="ml-4 mr-1"
-                            defaultValue={
-                              supplementaryAssessment.assessmentPenalty
-                            }
+                            value={supplementaryAssessment.assessmentPenalty || ''}
                             name="penalty-amount"
                             onChange={(e) => {
                               setSupplementaryAssessmentData({
