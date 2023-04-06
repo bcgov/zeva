@@ -8,10 +8,22 @@ on:
 
 jobs:
   add_label:
+    if: endsWith( github.event.pull_request.title, 'automerge' )
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions-ecosystem/action-add-labels@v1
         with:
-          labels: testLabelPR
+          labels: automerge
+
+  automerge:
+    runs-on: ubuntu-latest
+    steps:
+      - id: automerge
+        name: automerge
+        uses: "pascalgn/automerge-action@v0.15.6"
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          MERGE_METHOD: squash
+
 
