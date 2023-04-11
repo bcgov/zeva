@@ -31,10 +31,8 @@ const ComplianceHistory = (props) => {
         response.data.forEach(report => {
           let latestReturn = 0
           let submitted = null
-          console.log(report.history)
           // Loop over report history to find the latest returned status to use as a starting point
           for(let i = 0; i < report.history.length; i++){
-            console.log(report.history[i].status)
             if(!report.history[i].status){
               continue
             }
