@@ -3,7 +3,8 @@ from django.db import models
 from api.models.mixins.effective_dates import EffectiveDates
 from auditable.models import Auditable
 
-
+# to be deleted; you will not be able to import this module,
+# and any changes to fields will not be picked up when you run makemigrations
 class AccountBalance(Auditable, EffectiveDates):
     balance = models.DecimalField(
         db_comment="balance",
@@ -36,6 +37,7 @@ class AccountBalance(Auditable, EffectiveDates):
 
     class Meta:
         db_table = "account_balance"
+        managed = False
 
     db_table_comment = "account balances. A and B class credits"  \
                        "are kept as separate records."

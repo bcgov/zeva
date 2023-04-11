@@ -62,18 +62,6 @@ class ModelYearReportComplianceObligationSnapshotSerializer(serializers.ModelSer
 #         report_year = int(report_year_obj.name)
 #         return report_year
 
-#     def retrieve_balance(self, year, credit_type):
-#         request = self.context.get('request')
-#         balance = AccountBalance.objects.filter(
-#             organization=request.user.organization,
-#             effective_date__lte=date(year, 9, 30),
-#             credit_class_id=credit_type
-#         ).order_by('-effective_date').first()
-#         if balance:
-#             return balance.balance
-#         else:
-#             return 0
-
 #     def get_prior_year_balance(self, obj, *args, **kwargs):
 #         ## this needs to change to grab to grab values from the prior year snapshot
 #         kwargs = self.context.get('kwargs')

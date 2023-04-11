@@ -9,7 +9,7 @@ from ..models.model_year import ModelYear
 from ..models.weight_class import WeightClass
 from ..models.credit_transaction_type import CreditTransactionType
 from ..services.credit_transaction import validate_transfer
-from ..models.account_balance import AccountBalance
+from ..models.organization import Organization
 
 
 class TestTransfers(BaseTestCase):
@@ -87,8 +87,7 @@ class TestTransfers(BaseTestCase):
     # test that if the supplier does have enough of credit type/year the
     # transfer will work, a record will be added for each row in transfer
     # content (or unique credit type/year/weight) in the transaction table,
-    #  and a new row for each credit type for each organization in the
-    # account balance table. 
+    # and organization balances are calculated correctly
 
     def test_transfer_pass(self):
         transaction = CreditTransaction.objects.create(
@@ -120,27 +119,16 @@ class TestTransfers(BaseTestCase):
 
         validate_transfer(transfer_enough)
 
-        seller_balance = AccountBalance.objects.filter(
-            organization_id=self.users['EMHILLIE_BCEID'].organization.id,
-            expiration_date=None,
-            credit_class=CreditClass.objects.get(credit_class="A")
-        ).first()
+        seller_balance = Organization.objects.filter(
+            id=self.users['EMHILLIE_BCEID'].organization.id
+        ).first().balance['A']
 
-        buyer_balance = AccountBalance.objects.filter(
-            organization_id=self.users['RTAN_BCEID'].organization.id,
-            expiration_date=None,
-            credit_class=CreditClass.objects.get(credit_class="A")
-        ).first()
+        buyer_balance = Organization.objects.filter(
+            id=self.users['RTAN_BCEID'].organization.id
+        ).first().balance['A']
 
-        self.assertEqual(seller_balance.balance, -10)
-        self.assertEqual(buyer_balance.balance, 10)
-
-        credit_transaction_record = CreditTransaction.objects.filter(
-            credit_to=self.users['RTAN_BCEID'].organization,
-            debit_from=self.users['EMHILLIE_BCEID'].organization,
-            credit_class=CreditClass.objects.get(credit_class="A"),
-        ).order_by('-id').first()
-        self.assertEqual(credit_transaction_record.id, seller_balance.credit_transaction_id)
+        self.assertEqual(seller_balance, 390)
+        self.assertEqual(buyer_balance, 10)
 
         
        

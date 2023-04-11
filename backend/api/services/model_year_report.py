@@ -22,7 +22,6 @@ from api.models.credit_transaction import CreditTransaction
 from api.models.credit_transaction_type import CreditTransactionType
 from api.models.weight_class import WeightClass
 from api.models.organization import Organization
-from api.models.account_balance import AccountBalance
 from api.models.model_year_report_credit_transaction import ModelYearReportCreditTransaction
 from api.services.send_email import notifications_model_year_report
 
@@ -295,42 +294,6 @@ def adjust_credits(id, request):
                         model_year_report_id=id,
                         credit_transaction_id=added_transaction.id
                     )
-
-    balance_changes = [{
-        'credit_class': 'A',
-        'credit_value': total_a_value
-    }, {
-        'credit_class': 'B',
-        'credit_value': total_b_value
-    }]
-
-    for balance_change in balance_changes:
-        credit_class_obj = balance_change.get('credit_class')
-        credit_class = credit_class_a if credit_class_obj == 'A' else credit_class_b
-
-        credit_value = Decimal(balance_change.get('credit_value'))
-
-        current_balance = AccountBalance.objects.filter(
-            credit_class=credit_class,
-            organization_id=organization_id,
-            expiration_date=None
-        ).order_by('-id').first()
-
-        if current_balance:
-            new_balance = Decimal(current_balance.balance) -\
-                credit_value
-            current_balance.expiration_date = model_year_report_timestamp
-            current_balance.save()
-        else:
-            new_balance = 0 - credit_value
-
-        AccountBalance.objects.create(
-            balance=new_balance,
-            effective_date=model_year_report_timestamp,
-            credit_class=credit_class,
-            credit_transaction=added_transaction,
-            organization_id=organization_id
-        )
 
     deficits = ModelYearReportComplianceObligation.objects.filter(
         model_year_report_id=id,
