@@ -478,7 +478,7 @@ const SupplementaryContainer = (props) => {
           if (data.supplierInfo.ldvSales === '') {
             data.supplierInfo.ldvSales = ldvSales
           }
-          if (isDirector) {
+          if (isDirector && status === "RECOMMENDED") {
             axios
               .post(
                 ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id),
