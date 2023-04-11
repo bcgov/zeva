@@ -10,18 +10,6 @@ on:
           - 'release-*'
   
 jobs:
-  show-vars:
-    name: Show vars value
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
- 
-    steps:
-
-      - name: show all vars
-        shell: bash {0}
-        run: |
-          echo "showing var secrets.OPENSHIFT_SERVER"
-          echo "${{ secrets.OPENSHIFT_SERVER }}"
 
   call-pr-build:
     if: endsWith( github.event.pull_request.title, 'build-on-dev' )
