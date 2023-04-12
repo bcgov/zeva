@@ -323,9 +323,11 @@ def subscribed_users(notifications: list, request: object, request_type: str, em
             notification_objects = Notification.objects.filter(notification_id__in=notifications)
 
             test_info['user'] = request.update_user
+            test_info['actions'] = []
+            test_info['action_descriptions'] = []
             for object in notification_objects:
-                test_info['actions'] = test_info['actions'] + object.name
-                test_info['action_descriptions'] = test_info['action_descriptions'] + object.description
+                test_info['actions'].append(object.name)
+                test_info['action_descriptions'].append(object.description)
             test_info['time'] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
                     
             if user_email:
