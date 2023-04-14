@@ -81,10 +81,14 @@ def send_email(recipient_email: str, email_type: str, test_info: dict) -> {}:
                 """
     
     if settings.ENV_NAME != "prod":
+        action_info = ""
+        for index, action in enumerate(test_info['actions']):
+            action_info = action_info + """ <p>Action: """ + test_info['actions'][index] + """</p>
+                    <p>Description: """ + test_info['action_descriptions'][index] + """</p> """
+
         body = body + """\
             <p>User: """ + test_info['user'] + """</p>
-            <p>Action: """ + test_info['action'] + """</p>
-            <p>Description: """ + test_info['action_description'] + """</p>
+            """ + action_info + """
             <p>Time: """ + test_info['time'] + """</p>
             </body>
             </html>
@@ -316,11 +320,14 @@ def subscribed_users(notifications: list, request: object, request_type: str, em
                                             govt_org.id]) &
                         Q(id__in=subscribed_users)).exclude(email__isnull=True).exclude(email__exact='').exclude(username=request.update_user)
 
-            notification_object = Notification.objects.filter(id=notifications).first()
+            notification_objects = Notification.objects.filter(notification_id__in=notifications)
 
             test_info['user'] = request.update_user
-            test_info['action'] = notification_object.name
-            test_info['action_description'] = notification_object.description
+            test_info['actions'] = []
+            test_info['action_descriptions'] = []
+            for notification_obj in notification_objects:
+                test_info['actions'].append(notification_obj.name)
+                test_info['action_descriptions'].append(notification_obj.description)
             test_info['time'] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
                     
             if user_email:
