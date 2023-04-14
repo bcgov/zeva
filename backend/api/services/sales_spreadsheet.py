@@ -4,7 +4,6 @@ import logging
 from datetime import datetime
 import pickle
 from pickle import PickleError
-import magic
 import pylibmagic
 
 from dateutil.parser import parse
