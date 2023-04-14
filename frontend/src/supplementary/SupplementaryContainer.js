@@ -451,6 +451,7 @@ const SupplementaryContainer = (props) => {
           }
           creditActivity.push(creditActivityAddition)
         }
+
         setNewData({ ...newData, creditActivity })
         if (status) {
           const data = {
