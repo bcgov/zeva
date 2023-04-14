@@ -24,7 +24,7 @@ from api.models.weight_class import WeightClass
 from api.models.organization import Organization
 from api.models.model_year_report_credit_transaction import ModelYearReportCreditTransaction
 from api.services.send_email import notifications_model_year_report
-
+from api.models.supplemental_report import SupplementalReport
 
 def get_model_year_report_statuses(report, request_user=None):
     supplier_information_status = 'UNSAVED'
@@ -192,7 +192,26 @@ def get_model_year_report_statuses(report, request_user=None):
         }
     }
 
-
+def adjust_credits_reassessment(id, request):
+    ## this so far only updates LDV sales, we will need
+    ## to add the logic for reductions and deficits later
+    reassessment = SupplementalReport.objects.get(id=id)
+    model_year_report_id = SupplementalReport.objects.values_list(
+    'model_year_report_id', flat=True).filter(
+        id=id).first()
+    model_year_report = ModelYearReport.objects.get(id=model_year_report_id)
+    model_year_id = model_year_report.model_year.id
+    organization_id = model_year_report.organization.id
+    ldv_sales = reassessment.ldv_sales
+    if ldv_sales:
+        OrganizationLDVSales.objects.update_or_create(
+            organization_id=organization_id,
+            model_year_id=model_year_id,
+            defaults={
+            'ldv_sales': ldv_sales,
+            'update_user': request.user.username
+            }
+        )
 def adjust_credits(id, request):
     model_year = request.data.get('model_year')
     model_year_report_timestamp = "{}-09-30".format(
