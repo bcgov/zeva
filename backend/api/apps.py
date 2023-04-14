@@ -28,6 +28,7 @@ class ApiConfig(AppConfig):
 
         # register our interest in the post_migrate signal
         post_migrate.connect(post_migration_callback, sender=self)
+        sys.modules['api.models.account_balance'] = None
 
         if RUNSERVER:
             try:
