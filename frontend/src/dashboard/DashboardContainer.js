@@ -41,6 +41,7 @@ const DashboardContainer = (props) => {
   const isMountedRef = useRef(null)
 
   const getDashboard = () => {
+    setLoading(true)
     axios.get(ROUTES_DASHBOARD.LIST).then((dashboardResponse) => {
       const dashboard = dashboardResponse.data[0].activity
       // get vehicles!
@@ -307,6 +308,9 @@ const DashboardContainer = (props) => {
         creditAgreementsIssued
       }
       setActivityCount(activityCount)
+    }).then(()=>{
+      setLoading(false)
+
     })
   }
   const refreshList = () => {
@@ -316,7 +320,6 @@ const DashboardContainer = (props) => {
       if (!isMountedRef.current) {
         return false
       }
-      return setLoading(false)
     })
   }
 
