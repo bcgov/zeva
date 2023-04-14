@@ -36,6 +36,11 @@ jobs:
     timeout-minutes: 60
 
     steps:
+    
+      # python-magic pacjage reqires libmagic1
+      - name: Install libmagic1
+        run: sudo apt-get install -y libmagic1
+        
       - name: Checkout
         uses: actions/checkout@v3
         with:
