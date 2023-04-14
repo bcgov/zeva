@@ -18,3 +18,20 @@ The "Build PR on Dev" pipeline will be triggered when it identified pull request
 When the pull request is merged to the release branch, the pipeline "Teardown PR on Dev" will be triggered to undeploy the pull request on Dev. The splio configmaps and PVCs will still stay.
 
 
+# Post production release
+
+## Merge the tracking pull request and create the new release branch
+
+* Squash merge the tracking pull request to master
+* Create the release on GitHub from master branch
+* Create the new release branch from master branch
+* Change the new release branch as the default branch in the repo and update the branch protection rules https://github.com/bcgov/zeva/settings/branches
+* Notify the developers that the new release branch has been created, it is ready for the new pull requests
+
+## Updates for the new release branch
+
+* Also update frontend/package.json version and create the new tracking pull request
+* Update the value of workflow name, branches and PR_NUMBER in the workflows/release-build.yaml
+
+
+

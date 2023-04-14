@@ -11,13 +11,16 @@ on:
   
 jobs:
 
+  call-unit-test:
+    uses: ./.github/workflows/unit-test-template.yaml
+    with:
+      pr-number: ${{ github.event.pull_request.number }}
+
   call-pr-build:
     if: endsWith( github.event.pull_request.title, 'build-on-dev' )
     uses: ./.github/workflows/pr-build-template.yaml
     with:
-      # Update pr-number per pull request
       pr-number: ${{ github.event.pull_request.number }}
-      # Update pr-number per release
       version: ${{ github.event.pull_request.base.ref }}
     secrets:
       tools-namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
