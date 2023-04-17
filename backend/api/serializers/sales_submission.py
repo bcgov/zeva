@@ -82,16 +82,15 @@ class SalesSubmissionHistorySerializer(
         )
 
 
-class SalesSubmissionListSerializer(
-        ModelSerializer, EnumSupportSerializerMixin, BaseSerializer
+class SalesSubmissionBaseListSerializer(
+    ModelSerializer, EnumSupportSerializerMixin, BaseSerializer
 ):
-    organization = OrganizationSerializer(read_only=True)
-    total_credits = SerializerMethodField()
-    total_warnings = SerializerMethodField()
-    totals = SerializerMethodField()
-    update_user = SerializerMethodField()
-    validation_status = SerializerMethodField()
     submission_history = SerializerMethodField()
+    organization = SerializerMethodField()
+    totals = SerializerMethodField()
+    total_warnings = SerializerMethodField()
+    total_credits = SerializerMethodField()
+    validation_status = SerializerMethodField()
 
     def get_submission_history(self, obj):
         request = self.context.get('request')
@@ -130,6 +129,35 @@ class SalesSubmissionListSerializer(
             return None
 
         return history.update_timestamp.date()
+
+    def get_organization(self, obj):
+        return {
+            "short_name": obj.organization.short_name
+        }
+    
+    def get_totals(self, obj):
+        return {
+            'vins': obj.records.count()
+        }
+    
+    def get_total_warnings(self, obj):
+        request = self.context.get('request')
+        warnings = 0
+
+        valid_statuses = [SalesSubmissionStatuses.VALIDATED]
+
+        if request.user.is_government:
+            valid_statuses = [
+                SalesSubmissionStatuses.CHECKED,
+                SalesSubmissionStatuses.RECOMMEND_APPROVAL,
+                SalesSubmissionStatuses.RECOMMEND_REJECTION,
+                SalesSubmissionStatuses.VALIDATED
+            ]
+
+        if obj.validation_status in valid_statuses:
+            warnings = obj.unselected
+
+        return warnings
 
     def get_total_credits(self, obj):
         request = self.context.get('request')
@@ -182,38 +210,25 @@ class SalesSubmissionListSerializer(
             'b': round(total_b, 2)
         }
 
-    def get_total_warnings(self, obj):
-        request = self.context.get('request')
-        warnings = 0
-
-        valid_statuses = [SalesSubmissionStatuses.VALIDATED]
-
-        if request.user.is_government:
-            valid_statuses = [
-                SalesSubmissionStatuses.CHECKED,
-                SalesSubmissionStatuses.RECOMMEND_APPROVAL,
-                SalesSubmissionStatuses.RECOMMEND_REJECTION,
-                SalesSubmissionStatuses.VALIDATED
-            ]
-
-        if obj.validation_status in valid_statuses:
-            warnings = obj.unselected
-
-        return warnings
-
-    def get_totals(self, obj):
-        return {
-            'vins': obj.records.count()
-        }
-
     class Meta:
         model = SalesSubmission
-        fields = (
-            'id', 'validation_status', 'organization', 'submission_history',
-            'submission_sequence', 'totals', 'submission_id', 'update_user',
-            'total_credits', 'total_warnings', 'unselected',
-            'update_timestamp',
-        )
+        fields = [
+            'id', 'submission_history', 'organization', 'totals', 'unselected',
+            'total_warnings', 'total_credits', 'validation_status'
+        ]
+
+
+class SalesSubmissionListSerializer(
+        SalesSubmissionBaseListSerializer
+):
+    organization = OrganizationSerializer(read_only=True)
+    update_user = SerializerMethodField()
+
+    class Meta(SalesSubmissionBaseListSerializer.Meta):
+        fields = SalesSubmissionBaseListSerializer.Meta.fields + [
+            'submission_sequence', 'submission_id', 
+            'update_user', 'update_timestamp'
+        ]
 
 
 class SalesSubmissionObligationActivitySerializer(
