@@ -14,6 +14,7 @@ import os
 import sys
 
 from pika import ConnectionParameters, PlainCredentials
+from django.db.models import BigAutoField
 
 from . import database, amqp, email, keycloak, minio
 
@@ -38,6 +39,7 @@ DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
 DEVELOPMENT = os.getenv('DEVELOPMENT', 'False') == 'True'
 TESTING = 'test' in sys.argv
 RUNSERVER = 'runserver' in sys.argv
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 ALLOWED_HOSTS = ['*']
 
