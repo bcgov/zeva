@@ -1,7 +1,7 @@
 from django.db import migrations
 
 
-FILENAME = 'api/migrations/create_audit_trigger.sql'
+FILENAME = 'backend/api/migrations/create_audit_trigger.sql'
 
 
 def create_trigger(apps, schema_editor):
