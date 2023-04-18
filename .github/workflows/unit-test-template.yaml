@@ -66,21 +66,21 @@ jobs:
           pwd
           ls -la
           
-      # - name: Run coverage report for django tests 
-      #   uses: kuanfandevops/django-test-action@itvr-django-test
-      #   continue-on-error: false
-      #   env:
-      #     MINIO_ENDPOINT: minio:9000
-      #     MINIO_ACCESS_KEY: testtest
-      #     MINIO_SECRET_KEY: testtest
-      #     DATABASE_NAME: testdb
-      #     DATABASE_USER: test
-      #     DATABASE_PASSWORD: test123
-      #     DATABASE_ENGINE: postgresql
-      #     DATABASE_SERVICE_NAME: 127.0.0.1
-      #     POSTGRESQL_SERVICE_HOST: 127.0.0.1
-      #     POSTGRESQL_SERVICE_PORT: 5432
-      #   with:
-      #     settings-dir-path: "zeva"
-      #     requirements-file: "./requirements.txt"
-      #     managepy-dir: ./
+      - name: Run coverage report for django tests 
+        uses: kuanfandevops/django-test-action@itvr-django-test
+        continue-on-error: false
+        env:
+          MINIO_ENDPOINT: minio:9000
+          MINIO_ACCESS_KEY: testtest
+          MINIO_SECRET_KEY: testtest
+          DATABASE_NAME: testdb
+          DATABASE_USER: test
+          DATABASE_PASSWORD: test123
+          DATABASE_ENGINE: postgresql
+          DATABASE_SERVICE_NAME: 127.0.0.1
+          POSTGRESQL_SERVICE_HOST: 127.0.0.1
+          POSTGRESQL_SERVICE_PORT: 5432
+        with:
+          settings-dir-path: "./zeva"
+          requirements-file: "./requirements.txt"
+          managepy-dir: ./
