@@ -69,7 +69,6 @@ jobs:
           
       - name: Run coverage report for django tests 
         uses: kuanfandevops/django-test-action@itvr-django-test
-        working-directory: backend
         continue-on-error: false
         env:
           MINIO_ENDPOINT: minio:9000
