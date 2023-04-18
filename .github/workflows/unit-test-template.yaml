@@ -80,9 +80,9 @@ jobs:
           DATABASE_USER: test
           DATABASE_PASSWORD: test123
           DATABASE_ENGINE: postgresql
-          DATABASE_SERVICE_NAME: 127.0.0.1
-          POSTGRESQL_SERVICE_HOST: 127.0.0.1
-          POSTGRESQL_SERVICE_PORT: 5432
+          # DATABASE_SERVICE_NAME: 127.0.0.1
+          # POSTGRESQL_SERVICE_HOST: 127.0.0.1
+          # POSTGRESQL_SERVICE_PORT: 5432
         with:
           settings-dir-path: zeva
           requirements-file: requirements.txt
