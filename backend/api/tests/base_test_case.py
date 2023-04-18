@@ -68,12 +68,12 @@ class BaseTestCase(TestCase):
         with contextlib.redirect_stdout(io.StringIO()):
             call_command(
                 'load_ops_data',
-                'backend/api/fixtures/operational',
+                'api/fixtures/operational',
                 '--directory', '--no-exit'
             )
             call_command(
                 'load_ops_data',
-                'backend/api/fixtures/test',
+                'api/fixtures/test',
                 '--directory', '--no-exit'
             )
 
