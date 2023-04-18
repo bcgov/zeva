@@ -34,18 +34,24 @@ jobs:
     name: Run Backend Unit Tests
     runs-on: ubuntu-latest
     timeout-minutes: 60
-
-    steps:
     
-      # python-magic pacjage reqires libmagic1
-      - name: Install libmagic1
-        run: sudo apt-get install -y libmagic1
-        
+    steps:
+
       - name: Checkout
         uses: actions/checkout@v3
         with:
           ref: refs/pull/${{ inputs.pr-number }}/head     
-          
+
+      - name: Remove all only keep backend files
+        run: |
+          mv backend ..
+          rm -rf *
+          mv ../backend/* .
+          pwd
+          ls -la
+
+      # the DATABASE_* env variables have to have same value in as the action in order to connect to postgresql
+      # todo for itvr-django-test, create a new working-directory argument
       - name: Run coverage report for django tests 
         uses: kuanfandevops/django-test-action@itvr-django-test
         continue-on-error: false
@@ -57,10 +63,10 @@ jobs:
           DATABASE_USER: test
           DATABASE_PASSWORD: test123
           DATABASE_ENGINE: postgresql
-          DATABASE_SERVICE_NAME: 127.0.0.1
-          POSTGRESQL_SERVICE_HOST: 127.0.0.1
-          POSTGRESQL_SERVICE_PORT: 5432
+          # DATABASE_SERVICE_NAME: 127.0.0.1
+          # POSTGRESQL_SERVICE_HOST: 127.0.0.1
+          # POSTGRESQL_SERVICE_PORT: 5432
         with:
-          settings-dir-path: "backend/api"
-          requirements-file: "backend/requirements.txt"
-          managepy-dir: backend
+          settings-dir-path: zeva
+          requirements-file: requirements.txt
+          managepy-dir: ./

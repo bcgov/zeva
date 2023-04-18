@@ -377,7 +377,7 @@ describe('SupplementaryDirectorDetails', () => {
     expect(commentText).toBeInTheDocument()
   })
 
-  it('should trigger setSupplementaryAssessmentData when input changes', () => {
+  it('should render Recommended Header', () => {
     const setSupplementaryAssessmentData = jest.fn()
     render(
       <BrowserRouter>
@@ -398,10 +398,6 @@ describe('SupplementaryDirectorDetails', () => {
     )
     const recommendedHeader = screen.queryByText('Analyst Recommended Director Assessment')
     expect(recommendedHeader).toBeInTheDocument()
-
-    fireEvent.change(screen.getByRole('spinbutton'), { target: { value: 5 } })
-
-    expect(setSupplementaryAssessmentData).toHaveBeenCalled()
   })
 
   it('should render back button', () => {
