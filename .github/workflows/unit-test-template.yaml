@@ -9,25 +9,25 @@ on:
   
 jobs:
 
-  # frontend-unit-test:
+  frontend-unit-test:
 
-  #   name: Run Frontend Unit Tests
-  #   runs-on: ubuntu-latest
-  #   timeout-minutes: 60
+    name: Run Frontend Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
 
-  #   steps:
+    steps:
 
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
-  #       with:
-  #         ref: refs/pull/${{ inputs.pr-number }}/head        
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: refs/pull/${{ inputs.pr-number }}/head        
 
-  #     - name: Fronend Jest coverage report
-  #       uses: ArtiomTr/jest-coverage-report-action@v2.2.1
-  #       continue-on-error: false
-  #       with:
-  #         working-directory: frontend
-  #         test-script: npm run test
+      - name: Fronend Jest coverage report
+        uses: ArtiomTr/jest-coverage-report-action@v2.2.1
+        continue-on-error: false
+        with:
+          working-directory: frontend
+          test-script: npm run test
         
   backend-unit-test:
 
@@ -35,27 +35,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     
-    # defaults:
-    #   run:
-    #     working-directory: backend
-    # services:
-    #   postgres:
-    #     image: postgres:14
-    #     env:
-    #       POSTGRES_USER: postgres
-    #       POSTGRES_PASSWORD: postgres
-    #       POSTGRES_DB: zevatest
-    #     options:
-    #       --health-cmd pg_isready --health-interval 15s --health-timeout 5s --health-retries 5
-    #     ports:
-    #       - 5432:5432
-
     steps:
 
-      # python-magic pacjage reqires libmagic1
-      # - name: Install libmagic1
-      #   run: sudo apt-get install -y libmagic1
-        
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -69,6 +50,8 @@ jobs:
           pwd
           ls -la
 
+      # the DATABASE_* env variables have to have same value in as the action in order to connect to postgresql
+      # todo for itvr-django-test, create a new working-directory argument
       - name: Run coverage report for django tests 
         uses: kuanfandevops/django-test-action@itvr-django-test
         continue-on-error: false
