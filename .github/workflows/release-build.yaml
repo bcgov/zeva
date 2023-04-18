@@ -29,51 +29,17 @@ concurrency:
   
 jobs:
 
-  frontend-unit-test:
-
-    name: Run Frontend Unit Tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-
-    steps:
-
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Fronend Jest coverage report
-        uses: ArtiomTr/jest-coverage-report-action@v2.2.1
-        continue-on-error: false
-        with:
-          working-directory: frontend
-          test-script: npm run test
-        
-  backend-unit-test:
-
-    name: Run Backend Unit Tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      
-      - name: Run coverage report for django tests 
-        uses: kuanfandevops/django-test-action@itvr-django-test
-        continue-on-error: false
-        env:
-          MINIO_ENDPOINT: minio:9000
-          MINIO_ACCESS_KEY: testtest
-          MINIO_SECRET_KEY: testtest
-        with:
-          settings-dir-path: "backend/api"
-          requirements-file: "backend/requirements.txt"
-          managepy-dir: backend
+  call-unit-test:
+    uses: ./.github/workflows/unit-test-template.yaml
+    with:
+      pr-number: ${{ github.event.pull_request.number }}
 
   build:
 
     name: Build ZEVA on Openshift
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    needs: call-unit-test
 
     steps:
 
