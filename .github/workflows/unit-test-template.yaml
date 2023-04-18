@@ -66,7 +66,13 @@ jobs:
           pwd
           ls -la
           echo $GITHUB_WORKSPACE
-          
+          cd backend
+
+      - name: Current working dir after cb
+        run: |
+          pwd
+          ls -la
+
       - name: Run coverage report for django tests 
         uses: kuanfandevops/django-test-action@itvr-django-test
         continue-on-error: false
@@ -82,6 +88,9 @@ jobs:
           POSTGRESQL_SERVICE_HOST: 127.0.0.1
           POSTGRESQL_SERVICE_PORT: 5432
         with:
-          settings-dir-path: "backend/zeva"
-          requirements-file: "backend/requirements.txt"
-          managepy-dir: backend
+          settings-dir-path: "zeva"
+          requirements-file: "requirements.txt"
+          managepy-dir: ./
+          # settings-dir-path: "backend/zeva"
+          # requirements-file: "backend/requirements.txt"
+          # managepy-dir: backend
