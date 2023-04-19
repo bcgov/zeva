@@ -268,8 +268,7 @@ class ModelYearReportListSerializer(ModelSerializer, EnumSupportSerializerMixin)
 
         def get_ldv_sales(obj):
             if (
-                consider_supplemental
-                and latest_assessed_supplemental
+                latest_assessed_supplemental
                 and latest_assessed_supplemental.ldv_sales
             ):
                 return latest_assessed_supplemental.ldv_sales
