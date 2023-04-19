@@ -320,14 +320,20 @@ def subscribed_users(notifications: list, request: object, request_type: str, em
                                             govt_org.id]) &
                         Q(id__in=subscribed_users)).exclude(email__isnull=True).exclude(email__exact='').exclude(username=request.update_user)
 
-            notification_objects = Notification.objects.filter(notification_id__in=notifications)
+            notification_objects = Notification.objects.filter(id__in=notifications)
+            
 
-            test_info['user'] = request.update_user
+            try:
+                test_info['user'] = request.update_user
+            
+            except:
+                test_info['user'] = request.user.update_user
+
             test_info['actions'] = []
             test_info['action_descriptions'] = []
-            for notification_obj in notification_objects:
-                test_info['actions'].append(notification_obj.name)
-                test_info['action_descriptions'].append(notification_obj.description)
+            for object in notification_objects:
+                test_info['actions'].append(object.name)
+                test_info['action_descriptions'].append(object.description)
             test_info['time'] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
                     
             if user_email:
