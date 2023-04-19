@@ -12,7 +12,7 @@ on:
 jobs:
 
   call-unit-test:
-    uses: ./.github/workflows/unit-test-template.yaml
+    uses: ./.github/workflows/templates/unit-test-template.yaml
     with:
       pr-number: ${{ github.event.pull_request.number }}
 
