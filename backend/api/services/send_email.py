@@ -326,7 +326,7 @@ def subscribed_users(notifications: list, request: object, request_type: str, em
             try:
                 test_info['user'] = request.update_user
             
-            except:
+            except KeyError as error:
                 test_info['user'] = request.user.update_user
 
             test_info['actions'] = []
