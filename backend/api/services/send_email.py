@@ -291,6 +291,7 @@ Send email to the users based on their notification subscription
 
 
 def subscribed_users(notifications: list, request: object, request_type: str, email_type: str):
+    print(notifications)
     user_email = None
     test_info = {}
     try:
@@ -320,13 +321,22 @@ def subscribed_users(notifications: list, request: object, request_type: str, em
                                             govt_org.id]) &
                         Q(id__in=subscribed_users)).exclude(email__isnull=True).exclude(email__exact='').exclude(username=request.update_user)
 
-            notification_objects = Notification.objects.filter(notification_id__in=notifications)
+            notification_objects = Notification.objects.filter(id__in=notifications)
+            
 
-            test_info['user'] = request.update_user
+            try:
+                test_info['user'] = request.update_user
+            
+            except:
+                test_info['user'] = request.user.update_user
+
+            test_info['actions'] = []
+            test_info['action_descriptions'] = []
             for object in notification_objects:
-                test_info['actions'] = test_info['actions'] + object.name
-                test_info['action_descriptions'] = test_info['action_descriptions'] + object.description
+                test_info['actions'].append(object.name)
+                test_info['action_descriptions'].append(object.description)
             test_info['time'] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+            print(test_info['actions'])
                     
             if user_email:
                 send_email(list(user_email), email_type, test_info)
