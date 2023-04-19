@@ -80,11 +80,11 @@ def create_initial_credit_transaction_data(apps, schema_editor):
 
     CreditClass.objects.using(db_alias).create(
         credit_class='A',
-        effective_date=datetime.now(),
+        effective_date=datetime.datetime.now(),
     )
     CreditClass.objects.using(db_alias).create(
         credit_class='B',
-        effective_date=datetime.now(),
+        effective_date=datetime.datetime.now(),
     )
     CreditTransactionType.objects.using(db_alias).create(
         transaction_type='Validation',
@@ -166,10 +166,6 @@ def convert_id_to_user(apps, schema_editor):
                 pass
 
             row.save()
-
-
-def do_nothing(apps, schema_editor):
-    pass
 
 def convert_user_to_id(apps, schema_editor):
     """
@@ -488,7 +484,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'vehicle',
-                'unique_together': {('make', 'model', 'trim', 'model_year')},
             },
             bases=(models.Model, db_comments.model_mixins.DBComments),
         ),
@@ -593,10 +588,6 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.PROTECT, to='api.fueltype'),
             preserve_default=False,
         ),
-        migrations.AlterUniqueTogether(
-            name='vehicle',
-            unique_together={('make', 'model', 'vehicle_class_code', 'vehicle_fuel_type', 'model_year')},
-        ),
         migrations.RemoveField(
             model_name='vehicle',
             name='credit_value',
@@ -617,10 +608,6 @@ class Migration(migrations.Migration):
             name='model_name',
             field=models.CharField(default='modelname', max_length=250),
             preserve_default=False,
-        ),
-        migrations.AlterUniqueTogether(
-            name='vehicle',
-            unique_together={('make', 'model_name', 'vehicle_class_code', 'vehicle_fuel_type', 'model_year')},
         ),
         migrations.RemoveField(
             model_name='vehicle',
@@ -1161,8 +1148,8 @@ class Migration(migrations.Migration):
                 ('expiration_date', models.DateField(blank=True, null=True)),
                 ('description', models.CharField(db_column='description', max_length=250)),
                 ('vehicle_class_code', models.CharField(max_length=3, unique=True)),
-                ('create_user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='api_vehicleclass_CREATE_USER', to='api.userprofile')),
-                ('update_user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='api_vehicleclass_UPDATE_USER', to='api.userprofile')),
+                ('create_user', models.CharField(default='SYSTEM', max_length=130)),
+                ('update_user', models.CharField(max_length=130, null=True)),
             ],
             options={
                 'db_table': 'vehicle_class_code',
@@ -1720,16 +1707,6 @@ class Migration(migrations.Migration):
         migrations.RemoveField(
             model_name='zevtype',
             name='update_user_id',
-        ),
-        migrations.AlterField(
-            model_name='vehicleclass',
-            name='create_user',
-            field=models.CharField(default='SYSTEM', max_length=130),
-        ),
-        migrations.AlterField(
-            model_name='vehicleclass',
-            name='update_user',
-            field=models.CharField(max_length=130, null=True),
         ),
         migrations.CreateModel(
             name='FixtureMigration',
