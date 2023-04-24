@@ -40,7 +40,7 @@ from api.permissions.model_year_report import ModelYearReportPermissions
 from api.services.minio import minio_put_object, minio_remove_object
 from api.services.model_year_report import (
     get_model_year_report_statuses,
-    adjust_credits,
+    adjust_credits, adjust_credits_reassessment
 )
 from api.services.model_year_report import check_validation_status_change
 from api.serializers.organization_ldv_sales import OrganizationLDVSalesSerializer
@@ -796,7 +796,6 @@ class ModelYearReportViewset(
                 username=supplemental_report.create_user
             ).first()
             supplemental_id = supplemental_report.id
-
         if validation_status == "RETURNED":
             previous_status = SupplementalReportHistory.objects.filter(
                 supplemental_report_id=supplemental_id
@@ -913,6 +912,11 @@ class ModelYearReportViewset(
                                     update_user=request.user.username
                                 )
 
+
+                if validation_status == "ASSESSED":
+                    ##adjust credits etc the same way as is done with
+                    # model year reports excpt pass it the supplemental
+                    adjust_credits_reassessment(supplemental_id, request)
                 SupplementalReportHistory.objects.create(
                     supplemental_report_id=supplemental_id,
                     validation_status=validation_status,
