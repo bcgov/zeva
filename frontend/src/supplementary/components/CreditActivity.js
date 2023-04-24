@@ -13,24 +13,20 @@ import getUnspecifiedClassReduction from '../../app/utilities/getUnspecifiedClas
 
 const CreditActivity = (props) => {
   useEffect(() => {
-    const structuredProvisionalBalance = {}
-
-    structuredProvisionalBalance.title = 'ProvisionalBalanceAfterCreditReduction'
+    const structuredProvisionalBalances = []
 
     let index = null
     updatedBalances.balances.forEach((obj, i) => {
-      if (obj.modelYear === reportYear) {
-        index = i
-      }
+      let structuredProvisionalBalance = {}
+      structuredProvisionalBalance.title = 'ProvisionalBalanceAfterCreditReduction'
+      structuredProvisionalBalance.modelYear = updatedBalances.balances[i].modelYear
+      structuredProvisionalBalance.creditA = updatedBalances.balances[i].newCreditA
+      structuredProvisionalBalance.creditB = updatedBalances.balances[i].newCreditB
+      structuredProvisionalBalance.originalAValue = updatedBalances.balances[i].creditA
+      structuredProvisionalBalance.originalBValue = updatedBalances.balances[i].creditB
+      structuredProvisionalBalances.push(structuredProvisionalBalance)
     })
-    if (index !== null) {
-      structuredProvisionalBalance.modelYear = updatedBalances.balances[index].modelYear
-      structuredProvisionalBalance.creditA = updatedBalances.balances[index].newCreditA
-      structuredProvisionalBalance.creditB = updatedBalances.balances[index].newCreditB
-      structuredProvisionalBalance.originalAValue = updatedBalances.balances[index].creditA
-      structuredProvisionalBalance.originalBValue = updatedBalances.balances[index].creditB
-    }
-    handleSupplementalChange(structuredProvisionalBalance)
+    handleSupplementalChange(structuredProvisionalBalances)
   }, [newLdvSales])
 
   const {
