@@ -5,14 +5,28 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import CustomPropTypes from '../../app/utilities/props'
-import ReactTable from '../../app/components/ReactTable'
+import ReactTable from 'react-table'
 import formatNumeric from '../../app/utilities/formatNumeric'
 import formatStatus from '../../app/utilities/formatStatus'
 import history from '../../app/History'
 import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests'
+import calculateNumberOfPages from '../../app/utilities/calculateNumberOfPages'
 
 const CreditRequestListTable = (props) => {
-  const { items, filtered, setFiltered, user } = props
+  const {
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    filters,
+    setFilters,
+    sorts,
+    setSorts,
+    items,
+    itemsCount,
+    loading,
+    user
+  } = props
 
   const columns = [
     {
@@ -30,7 +44,9 @@ const CreditRequestListTable = (props) => {
       accessor: 'submissionHistory',
       className: 'text-center',
       Header: 'Date',
-      maxWidth: 150
+      maxWidth: 150,
+      filterable: false,
+      sortable: false
     },
     {
       accessor: (item) =>
@@ -53,14 +69,18 @@ const CreditRequestListTable = (props) => {
       className: 'text-right',
       Header: 'Total Eligible Sales',
       maxWidth: 150,
-      id: 'total-sales'
+      id: 'total-sales',
+      filterable: false,
+      sortable: false
     },
     {
       accessor: (item) => (item.totalWarnings > 0 ? item.totalWarnings : '-'),
       className: 'text-right',
       Header: 'Not Eligible for Credits',
       id: 'warnings',
-      maxWidth: 250
+      maxWidth: 250,
+      filterable: false,
+      sortable: false
     },
     {
       accessor: (item) =>
@@ -70,7 +90,9 @@ const CreditRequestListTable = (props) => {
       className: 'text-right',
       Header: 'A-Credits',
       id: 'credits-a',
-      maxWidth: 150
+      maxWidth: 150,
+      filterable: false,
+      sortable: false
     },
     {
       accessor: (item) =>
@@ -80,7 +102,9 @@ const CreditRequestListTable = (props) => {
       className: 'text-right',
       Header: 'B-Credits',
       id: 'credits-b',
-      maxWidth: 150
+      maxWidth: 150,
+      filterable: false,
+      sortable: false
     },
     {
       accessor: (item) => {
@@ -102,68 +126,78 @@ const CreditRequestListTable = (props) => {
         return status
       },
       className: 'text-center text-capitalize',
-      filterMethod: (filter, row) => {
-        const filterValues = filter.value.split(',')
-
-        let returnValue = false
-
-        filterValues.forEach((filterValue) => {
-          const value = filterValue.toLowerCase().trim()
-
-          if (value !== '' && !returnValue) {
-            returnValue = row[filter.id].toLowerCase().includes(value)
-          }
-        })
-
-        return returnValue
-      },
       Header: 'Status',
       id: 'status',
-      maxWidth: 250
+      maxWidth: 250,
+      filterable: false,
+      sortable: false
     }
   ]
 
-  // Default sort by items by id int value
-  items.sort(function (a, b) {
-    return b.id - a.id
-  })
-
   return (
     <ReactTable
+      manual
       columns={columns}
       data={items}
-      filtered={filtered}
+      loading={loading}
+      filterable={true}
+      pageSizeOptions={[10, 20]}
+      page={page - 1}
+      pages={calculateNumberOfPages(itemsCount, pageSize)}
+      pageSize={pageSize}
+      sorted={sorts}
+      filtered={filters}
+      onPageChange={(pageIndex) => {
+        setPage(pageIndex + 1)
+      }}
+      onPageSizeChange={(pageSize) => {
+        setPage(1)
+        setPageSize(pageSize)
+      }}
+      onSortedChange={(newSorted) => {
+        setPage(1)
+        setSorts(newSorted)
+      }}
+      onFilteredChange={(filtered) => {
+        setPage(1)
+        setFilters(filtered)
+      }}
       getTrProps={(state, row) => {
         if (row && row.original) {
           return {
             onClick: () => {
               const { id } = row.original
-
               history.push(
                 ROUTES_CREDIT_REQUESTS.DETAILS.replace(/:id/g, id),
-                filtered
+                {
+                  page,
+                  pageSize,
+                  filters,
+                  sorts
+                }
               )
             },
             className: 'clickable'
           }
         }
-
         return {}
       }}
-      setFiltered={setFiltered}
     />
   )
 }
 
-CreditRequestListTable.defaultProps = {
-  filtered: undefined,
-  setFiltered: undefined
-}
-
 CreditRequestListTable.propTypes = {
-  filtered: PropTypes.arrayOf(PropTypes.shape()),
-  items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  setFiltered: PropTypes.func,
+  page: PropTypes.number.isRequired,
+  setPage: PropTypes.func.isRequired,
+  pageSize: PropTypes.number.isRequired,
+  setPageSize: PropTypes.func.isRequired,
+  filters: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  setFilters: PropTypes.func.isRequired,
+  sorts: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  setSorts: PropTypes.func.isRequired,
+  items: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  itemsCount: PropTypes.number.isRequired,
+  loading: PropTypes.bool.isRequired,
   user: CustomPropTypes.user.isRequired
 }
 

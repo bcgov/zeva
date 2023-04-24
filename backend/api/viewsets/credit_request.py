@@ -25,7 +25,7 @@ from api.models.sales_submission_content_reason import \
 from api.models.sales_submission_statuses import SalesSubmissionStatuses
 from api.permissions.credit_request import CreditRequestPermissions
 from api.serializers.sales_submission import SalesSubmissionSerializer, \
-    SalesSubmissionListSerializer, SalesSubmissionSaveSerializer
+    SalesSubmissionBaseListSerializer, SalesSubmissionListSerializer, SalesSubmissionSaveSerializer
 from api.serializers.sales_submission_content import \
     SalesSubmissionContentSerializer
 from api.serializers.sales_submission_content_reason import \
@@ -38,6 +38,7 @@ from api.services.sales_spreadsheet import create_sales_spreadsheet, \
 from api.services.send_email import notifications_credit_application
 from auditable.views import AuditableMixin
 import numpy as np
+from api.paginations import BasicPagination
 
 
 class CreditRequestViewset(
@@ -45,6 +46,7 @@ class CreditRequestViewset(
         mixins.ListModelMixin, mixins.RetrieveModelMixin,
         mixins.UpdateModelMixin
 ):
+    pagination_class = BasicPagination
     permission_classes = (CreditRequestPermissions,)
     http_method_names = ['get', 'patch', 'post', 'put']
 
@@ -72,6 +74,7 @@ class CreditRequestViewset(
         'partial_update': SalesSubmissionSaveSerializer,
         'update': SalesSubmissionSaveSerializer,
         'content': SalesSubmissionContentSerializer,
+        'paginated': SalesSubmissionBaseListSerializer
     }
 
     def get_serializer_class(self):
@@ -88,6 +91,44 @@ class CreditRequestViewset(
 
         if self.request.method != "PATCH":
             notifications_credit_application(submission)
+
+    @action(detail=False, methods=['post'])
+    def paginated(self, request):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        filters = request.data.get("filters")
+        sorts = request.data.get("sorts")
+        for filter in filters:
+            id = filter.get("id")
+            value = filter.get("value")
+            if id == "id":
+                queryset = queryset.filter(id=value)
+            elif id == "supplier":
+                queryset = queryset.filter(organization__short_name__icontains=value)
+        for sort in sorts:
+            id = sort.get("id")
+            desc = sort.get("desc")
+            if id == "id":
+                if desc:
+                    queryset = queryset.order_by("-id")
+                else:
+                    queryset = queryset.order_by("id")
+            elif id == "supplier":
+                if desc:
+                    queryset = queryset.order_by("-organization__short_name")
+                else:
+                    queryset = queryset.order_by("organization__short_name")
+        
+        if len(sorts) == 0:
+            queryset = queryset.order_by("-id")
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     @action(detail=False)
     def template(self, request):
