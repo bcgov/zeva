@@ -4,7 +4,7 @@ import logging
 from datetime import datetime
 import pickle
 from pickle import PickleError
-import magic
+import pylibmagic
 
 from dateutil.parser import parse
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
@@ -298,7 +298,7 @@ def get_organization(workbook):
 
 
 def validate_xls_file(file):
-    mime = magic.Magic(mime=True)
+    mime = pylibmagic.Magic(mime=True)
     mimetype = mime.from_file(file.temporary_file_path())
 
     if mimetype != "application/vnd.ms-excel":
