@@ -28,6 +28,7 @@ jobs:
         with:
           working-directory: frontend
           test-script: npm run test
+          output: report-markdown
         
   backend-unit-test:
 
