@@ -1,5 +1,6 @@
 module.exports = {
   testEnvironment: 'jest-environment-jsdom',
+  collectCoverage: false,
   collectCoverageFrom: ['src/**/*.{js,jsx}'],
   coverageThreshold: {
     global: {
