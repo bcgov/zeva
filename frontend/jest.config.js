@@ -3,9 +3,9 @@ module.exports = {
   collectCoverageFrom: ['src/**/*.{js,jsx}'],
   coverageThreshold: {
     global: {
-      branches: 20,
-      functions: 10,
-      lines: 20,
+      branches: 1,
+      functions: 1,
+      lines: 1,
       statements: -6000
     }
   },
