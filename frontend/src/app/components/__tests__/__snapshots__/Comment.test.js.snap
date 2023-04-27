@@ -19,7 +19,7 @@ exports[`Comment component renders correctly with comments 1`] = `
       Jane Doe
       ,
        
-      2022-01-01 5:00 pm
+      2022-01-01 6:00 pm
       :
        
       Another sample comment
