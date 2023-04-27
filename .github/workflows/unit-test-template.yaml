@@ -24,8 +24,12 @@ jobs:
       
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
-
+          node-version: 14.16
+          
+      - name: Remove all only keep backend files
+        run: |
+          node --version
+          
       - name: Fronend Jest coverage report
         uses: ArtiomTr/jest-coverage-report-action@v2.2.1
         continue-on-error: false
