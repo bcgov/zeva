@@ -55,9 +55,8 @@ class App extends Component {
 
     const authParams = {
       pkceMethod: 'S256',
-      redirectUri: CONFIG.KEYCLOAK.CALLBACK_URL,
       promiseType: 'native',
-      idpHint: 'idir'
+      onLoad: 'check-sso'
     }
 
     const idToken = window.sessionStorage.getItem('idToken')
