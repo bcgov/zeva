@@ -144,7 +144,6 @@ jest.mock('react-router-dom', () => ({
 
 jest.mock('../../../app/components/Button', () => {
   const React = require('react')
-  const { Link } = require('react-router-dom')
   return jest.fn().mockImplementation(({ buttonType, action, optionalText, optionalClassname, locationRoute, buttonTooltip, disabled, ...props }) => {
     const buttonText = optionalText
     return (
