@@ -163,9 +163,12 @@ const RenderCreditTransfersDetailsPage = (user) => {
         submission={submission}
         assertions={[]}
         user={user}
+        sufficientCredit={true}
+        handleCheckboxClick={() => {}}
         handleSubmit={() => {
           console.log('submit!')
         }}
+        errorMessage={[]}
       />
     </>
   )

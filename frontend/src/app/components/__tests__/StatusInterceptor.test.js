@@ -1,7 +1,7 @@
 import React from 'react'
 import TestRenderer from 'react-test-renderer'
 import { render, cleanup } from '@testing-library/react'
-import { BrowserRouter } from 'react-router-dom'
+import { MemoryRouter } from 'react-router-dom'
 import StatusInterceptor from '../StatusInterceptor'
 
 require('@babel/core')
@@ -31,9 +31,9 @@ describe('status interceptor', () => {
   })
   it('gives a 404 message', () => {
     const testRender = TestRenderer.create(
-      <BrowserRouter>
+      <MemoryRouter>
         <StatusInterceptor statusCode={404} />
-      </BrowserRouter>
+      </MemoryRouter>
     ).toJSON()
     expect(testRender.children[1].children[0].children).toEqual([
       'The requested page could not be found.'

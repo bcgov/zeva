@@ -18,6 +18,7 @@ describe('VehicleDetailsPage', () => {
         details={details}
         requestStateChange={() => {}}
         user={user}
+        isActiveChange={() => {}}
       />
     )
   })
