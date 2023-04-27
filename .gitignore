@@ -17,8 +17,6 @@ backend/minio/
 backend/db.json
 minio/minio_files/.minio.sys/
 
-frontend/src/app/components/__tests__/__snapshots__/
-
 package-lock.json
 
 storybook-static/
