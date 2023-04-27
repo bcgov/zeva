@@ -32,25 +32,21 @@ const ComplianceHistory = (props) => {
           let latestReturn = 0
           let submitted = null
           // Loop over report history to find the latest returned status to use as a starting point
-          for(let i = 0; i < report.history.length; i++){
-            if(!report.history[i].status){
+          for (let i = 0; i < report.history.length; i++) {
+            if (!report.history[i].status) {
               continue
-            }
-            else{
-              if(report.history[i].status === "SUBMITTED"){
+            } else {
+              if (report.history[i].status === 'SUBMITTED') {
                 submitted = i
-              }
-              else if(report.history[i].status === "RETURNED"){
+              } else if (report.history[i].status === 'RETURNED') {
                 latestReturn = i
               }
             }
           }
           // If there is a return status, then filter out old entries but keep the original submission
-          if(latestReturn > 0){
+          if (latestReturn > 0) {
             report.history.filter((value, index) => index === submitted || index >= latestReturn)
-          }
-          // Otherwise use the original submission index as the starting point and remove anything prior if they exist
-          else{
+          } else { // Otherwise use the original submission index as the starting point and remove anything prior if they exist
             report.history.filter((value, index) => index >= submitted)
           }
         })

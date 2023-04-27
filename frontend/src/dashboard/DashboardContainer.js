@@ -308,9 +308,8 @@ const DashboardContainer = (props) => {
         creditAgreementsIssued
       }
       setActivityCount(activityCount)
-    }).then(()=>{
+    }).then(() => {
       setLoading(false)
-
     })
   }
   const refreshList = () => {
