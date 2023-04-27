@@ -1,5 +1,5 @@
 from rest_framework.serializers import ValidationError
-
+from django.utils import timezone
 from .base_test_case import BaseTestCase
 from ..models.credit_transfer import CreditTransfer
 from ..models.credit_transaction import CreditTransaction
@@ -99,7 +99,8 @@ class TestTransfers(BaseTestCase):
             number_of_credits=100,
             total_value=400,
             transaction_type=CreditTransactionType.objects.get(
-                transaction_type="Validation")
+                transaction_type="Validation"),
+            transaction_timestamp=timezone.now()
         )
         transfer_enough = CreditTransfer.objects.create(
             credit_to=self.users['RTAN_BCEID'].organization,
