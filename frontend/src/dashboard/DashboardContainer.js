@@ -307,9 +307,14 @@ const DashboardContainer = (props) => {
         ...activityCount,
         creditAgreementsIssued
       }
-      setActivityCount(activityCount)
+
+      if (isMountedRef.current) {
+        setActivityCount(activityCount)
+      }
     }).then(() => {
-      setLoading(false)
+      if (isMountedRef.current) {
+        setLoading(false)
+      }
     })
   }
   const refreshList = () => {
