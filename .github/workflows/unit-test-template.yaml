@@ -26,7 +26,7 @@ jobs:
         with:
           node-version: 14.16
           
-      - name: Remove all only keep backend files
+      - name: Show node version
         run: |
           node --version
           
