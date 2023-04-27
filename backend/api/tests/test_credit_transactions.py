@@ -7,6 +7,7 @@ from ..models.credit_transaction import CreditTransaction
 from ..models.credit_transaction_type import CreditTransactionType
 from ..models.vehicle import Vehicle
 from ..models.weight_class import WeightClass
+from django.utils import timezone
 
 
 class TestOrganizations(BaseTestCase):
@@ -70,6 +71,7 @@ class TestOrganizations(BaseTestCase):
                     credit_value=t.vehicle.get_credit_value(),
                     total_value=t.value * t.vehicle.get_credit_value(),
                     weight_class=WeightClass.objects.get(weight_class_code='LDV'),
+                    transaction_timestamp=timezone.now(),
                 )
 
     def test_org1_credits(self):
