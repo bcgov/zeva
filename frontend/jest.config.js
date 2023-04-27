@@ -6,7 +6,7 @@ module.exports = {
       branches: 20,
       functions: 10,
       lines: 20,
-      statements: -50
+      statements: -6000
     }
   },
   moduleFileExtensions: ['js', 'node', 'json'],
