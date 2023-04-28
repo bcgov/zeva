@@ -26,17 +26,11 @@ jobs:
         with:
           node-version: 16.20.0
           
-      - name: Show node version
-        run: |
-          node --version
-          ls -l frontend/src/credits/components/__tests__
-          
       - name: Frontend Jest coverage report
         uses: ArtiomTr/jest-coverage-report-action@v2.2.1
         continue-on-error: false
         with:
           working-directory: frontend
-          test-script: npm run test
           output: report-markdown
         
   backend-unit-test:
