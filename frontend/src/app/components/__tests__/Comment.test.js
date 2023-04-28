@@ -1,8 +1,13 @@
 import React from 'react'
 import Comment from '../Comment'
 import renderer from 'react-test-renderer'
+import { advanceTo } from 'jest-date-mock'
 
 describe('Comment component', () => {
+  beforeEach(() => {
+    advanceTo(new Date(2021, 11, 31, 17, 0, 0)) // Mock the current date/time
+  })
+
   it('renders correctly with comments', () => {
     const commentArray = [
       {
