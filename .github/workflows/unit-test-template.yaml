@@ -29,6 +29,7 @@ jobs:
       - name: Show node version
         run: |
           node --version
+          ls -l src/credits/components/__tests__
           
       - name: Frontend Jest coverage report
         uses: ArtiomTr/jest-coverage-report-action@v2.2.1
