@@ -37,6 +37,7 @@ jobs:
           working-directory: frontend
           test-script: npm run test
           output: report-markdown
+          coveragePath: 'coverage/coverage-final.json'
         
   backend-unit-test:
 
