@@ -32,6 +32,8 @@ jobs:
         with:
           working-directory: frontend
           output: report-markdown
+          prnumber: ${{ inputs.pr-number }}
+          test-script: npm run test
         
   backend-unit-test:
 
