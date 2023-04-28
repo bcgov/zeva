@@ -94,6 +94,15 @@ python manage.py test
 or to run specific test files, point to the folder or file
 python manage.py test api.services.tests.test_credit_transfers.py
 
+### Squashing migrations
+
+To squash migrations: python manage.py squashmigrations {app_name} {#_of_migration_you_wish_to_squash_up_to_and_include}
+For example: "python manage.py squashmigrations api 0100" will squash all migrations between the first migration and the 100th migration, inclusive.
+
+If, in the migrations you're squashing, there exists RunPython operations executing certain functions, those functions will have to be copied into the squashed migration file, and the RunPython operations in the squashed migration file will have to reference those copied over functions.
+
+Once the squashed migration file has been run in all environments (check the django_migrations table in each environment's database to make sure there's a record of the squashed migration file being run), delete the squashed migrations and delete the "replaces" attribute in the Migration class of the squashed migration. If there are any migrations that depend on a deleted migration, you will have to change them to depend on the squashed migration instead. The squashed migration file is now a normal migration.
+
 # Project Pipeline
 
 The project uses pull request based pipeline is supported by [BCDK](https://github.com/BCDevOps/bcdk) and follow the instructions at [here](https://github.com/bcgov/zeva/tree/release-1.26.0/openshift/README.md) to setup the pipeline.
