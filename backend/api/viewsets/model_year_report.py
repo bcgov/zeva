@@ -912,11 +912,11 @@ class ModelYearReportViewset(
                                     update_user=request.user.username
                                 )
 
-
                 if validation_status == "ASSESSED":
-                    ##adjust credits etc the same way as is done with
+                    # adjust credits etc the same way as is done with
                     # model year reports excpt pass it the supplemental
                     adjust_credits_reassessment(supplemental_id, request)
+
                 SupplementalReportHistory.objects.create(
                     supplemental_report_id=supplemental_id,
                     validation_status=validation_status,
