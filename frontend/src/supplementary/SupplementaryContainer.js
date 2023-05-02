@@ -354,9 +354,11 @@ const SupplementaryContainer = (props) => {
 
   const handleSupplementalChange = (obj) => {
     let creditActivity = []
+
     if (newData && newData.creditActivity) {
       creditActivity = [...newData.creditActivity]
     }
+
     obj.forEach((balance) => {
       if (balance.modelYear && balance.title) {
         const index = creditActivity.findIndex((each) => {
@@ -367,7 +369,8 @@ const SupplementaryContainer = (props) => {
         })
         if (index >= 0) {
           if (
-            ((balance.creditA || balance.creditA === '') && (balance.creditB || balance.creditB === ''))
+            ((balance.creditA || balance.creditA === '' || balance.creditA === 0) &&
+              (balance.creditB || balance.creditB === '' || balance.creditB === 0))
           ) {
             // contains both credit type changes
             creditActivity[index] = {
@@ -377,7 +380,7 @@ const SupplementaryContainer = (props) => {
               originalAValue: balance.originalAValue,
               originalBValue: balance.originalBValue
             }
-          } else if (balance.creditA || balance.creditA === '') {
+          } else if (balance.creditA || balance.creditA === '' || balance.creditA === 0) {
             // contains A credit changes
             creditActivity[index] = {
               ...newData.creditActivity[index],
@@ -385,7 +388,7 @@ const SupplementaryContainer = (props) => {
               originalAValue: balance.originalAValue,
               originalBValue: balance.originalBValue
             }
-          } else if (balance.creditB || balance.creditB === '') {
+          } else if (balance.creditB || balance.creditB === '' || balance.creditB === 0) {
             // contains B credit changes
             creditActivity[index] = {
               ...newData.creditActivity[index],

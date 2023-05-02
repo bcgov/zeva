@@ -46,6 +46,18 @@ const CreditActivity = (props) => {
       structuredProvisionalBalance.originalBValue = updatedBalances.balances[i].creditB
       structuredProvisionalBalances.push(structuredProvisionalBalance)
     })
+
+    updatedBalances.deficits.forEach((obj, i) => {
+      const structuredProvisionalBalance = {}
+      structuredProvisionalBalance.title = 'CreditDeficit'
+      structuredProvisionalBalance.modelYear = updatedBalances.deficits[i].modelYear
+      structuredProvisionalBalance.creditA = updatedBalances.deficits[i].newCreditA || 0
+      structuredProvisionalBalance.creditB = updatedBalances.deficits[i].newCreditB || 0
+      structuredProvisionalBalance.originalAValue = updatedBalances.deficits[i].creditA
+      structuredProvisionalBalance.originalBValue = updatedBalances.deficits[i].creditB
+      structuredProvisionalBalances.push(structuredProvisionalBalance)
+    })
+
     handleSupplementalChange(structuredProvisionalBalances)
   }, [newLdvSales])
 

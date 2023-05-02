@@ -25,6 +25,8 @@ from api.models.organization import Organization
 from api.models.model_year_report_credit_transaction import ModelYearReportCreditTransaction
 from api.services.send_email import notifications_model_year_report
 from api.models.supplemental_report import SupplementalReport
+from api.models.supplemental_report_credit_activity import \
+    SupplementalReportCreditActivity
 
 def get_model_year_report_statuses(report, request_user=None):
     supplier_information_status = 'UNSAVED'
@@ -199,6 +201,8 @@ def adjust_credits_reassessment(id, request):
     model_year_report_id = SupplementalReport.objects.values_list(
     'model_year_report_id', flat=True).filter(
         id=id).first()
+    credit_class_a = CreditClass.objects.get(credit_class='A')
+    credit_class_b = CreditClass.objects.get(credit_class='B')
     model_year_report = ModelYearReport.objects.get(id=model_year_report_id)
     model_year_id = model_year_report.model_year.id
     organization_id = model_year_report.organization.id
@@ -212,6 +216,50 @@ def adjust_credits_reassessment(id, request):
             'update_user': request.user.username
             }
         )
+
+    deficits = SupplementalReportCreditActivity.objects.filter(
+        supplemental_report_id=reassessment.id,
+        category='CreditDeficit'
+    )
+    
+    for deficit in deficits:
+        if deficit.credit_a_value > 0:
+            OrganizationDeficits.objects.update_or_create(
+                credit_class=credit_class_a,
+                organization_id=organization_id,
+                model_year_id=model_year_id,
+                defaults={
+                    'credit_value': deficit.credit_a_value,
+                    'create_user': request.user.username,
+                    'update_user': request.user.username
+                }
+            )
+        else:
+            OrganizationDeficits.objects.filter(
+                credit_class=credit_class_a,
+                organization_id=organization_id,
+                model_year_id=model_year_id
+            ).delete()
+
+        if deficit.credit_b_value > 0:
+            OrganizationDeficits.objects.update_or_create(
+                credit_class=credit_class_b,
+                organization_id=organization_id,
+                model_year_id=model_year_id,
+                defaults={
+                    'credit_value': deficit.credit_b_value,
+                    'create_user': request.user.username,
+                    'update_user': request.user.username
+                }
+            )
+        else:
+            OrganizationDeficits.objects.filter(
+                credit_class=credit_class_b,
+                organization_id=organization_id,
+                model_year_id=model_year_id
+            ).delete()
+
+
 def adjust_credits(id, request):
     model_year = request.data.get('model_year')
     model_year_report_timestamp = "{}-09-30".format(
