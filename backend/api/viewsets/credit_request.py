@@ -105,6 +105,8 @@ class CreditRequestViewset(
                 queryset = queryset.filter(id=value)
             elif id == "supplier":
                 queryset = queryset.filter(organization__short_name__icontains=value)
+            elif id == "status":
+                queryset = self.filter_by_status(queryset, value)
         for sort in sorts:
             id = sort.get("id")
             desc = sort.get("desc")
@@ -129,6 +131,40 @@ class CreditRequestViewset(
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+    
+    def filter_by_status(self, queryset, value):
+        mappings = {
+            "validated": SalesSubmissionStatuses.CHECKED.value,
+            "issued": SalesSubmissionStatuses.VALIDATED.value,
+            "recommend issuance": SalesSubmissionStatuses.RECOMMEND_APPROVAL.value,
+            "new": SalesSubmissionStatuses.NEW.value,
+            "draft": SalesSubmissionStatuses.DRAFT.value,
+            "submitted": SalesSubmissionStatuses.SUBMITTED.value,
+            "rejected": SalesSubmissionStatuses.REJECTED.value,
+            "recommend rejection": SalesSubmissionStatuses.RECOMMEND_REJECTION.value,
+        }
+        mapping_keys = list(mappings.keys())
+        final_q = None
+        q_objects = []
+        search_terms = value.split(",")
+        for search_term in search_terms:
+            transformed_search_term = search_term.lower().strip()
+            if transformed_search_term != "":
+                for mapping_key in mapping_keys:
+                    if transformed_search_term in mapping_key:
+                        q_objects.append(Q(validation_status=mappings[mapping_key]))
+                    else:
+                        q_objects.append(Q(id=-1))
+        for index, q_object in enumerate(q_objects):
+            if index == 0:
+                final_q = q_object
+            else:
+                final_q = final_q | q_object
+
+        if final_q:
+            return queryset.filter(final_q)
+
+        return queryset
 
     @action(detail=False)
     def template(self, request):

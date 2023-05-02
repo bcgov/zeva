@@ -129,7 +129,6 @@ const CreditRequestListTable = (props) => {
       Header: 'Status',
       id: 'status',
       maxWidth: 250,
-      filterable: false,
       sortable: false
     }
   ]
@@ -141,6 +140,7 @@ const CreditRequestListTable = (props) => {
       data={items}
       loading={loading}
       filterable={true}
+      multisort={false}
       pageSizeOptions={[10, 20]}
       page={page - 1}
       pages={calculateNumberOfPages(itemsCount, pageSize)}
