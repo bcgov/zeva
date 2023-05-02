@@ -14,13 +14,14 @@ from ..models.organization import Organization
 from ..models.model_year import ModelYear
 from ..models.organization_deficits import OrganizationDeficits
 
+SAVE_API = '/api/compliance/reports/1/supplemental_save'
+CONTENT_TYPE = 'application/json'
 
 class TestSupplementalReports(BaseTestCase):
     def setUp(self):
         super().setUp()
 
         org1 = self.users['EMHILLIE_BCEID'].organization
-        gov = self.users['RTAN'].organization
 
         self.model_year_report = ModelYearReport.objects.create(
             id=1,
@@ -64,7 +65,7 @@ class TestSupplementalReports(BaseTestCase):
           "status": "DRAFT",
           "zevSales": []
         })
-        response = self.clients['RTAN'].patch("/api/compliance/reports/1/supplemental_save", data=data, content_type='application/json')
+        self.clients['RTAN'].patch(SAVE_API, data=data, content_type=CONTENT_TYPE)
         report = SupplementalReport.objects.last()
         self.assertEqual(report.ldv_sales, 1000)
 
@@ -91,7 +92,7 @@ class TestSupplementalReports(BaseTestCase):
           },
           "zevSales": []
         })
-        response = self.clients['RTAN'].patch("/api/compliance/reports/1/supplemental_save", data=data, content_type='application/json')
+        self.clients['RTAN'].patch(SAVE_API, data=data, content_type=CONTENT_TYPE)
         supplemental_reports = SupplementalReport.objects.all()
         self.assertEqual(supplemental_reports.count(), 2)
         most_recent_report = SupplementalReport.objects.last()
@@ -99,7 +100,7 @@ class TestSupplementalReports(BaseTestCase):
 
 
     def test_reassessment_deficit(self):
-        reassessment_report = SupplementalReport.objects.create(
+        SupplementalReport.objects.create(
             model_year_report=self.model_year_report,
             create_user='RTAN',
             ldv_sales=200,
@@ -132,13 +133,13 @@ class TestSupplementalReports(BaseTestCase):
           },
           "zevSales": []
         })
-        response = self.clients['RTAN'].patch("/api/compliance/reports/1/supplemental_save", data=data, content_type='application/json')
+        self.clients['RTAN'].patch(SAVE_API, data=data, content_type=CONTENT_TYPE)
 
         data = json.dumps({
           "newReport": False,
           "status": "SUBMITTED"
         })
-        response = self.clients['RTAN'].patch("/api/compliance/reports/1/supplemental_save", data=data, content_type='application/json')
+        self.clients['RTAN'].patch(SAVE_API, data=data, content_type=CONTENT_TYPE)
 
         report = SupplementalReport.objects.last()
         self.assertEqual(report.status, ModelYearReportStatuses.SUBMITTED)
@@ -150,7 +151,7 @@ class TestSupplementalReports(BaseTestCase):
           "newReport": False,
           "status": "ASSESSED"
         })
-        response = self.clients['RTAN'].patch("/api/compliance/reports/1/supplemental_save", data=data, content_type='application/json')
+        self.clients['RTAN'].patch(SAVE_API, data=data, content_type=CONTENT_TYPE)
 
         deficits = OrganizationDeficits.objects.all()
         self.assertEqual(deficits.count(), 2)
