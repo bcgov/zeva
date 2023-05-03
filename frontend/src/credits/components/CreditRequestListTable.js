@@ -20,6 +20,7 @@ const CreditRequestListTable = (props) => {
     setPageSize,
     filters,
     setFilters,
+    setApplyFiltersCount,
     sorts,
     setSorts,
     items,
@@ -129,7 +130,6 @@ const CreditRequestListTable = (props) => {
       Header: 'Status',
       id: 'status',
       maxWidth: 250,
-      filterable: false,
       sortable: false
     }
   ]
@@ -141,6 +141,7 @@ const CreditRequestListTable = (props) => {
       data={items}
       loading={loading}
       filterable={true}
+      multisort={false}
       pageSizeOptions={[10, 20]}
       page={page - 1}
       pages={calculateNumberOfPages(itemsCount, pageSize)}
@@ -158,9 +159,14 @@ const CreditRequestListTable = (props) => {
         setPage(1)
         setSorts(newSorted)
       }}
-      onFilteredChange={(filtered) => {
-        setPage(1)
+      onFilteredChange={(filtered, column, value) => {
         setFilters(filtered)
+        if (!value || (value && (value.endsWith(';') || value.endsWith("'")))) {
+          setPage(1)
+          setApplyFiltersCount((prev) => {
+            return prev + 1
+          })
+        }
       }}
       getTrProps={(state, row) => {
         if (row && row.original) {
@@ -193,6 +199,7 @@ CreditRequestListTable.propTypes = {
   setPageSize: PropTypes.func.isRequired,
   filters: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   setFilters: PropTypes.func.isRequired,
+  setApplyFiltersCount: PropTypes.func.isRequired,
   sorts: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   setSorts: PropTypes.func.isRequired,
   items: PropTypes.arrayOf(PropTypes.shape()).isRequired,
