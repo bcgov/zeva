@@ -32,6 +32,7 @@ const CreditRequestListContainer = (props) => {
   const [page, setPage] = useState(location && location.state && location.state.page ? location.state.page : 1)
   const [pageSize, setPageSize] = useState(location && location.state && location.state.pageSize ? location.state.pageSize : 10)
   const [filters, setFilters] = useState(getInitialFilters())
+  const [applyFiltersCount, setApplyFiltersCount] = useState(0)
   const [sorts, setSorts] = useState(location && location.state && location.state.sorts ? location.state.sorts : [])
   const [submissionsCount, setSubmissionsCount] = useState(0)
 
@@ -59,7 +60,7 @@ const CreditRequestListContainer = (props) => {
 
   useEffect(() => {
     refreshList()
-  }, [page, pageSize, filters, sorts])
+  }, [page, pageSize, applyFiltersCount, sorts])
 
   return [
     <CreditTransactionTabs active="credit-requests" key="tabs" user={user} />,
@@ -72,6 +73,7 @@ const CreditRequestListContainer = (props) => {
       setPageSize={setPageSize}
       filters={filters}
       setFilters={setFilters}
+      setApplyFiltersCount={setApplyFiltersCount}
       sorts={sorts}
       setSorts={setSorts}
       submissions={submissions}

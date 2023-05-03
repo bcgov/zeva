@@ -39,6 +39,7 @@ from api.services.send_email import notifications_credit_application
 from auditable.views import AuditableMixin
 import numpy as np
 from api.paginations import BasicPagination
+from api.services.filter_utilities import get_search_type_and_terms, get_search_q_object
 
 
 class CreditRequestViewset(
@@ -77,6 +78,12 @@ class CreditRequestViewset(
         'paginated': SalesSubmissionBaseListSerializer
     }
 
+    suffix_type_dict = {
+        ";": "icontains",
+        "'": "iexact"
+    }
+    delimiter = ","
+
     def get_serializer_class(self):
         if self.action in list(self.serializer_classes.keys()):
             return self.serializer_classes[self.action]
@@ -101,12 +108,19 @@ class CreditRequestViewset(
         for filter in filters:
             id = filter.get("id")
             value = filter.get("value")
+            search = get_search_type_and_terms(value, self.delimiter, self.suffix_type_dict)
+            search_type = search["type"]
+            search_terms = search["terms"]
             if id == "id":
-                queryset = queryset.filter(id=value)
+                q_obj = get_search_q_object(search_terms, search_type, "id")
+                if q_obj:
+                    queryset = queryset.filter(q_obj)
             elif id == "supplier":
-                queryset = queryset.filter(organization__short_name__icontains=value)
+                q_obj = get_search_q_object(search_terms, search_type, "organization__short_name")
+                if q_obj:
+                    queryset = queryset.filter(q_obj)
             elif id == "status":
-                queryset = self.filter_by_status(queryset, value)
+                queryset = self.filter_by_status(queryset, search_type, search_terms)
         for sort in sorts:
             id = sort.get("id")
             desc = sort.get("desc")
@@ -132,7 +146,7 @@ class CreditRequestViewset(
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
     
-    def filter_by_status(self, queryset, value):
+    def filter_by_status(self, queryset, search_type, search_terms):
         mappings = {
             "validated": SalesSubmissionStatuses.CHECKED.value,
             "issued": SalesSubmissionStatuses.VALIDATED.value,
@@ -144,22 +158,34 @@ class CreditRequestViewset(
             "recommend rejection": SalesSubmissionStatuses.RECOMMEND_REJECTION.value,
         }
         mapping_keys = list(mappings.keys())
-        final_q = None
-        q_objects = []
-        search_terms = value.split(",")
-        for search_term in search_terms:
-            transformed_search_term = search_term.lower().strip()
-            if transformed_search_term != "":
+        q_none = Q(id=-1)
+        contains_unmapped_search_term = False
+        mapped_search_terms = []
+
+        if search_type == "iexact":
+            for search_term in search_terms:
+                transformed_search_term = search_term.lower()
+                mapped_search_term = mappings.get(transformed_search_term)
+                if mapped_search_term:
+                    mapped_search_terms.append(mapped_search_term)
+                else:
+                    contains_unmapped_search_term = True
+        else:
+            for search_term in search_terms:
+                transformed_search_term = search_term.lower()
                 for mapping_key in mapping_keys:
                     if transformed_search_term in mapping_key:
-                        q_objects.append(Q(validation_status=mappings[mapping_key]))
+                        mapped_search_terms.append(mappings[mapping_key])
                     else:
-                        q_objects.append(Q(id=-1))
-        for index, q_object in enumerate(q_objects):
-            if index == 0:
-                final_q = q_object
+                        contains_unmapped_search_term = True
+                
+        final_q = get_search_q_object(mapped_search_terms, "exact", "validation_status")
+
+        if contains_unmapped_search_term:
+            if final_q:
+                return queryset.filter(final_q | q_none)
             else:
-                final_q = final_q | q_object
+                return queryset.filter(q_none)
 
         if final_q:
             return queryset.filter(final_q)

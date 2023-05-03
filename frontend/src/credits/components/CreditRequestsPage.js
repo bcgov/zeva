@@ -16,6 +16,7 @@ const CreditRequestsPage = (props) => {
     setPageSize,
     filters,
     setFilters,
+    setApplyFiltersCount,
     sorts,
     setSorts,
     submissions,
@@ -64,6 +65,7 @@ const CreditRequestsPage = (props) => {
             setPageSize={setPageSize}
             filters={filters}
             setFilters={setFilters}
+            setApplyFiltersCount={setApplyFiltersCount}
             sorts={sorts}
             setSorts={setSorts}
             items={submissions}
@@ -85,6 +87,7 @@ CreditRequestsPage.propTypes = {
   setPageSize: PropTypes.func.isRequired,
   filters: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   setFilters: PropTypes.func.isRequired,
+  setApplyFiltersCount: PropTypes.func.isRequired,
   sorts: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   setSorts: PropTypes.func.isRequired,
   submissions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
