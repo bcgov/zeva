@@ -158,7 +158,6 @@ class CreditRequestViewset(
             "recommend rejection": SalesSubmissionStatuses.RECOMMEND_REJECTION.value,
         }
         mapping_keys = list(mappings.keys())
-        q_none = Q(id=-1)
         contains_unmapped_search_term = False
         mapped_search_terms = []
 
@@ -179,13 +178,7 @@ class CreditRequestViewset(
                     else:
                         contains_unmapped_search_term = True
                 
-        final_q = get_search_q_object(mapped_search_terms, "exact", "validation_status")
-
-        if contains_unmapped_search_term:
-            if final_q:
-                return queryset.filter(final_q | q_none)
-            else:
-                return queryset.filter(q_none)
+        final_q = get_search_q_object(mapped_search_terms, "exact", "validation_status", [Q(id=-1)] if contains_unmapped_search_term else [])
 
         if final_q:
             return queryset.filter(final_q)

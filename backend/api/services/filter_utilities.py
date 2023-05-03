@@ -21,7 +21,7 @@ def get_search_type_and_terms(value, delimiter, suffix_type_dict):
     return {"type": search_type, "terms": search_terms}
 
 
-def get_search_q_object(search_terms, search_type, field_name):
+def get_search_q_object(search_terms, search_type, field_name, extra_q_objects=[]):
     final_q = None
     for index, term in enumerate(search_terms):
         filter_lookup = {
@@ -34,4 +34,11 @@ def get_search_q_object(search_terms, search_type, field_name):
             final_q = q_obj
         else:
             final_q = final_q | q_obj
+    
+    for extra_q_object in extra_q_objects:
+        if final_q:
+            final_q = final_q | extra_q_object
+        else:
+            final_q = extra_q_object
+
     return final_q
