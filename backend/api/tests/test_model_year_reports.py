@@ -12,6 +12,7 @@ from ..models.model_year_report_assessment_descriptions import ModelYearReportAs
 from ..models.model_year_report_ldv_sales import ModelYearReportLDVSales
 from ..models.organization import Organization
 from ..models.model_year import ModelYear
+from unittest.mock import patch
 
 
 class TestModelYearReports(BaseTestCase):
@@ -60,13 +61,25 @@ class TestModelYearReports(BaseTestCase):
 
     
     def test_assessment_patch_response(self):
-        makes = ["TESLATRUCK", "TESLA", "TEST"]
-        sales = {"2020":25}
-        data = json.dumps({"makes":makes, "sales":sales})
-        response = self.clients['RTAN'].patch("/api/compliance/reports/1/assessment_patch", data=data, content_type='application/json')
-        self.assertEqual(response.status_code, 200)
-        response = self.clients['RTAN'].patch("/api/compliance/reports/999/assessment_patch", data=data, content_type='application/json')
-        self.assertEqual(response.status_code, 404)
+        with patch('api.services.send_email.send_model_year_report_emails') as mock_send_model_year_report_emails:
+        
+            makes = ["TESLATRUCK", "TESLA", "TEST"]
+            sales = {"2020":25}
+            data = json.dumps({"makes":makes, "sales":sales})
+
+            response = self.clients['RTAN'].patch("/api/compliance/reports/1/assessment_patch", data=data, content_type='application/json')
+            self.assertEqual(response.status_code, 200)
+
+            response = self.clients['RTAN'].patch("/api/compliance/reports/999/assessment_patch", data=data, content_type='application/json')
+            self.assertEqual(response.status_code, 404)
+
+            data = json.dumps({"makes":makes, "sales":sales, "validation_status": 'SUBMITTED'})
+
+            response = self.clients['RTAN'].patch("/api/compliance/reports/1/assessment_patch", data=data, content_type='application/json')
+            self.assertEqual(response.status_code, 200)
+
+            # Test that email method is called properly
+            mock_send_model_year_report_emails.assert_called()
 
 
     def test_assessment_patch_logic(self):

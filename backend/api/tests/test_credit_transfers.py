@@ -1,3 +1,4 @@
+import json
 from rest_framework.serializers import ValidationError
 from django.utils import timezone
 from .base_test_case import BaseTestCase
@@ -10,6 +11,7 @@ from ..models.weight_class import WeightClass
 from ..models.credit_transaction_type import CreditTransactionType
 from ..services.credit_transaction import validate_transfer
 from ..models.organization import Organization
+from unittest.mock import patch
 
 
 class TestTransfers(BaseTestCase):
@@ -38,7 +40,6 @@ class TestTransfers(BaseTestCase):
             credit_to=org1,
             debit_from=org2,
         )
-
 
 
     def test_list_transfer(self):
@@ -131,5 +132,33 @@ class TestTransfers(BaseTestCase):
         self.assertEqual(seller_balance, 390)
         self.assertEqual(buyer_balance, 10)
 
-        
-       
+
+    def test_credit_transfer_create(self):
+        self.test_transfer_pass()
+
+        with patch('api.services.send_email.send_credit_transfer_emails') as mock_send_credit_transfer_emails:
+
+            response = self.clients['RTAN_BCEID'].post(
+              "/api/credit-transfers",
+              content_type='application/json',
+              data=json.dumps({
+                  'status': "SUBMITTED",
+                  'signing_confirmation': [1],
+                  'debit_from': self.users['EMHILLIE_BCEID'].organization.id,
+                  'credit_to': self.users['RTAN_BCEID'].organization.id,
+                  'content': [{
+                      'debit_from': self.users['EMHILLIE_BCEID'].organization.id,
+                      'credit_to': self.users['RTAN_BCEID'].organization.id,
+                      'model_year': '2020',
+                      'credit_class': 'A',
+                      'weight_class': 'LDV',
+                      'credit_value': 5,
+                      'dollar_value': 100
+                  }]
+              })
+            )
+
+            self.assertEqual(response.status_code, 201)
+            
+            # Test that email method is called properly
+            mock_send_credit_transfer_emails.assert_called()
