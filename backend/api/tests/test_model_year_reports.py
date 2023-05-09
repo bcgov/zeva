@@ -14,6 +14,7 @@ from ..models.organization import Organization
 from ..models.model_year import ModelYear
 from unittest.mock import patch
 
+CONTENT_TYPE = 'application/json'
 
 class TestModelYearReports(BaseTestCase):
     def setUp(self):
@@ -67,15 +68,15 @@ class TestModelYearReports(BaseTestCase):
             sales = {"2020":25}
             data = json.dumps({"makes":makes, "sales":sales})
 
-            response = self.clients['RTAN'].patch("/api/compliance/reports/1/assessment_patch", data=data, content_type='application/json')
+            response = self.clients['RTAN'].patch("/api/compliance/reports/1/assessment_patch", data=data, content_type=CONTENT_TYPE)
             self.assertEqual(response.status_code, 200)
 
-            response = self.clients['RTAN'].patch("/api/compliance/reports/999/assessment_patch", data=data, content_type='application/json')
+            response = self.clients['RTAN'].patch("/api/compliance/reports/999/assessment_patch", data=data, content_type=CONTENT_TYPE)
             self.assertEqual(response.status_code, 404)
 
             data = json.dumps({"makes":makes, "sales":sales, "validation_status": 'SUBMITTED'})
 
-            response = self.clients['RTAN'].patch("/api/compliance/reports/1/assessment_patch", data=data, content_type='application/json')
+            response = self.clients['RTAN'].patch("/api/compliance/reports/1/assessment_patch", data=data, content_type=CONTENT_TYPE)
             self.assertEqual(response.status_code, 200)
 
             # Test that email method is called properly
@@ -96,7 +97,7 @@ class TestModelYearReports(BaseTestCase):
         #     model_year_report=model_year_report
         # )
 
-        # response = self.clients['RTAN'].patch("/api/compliance/reports/1/assessment_patch", data=data, content_type='application/json')
+        # response = self.clients['RTAN'].patch("/api/compliance/reports/1/assessment_patch", data=data, content_type=CONTENT_TYPE)
 
         # sales_records = ModelYearReportLDVSales.objects.filter(
         #     model_year_id=model_year.id,
@@ -106,7 +107,7 @@ class TestModelYearReports(BaseTestCase):
         # self.assertEqual(sales_records.count(), 1)
 
         # data = json.dumps({"makes":makes, "sales":{"2020":10}})
-        # response = self.clients['RTAN'].patch("/api/compliance/reports/1/assessment_patch", data=data, content_type='application/json')
+        # response = self.clients['RTAN'].patch("/api/compliance/reports/1/assessment_patch", data=data, content_type=CONTENT_TYPE)
         
         # sales_records = ModelYearReportLDVSales.objects.filter(
         #     model_year_id=model_year.id,
@@ -123,7 +124,7 @@ class TestModelYearReports(BaseTestCase):
         # )
         
         # data = json.dumps({"makes":makes, "sales":{"2020":50}})
-        # response = self.clients['RTAN'].patch("/api/compliance/reports/1/assessment_patch", data=data, content_type='application/json')
+        # response = self.clients['RTAN'].patch("/api/compliance/reports/1/assessment_patch", data=data, content_type=CONTENT_TYPE)
 
         # sales_records = ModelYearReportLDVSales.objects.filter(
         #     model_year_id=model_year.id,

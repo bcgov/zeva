@@ -37,13 +37,13 @@ def get_email_service_token() -> dict:
     url = settings.EMAIL['CHES_AUTH_URL']
     if not client_id:
         LOGGER.error("Email service client id is not configured")
-        return
+        return {"error": "Email service client id is not configured"}
     if not client_secret:
         LOGGER.error("Email service client secret is not configured")
-        return
+        return {"error": "Email service client secret is not configured"}
     if not url:
         LOGGER.error("Common hosted email service authentication url is not configured")
-        return
+        return {"error": "Common hosted email service authentication url is not configured"}
     payload = {"grant_type": "client_credentials"}
     header = {"content-type": "application/x-www-form-urlencoded"}
     try:
@@ -56,12 +56,12 @@ def get_email_service_token() -> dict:
         )
         if not token_rs.status_code == 200:
             LOGGER.error("Error: Unexpected response", token_rs.text.encode('utf8'))
-            return
+            return {"error": "Unexpected response"}
         json_obj = token_rs.json()
         return json_obj
     except requests.exceptions.RequestException as e:
         LOGGER.error("Error: {}".format(e))
-        return
+        return {"error": str(e)}
 
 
 def generate_email_body(email_type: str, test_info: dict) -> str:
@@ -108,7 +108,7 @@ def generate_email_body(email_type: str, test_info: dict) -> str:
     return body
 
 
-def send_email(recipient_emails: str, email_type: str, test_info: dict) -> dict:
+def send_email(recipient_emails: list(str), email_type: str, test_info: dict):
     """
     Sends an email to the specified recipients with the given email type and test information.
 
