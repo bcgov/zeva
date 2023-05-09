@@ -18,6 +18,7 @@ from api.models.notification_subscription import NotificationSubscription
 from api.models.organization import Organization
 import requests
 from django.db.models import Q
+from typing import List
 
 LOGGER = logging.getLogger(__name__)
 
@@ -108,7 +109,7 @@ def generate_email_body(email_type: str, test_info: dict) -> str:
     return body
 
 
-def send_email(recipient_emails: list(str), email_type: str, test_info: dict):
+def send_email(recipient_emails: List[str], email_type: str, test_info: dict):
     """
     Sends an email to the specified recipients with the given email type and test information.
 
@@ -468,7 +469,7 @@ def send_zev_model_emails(notifications, request):
     :param request: The request object containing relevant data.
     """
     request_type = 'zev_model'
-    user_email = get_subscribed_user_emails(notifications, request.update_user, request_type)
+    user_email = get_subscribed_user_emails(notifications, request.user, request_type)
     notification_objects = get_notification_objects(notifications)
     test_info = prepare_test_info(request, notification_objects)
 
