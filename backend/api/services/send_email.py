@@ -250,7 +250,7 @@ def prepare_test_info(request, notification_objects):
     test_info = {}
     try:
         test_info['user'] = request.update_user
-    except KeyError as error:
+    except AttributeError as error:
         test_info['user'] = request.user.update_user
 
     test_info['actions'] = []
@@ -264,7 +264,6 @@ def prepare_test_info(request, notification_objects):
 
 
 def notifications_credit_transfers(transfer: object):
-    print('notifications_credit_transfers')
     """
     Handles notifications for credit transfer events based on the transfer status.
 

@@ -11,6 +11,7 @@ from ..models.weight_class import WeightClass
 from ..models.credit_transaction_type import CreditTransactionType
 from ..services.credit_transaction import validate_transfer
 from ..models.organization import Organization
+from ..models.signing_authority_confirmation import SigningAuthorityConfirmation
 from unittest.mock import patch
 
 
@@ -135,6 +136,13 @@ class TestTransfers(BaseTestCase):
 
     def test_credit_transfer_create(self):
         self.test_transfer_pass()
+
+        SigningAuthorityConfirmation.objects.create(
+            create_user=self.users['EMHILLIE_BCEID'],
+            has_accepted=True,
+            title='Admin',
+            signing_authority_assertion_id=1
+        )
 
         with patch('api.services.send_email.send_credit_transfer_emails') as mock_send_credit_transfer_emails:
 
