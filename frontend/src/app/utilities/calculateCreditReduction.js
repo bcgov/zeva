@@ -112,12 +112,12 @@ const calculateCreditReduction = (
         if (balanceIndex >= 0) {
           updatedBalances[balanceIndex] = {
             ...updatedBalances[balanceIndex],
-            creditA: updatedBalances[balanceIndex].creditA - remainingReduction
+            creditA: Math.round((updatedBalances[balanceIndex].creditA - remainingReduction) * 100) / 100
           }
         } else {
           updatedBalances.push({
             modelYear: balance.modelYear,
-            creditA: balance.creditA - remainingReduction,
+            creditA: Math.round((balance.creditA - remainingReduction) * 100) / 100,
             creditB: balance.creditB
           })
         }
@@ -128,7 +128,7 @@ const calculateCreditReduction = (
       } else {
         // if balance is less than the reduction value
         deduction.creditA = balance.creditA
-        remainingReduction -= balance.creditA
+        remainingReduction = Math.round((remainingReduction - balance.creditA) * 100) / 100
 
         const balanceIndex = updatedBalances.findIndex(
           (each) => each.modelYear === balance.modelYear
