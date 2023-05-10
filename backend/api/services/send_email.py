@@ -86,8 +86,6 @@ def generate_email_body(email_type: str, test_info: dict) -> str:
     <p>You received this email because you subscribed at the site above, to stop receiving these email logon to your account here <a href="https://zeroemissionvehicles.gov.bc.ca/notifications">https://zeroemissionvehicles.gov.bc.ca/notifications</a></p>
     """
 
-    print('environment', settings.ENV_NAME)
-
     if settings.ENV_NAME != "prod":
         action_info = "".join(
             f"""<p>Action: {action}</p>
@@ -107,12 +105,11 @@ def generate_email_body(email_type: str, test_info: dict) -> str:
         </body>
         </html>
         """
-    print('email body', body)
+
     return body
 
 
 def send_email(recipient_emails: List[str], email_type: str, test_info: dict):
-    print('SENDING EMAIL', email_type, test_info, recipient_emails)
     """
     Sends an email to the specified recipients with the given email type and test information.
 
@@ -131,23 +128,18 @@ def send_email(recipient_emails: List[str], email_type: str, test_info: dict):
     url = settings.EMAIL['CHES_EMAIL_URL']
 
     if not sender_email:
-        print('Sender email address not configured')
         LOGGER.error("Sender email address not configured")
         return
     if not url:
-        print('CHES email url not configured')
         LOGGER.error("CHES email url not configured")
         return
     if not sender_name:
-        print('Sender name not configured')
         LOGGER.error("Sender name not configured")
         return
     if not recipient_emails:
-        print('No recipient email address provided')
         LOGGER.error("No recipient email address provided")
         return
     if not email_type:
-        print('No email type provided')
         LOGGER.error("No email type provided")
         return
     
@@ -159,7 +151,6 @@ def send_email(recipient_emails: List[str], email_type: str, test_info: dict):
 
     token = get_email_service_token()
     if not token or 'access_token' not in token:
-        print('No email service token provided')
         LOGGER.error("No email service token provided", token)
         return
     auth_token = token['access_token']
@@ -167,7 +158,7 @@ def send_email(recipient_emails: List[str], email_type: str, test_info: dict):
     sender_info = formataddr((str(Header(sender_name, "utf-8")), sender_email))
 
     data = {
-            "bcc": recipient_emails + ['alex@bigthink.io'],
+            "bcc": recipient_emails,
             "bodyType": bodyType,
             "body": body,
             "cc": [],
@@ -190,23 +181,19 @@ def send_email(recipient_emails: List[str], email_type: str, test_info: dict):
             headers=headers
         )
         if not response.status_code == 201:
-            print('Error: Email failed!')
             LOGGER.error("Error: Email failed! %s", response.text.encode('utf8'))
             return
 
         email_res = response.json()
         if email_res:
-            print('Email sent successfully!')
             LOGGER.debug("Email sent successfully!", email_res['messages'][0]['msgId'])
             return
     except requests.exceptions.RequestException as e:
-        print("Error: {}".format(e))
         LOGGER.error("Error: {}".format(e))
         return
 
 
 def get_subscribed_user_emails(notifications, obj, request_type):
-    print('get_subscribed_user_emails', request_type)
     """
     Retrieves the subscribed user emails for the given notifications, object, and request type.
 
@@ -237,7 +224,6 @@ def get_subscribed_user_emails(notifications, obj, request_type):
             Q(organization_id__in=[obj.organization, govt_org.id]) &
             Q(id__in=subscribed_users)).exclude(email__isnull=True).exclude(email__exact='').exclude(username=obj.update_user)
 
-    print('user_emails', user_emails)
     return user_emails
 
 
@@ -252,7 +238,6 @@ def get_notification_objects(notifications):
 
 
 def prepare_test_info(request, notification_objects):
-    print('PREPARING TEST INFO')
     """
     Prepares a dictionary containing test information based on the given request and notification objects.
 
@@ -280,7 +265,6 @@ def prepare_test_info(request, notification_objects):
 
 
 def notifications_credit_transfers(transfer: object):
-    print('notifications_credit_transfers')
     """
     Handles notifications for credit transfer events based on the transfer status.
 
@@ -333,7 +317,6 @@ def notifications_credit_transfers(transfer: object):
 
 
 def notifications_model_year_report(validation_status, request, previous_status = 'NA'):
-    print('notifications_model_year_report')
     """
     Handles notifications for model year report events based on the validation status.
 
@@ -355,16 +338,12 @@ def notifications_model_year_report(validation_status, request, previous_status 
     elif validation_status == ModelYearReportStatuses.RETURNED.name:
         notifications = Notification.objects.values_list('id', flat=True).filter(
             notification_code='MODEL_YEAR_REPORT_RETURNED') 
-    elif validation_status == ModelYearReportStatuses.DRAFT.name and previous_status == ModelYearReportStatuses.ASSESSED.name:
-        # Incorrect Logic now that reassessments feature exists, temp to remove
-        notifications = Notification.objects.values_list('id', flat=True).filter(
-            notification_code='MODEL_YEAR_REPORT_RETURNED')
+
     if notifications:
         send_model_year_report_emails(notifications, request)
 
 
 def notifications_credit_agreement(agreement: object):
-    print('notifications_credit_agreement')
     """
     Handles notifications for credit agreement events based on the agreement status.
 
@@ -388,7 +367,6 @@ def notifications_credit_agreement(agreement: object):
 
 
 def notifications_credit_application(submission: object):
-    print('notifications_credit_application')
     """
     Handles notifications for credit application events based on the submission status.
 
@@ -418,7 +396,6 @@ def notifications_credit_application(submission: object):
 
 
 def notifications_zev_model(request: object, validation_status: str):
-    print('notifications_zev_model')
     """
     Handles notifications for ZEV model events based on the validation status.
 
@@ -448,7 +425,6 @@ def notifications_zev_model(request: object, validation_status: str):
 
 
 def send_credit_transfer_emails(notifications, transfer):
-    print('send_credit_transfer_emails')
     """
     Sends emails to subscribed users with credit transfer updates.
 
@@ -466,7 +442,6 @@ def send_credit_transfer_emails(notifications, transfer):
 
 
 def send_credit_application_emails(notifications, submission):
-    print('send_credit_application_emails')
     """
     Sends emails to subscribed users with credit application updates.
 
@@ -484,7 +459,6 @@ def send_credit_application_emails(notifications, submission):
 
 
 def send_zev_model_emails(notifications, request):
-    print('send_zev_model_emails')
     """
     Sends emails to subscribed users with ZEV model updates.
 
@@ -502,7 +476,6 @@ def send_zev_model_emails(notifications, request):
 
 
 def send_model_year_report_emails(notifications, request):
-    print('send_model_year_report_emails')
     """
     Sends emails to subscribed users with model year report updates.
 
@@ -520,7 +493,6 @@ def send_model_year_report_emails(notifications, request):
 
 
 def send_credit_agreement_emails(notifications, agreement):
-    print('send_credit_agreement_emails')
     """
     Sends emails to subscribed users with credit agreement updates.
 
