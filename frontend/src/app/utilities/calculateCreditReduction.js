@@ -1,4 +1,4 @@
-const reduceFromBalance = (balance, creditType, paramRemainingReduction) => {
+export const reduceFromBalance = (balance, creditType, paramRemainingReduction) => {
   let remainingReduction = paramRemainingReduction
   const deduction = {
     creditA: 0,
@@ -21,7 +21,7 @@ const reduceFromBalance = (balance, creditType, paramRemainingReduction) => {
   }
 }
 
-const updateBalances = (paramUpdatedBalances, balance, deduction) => {
+export const updateBalances = (paramUpdatedBalances, balance, deduction) => {
   const updatedBalances = paramUpdatedBalances
 
   const balanceIndex = updatedBalances.findIndex(
@@ -43,7 +43,7 @@ const updateBalances = (paramUpdatedBalances, balance, deduction) => {
   }
 }
 
-const updateDeductions = (paramDeductions, balance, deduction) => {
+export const updateDeductions = (paramDeductions, balance, deduction) => {
   const deductions = paramDeductions
 
   const index = deductions.findIndex(
