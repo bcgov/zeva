@@ -29,17 +29,20 @@ const CreditRequestListTable = (props) => {
     user
   } = props
 
+  const filterPlaceholderText = 'Press ";" to search'
+
   const columns = [
     {
       id: 'id',
       accessor: 'id',
       className: 'text-center',
       Header: 'ID',
-      maxWidth: 100,
+      maxWidth: 180,
       sortMethod: (a, b) => {
         return b.id - a.id
       },
-      Cell: (item) => <span>CA-{item.original.id}</span>
+      Cell: (item) => <span>CA-{item.original.id}</span>,
+      Placeholder: filterPlaceholderText
     },
     {
       accessor: 'submissionHistory',
@@ -56,7 +59,8 @@ const CreditRequestListTable = (props) => {
       Header: 'Supplier',
       id: 'supplier',
       show: user.isGovernment,
-      maxWidth: 200
+      maxWidth: 200,
+      Placeholder: filterPlaceholderText
     },
     {
       accessor: (item) => {
@@ -130,7 +134,8 @@ const CreditRequestListTable = (props) => {
       Header: 'Status',
       id: 'status',
       maxWidth: 250,
-      sortable: false
+      sortable: false,
+      Placeholder: filterPlaceholderText
     }
   ]
 
