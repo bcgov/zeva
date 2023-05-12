@@ -3,7 +3,7 @@ const getTotalReduction = (ldvSales, complianceRatio) => {
     return 0
   }
 
-  const totalReduction = ldvSales * (complianceRatio / 100)
+  const totalReduction = Math.round(ldvSales * (complianceRatio / 100) * 100) / 100
 
   return totalReduction
 }
