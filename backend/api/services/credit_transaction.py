@@ -77,7 +77,7 @@ def adjust_deficits(organization):
     total_current_reduction = 0
 
     for balance in balances:
-        remaining_balance = balance.get('total_value')
+        remaining_balance = Decimal(balance.get('total_value'))
 
         if remaining_balance <= 0:
             continue
