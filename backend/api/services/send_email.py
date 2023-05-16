@@ -33,6 +33,9 @@ def get_email_service_token() -> dict:
 
     :return: A dictionary containing the token information if successful, or None if an error occurs.
     """
+    if settings.DEBUG:
+        print('starting email service')
+
     client_id = settings.EMAIL['EMAIL_SERVICE_CLIENT_ID']
     client_secret = settings.EMAIL['EMAIL_SERVICE_CLIENT_SECRET']
     url = settings.EMAIL['CHES_AUTH_URL']
@@ -48,6 +51,9 @@ def get_email_service_token() -> dict:
     payload = {"grant_type": "client_credentials"}
     header = {"content-type": "application/x-www-form-urlencoded"}
     try:
+        if settings.DEBUG:
+            print('fetching email token')
+
         token_rs = requests.post(
             url, 
             data=payload,
@@ -56,11 +62,15 @@ def get_email_service_token() -> dict:
             verify=True
         )
         if not token_rs.status_code == 200:
+            if settings.DEBUG:
+                print("Error: Unexpected response", token_rs.text.encode('utf8'))
             LOGGER.error("Error: Unexpected response", token_rs.text.encode('utf8'))
             return {"error": "Unexpected response"}
         json_obj = token_rs.json()
         return json_obj
     except requests.exceptions.RequestException as e:
+        if settings.DEBUG:
+            print("Error: {}".format(e))
         LOGGER.error("Error: {}".format(e))
         return {"error": str(e)}
 
@@ -105,6 +115,8 @@ def generate_email_body(email_type: str, test_info: dict) -> str:
         </body>
         </html>
         """
+    if settings.DEBUG:
+        print('generated email body', body)
 
     return body
 
@@ -123,6 +135,10 @@ def send_email(recipient_emails: List[str], email_type: str, test_info: dict):
     :param test_info: A dictionary containing test information, such as user, actions, action descriptions, and time.
     :return: None if the email is sent successfully, or a dictionary containing an error message if an error occurs.
     """
+
+    if settings.DEBUG:
+        print('drafting email')
+    
     sender_email = settings.EMAIL['SENDER_EMAIL']
     sender_name = settings.EMAIL['SENDER_NAME']
     url = settings.EMAIL['CHES_EMAIL_URL']
@@ -151,6 +167,8 @@ def send_email(recipient_emails: List[str], email_type: str, test_info: dict):
 
     token = get_email_service_token()
     if not token or 'access_token' not in token:
+        if settings.DEBUG:
+            print('access_token failed')
         LOGGER.error("No email service token provided", token)
         return
     auth_token = token['access_token']
@@ -175,17 +193,24 @@ def send_email(recipient_emails: List[str], email_type: str, test_info: dict):
     headers = {"Authorization": 'Bearer ' + auth_token,
                "Content-Type": "application/json"}
     try:
+        if settings.DEBUG:
+            print('posting email request')
+
         response = requests.post(
             url,
             data=json.dumps(data),
             headers=headers
         )
         if not response.status_code == 201:
+            if settings.DEBUG:
+                print("Error: Email failed! %s", response.text.encode('utf8'))
             LOGGER.error("Error: Email failed! %s", response.text.encode('utf8'))
             return
 
         email_res = response.json()
         if email_res:
+            if settings.DEBUG:
+                print("Email sent successfully!", email_res['messages'][0]['msgId'])
             LOGGER.debug("Email sent successfully!", email_res['messages'][0]['msgId'])
             return
     except requests.exceptions.RequestException as e:
@@ -207,6 +232,9 @@ def get_subscribed_user_emails(notifications, obj, request_type):
     :param request_type: A string that indicates the type of request ('credit_transfer', 'model_year_report', etc.).
     :return: A list of subscribed user emails.
     """
+    if settings.DEBUG:
+        print('starting get_subscribed_user_emails')
+
     govt_org = Organization.objects.filter(is_government=True).first()
     subscribed_users = NotificationSubscription.objects.values_list('user_profile_id', flat=True).filter(
         notification__id__in=notifications).filter(user_profile__is_active=True)
@@ -223,6 +251,9 @@ def get_subscribed_user_emails(notifications, obj, request_type):
         user_emails = UserProfile.objects.values_list('email', flat=True).filter(
             Q(organization_id__in=[obj.organization, govt_org.id]) &
             Q(id__in=subscribed_users)).exclude(email__isnull=True).exclude(email__exact='').exclude(username=obj.update_user)
+
+    if settings.DEBUG:
+        print('get_subscribed_user_emails', user_emails)
 
     return user_emails
 
@@ -248,6 +279,9 @@ def prepare_test_info(request, notification_objects):
     :param notification_objects: A QuerySet of Notification objects.
     :return: A dictionary containing test information.
     """
+    if settings.DEBUG:
+        print('preparing test info')
+
     test_info = {}
     try:
         test_info['user'] = request.update_user
@@ -260,6 +294,9 @@ def prepare_test_info(request, notification_objects):
         test_info['actions'].append(object.name)
         test_info['action_descriptions'].append(object.description)
     test_info['time'] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
+    if settings.DEBUG:
+        print('test info', test_info)
 
     return test_info
 
@@ -312,6 +349,9 @@ def notifications_credit_transfers(transfer: object):
             Q(notification_code='CREDIT_TRANSFER_REJECTED_GOVT') |
             Q(notification_code='CREDIT_TRANSFER_REJECTED'))
 
+    if settings.DEBUG:
+        print('notifications_credit_transfers', notifications)
+
     if notifications:
         send_credit_transfer_emails(notifications, transfer)
 
@@ -339,6 +379,9 @@ def notifications_model_year_report(validation_status, request, previous_status 
         notifications = Notification.objects.values_list('id', flat=True).filter(
             notification_code='MODEL_YEAR_REPORT_RETURNED') 
 
+    if settings.DEBUG:
+        print('notifications_model_year_report', notifications)
+
     if notifications:
         send_model_year_report_emails(notifications, request)
 
@@ -361,6 +404,9 @@ def notifications_credit_agreement(agreement: object):
     elif validation_status == CreditAgreementStatuses.RETURNED:
         notifications = Notification.objects.values_list('id', flat=True).filter(
             notification_code='CREDIT_AGREEMENT_RETURNED_WITH_COMMENT') 
+
+    if settings.DEBUG:
+        print('notifications_credit_agreement', notifications)
 
     if notifications:
         send_credit_agreement_emails(notifications, agreement)
@@ -391,6 +437,9 @@ def notifications_credit_application(submission: object):
         notifications = Notification.objects.values_list('id', flat=True).filter(
             notification_code='CREDIT_APPLICATION_SUBMITTED')
 
+    if settings.DEBUG:
+        print('notifications_credit_application', notifications)
+
     if notifications:
         send_credit_application_emails(notifications, submission)
 
@@ -420,6 +469,9 @@ def notifications_zev_model(request: object, validation_status: str):
         notifications = Notification.objects.values_list('id', flat=True).filter(
             notification_code='ZEV_MODEL_RANGE_REPORT_TEST_RESULT_REQUESTED')
 
+    if settings.DEBUG:
+        print('notifications_zev_model', notifications)
+
     if notifications:
         send_zev_model_emails(notifications, request)
 
@@ -431,6 +483,9 @@ def send_credit_transfer_emails(notifications, transfer):
     :param notifications: Notification objects for the credit transfer event.
     :param transfer: The credit transfer object.
     """
+    if settings.DEBUG:
+        print('send_credit_transfer_emails')
+
     request_type = 'credit_transfer'
     user_emails = get_subscribed_user_emails(notifications, transfer, request_type)
     notification_objects = get_notification_objects(notifications)
@@ -448,14 +503,17 @@ def send_credit_application_emails(notifications, submission):
     :param notifications: Notification objects for the credit application event.
     :param submission: The credit application submission object.
     """
+    if settings.DEBUG:
+        print('send_credit_application_emails')
+    
     request_type = 'credit_application'
-    user_email = get_subscribed_user_emails(notifications, submission.update_user, request_type)
+    user_emails = get_subscribed_user_emails(notifications, submission.update_user, request_type)
     notification_objects = get_notification_objects(notifications)
     test_info = prepare_test_info(submission, notification_objects)
 
-    if user_email:
+    if user_emails:
         email_type = '<b>credit application update</b>'
-        send_email(list(user_email), email_type, test_info)
+        send_email(list(user_emails), email_type, test_info)
 
 
 def send_zev_model_emails(notifications, request):
@@ -465,14 +523,17 @@ def send_zev_model_emails(notifications, request):
     :param notifications: Notification objects for the ZEV model event.
     :param request: The request object containing relevant data.
     """
+    if settings.DEBUG:
+        print('send_zev_model_emails')
+    
     request_type = 'zev_model'
-    user_email = get_subscribed_user_emails(notifications, request.user, request_type)
+    user_emails = get_subscribed_user_emails(notifications, request.user, request_type)
     notification_objects = get_notification_objects(notifications)
     test_info = prepare_test_info(request, notification_objects)
 
-    if user_email:
+    if user_emails:
         email_type = '<b>ZEV model update</b>'
-        send_email(list(user_email), email_type, test_info)
+        send_email(list(user_emails), email_type, test_info)
 
 
 def send_model_year_report_emails(notifications, request):
@@ -482,6 +543,9 @@ def send_model_year_report_emails(notifications, request):
     :param notifications: Notification objects for the model year report event.
     :param request: The request object containing relevant data.
     """
+    if settings.DEBUG:
+        print('send_model_year_report_emails')
+    
     request_type = 'model_year_report'
     user_emails = get_subscribed_user_emails(notifications, request, request_type)
     notification_objects = get_notification_objects(notifications)
@@ -499,6 +563,9 @@ def send_credit_agreement_emails(notifications, agreement):
     :param notifications: Notification objects for the credit agreement event.
     :param agreement: The credit agreement object.
     """
+    if settings.DEBUG:
+        print('send_credit_agreement_emails')
+    
     request_type = 'credit_agreement'
     user_emails = get_subscribed_user_emails(notifications, agreement.update_user, request_type)
     notification_objects = get_notification_objects(notifications)
