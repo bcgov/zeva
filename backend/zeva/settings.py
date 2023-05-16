@@ -37,7 +37,7 @@ WELL_KNOWN_ENDPOINT = os.getenv('WELL_KNOWN_ENDPOINT',
   'https://dev.loginproxy.gov.bc.ca/auth/realms/standard/.well-known/openid-configuration')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
+DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'true'
 DEVELOPMENT = os.getenv('DEVELOPMENT', 'False') == 'True'
 TESTING = 'test' in sys.argv
 RUNSERVER = 'runserver' in sys.argv
