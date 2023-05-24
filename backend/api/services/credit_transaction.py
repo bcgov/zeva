@@ -352,3 +352,11 @@ def validate_transfer(transfer):
     for year, v in credit_total.items():
         for credit_class, credit_value in v.items():
             adjust_deficits(transfer.credit_to)
+
+
+def get_map_of_credit_transactions(key_field, value_field):
+    result = {}
+    credit_transactions = CreditTransaction.objects.only(key_field, value_field)
+    for credit_transaction in credit_transactions:
+        result[getattr(credit_transaction, key_field)] = getattr(credit_transaction, value_field)
+    return result

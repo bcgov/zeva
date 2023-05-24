@@ -11,6 +11,7 @@ import formatStatus from '../../app/utilities/formatStatus'
 import history from '../../app/History'
 import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests'
 import calculateNumberOfPages from '../../app/utilities/calculateNumberOfPages'
+import CustomFilterComponent from '../../app/components/CustomFilterComponent'
 
 const CreditRequestListTable = (props) => {
   const {
@@ -29,7 +30,14 @@ const CreditRequestListTable = (props) => {
     user
   } = props
 
-  const filterPlaceholderText = 'Press ";" to search'
+  const filterPlaceholderText = 'Press "Enter" to search'
+
+  const applyFilters = () => {
+    setPage(1)
+    setApplyFiltersCount((prev) => {
+      return prev + 1
+    })
+  }
 
   const columns = [
     {
@@ -37,20 +45,21 @@ const CreditRequestListTable = (props) => {
       accessor: 'id',
       className: 'text-center',
       Header: 'ID',
-      maxWidth: 180,
+      maxWidth: 200,
       sortMethod: (a, b) => {
         return b.id - a.id
       },
       Cell: (item) => <span>CA-{item.original.id}</span>,
-      Placeholder: filterPlaceholderText
+      Placeholder: filterPlaceholderText,
+      applyFilters
     },
     {
+      id: 'date',
       accessor: 'submissionHistory',
       className: 'text-center',
       Header: 'Date',
       maxWidth: 150,
-      filterable: false,
-      sortable: false
+      filterable: false
     },
     {
       accessor: (item) =>
@@ -60,7 +69,8 @@ const CreditRequestListTable = (props) => {
       id: 'supplier',
       show: user.isGovernment,
       maxWidth: 200,
-      Placeholder: filterPlaceholderText
+      Placeholder: filterPlaceholderText,
+      applyFilters
     },
     {
       accessor: (item) => {
@@ -135,7 +145,8 @@ const CreditRequestListTable = (props) => {
       id: 'status',
       maxWidth: 250,
       sortable: false,
-      Placeholder: filterPlaceholderText
+      Placeholder: filterPlaceholderText,
+      applyFilters
     }
   ]
 
@@ -166,13 +177,11 @@ const CreditRequestListTable = (props) => {
       }}
       onFilteredChange={(filtered, column, value) => {
         setFilters(filtered)
-        if (!value || (value && (value.endsWith(';') || value.endsWith("'")))) {
-          setPage(1)
-          setApplyFiltersCount((prev) => {
-            return prev + 1
-          })
+        if (!value) {
+          applyFilters()
         }
       }}
+      FilterComponent={CustomFilterComponent}
       getTrProps={(state, row) => {
         if (row && row.original) {
           return {

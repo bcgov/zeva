@@ -86,7 +86,7 @@ const ActionsBceid = (props) => {
             icon="check-square"
             boldText="Credit Applications"
             regularText={`${activityCount.creditsDraft} saved awaiting submission`}
-            linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=Draft;`}
+            linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=Draft`}
           />
         )}
         {activityCount.creditsAwaiting > 0 &&
@@ -96,7 +96,7 @@ const ActionsBceid = (props) => {
               icon="check-square"
               boldText="Credit Applications"
               regularText={`${activityCount.creditsAwaiting} awaiting validation`}
-              linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=Submitted;`}
+              linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=Submitted`}
             />
         )}
         {activityCount.creditsIssued > 0 &&
@@ -106,7 +106,7 @@ const ActionsBceid = (props) => {
               icon="check-square"
               boldText="Credit Applications"
               regularText={`${activityCount.creditsIssued} processed by Government of B.C.`}
-              linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=Issued;`}
+              linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=Issued`}
             />
         )}
         {activityCount.creditsDraft === 0 &&
