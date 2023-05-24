@@ -46,7 +46,7 @@ const ActionsIdir = (props) => {
               icon="check-square"
               boldText="Credit Applications"
               regularText={`${activityCount.creditsAnalyst} require analyst/engineer validation`}
-              linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=Submitted,Validated;`}
+              linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=Submitted,Validated`}
             />
         )}
         {activityCount.creditsRecommendApprove > 0 && (
@@ -55,7 +55,7 @@ const ActionsIdir = (props) => {
             icon="check-square"
             boldText="Credit Applications"
             regularText={`${activityCount.creditsRecommendApprove} recommended for director approval`}
-            linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=Recommend%20Issuance;`}
+            linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=Recommend%20Issuance`}
           />
         )}
         {activityCount.creditsRecommendReject > 0 && (
@@ -64,7 +64,7 @@ const ActionsIdir = (props) => {
             icon="check-square"
             boldText="Credit Applications"
             regularText={`${activityCount.creditsRecommendReject} recommended for director rejection`}
-            linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=Recommend%20Rejection;`}
+            linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=Recommend%20Rejection`}
           />
         )}
         {((!user.hasPermission('RECOMMEND_SALES') &&
