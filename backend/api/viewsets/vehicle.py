@@ -143,7 +143,7 @@ class VehicleViewSet(
         request.organization = vehicle.organization
         request.update_user = vehicle.update_user
 
-        notifications_zev_model(request, request.data['validation_status'])
+        notifications_zev_model(vehicle, request.data['validation_status'])
 
         return Response(serializer.data)
 
