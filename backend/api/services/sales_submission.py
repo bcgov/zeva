@@ -62,7 +62,6 @@ def get_map_of_sales_submission_ids_to_timestamps(user_is_government):
                             "update_timestamp"
                         ]
                         break
-            pass
         if sales_submission_id not in result:
             result[sales_submission_id] = timezone.now()
     return result
