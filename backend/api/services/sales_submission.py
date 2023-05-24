@@ -20,7 +20,7 @@ def get_map_of_sales_submission_ids_to_timestamps(user_is_government):
         )
     )
     map_of_credit_transaction_ids_to_timestamps = get_map_of_credit_transactions(
-        "id", "update_timestamp"
+        "id", "transaction_timestamp"
     )
     map_of_submission_ids_to_credit_transaction_ids = (
         get_map_of_sales_submission_ids_to_credit_transaction_ids()
@@ -28,10 +28,11 @@ def get_map_of_sales_submission_ids_to_timestamps(user_is_government):
     for sales_submission in sales_submissions:
         sales_submission_id = sales_submission.id
         sales_submission_status = sales_submission.validation_status.value
-        credit_transaction_id = map_of_submission_ids_to_credit_transaction_ids.get(
+        credit_transaction_ids = map_of_submission_ids_to_credit_transaction_ids.get(
             sales_submission_id
         )
-        if sales_submission.part_of_model_year_report and credit_transaction_id:
+        if sales_submission.part_of_model_year_report and credit_transaction_ids:
+            credit_transaction_id = credit_transaction_ids[0]
             result[sales_submission_id] = map_of_credit_transaction_ids_to_timestamps[
                 credit_transaction_id
             ]
@@ -42,13 +43,13 @@ def get_map_of_sales_submission_ids_to_timestamps(user_is_government):
                 )
             )
             if (not user_is_government) and sales_submission_status in [
-                SalesSubmissionStatuses.RECOMMEND_REJECTION,
-                SalesSubmissionStatuses.RECOMMEND_APPROVAL,
-                SalesSubmissionStatuses.CHECKED,
+                SalesSubmissionStatuses.RECOMMEND_REJECTION.value,
+                SalesSubmissionStatuses.RECOMMEND_APPROVAL.value,
+                SalesSubmissionStatuses.CHECKED.value,
             ]:
                 for status_and_timestamp in statuses_and_timestamps:
                     status = status_and_timestamp["validation_status"]
-                    if status == SalesSubmissionStatuses.SUBMITTED:
+                    if status == SalesSubmissionStatuses.SUBMITTED.value:
                         result[sales_submission_id] = status_and_timestamp[
                             "update_timestamp"
                         ]
@@ -77,7 +78,9 @@ def get_map_of_sales_submission_ids_to_credit_transaction_ids():
         for row in rows:
             sales_submission_id = row[0]
             credit_transaction_id = row[1]
-            result[sales_submission_id] = credit_transaction_id
+            if sales_submission_id not in result:
+                result[sales_submission_id] = []
+            result[sales_submission_id].append(credit_transaction_id)
         return result
 
 
