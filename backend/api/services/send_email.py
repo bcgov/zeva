@@ -239,6 +239,9 @@ def get_subscribed_user_emails(notifications, obj, request_type):
     subscribed_users = NotificationSubscription.objects.values_list('user_profile_id', flat=True).filter(
         notification__id__in=notifications).filter(user_profile__is_active=True)
 
+    if settings.DEBUG:
+        print('subscribed users', subscribed_users)
+
     if request_type == 'credit_transfer':
         user_emails = UserProfile.objects.values_list('email', flat=True).filter(
             Q(organization_id__in=[obj.debit_from_id, obj.credit_to_id, govt_org.id]) &
@@ -444,28 +447,28 @@ def notifications_credit_application(submission: object):
         send_credit_application_emails(notifications, submission)
 
 
-def notifications_zev_model(request: object, validation_status: str):
+def notifications_zev_model(vehicle: object, validation_status: str):
     """
     Handles notifications for ZEV model events based on the validation status.
 
-    :param request: The request object containing relevant data.
+    :param vehicle: The vehicle object containing relevant data.
     :param validation_status: The validation status of the ZEV model.
     """
     notifications = None
-    if validation_status == VehicleDefinitionStatuses.VALIDATED.name:
+    if validation_status == VehicleDefinitionStatuses.VALIDATED:
         notifications = Notification.objects.values_list('id', flat=True).filter(
             notification_code='ZEV_MODEL_VALIDATED')
 
-    elif validation_status == VehicleDefinitionStatuses.REJECTED.name:
+    elif validation_status == VehicleDefinitionStatuses.REJECTED:
         notifications = Notification.objects.values_list('id', flat=True).filter(
             notification_code='ZEV_MODEL_REJECTED')
 
-    elif validation_status == VehicleDefinitionStatuses.SUBMITTED.name:
+    elif validation_status == VehicleDefinitionStatuses.SUBMITTED:
         notifications = Notification.objects.values_list('id', flat=True).filter(
             Q(notification_code='ZEV_MODEL_SUBMITTED') |
             Q(notification_code='ZEV_MODEL_RANGE_REPORT_SUBMITTED'))
 
-    elif validation_status == VehicleDefinitionStatuses.CHANGES_REQUESTED.name:
+    elif validation_status == VehicleDefinitionStatuses.CHANGES_REQUESTED:
         notifications = Notification.objects.values_list('id', flat=True).filter(
             notification_code='ZEV_MODEL_RANGE_REPORT_TEST_RESULT_REQUESTED')
 
@@ -473,7 +476,7 @@ def notifications_zev_model(request: object, validation_status: str):
         print('notifications_zev_model', notifications)
 
     if notifications:
-        send_zev_model_emails(notifications, request)
+        send_zev_model_emails(notifications, vehicle)
 
 
 def send_credit_transfer_emails(notifications, transfer):
@@ -516,7 +519,7 @@ def send_credit_application_emails(notifications, submission):
         send_email(list(user_emails), email_type, test_info)
 
 
-def send_zev_model_emails(notifications, request):
+def send_zev_model_emails(notifications, vehicle):
     """
     Sends emails to subscribed users with ZEV model updates.
 
@@ -527,9 +530,9 @@ def send_zev_model_emails(notifications, request):
         print('send_zev_model_emails')
     
     request_type = 'zev_model'
-    user_emails = get_subscribed_user_emails(notifications, request.user, request_type)
+    user_emails = get_subscribed_user_emails(notifications, vehicle, request_type)
     notification_objects = get_notification_objects(notifications)
-    test_info = prepare_test_info(request, notification_objects)
+    test_info = prepare_test_info(vehicle, notification_objects)
 
     if user_emails:
         email_type = '<b>ZEV model update</b>'
