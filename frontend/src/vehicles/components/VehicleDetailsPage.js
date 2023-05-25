@@ -344,6 +344,14 @@ const VehicleDetailsPage = (props) => {
               )}
             </span>
             <span className="right-content">
+              <Button
+                buttonType="button"
+                optionalClassname="ml-2 mr-2 button btn"
+                optionalText="Print/Download Page"
+                action={() => {
+                  window.print()
+                }}
+              />
               {['DRAFT', 'CHANGES_REQUESTED'].indexOf(
                 details.validationStatus
               ) >= 0 &&
