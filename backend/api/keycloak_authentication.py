@@ -127,6 +127,8 @@ class UserAuthentication(authentication.BaseAuthentication):
                 user = UserProfile.objects.get(keycloak_user_id=user_token['preferred_username'])
                 print('*** user', user)
                 return user, None
+            except Exception as exc:
+                print(str(exc))
             except UserProfile.DoesNotExist: 
                 print("User does not exist, falling through")
                 pass
