@@ -24,7 +24,7 @@ fi
 
 project_name='e52f12-test'
 # the lead test db pod:
-pod_name='zeva-spilo-test-0'
+pod_name='zeva-spilo-test-1'
 env='test'
 
 local_path=$1
