@@ -34,7 +34,6 @@ class UserAuthentication(authentication.BaseAuthentication):
         """
         Verify the JWT token and find the correct user in the DB
         """
-
         if not settings.KEYCLOAK['ENABLED']:
             # fall through
             return None
@@ -72,13 +71,11 @@ class UserAuthentication(authentication.BaseAuthentication):
             raise exceptions.AuthenticationFailed(
                 'No token found'
             )
-        
 
         user_token = None
         token_validation_errors = []
         
         jwks_client = jwt.PyJWKClient(self.jwks_uri)
-
 
         try:
             signing_key = jwks_client.get_signing_key_from_jwt(token)
@@ -95,7 +92,6 @@ class UserAuthentication(authentication.BaseAuthentication):
                 audience=settings.KEYCLOAK['AUDIENCE'],
                 options={"verify_exp": True},
             )
-
         except (jwt.InvalidTokenError, jwt.ExpiredSignatureError, jwt.DecodeError) as exc:
             print(str(exc))
             token_validation_errors.append(exc)
@@ -126,7 +122,6 @@ class UserAuthentication(authentication.BaseAuthentication):
                 raise Exception('unknown identity provider')
         except Exception as exc:
             raise Exception('identity provider invalid')
-
 
         # fall through to here if no mapped user is found
         if 'email' in user_token:
@@ -173,6 +168,5 @@ class UserAuthentication(authentication.BaseAuthentication):
                 'Your account is currently inactive. Please contact your '
                 'administrator to re-activate your account.'
             )
-
 
         return user, None
