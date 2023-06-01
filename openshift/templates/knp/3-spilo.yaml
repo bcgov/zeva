@@ -25,6 +25,7 @@ objects:
       ## Allow zeva-spilo to accept communications from schema-public
       ## Allow zeva-spilo to accept communications from schema-audit
       ## Allow zeva-spilo to accept communications from backup-container
+      ## Allow zeva-spilo to accept communications from backup cronjob
       ## Allow zeva-spilo to accept communications from metabase from cthub
       podSelector:
         matchLabels:
@@ -65,6 +66,13 @@ objects:
           ports:
             - protocol: TCP
               port: 5432
+        - from:
+            - podSelector:
+                matchLabels:
+                  cronjob: zeva-db-backup
+          ports:
+            - protocol: TCP
+              port: 5432              
         - from:
             - namespaceSelector:
                 matchLabels:
