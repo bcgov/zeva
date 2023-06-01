@@ -64,9 +64,37 @@ jobs:
             oc -n ${{ secrets.dev-namespace }} exec zeva-spilo-dev-${{ inputs.pr-number }}-0 -- psql -c "create database zeva owner ${{ secrets.zeva-dev-username }} ENCODING 'UTF8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE = 'en_US.UTF-8'" || true
           fi
 
-  build:
+  build-frontend:
 
-    name: Build ZEVA on Openshift
+    name: Build ZEVA Frontend on Openshift
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs: database
+
+    steps:
+
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          ref: refs/pull/${{ inputs.pr-number }}/head
+
+      - name: Log in to Openshift
+        uses: redhat-actions/oc-login@v1.2
+        with:
+          openshift_server_url: ${{ secrets.openshift-server }}
+          openshift_token: ${{ secrets.openshift-token }}
+          insecure_skip_tls_verify: true
+          namespace: ${{ secrets.tools-namespace }}
+
+      - name: Build ZEVA Frontend
+        run: |
+          cd openshift/templates/frontend
+          oc process -f ./frontend-bc-docker.yaml NAME=zeva SUFFIX=-build-${{ inputs.pr-number }} VERSION=build-${{ inputs.version }}-${{ inputs.pr-number }} GIT_URL=${{ env.GIT_URL }} GIT_REF=refs/pull/${{ inputs.pr-number }}/head | oc apply --wait=true -f - -n ${{ secrets.tools-namespace }}
+          oc start-build --wait=true zeva-frontend-build-${{ inputs.pr-number }}
+
+  build-backend:
+
+    name: Build ZEVA Backend on Openshift
     runs-on: ubuntu-latest
     timeout-minutes: 60
     needs: database
@@ -92,18 +120,12 @@ jobs:
           oc process -f ./backend-bc.yaml NAME=zeva SUFFIX=-build-${{ inputs.pr-number }} VERSION=build-${{ inputs.version }}-${{ inputs.pr-number }} GIT_URL=${{ env.GIT_URL }} GIT_REF=refs/pull/${{ inputs.pr-number }}/head | oc apply --wait=true -f - -n ${{ secrets.tools-namespace }}
           oc start-build --wait=true zeva-backend-build-${{ inputs.pr-number }}
 
-      - name: Build ZEVA Frontend
-        run: |
-          cd openshift/templates/frontend
-          oc process -f ./frontend-bc-docker.yaml NAME=zeva SUFFIX=-build-${{ inputs.pr-number }} VERSION=build-${{ inputs.version }}-${{ inputs.pr-number }} GIT_URL=${{ env.GIT_URL }} GIT_REF=refs/pull/${{ inputs.pr-number }}/head | oc apply --wait=true -f - -n ${{ secrets.tools-namespace }}
-          oc start-build --wait=true zeva-frontend-build-${{ inputs.pr-number }}
-
   deploy-on-dev:
 
     name: Deploy ZEVA on Dev
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    needs: build
+    needs: [build-frontend,build-backend]
  
     steps:
 

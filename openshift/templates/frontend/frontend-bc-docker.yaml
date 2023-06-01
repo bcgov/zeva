@@ -53,10 +53,10 @@ objects:
         name: ${NAME}-frontend:${VERSION}
     resources:
         limits:
-            cpu: 2000m
+            cpu: 1000m
             memory: 2Gi
         requests:
-            cpu: 1000m
+            cpu: 500m
             memory: 1Gi
     source:
       contextDir: frontend
