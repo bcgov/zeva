@@ -499,7 +499,7 @@ const CreditRequestDetailsPage = (props) => {
               It is recommended that the Director issue a total of{' '}
               {formatNumeric(totalEligibleCredits, 2)} ZEV credits to{' '}
               {submission.organization.name} based on{' '}
-              {formatNumeric(submission.eligible.map(e => e.vinCount).reduce((a, b) => a + b, 0))}{' '}
+              {formatNumeric(submission?.eligible?.map(e => e.vinCount).reduce((a, b) => a + b, 0))}{' '}
               eligible ZEV sales.
             </div>
           </div>
