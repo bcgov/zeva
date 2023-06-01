@@ -31,6 +31,7 @@ from api.serializers.sales_submission import (
 )
 from api.serializers.sales_submission_content import SalesSubmissionContentSerializer
 from api.services.credit_transaction import award_credits
+from api.services.sales_submission import check_validation_status_change
 from api.services.minio import minio_put_object
 from api.services.sales_spreadsheet import (
     create_sales_spreadsheet,
@@ -39,7 +40,6 @@ from api.services.sales_spreadsheet import (
     create_errors_spreadsheet,
     create_details_spreadsheet,
 )
-from api.services.send_email import notifications_credit_application
 from auditable.views import AuditableMixin
 import numpy as np
 from api.paginations import BasicPagination
@@ -93,13 +93,18 @@ class CreditRequestViewset(
         return self.serializer_classes['default']
 
     def perform_update(self, serializer):
+        validation_status = self.request.data.get("validation_status")
+
+        submission_check = SalesSubmission.objects.filter(
+            id=serializer.instance.id,
+        ).first()
+
         submission = serializer.save()
+        check_validation_status_change(submission_check.validation_status, validation_status, submission)
 
         if submission.validation_status == SalesSubmissionStatuses.VALIDATED:
             award_credits(submission)
 
-        if self.request.method != "PATCH":
-            notifications_credit_application(submission)
 
     @action(detail=False, methods=['post'])
     def paginated(self, request):

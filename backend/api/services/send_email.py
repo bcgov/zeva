@@ -510,7 +510,7 @@ def send_credit_application_emails(notifications, submission):
         print('send_credit_application_emails')
     
     request_type = 'credit_application'
-    user_emails = get_subscribed_user_emails(notifications, submission.update_user, request_type)
+    user_emails = get_subscribed_user_emails(notifications, submission, request_type)
     notification_objects = get_notification_objects(notifications)
     test_info = prepare_test_info(submission, notification_objects)
 

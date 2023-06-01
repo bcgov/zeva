@@ -2,6 +2,7 @@ from django.db import connection
 from api.models.sales_submission import SalesSubmission
 from api.services.credit_transaction import get_map_of_credit_transactions
 from api.models.sales_submission_statuses import SalesSubmissionStatuses
+from api.services.send_email import notifications_credit_application
 from django.utils import timezone
 
 
@@ -115,3 +116,13 @@ def get_map_of_sales_submissions_by_history(
                 result[key] = []
             result[key].append(values)
         return result
+
+
+def check_validation_status_change(current_status, new_status, submission):
+    if type(current_status) is SalesSubmissionStatuses:
+        current_status = current_status.name
+    if type(new_status) is SalesSubmissionStatuses:
+        new_status = new_status.name
+        
+    if new_status != current_status:
+        notifications_credit_application(submission)
