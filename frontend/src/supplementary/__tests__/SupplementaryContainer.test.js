@@ -84,6 +84,8 @@ jest.mock('react-router-dom', () => {
   }
 })
 
+// explicitly mock axios here instead of using the mock provided by jest-mock-axios,
+// as that mock does not have the axios.spread function, which is used by SupplementaryContainer
 jest.mock('axios', () => {
   const originalModule = jest.requireActual('axios')
   return {
