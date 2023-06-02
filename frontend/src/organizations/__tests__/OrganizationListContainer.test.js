@@ -2,7 +2,7 @@ import React from 'react'
 import { describe, expect, test } from '@jest/globals'
 import { render, act } from '@testing-library/react'
 import { BrowserRouter as Router } from 'react-router-dom'
-import axios from 'axios'
+import mockAxios from 'jest-mock-axios'
 import OrganizationListContainer from '../OrganizationListContainer'
 
 const baseUser = {}
@@ -11,8 +11,6 @@ const baseProps = {
   keycloak: {},
   user: baseUser
 }
-
-const baseOrganizations = []
 
 const mockOrganizationListPage = jest.fn()
 jest.mock('../components/OrganizationListPage', () => {
@@ -23,18 +21,8 @@ jest.mock('../components/OrganizationListPage', () => {
   return OrganizationListPageMock
 })
 
-jest.mock('axios', () => {
-  const originalModule = jest.requireActual('axios')
-  return {
-    __esModule: true,
-    ...originalModule
-  }
-})
-
-beforeEach(() => {
-  jest.spyOn(axios, 'get').mockImplementation((url) => {
-    return Promise.resolve({ data: baseOrganizations })
-  })
+afterEach(() => {
+  mockAxios.reset()
 })
 
 describe('OrganizationListContainer', () => {
@@ -52,9 +40,6 @@ describe('OrganizationListContainer', () => {
 
   test('does not pass received organizations downstream if not government user', async () => {
     const organizations = [{ id: 1 }, { id: 2 }, { id: 3 }]
-    jest.spyOn(axios, 'get').mockImplementation((url) => {
-      return Promise.resolve({ data: organizations })
-    })
     await act(async () => {
       render(
         <Router>
@@ -63,6 +48,9 @@ describe('OrganizationListContainer', () => {
           />
         </Router>
       )
+    })
+    await act(async () => {
+      mockAxios.mockResponse({ data: organizations }, null, true)
     })
     expect(mockOrganizationListPage).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -73,9 +61,6 @@ describe('OrganizationListContainer', () => {
 
   test('passes received organizations downstream if government user', async () => {
     const organizations = [{ id: 1 }, { id: 2 }, { id: 3 }]
-    jest.spyOn(axios, 'get').mockImplementation((url) => {
-      return Promise.resolve({ data: organizations })
-    })
     const props = { ...baseProps, user: { isGovernment: true } }
     await act(async () => {
       render(
@@ -85,6 +70,9 @@ describe('OrganizationListContainer', () => {
           />
         </Router>
       )
+    })
+    await act(async () => {
+      mockAxios.mockResponse({ data: organizations })
     })
     expect(mockOrganizationListPage).toHaveBeenCalledWith(
       expect.objectContaining({
