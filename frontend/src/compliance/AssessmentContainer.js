@@ -509,6 +509,9 @@ const AssessmentContainer = (props) => {
 
         if (analystAction) {
           data.penalty = details.assessment.assessmentPenalty
+          if (data.penalty === '') {
+            data.penalty = null
+          }
           data.description = details.assessment.decision.id
           if (status === 'DRAFT') {
             data.removeConfirmation = true
