@@ -248,8 +248,8 @@ def get_subscribed_user_emails(notifications, obj, request_type):
             Q(id__in=subscribed_users)).exclude(email__isnull=True).exclude(email__exact='').exclude(username=obj.update_user)
     elif request_type == 'model_year_report':
         user_emails = UserProfile.objects.values_list('email', flat=True).filter(
-            Q(organization_id__in=[obj.user.organization.id, govt_org.id]) &
-            Q(id__in=subscribed_users)).exclude(email__isnull=True).exclude(email__exact='').exclude(username=obj.user.update_user)
+            Q(organization_id__in=[obj.organization.id, govt_org.id]) &
+            Q(id__in=subscribed_users)).exclude(email__isnull=True).exclude(email__exact='').exclude(username=obj.update_user)
     else:
         user_emails = UserProfile.objects.values_list('email', flat=True).filter(
             Q(organization_id__in=[obj.organization, govt_org.id]) &
@@ -304,11 +304,12 @@ def prepare_test_info(request, notification_objects):
     return test_info
 
 
-def notifications_credit_transfers(transfer: object):
+def notifications_credit_transfers(transfer: object, transfer_sent_back_to_analyst: bool):
     """
     Handles notifications for credit transfer events based on the transfer status.
 
     :param transfer: The credit transfer object with its current status.
+    :param transfer_sent_back_to_analyst: whether the transfer was sent back to the analyst
     """
     validation_status = transfer.status
     notifications = None
@@ -330,9 +331,13 @@ def notifications_credit_transfers(transfer: object):
             notification_code='CREDIT_TRANSFER_RECOMMEND_REJECT')
 
     elif validation_status == CreditTransferStatuses.APPROVED:
-        notifications = Notification.objects.values_list('id', flat=True).filter(
-            Q(notification_code='CREDIT_TRANSFER_APPROVED') |
-            Q(notification_code='CREDIT_TRANSFER_APPROVED_PARTNER'))
+        if transfer_sent_back_to_analyst:
+            notifications = Notification.objects.values_list('id', flat=True).filter(
+                Q(notification_code='CREDIT_TRANSFER_APPROVED'))
+        else:
+            notifications = Notification.objects.values_list('id', flat=True).filter(
+                Q(notification_code='CREDIT_TRANSFER_APPROVED') |
+                Q(notification_code='CREDIT_TRANSFER_APPROVED_PARTNER'))
 
     elif validation_status == CreditTransferStatuses.DISAPPROVED:
         notifications = Notification.objects.values_list('id', flat=True).filter(
@@ -359,34 +364,37 @@ def notifications_credit_transfers(transfer: object):
         send_credit_transfer_emails(notifications, transfer)
 
 
-def notifications_model_year_report(validation_status, request, previous_status = 'NA'):
+def notifications_model_year_report(updated_model_year_report, report_returned_to_supplier):
     """
     Handles notifications for model year report events based on the validation status.
 
-    :param validation_status: The validation status of the model year report.
-    :param request: The request object containing relevant data.
-    :param previous_status: The previous status of the model year report (default is 'NA').
+    :param updated_model_year_report: The new/updated model year report.
+    :param report_returned_to_supplier: Whether the report was returned to the supplier.
     """
+    validation_status = updated_model_year_report.validation_status
     notifications = None
-    if validation_status == ModelYearReportStatuses.ASSESSED.name:
+    if validation_status == ModelYearReportStatuses.ASSESSED:
         notifications = Notification.objects.values_list('id', flat=True).filter(
             Q(notification_code='MODEL_YEAR_REPORT_ASSESSED_SUPPLIER') |
             Q(notification_code='MODEL_YEAR_REPORT_ASSESSED_GOVT'))
-    elif validation_status == ModelYearReportStatuses.SUBMITTED.name:
+    elif validation_status == ModelYearReportStatuses.SUBMITTED:
         notifications = Notification.objects.values_list('id', flat=True).filter(
             notification_code='MODEL_YEAR_REPORT_SUBMITTED') 
-    elif validation_status == ModelYearReportStatuses.RECOMMENDED.name:
+    elif validation_status == ModelYearReportStatuses.RECOMMENDED:
         notifications = Notification.objects.values_list('id', flat=True).filter(
             notification_code='MODEL_YEAR_REPORT_RECOMMENDED') 
-    elif validation_status == ModelYearReportStatuses.RETURNED.name:
+    elif validation_status == ModelYearReportStatuses.RETURNED:
         notifications = Notification.objects.values_list('id', flat=True).filter(
-            notification_code='MODEL_YEAR_REPORT_RETURNED') 
+            notification_code='MODEL_YEAR_REPORT_RETURNED')
+    elif report_returned_to_supplier:
+        notifications = Notification.objects.values_list('id', flat=True).filter(
+            notification_code='MODEL_YEAR_REPORT_RETURNED_TO_SUPPLIER')
 
     if settings.DEBUG:
         print('notifications_model_year_report', notifications)
 
     if notifications:
-        send_model_year_report_emails(notifications, request)
+        send_model_year_report_emails(notifications, updated_model_year_report)
 
 
 def notifications_credit_agreement(agreement: object):
@@ -539,7 +547,7 @@ def send_zev_model_emails(notifications, vehicle):
         send_email(list(user_emails), email_type, test_info)
 
 
-def send_model_year_report_emails(notifications, request):
+def send_model_year_report_emails(notifications, model_year_report):
     """
     Sends emails to subscribed users with model year report updates.
 
@@ -550,9 +558,9 @@ def send_model_year_report_emails(notifications, request):
         print('send_model_year_report_emails')
     
     request_type = 'model_year_report'
-    user_emails = get_subscribed_user_emails(notifications, request, request_type)
+    user_emails = get_subscribed_user_emails(notifications, model_year_report, request_type)
     notification_objects = get_notification_objects(notifications)
-    test_info = prepare_test_info(request, notification_objects)
+    test_info = prepare_test_info(model_year_report, notification_objects)
 
     if user_emails:
         email_type = '<b>model year report update</b>'
