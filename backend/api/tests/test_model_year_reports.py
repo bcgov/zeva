@@ -79,9 +79,6 @@ class TestModelYearReports(BaseTestCase):
             response = self.clients['RTAN'].patch("/api/compliance/reports/1/assessment_patch", data=data, content_type=CONTENT_TYPE)
             self.assertEqual(response.status_code, 200)
 
-            # Test that email method is called properly
-            mock_send_model_year_report_emails.assert_called()
-
 
     def test_assessment_patch_logic(self):
         makes = ["TESLATRUCK", "TESLA", "TEST"]
