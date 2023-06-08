@@ -295,9 +295,9 @@ class ModelYearReportListSerializer(ModelSerializer, EnumSupportSerializerMixin)
                 if obj.validation_status != ModelYearReportStatuses.ASSESSED:
                     return "-"
 
-                assessment = ModelYearReportAssessment.objects.get(
+                assessment = ModelYearReportAssessment.objects.filter(
                     model_year_report_id=obj.id
-                )
+                ).first()
 
                 if assessment:
                     found = assessment.model_year_report_assessment_description.description.find(
