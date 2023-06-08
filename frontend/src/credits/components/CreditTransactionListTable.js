@@ -21,8 +21,8 @@ const CreditTransactionListTable = (props) => {
   const getInitialExpandedModelYears = () => {
     let latestModelYear = 0
     items.forEach((item) => {
-      const modelYear = item.modelYear.name
-      if (parseInt(modelYear) > parseInt(latestModelYear)) {
+      const modelYear = item.modelYear?.name
+      if (modelYear && parseInt(modelYear) > parseInt(latestModelYear)) {
         latestModelYear = modelYear
       }
     })
@@ -436,11 +436,13 @@ const CreditTransactionListTable = (props) => {
   const transactionsByModelYear = {}
 
   transactions.forEach((transaction) => {
-    const modelYear = transaction.modelYear.name
-    if (!transactionsByModelYear[modelYear]) {
-      transactionsByModelYear[modelYear] = []
+    const modelYear = transaction.modelYear?.name
+    if (modelYear) {
+      if (!transactionsByModelYear[modelYear]) {
+        transactionsByModelYear[modelYear] = []
+      }
+      transactionsByModelYear[modelYear].push(transaction)
     }
-    transactionsByModelYear[modelYear].push(transaction)
   })
 
   const accordionItems = []
