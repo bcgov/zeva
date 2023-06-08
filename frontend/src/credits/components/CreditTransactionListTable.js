@@ -450,7 +450,7 @@ const CreditTransactionListTable = (props) => {
   for (const [year, transactionGroup] of Object.entries(transactionsByModelYear)) {
     const item = {}
     item.key = year
-    item.title = `Credit Transactions for the ${year} Compliance Period (Oct.1, ${year} - Sept.30, ${parseInt(year) + parseInt(1)})`
+    item.title = `Credit Transactions for the ${year} Compliance Period (Oct.1, ${year} - Sept.30, ${parseInt(year) + 1})`
     item.content = getReactTable(transactionGroup)
     accordionItems.push(item)
   }
