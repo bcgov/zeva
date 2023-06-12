@@ -348,7 +348,7 @@ class CreditTransferSaveSerializer(ModelSerializer):
                     signing_authority_assertion_id=confirmation
                 )
 
-            notifications_credit_transfers(credit_transfer, False)
+            notifications_credit_transfers(credit_transfer, False, False)
 
         serializer = CreditTransferSerializer(
             credit_transfer, read_only=True,

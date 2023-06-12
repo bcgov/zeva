@@ -91,8 +91,11 @@ class CreditTransferViewset(
             validate_transfer(transfer)
 
         transfer_sent_back_to_analyst = False
+        transfer_saved_by_analyst = False
         old_transfer_status = transfer.old_status
         new_transfer_status = transfer.status
         if (old_transfer_status == CreditTransferStatuses.RECOMMEND_APPROVAL or old_transfer_status == CreditTransferStatuses.RECOMMEND_REJECTION) and new_transfer_status == CreditTransferStatuses.APPROVED:
             transfer_sent_back_to_analyst = True
-        notifications_credit_transfers(transfer, transfer_sent_back_to_analyst)
+        elif old_transfer_status == CreditTransferStatuses.APPROVED and new_transfer_status == CreditTransferStatuses.APPROVED:
+            transfer_saved_by_analyst = True
+        notifications_credit_transfers(transfer, transfer_sent_back_to_analyst, transfer_saved_by_analyst)
