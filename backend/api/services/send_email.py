@@ -304,12 +304,13 @@ def prepare_test_info(request, notification_objects):
     return test_info
 
 
-def notifications_credit_transfers(transfer: object, transfer_sent_back_to_analyst: bool):
+def notifications_credit_transfers(transfer: object, transfer_sent_back_to_analyst: bool, transfer_saved_by_analyst: bool):
     """
     Handles notifications for credit transfer events based on the transfer status.
 
     :param transfer: The credit transfer object with its current status.
     :param transfer_sent_back_to_analyst: whether the transfer was sent back to the analyst
+    :param transfer_saved_by_analyst: whether the transfer was saved by the analyst
     """
     validation_status = transfer.status
     notifications = None
@@ -334,7 +335,7 @@ def notifications_credit_transfers(transfer: object, transfer_sent_back_to_analy
         if transfer_sent_back_to_analyst:
             notifications = Notification.objects.values_list('id', flat=True).filter(
                 Q(notification_code='CREDIT_TRANSFER_APPROVED'))
-        else:
+        elif not transfer_saved_by_analyst:
             notifications = Notification.objects.values_list('id', flat=True).filter(
                 Q(notification_code='CREDIT_TRANSFER_APPROVED') |
                 Q(notification_code='CREDIT_TRANSFER_APPROVED_PARTNER'))

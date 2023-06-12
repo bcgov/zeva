@@ -466,7 +466,7 @@ class ModelYearReportViewset(
                     defaults={
                         "update_user": request.user.username,
                         "model_year_report_assessment_description_id": description,
-                        "penalty": penalty,
+                        "penalty": None if penalty == "" else penalty,
                     },
                 )
 
