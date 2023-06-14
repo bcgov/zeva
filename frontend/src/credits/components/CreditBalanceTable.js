@@ -16,7 +16,7 @@ const CreditBalanceTable = (props) => {
     balances.balances.forEach((balance) => {
       if (balance.modelYear?.name && balance.creditClass?.creditClass) {
         const modelYear = parseInt(balance.modelYear.name)
-        const key = modelYear + ' Credits'
+        const key = modelYear
         const creditClass = balance.creditClass.creditClass
         const totalValue = isNaN(parseFloat(balance.totalValue)) ? 0 : parseFloat(balance.totalValue)
         if (creditClass === 'A' || creditClass === 'B') {
@@ -38,7 +38,7 @@ const CreditBalanceTable = (props) => {
   if (assessedBalances.deficits) {
     assessedBalances.deficits.forEach((deficit) => {
       const modelYear = deficit.modelYear
-      const key = modelYear + ' Deficit'
+      const key = modelYear
       const creditA = isNaN(parseFloat(deficit.creditA)) ? 0 : parseFloat(deficit.creditA)
       const creditB = isNaN(parseFloat(deficit.creditB)) ? 0 : parseFloat(deficit.creditB)
       if (creditA) {
@@ -64,20 +64,21 @@ const CreditBalanceTable = (props) => {
     delete assessedDeficits[key]
   }
 
+  const bCreditsInCaseOfDeficit = {}
   if (deficitAExists && !deficitBExists) {
     if (assessedBalances.balances) {
       assessedBalances.balances.forEach((balance) => {
         const modelYear = balance.modelYear
-        const key = modelYear + ' Credits'
+        const key = modelYear
         const creditB = isNaN(parseFloat(balance.creditB)) ? 0 : parseFloat(balance.creditB)
         if (creditB) {
-          if (!assessedDeficits[key]) {
-            assessedDeficits[key] = {
+          if (!bCreditsInCaseOfDeficit[key]) {
+            bCreditsInCaseOfDeficit[key] = {
               A: 0,
               B: 0
             }
           }
-          assessedDeficits[key].B = assessedDeficits[key].B + creditB
+          bCreditsInCaseOfDeficit[key].B = bCreditsInCaseOfDeficit[key].B + creditB
         }
       })
     }
@@ -88,7 +89,7 @@ const CreditBalanceTable = (props) => {
     if (assessedBalances.balances) {
       assessedBalances.balances.forEach((balance) => {
         const modelYear = balance.modelYear
-        const key = modelYear + ' Credits'
+        const key = modelYear
         const creditA = isNaN(parseFloat(balance.creditA)) ? 0 : parseFloat(balance.creditA)
         const creditB = isNaN(parseFloat(balance.creditB)) ? 0 : parseFloat(balance.creditB)
         if (!assessedCredits[key]) {
@@ -110,7 +111,10 @@ const CreditBalanceTable = (props) => {
       B: 0
     }
   } else {
-    [currentBalances, assessedCredits].forEach((structure) => {
+    let totalA = 0
+    let totalB = 0
+    const structures = [currentBalances, assessedCredits]
+    structures.forEach((structure) => {
       for (const [key, creditsAandB] of Object.entries(structure)) {
         if (!totalCredits[key]) {
           totalCredits[key] = {
@@ -120,14 +124,25 @@ const CreditBalanceTable = (props) => {
         }
         totalCredits[key].A = totalCredits[key].A + creditsAandB.A
         totalCredits[key].B = totalCredits[key].B + creditsAandB.B
+        totalA = totalA + creditsAandB.A
+        totalB = totalB + creditsAandB.B
       }
     })
+    totalCredits['Total Current LDV Credits'] = {
+      A: totalA,
+      B: totalB
+    }
   }
 
   const getColumns = (keyColumnHeader, bColumnHeader) => {
     return [
       {
-        accessor: (item) => `${item.label}`,
+        accessor: (item) => {
+          if (!isNaN(parseInt(item.label))) {
+            return `${item.label} Credits`
+          }
+          return item.label
+        },
         className: 'text-left',
         Header: keyColumnHeader,
         headerClassName: 'text-left',
@@ -159,12 +174,7 @@ const CreditBalanceTable = (props) => {
         className="credit-balance-table"
         columns={columns}
         sortable={false}
-        data={Object.entries(data).reverse()
-          .map(([key, value]) => ({
-            label: key,
-            ...value
-          }))
-        }
+        data={data}
         filterable={false}
         getTrProps={(state, rowInfo) => {
           if (rowInfo) {
@@ -192,11 +202,19 @@ const CreditBalanceTable = (props) => {
     )
   }
 
+  const getRows = (object) => {
+    const result = []
+    for (const [key, structure] of Object.entries(object)) {
+      result.push({ label: key, A: structure.A, B: structure.B })
+    }
+    return result
+  }
+
   return (
     <>
-      {getReactTable(`Credits Issued during the ${complianceYear} Compliance Period (Oct.1, ${complianceYear} - Sept.30, ${complianceYear + 1})`, 'B', currentBalances)}
-      {getReactTable(`Assessed Balance at the End of Sept.30, ${complianceYear}`, deficitBExists ? 'Unspecified' : 'B', (deficitAExists || deficitBExists) ? assessedDeficits : assessedCredits)}
-      {getReactTable('', 'B', totalCredits)}
+      {getReactTable(`Credits Issued during the ${complianceYear} Compliance Period (Oct.1, ${complianceYear} - Sept.30, ${complianceYear + 1})`, 'B', getRows(currentBalances))}
+      {getReactTable(`Assessed Balance at the End of Sept.30, ${complianceYear}`, deficitBExists ? 'Unspecified' : 'B', (deficitAExists || deficitBExists) ? (getRows(assessedDeficits)).concat(getRows(bCreditsInCaseOfDeficit)) : getRows(assessedCredits))}
+      {getReactTable('', 'B', getRows(totalCredits))}
     </>
   )
 }
