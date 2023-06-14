@@ -447,7 +447,7 @@ const CreditTransactionListTable = (props) => {
 
   const accordionItems = []
 
-  for (const [year, transactionGroup] of Object.entries(transactionsByModelYear)) {
+  for (const [year, transactionGroup] of Object.entries(transactionsByModelYear).reverse()) {
     const item = {}
     item.key = year
     item.title = `Credit Transactions for the ${year} Compliance Period (Oct.1, ${year} - Sept.30, ${parseInt(year) + 1})`

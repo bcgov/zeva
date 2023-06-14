@@ -14,12 +14,14 @@ import ROUTES_ORGANIZATIONS from '../app/routes/Organizations'
 import ROUTES_COMPLIANCE from '../app/routes/Compliance'
 import VehicleSupplierTabs from '../app/components/VehicleSupplierTabs'
 import VehicleSupplierSalesListPage from './components/VehicleSupplierSalesListPage'
+import { getMostRecentModelYearReportId, getModelYearReportCreditBalances } from '../app/utilities/getModelYearReportCreditBalances'
 
 const VehicleSupplierCreditTransactionListContainer = (props) => {
   const { id } = useParams()
   const [details, setDetails] = useState({})
   const [loading, setLoading] = useState(true)
-  const [balances, setBalances] = useState([])
+  const [balances, setBalances] = useState({})
+  const [assessedBalances, setAssessedBalances] = useState({})
   const [reports, setReports] = useState([])
   const [creditTransactions, setCreditTransactions] = useState([])
   const { keycloak, location, user } = props
@@ -51,11 +53,18 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
         setReports(response.data)
       })
 
+      const assessedBalancesPromise = getMostRecentModelYearReportId(id).then((modelYearReportId) => {
+        return getModelYearReportCreditBalances(modelYearReportId)
+      }).then((modelYearReportBalances) => {
+        setAssessedBalances(modelYearReportBalances)
+      })
+
     Promise.all([
       balancePromise,
       listPromise,
       detailsPromise,
-      reportsPromise
+      reportsPromise,
+      assessedBalancesPromise
     ]).then(() => {
       setLoading(false)
     })
@@ -78,6 +87,7 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
         loading={loading}
         locationState={locationState}
         balances={balances}
+        assessedBalances={assessedBalances}
         items={creditTransactions}
         reports={reports}
         user={{ isGovernment: true }}

@@ -8,7 +8,7 @@ import CreditTransactions from '../../credits/components/CreditTransactions'
 import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations'
 
 const VehicleSupplierSalesListPage = (props) => {
-  const { loading, locationState, user, items, reports, balances } = props
+  const { loading, locationState, user, items, reports, balances, assessedBalances } = props
 
   if (loading) {
     return <Loading />
@@ -20,6 +20,7 @@ const VehicleSupplierSalesListPage = (props) => {
         <div className="col-sm-12">
           <CreditTransactions
             balances={balances}
+            assessedBalances={assessedBalances}
             reports={reports}
             items={items}
             user={user}
@@ -50,7 +51,8 @@ VehicleSupplierSalesListPage.defaultProps = {
 }
 
 VehicleSupplierSalesListPage.propTypes = {
-  balances: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  balances: PropTypes.shape({}).isRequired,
+  assessedBalances: PropTypes.shape({}).isRequired,
   items: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   loading: PropTypes.bool.isRequired,
   locationState: PropTypes.arrayOf(PropTypes.shape()),
