@@ -137,12 +137,7 @@ const CreditBalanceTable = (props) => {
   const getColumns = (keyColumnHeader, bColumnHeader) => {
     return [
       {
-        accessor: (item) => {
-          if (!isNaN(parseInt(item.label))) {
-            return `${item.label} Credits`
-          }
-          return item.label
-        },
+        accessor: (item) => (item.label),
         className: 'text-left',
         Header: keyColumnHeader,
         headerClassName: 'text-left',
@@ -202,19 +197,23 @@ const CreditBalanceTable = (props) => {
     )
   }
 
-  const getRows = (object) => {
+  const getRows = (object, suffixForModelYears) => {
     const result = []
     for (const [key, structure] of Object.entries(object)) {
-      result.push({ label: key, A: structure.A, B: structure.B })
+      let label = key
+      if (!isNaN(parseInt(key))) {
+        label = key + suffixForModelYears
+      }
+      result.push({ label: label, A: structure.A, B: structure.B })
     }
     return result
   }
 
   return (
     <>
-      {getReactTable(`Credits Issued during the ${complianceYear} Compliance Period (Oct.1, ${complianceYear} - Sept.30, ${complianceYear + 1})`, 'B', getRows(currentBalances))}
-      {getReactTable(`Assessed Balance at the End of Sept.30, ${complianceYear}`, deficitBExists ? 'Unspecified' : 'B', (deficitAExists || deficitBExists) ? (getRows(assessedDeficits)).concat(getRows(bCreditsInCaseOfDeficit)) : getRows(assessedCredits))}
-      {getReactTable('', 'B', getRows(totalCredits))}
+      {getReactTable(`Credits Issued during the ${complianceYear} Compliance Period (Oct.1, ${complianceYear} - Sept.30, ${complianceYear + 1})`, 'B', getRows(currentBalances, ' Credits'))}
+      {getReactTable(`Assessed Balance at the End of Sept.30, ${complianceYear}`, deficitBExists ? 'Unspecified' : 'B', (deficitAExists || deficitBExists) ? (getRows(assessedDeficits, ' Deficit')).concat(getRows(bCreditsInCaseOfDeficit, ' Credits')) : getRows(assessedCredits, ' Credits'))}
+      {getReactTable('', 'B', getRows(totalCredits, ' Credits'))}
     </>
   )
 }
