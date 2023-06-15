@@ -202,7 +202,7 @@ const CreditBalanceTable = (props) => {
       }
       result.push({ label: label, A: structure.A, B: structure.B })
     }
-    return result
+    return result.reverse()
   }
 
   return (
