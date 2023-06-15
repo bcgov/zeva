@@ -15,18 +15,17 @@ const CreditBalanceTable = (props) => {
   if (balances.balances) {
     balances.balances.forEach((balance) => {
       if (balance.modelYear?.name && balance.creditClass?.creditClass) {
-        const modelYear = parseInt(balance.modelYear.name)
-        const key = modelYear
+        const modelYear = balance.modelYear.name
         const creditClass = balance.creditClass.creditClass
         const totalValue = isNaN(parseFloat(balance.totalValue)) ? 0 : parseFloat(balance.totalValue)
         if (creditClass === 'A' || creditClass === 'B') {
-          if (!currentBalances[key]) {
-            currentBalances[key] = {
+          if (!currentBalances[modelYear]) {
+            currentBalances[modelYear] = {
               A: 0,
               B: 0
             }
           }
-          currentBalances[key][creditClass] = currentBalances[key][creditClass] + totalValue
+          currentBalances[modelYear][creditClass] = currentBalances[modelYear][creditClass] + totalValue
         }
       }
     })
@@ -38,7 +37,6 @@ const CreditBalanceTable = (props) => {
   if (assessedBalances.deficits) {
     assessedBalances.deficits.forEach((deficit) => {
       const modelYear = deficit.modelYear
-      const key = modelYear
       const creditA = isNaN(parseFloat(deficit.creditA)) ? 0 : parseFloat(deficit.creditA)
       const creditB = isNaN(parseFloat(deficit.creditB)) ? 0 : parseFloat(deficit.creditB)
       if (creditA) {
@@ -47,14 +45,14 @@ const CreditBalanceTable = (props) => {
       if (creditB) {
         deficitBExists = true
       }
-      if (!assessedDeficits[key]) {
-        assessedDeficits[key] = {
+      if (!assessedDeficits[modelYear]) {
+        assessedDeficits[modelYear] = {
           A: 0,
           B: 0
         }
       }
-      assessedDeficits[key].A = assessedDeficits[key].A + (-1 * creditA)
-      assessedDeficits[key].B = assessedDeficits[key].B + (-1 * creditB)
+      assessedDeficits[modelYear].A = assessedDeficits[modelYear].A + (-1 * creditA)
+      assessedDeficits[modelYear].B = assessedDeficits[modelYear].B + (-1 * creditB)
     })
   }
 
@@ -69,16 +67,15 @@ const CreditBalanceTable = (props) => {
     if (assessedBalances.balances) {
       assessedBalances.balances.forEach((balance) => {
         const modelYear = balance.modelYear
-        const key = modelYear
         const creditB = isNaN(parseFloat(balance.creditB)) ? 0 : parseFloat(balance.creditB)
         if (creditB) {
-          if (!bCreditsInCaseOfDeficit[key]) {
-            bCreditsInCaseOfDeficit[key] = {
+          if (!bCreditsInCaseOfDeficit[modelYear]) {
+            bCreditsInCaseOfDeficit[modelYear] = {
               A: 0,
               B: 0
             }
           }
-          bCreditsInCaseOfDeficit[key].B = bCreditsInCaseOfDeficit[key].B + creditB
+          bCreditsInCaseOfDeficit[modelYear].B = bCreditsInCaseOfDeficit[modelYear].B + creditB
         }
       })
     }
@@ -89,17 +86,16 @@ const CreditBalanceTable = (props) => {
     if (assessedBalances.balances) {
       assessedBalances.balances.forEach((balance) => {
         const modelYear = balance.modelYear
-        const key = modelYear
         const creditA = isNaN(parseFloat(balance.creditA)) ? 0 : parseFloat(balance.creditA)
         const creditB = isNaN(parseFloat(balance.creditB)) ? 0 : parseFloat(balance.creditB)
-        if (!assessedCredits[key]) {
-          assessedCredits[key] = {
+        if (!assessedCredits[modelYear]) {
+          assessedCredits[modelYear] = {
             A: 0,
             B: 0
           }
         }
-        assessedCredits[key].A = assessedCredits[key].A + creditA
-        assessedCredits[key].B = assessedCredits[key].B + creditB
+        assessedCredits[modelYear].A = assessedCredits[modelYear].A + creditA
+        assessedCredits[modelYear].B = assessedCredits[modelYear].B + creditB
       })
     }
   }
