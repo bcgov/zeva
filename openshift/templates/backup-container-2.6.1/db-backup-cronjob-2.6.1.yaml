@@ -185,7 +185,7 @@ objects:
                     name: "backup"
                 env:
                   - name: BACKUP_DIR
-                    value: "${BACKUP_DIR}"
+                    value: "${BACKUP_DIR}/db-backups-by-cron/"
                   - name: BACKUP_STRATEGY
                     valueFrom:
                       configMapKeyRef:
