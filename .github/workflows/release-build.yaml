@@ -90,8 +90,8 @@ jobs:
       
       - name: Tag Frontend Image from tools to dev
         run: |
-          oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-frontend:build-${{ env.VERSION }}-${{ env.PR_NUMBER }} ${{ env.DEV_NAMESPACE }}/zeva-frontend:dev-${{ env.VERSION }}-${{ env.PR_NUMBER }}
-          oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-backend:build-${{ env.VERSION }}-${{ env.PR_NUMBER }} ${{ env.DEV_NAMESPACE }}/zeva-backend:dev-${{ env.VERSION }}-${{ env.PR_NUMBER }}
+          oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-frontend:build-${{ env.VERSION }}-${{ env.PR_NUMBER }} ${{ env.DEV_NAMESPACE }}/zeva-frontend:dev-${{ env.VERSION }}
+          oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-backend:build-${{ env.VERSION }}-${{ env.PR_NUMBER }} ${{ env.DEV_NAMESPACE }}/zeva-backend:dev-${{ env.VERSION }}
 
       # helm status will show an error if the helm release doesn't exist. The error will be ignored.
       - name: Deply zeva-frontend on Dev
