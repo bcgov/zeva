@@ -519,7 +519,10 @@ class CreditRequestViewset(
         serializer = SalesSubmissionContentSerializer(
             paginated, many=True, read_only=True, context={'request': request}
         )
-        errorList = list(np.concatenate([sc.warnings for sc in submission_content]))
+        errorList = []
+        list_of_warnings = [sc.warnings for sc in submission_content]
+        if list_of_warnings:
+            errorList = list(np.concatenate(list_of_warnings))
         newErrorList = []
         for error in errorList:
             if error == 'NO_ICBC_MATCH':
