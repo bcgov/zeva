@@ -4,11 +4,6 @@
 name: Release Build 1.47.0
 
 on:
-  push:
-    branches: [ release-1.47.0 ]
-    paths:
-      - frontend/**
-      - backend/**
   workflow_dispatch:
   workflow_call:
 
