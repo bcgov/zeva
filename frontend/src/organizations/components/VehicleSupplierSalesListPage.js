@@ -8,7 +8,7 @@ import CreditTransactions from '../../credits/components/CreditTransactions'
 import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations'
 
 const VehicleSupplierSalesListPage = (props) => {
-  const { assessedSupplementalsMap, loading, locationState, user, items, reports, balances } = props
+  const { assessedSupplementalsMap, loading, locationState, user, items, reports, balances, assessedBalances } = props
 
   if (loading) {
     return <Loading />
@@ -21,6 +21,7 @@ const VehicleSupplierSalesListPage = (props) => {
           <CreditTransactions
             assessedSupplementalsMap={assessedSupplementalsMap}
             balances={balances}
+            assessedBalances={assessedBalances}
             reports={reports}
             items={items}
             user={user}
@@ -52,7 +53,8 @@ VehicleSupplierSalesListPage.defaultProps = {
 
 VehicleSupplierSalesListPage.propTypes = {
   assessedSupplementalsMap: PropTypes.shape().isRequired,
-  balances: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  balances: PropTypes.shape({}).isRequired,
+  assessedBalances: PropTypes.shape({}).isRequired,
   items: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   loading: PropTypes.bool.isRequired,
   locationState: PropTypes.arrayOf(PropTypes.shape()),

@@ -16,7 +16,9 @@ const ORGANIZATIONS = {
   TRANSACTIONS: `${API_BASE_PATH}/:id/credit-transactions`,
   USERS: `${API_BASE_PATH}/:id/users`,
   VEHICLES: `${API_BASE_PATH}/:id/vehicles`,
-  ASSESSED_SUPPLEMENTALS_MAP: `${API_BASE_PATH}/:id/assessed_supplementals_map`
+  ASSESSED_SUPPLEMENTALS_MAP: `${API_BASE_PATH}/:id/assessed_supplementals_map`,
+  VEHICLES: `${API_BASE_PATH}/:id/vehicles`, 
+  MOST_RECENT_MYR_ID: `${API_BASE_PATH}/:id/most_recent_myr_id`
 }
 
 export default ORGANIZATIONS
