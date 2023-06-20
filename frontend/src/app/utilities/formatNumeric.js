@@ -11,7 +11,7 @@ const formatNumeric = (value, decimals = 2, roundBracket) => {
   } else if (decimals === 0) {
     newValue = Math.round(newValue)
   }
-  if (Math.abs(value) < 0.001) {
+  if (Math.abs(value) < 0.001 && !decimals === 0) {
     newValue = '0.00'
   }
   if (roundBracket) {
