@@ -21,6 +21,8 @@ from api.models.model_year_report_statuses import ModelYearReportStatuses
 from api.models.sales_submission import SalesSubmission
 from api.models.model_year import ModelYear
 from api.models.model_year_report_credit_transaction import ModelYearReportCreditTransaction
+from django.utils import timezone
+from datetime import datetime
 
 from api.services.credit_transfer import aggregate_credit_transfer_details
 from api.utilities.credit_transaction import (
@@ -34,7 +36,7 @@ from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 
 
-def aggregate_credit_balance_details(organization):
+def aggregate_credit_balance_details(organization, credit_transaction_queryset=None):
     balance_credits = Coalesce(Sum('total_value', filter=Q(
         credit_to=organization
     )), Value(0), output_field=FloatField())
@@ -43,7 +45,11 @@ def aggregate_credit_balance_details(organization):
         debit_from=organization
     )), Value(0), output_field=FloatField())
 
-    balance = CreditTransaction.objects.filter(
+    root_qs = CreditTransaction.objects
+    if credit_transaction_queryset:
+        root_qs = credit_transaction_queryset
+
+    balance = root_qs.filter(
         Q(credit_to=organization) | Q(debit_from=organization)
     ).values(
         'model_year_id', 'credit_class_id', 'weight_class_id'
@@ -438,3 +444,19 @@ def update_credit_reductions(
         updated_reductions.append(original_reduction)
         ids_of_retrieved_reductions.append(original_reduction.id)
     CreditTransaction.objects.bulk_update(updated_reductions, ["credit_value", "total_value", "update_timestamp"])
+def get_current_compliance_period_split_date():
+    now = timezone.now()
+    year = now.year
+    if now.month < 10:
+        year = year -1
+    return timezone.make_aware(datetime(year, 10, 1))
+    
+
+def get_credit_transactions_queryset_by_date(date, lookup):
+    filter_lookup = {
+        "transaction_timestamp__{lookup}".format(
+            lookup=lookup
+        ): date
+    }
+    return CreditTransaction.objects.filter(**filter_lookup)
+
