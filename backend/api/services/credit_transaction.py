@@ -35,7 +35,7 @@ def aggregate_credit_balance_details(organization, credit_transaction_queryset=N
     )), Value(0), output_field=FloatField())
 
     root_qs = CreditTransaction.objects
-    if credit_transaction_queryset:
+    if credit_transaction_queryset is not None:
         root_qs = credit_transaction_queryset
 
     balance = root_qs.filter(
