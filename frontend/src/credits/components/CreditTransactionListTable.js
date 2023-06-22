@@ -14,6 +14,7 @@ import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers'
 import ROUTES_CREDITS from '../../app/routes/Credits'
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
 import { accordionItemClickHandler, Accordion } from '../../app/components/Accordion'
+import getComplianceYear from '../../app/utilities/getComplianceYear'
 
 const CreditTransactionListTable = (props) => {
   const { items, reports } = props
@@ -433,21 +434,22 @@ const CreditTransactionListTable = (props) => {
     accordionItemClickHandler(expandedModelYears, setExpandedModelYears, modelYear)
   }
 
-  const transactionsByModelYear = {}
+  const transactionsByCompliancePeriod = {}
 
   transactions.forEach((transaction) => {
-    const modelYear = transaction.modelYear?.name
-    if (modelYear) {
-      if (!transactionsByModelYear[modelYear]) {
-        transactionsByModelYear[modelYear] = []
+    const timestamp = transaction.transactionTimestamp
+    if (timestamp) {
+      const complianceYear = getComplianceYear(timestamp)
+      if (!transactionsByCompliancePeriod[complianceYear]) {
+        transactionsByCompliancePeriod[complianceYear] = []
       }
-      transactionsByModelYear[modelYear].push(transaction)
+      transactionsByCompliancePeriod[complianceYear].push(transaction)
     }
   })
 
   const accordionItems = []
 
-  for (const [year, transactionGroup] of Object.entries(transactionsByModelYear).reverse()) {
+  for (const [year, transactionGroup] of Object.entries(transactionsByCompliancePeriod).reverse()) {
     const item = {}
     item.key = year
     item.title = `Credit Transactions for the ${year} Compliance Period (Oct.1, ${year} - Sept.30, ${parseInt(year) + 1})`
