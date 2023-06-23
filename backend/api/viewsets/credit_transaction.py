@@ -9,7 +9,7 @@ from api.serializers.credit_transaction import CreditTransactionSerializer, \
     CreditTransactionBalanceSerializer, CreditTransactionListSerializer
 from api.services.credit_transaction import aggregate_credit_balance_details, \
     aggregate_transactions_by_submission
-from api.services.credit_transaction import calculate_insufficient_credits, get_current_compliance_period_split_date, get_credit_transactions_queryset_by_date
+from api.services.credit_transaction import calculate_insufficient_credits
 from auditable.views import AuditableMixin
 
 
@@ -55,18 +55,10 @@ class CreditTransactionViewSet(
     @action(detail=False)
     def balances(self, request):
         user = self.request.user
-        compliance_period_split_date = get_current_compliance_period_split_date()
-        queryset = get_credit_transactions_queryset_by_date(compliance_period_split_date, "gte")
-        balances = aggregate_credit_balance_details(user.organization, queryset)
-    
+        balances = aggregate_credit_balance_details(user.organization)
+
         serializer = self.get_serializer(balances, many=True)
-
-        response = {
-            "compliance_year": compliance_period_split_date.year,
-            "balances": serializer.data
-        }
-
-        return Response(response)
+        return Response(serializer.data)
 
     @action(detail=True)
     def calculate_balance(self, request, **kwargs):

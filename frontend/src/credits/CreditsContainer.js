@@ -7,14 +7,12 @@ import CreditTransactionTabs from '../app/components/CreditTransactionTabs'
 import ROUTES_CREDITS from '../app/routes/Credits'
 import ROUTES_COMPLIANCE from '../app/routes/Compliance'
 import CustomPropTypes from '../app/utilities/props'
-import { getMostRecentModelYearReportId, getModelYearReportCreditBalances } from '../app/utilities/getModelYearReportCreditBalances'
 
 const CreditsContainer = (props) => {
   const [loading, setLoading] = useState(true)
-  const [balances, setBalances] = useState({})
+  const [balances, setBalances] = useState([])
   const [creditTransactions, setCreditTransactions] = useState([])
   const [reports, setReports] = useState([])
-  const [assessedBalances, setAssessedBalances] = useState({})
   const { user } = props
 
   const refreshList = (showLoading) => {
@@ -35,13 +33,7 @@ const CreditsContainer = (props) => {
         setReports(response.data)
       })
 
-    const assessedBalancesPromise = getMostRecentModelYearReportId(user.organization.id).then((modelYearReportId) => {
-      return getModelYearReportCreditBalances(modelYearReportId)
-    }).then((modelYearReportBalances) => {
-      setAssessedBalances(modelYearReportBalances)
-    })
-
-    Promise.all([balancePromise, listPromise, reportsPromise, assessedBalancesPromise]).then(() => {
+    Promise.all([balancePromise, listPromise, reportsPromise]).then(() => {
       setLoading(false)
     })
   }
@@ -63,7 +55,6 @@ const CreditsContainer = (props) => {
         />
         <CreditTransactions
           balances={balances}
-          assessedBalances={assessedBalances}
           items={creditTransactions}
           reports={reports}
           user={user}

@@ -20,12 +20,6 @@ from api.services.credit_transaction import aggregate_credit_balance_details, \
     aggregate_transactions_by_submission
 from api.permissions.organization import OrganizationPermissions
 from auditable.views import AuditableMixin
-from api.services.credit_transaction import (
-    get_current_compliance_period_split_date,
-    get_credit_transactions_queryset_by_date,
-)
-from api.models.model_year_report import ModelYearReport
-from api.models.model_year_report_statuses import ModelYearReportStatuses
 
 
 class OrganizationViewSet(
@@ -132,21 +126,17 @@ class OrganizationViewSet(
     @action(detail=True)
     @method_decorator(permission_required('VIEW_SALES'))
     def supplier_balance(self, request, pk=None):
+        """
+        Get the credit balance of a specific organization
+        """
         if not request.user.is_government:
             return Response(None)
 
-        compliance_period_split_date = get_current_compliance_period_split_date()
-        queryset = get_credit_transactions_queryset_by_date(compliance_period_split_date, "gte")
-        balances = aggregate_credit_balance_details(pk, queryset)
+        balances = aggregate_credit_balance_details(pk)
 
         serializer = CreditTransactionBalanceSerializer(balances, many=True)
 
-        response = {
-            "balances": serializer.data,
-            "compliance_year": compliance_period_split_date.year
-        }
-
-        return Response(response)
+        return Response(serializer.data)
 
     @action(detail=True)
     @method_decorator(permission_required('VIEW_SALES'))
@@ -191,22 +181,3 @@ class OrganizationViewSet(
         serializer = OrganizationLDVSalesSerializer(ldv_sales, many=True)
 
         return Response(serializer.data)
-
-    @action(detail=True, methods=["get"])
-    def most_recent_myr_id(self, request, pk=None):
-        response = None
-        model_year_report = (
-            ModelYearReport.objects.only("id")
-            .filter(organization=pk)
-            .filter(
-                validation_status__in=[
-                    ModelYearReportStatuses.ASSESSED,
-                    ModelYearReportStatuses.REASSESSED,
-                ]
-            )
-            .order_by("-create_timestamp")
-            .first()
-        )
-        if model_year_report:
-            response = model_year_report.id
-        return Response(response)
