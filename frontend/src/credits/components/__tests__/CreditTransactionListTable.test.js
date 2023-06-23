@@ -10,7 +10,7 @@ const data = [
     detailTransactionType: null,
     foreignKey: 159,
     modelYear: {
-      name: '2020',
+      name: '2019',
       effectiveDate: '2019-01-01',
       expirationDate: '2019-12-31'
     },

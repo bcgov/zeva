@@ -2,7 +2,7 @@
  * Presentational component
  */
 import PropTypes from 'prop-types'
-import React, { useState } from 'react'
+import React from 'react'
 import moment from 'moment-timezone'
 
 import ReactTable from '../../app/components/ReactTable'
@@ -13,28 +13,9 @@ import ROUTES_CREDIT_AGREEMENTS from '../../app/routes/CreditAgreements'
 import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers'
 import ROUTES_CREDITS from '../../app/routes/Credits'
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
-import { accordionItemClickHandler, Accordion } from '../../app/components/Accordion'
-import getComplianceYear from '../../app/utilities/getComplianceYear'
 
 const CreditTransactionListTable = (props) => {
   const { items, reports } = props
-
-  const getInitialExpandedModelYears = () => {
-    let latestModelYear = 0
-    items.forEach((item) => {
-      const modelYear = item.modelYear?.name
-      if (modelYear && parseInt(modelYear) > parseInt(latestModelYear)) {
-        latestModelYear = modelYear
-      }
-    })
-    if (latestModelYear) {
-      return [latestModelYear]
-    }
-    return []
-  }
-
-  const [expandedModelYears, setExpandedModelYears] = useState(getInitialExpandedModelYears())
-
   const translateTransactionType = (item) => {
     if (!item.transactionType) {
       return false
@@ -349,9 +330,8 @@ const CreditTransactionListTable = (props) => {
     }
   ]
 
-  const getReactTable = (transactions) => {
-    return (
-      <ReactTable
+  return (
+    <ReactTable
       className="credit-transaction-list-table"
       columns={columns}
       data={transactions}
@@ -426,42 +406,6 @@ const CreditTransactionListTable = (props) => {
 
         return {}
       }}
-    />
-    )
-  }
-
-  const handleTransactionsGroupClick = (modelYear) => {
-    accordionItemClickHandler(expandedModelYears, setExpandedModelYears, modelYear)
-  }
-
-  const transactionsByCompliancePeriod = {}
-
-  transactions.forEach((transaction) => {
-    const timestamp = transaction.transactionTimestamp
-    if (timestamp) {
-      const complianceYear = getComplianceYear(timestamp)
-      if (!transactionsByCompliancePeriod[complianceYear]) {
-        transactionsByCompliancePeriod[complianceYear] = []
-      }
-      transactionsByCompliancePeriod[complianceYear].push(transaction)
-    }
-  })
-
-  const accordionItems = []
-
-  for (const [year, transactionGroup] of Object.entries(transactionsByCompliancePeriod).reverse()) {
-    const item = {}
-    item.key = year
-    item.title = `Credit Transactions for the ${year} Compliance Period (Oct.1, ${year} - Sept.30, ${parseInt(year) + 1})`
-    item.content = getReactTable(transactionGroup)
-    accordionItems.push(item)
-  }
-
-  return (
-    <Accordion
-      items={accordionItems}
-      keysOfOpenItems={expandedModelYears}
-      handleItemClick={handleTransactionsGroupClick}    
     />
   )
 }
