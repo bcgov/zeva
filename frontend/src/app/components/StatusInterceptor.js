@@ -50,8 +50,8 @@ class StatusInterceptor extends Component {
   static render500Message () {
     return (
       <p>
-        It looks like our system is experiencing some technical difficulties. We
-        have been notified and will look into it. Please try again later.
+        It looks like our system is experiencing some technical difficulties. 
+        Please try again later.
       </p>
     )
   }
@@ -68,8 +68,8 @@ class StatusInterceptor extends Component {
   static renderDefaultMessage () {
     return (
       <p>
-        It looks like our system is experiencing some technical difficulties. We
-        have been notified and will look into it. Please try again later.
+        It looks like our system is experiencing some technical difficulties. 
+        Please try again later.
       </p>
     )
   }

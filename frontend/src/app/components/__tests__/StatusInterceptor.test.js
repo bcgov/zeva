@@ -44,7 +44,7 @@ describe('status interceptor', () => {
       <StatusInterceptor statusCode={500} />
     ).toJSON()
     expect(testRender.children[1].children).toEqual([
-      'It looks like our system is experiencing some technical difficulties. We have been notified and will look into it. Please try again later.'
+      'It looks like our system is experiencing some technical difficulties. Please try again later.'
     ])
   })
   it('gives a 502 message', () => {
@@ -58,7 +58,7 @@ describe('status interceptor', () => {
   it('gives a default message', () => {
     const testRender = TestRenderer.create(<StatusInterceptor />).toJSON()
     expect(testRender.children[1].children).toEqual([
-      'It looks like our system is experiencing some technical difficulties. We have been notified and will look into it. Please try again later.'
+      'It looks like our system is experiencing some technical difficulties. Please try again later.'
     ])
   })
 })
