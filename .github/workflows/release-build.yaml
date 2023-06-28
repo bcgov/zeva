@@ -147,7 +147,7 @@ jobs:
         with:
           secret: ${{ github.TOKEN }}
           approvers: AlexZorkin,kuanfandevops,tim738745,emi-hi
-          minimum-approvals: 2
+          minimum-approvals: 1
           issue-title: "ZEVA ${{ env.VERSION }} Prod Deployment"
       
       - name: Tag Frontend Image from tools to Prod
