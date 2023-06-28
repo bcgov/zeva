@@ -1,6 +1,6 @@
 import React from 'react'
 import { render, cleanup } from '@testing-library/react'
-import { BrowserRouter } from 'react-router-dom'
+import { MemoryRouter } from 'react-router-dom'
 
 import VehicleEditContainer from '../VehicleEditContainer'
 
@@ -24,13 +24,13 @@ describe('VehicleEditContainer', () => {
 
   it('renders without crashing', () => {
     render(
-      <BrowserRouter>
+      <MemoryRouter>
         <VehicleEditContainer
           keycloak={keycloak}
           location={location}
           user={user}
         />
-      </BrowserRouter>
+      </MemoryRouter>
     )
   })
 })

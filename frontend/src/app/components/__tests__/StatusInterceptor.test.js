@@ -1,7 +1,7 @@
 import React from 'react'
 import TestRenderer from 'react-test-renderer'
 import { render, cleanup } from '@testing-library/react'
-import { BrowserRouter } from 'react-router-dom'
+import { MemoryRouter } from 'react-router-dom'
 import StatusInterceptor from '../StatusInterceptor'
 
 require('@babel/core')
@@ -31,9 +31,9 @@ describe('status interceptor', () => {
   })
   it('gives a 404 message', () => {
     const testRender = TestRenderer.create(
-      <BrowserRouter>
+      <MemoryRouter>
         <StatusInterceptor statusCode={404} />
-      </BrowserRouter>
+      </MemoryRouter>
     ).toJSON()
     expect(testRender.children[1].children[0].children).toEqual([
       'The requested page could not be found.'
@@ -44,7 +44,7 @@ describe('status interceptor', () => {
       <StatusInterceptor statusCode={500} />
     ).toJSON()
     expect(testRender.children[1].children).toEqual([
-      'It looks like our system is experiencing some technical difficulties. We have been notified and will look into it. Please try again later.'
+      'It looks like our system is experiencing some technical difficulties. Please try again later.'
     ])
   })
   it('gives a 502 message', () => {
@@ -58,7 +58,7 @@ describe('status interceptor', () => {
   it('gives a default message', () => {
     const testRender = TestRenderer.create(<StatusInterceptor />).toJSON()
     expect(testRender.children[1].children).toEqual([
-      'It looks like our system is experiencing some technical difficulties. We have been notified and will look into it. Please try again later.'
+      'It looks like our system is experiencing some technical difficulties. Please try again later.'
     ])
   })
 })

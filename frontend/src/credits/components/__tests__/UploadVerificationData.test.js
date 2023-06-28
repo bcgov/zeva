@@ -17,6 +17,9 @@ it('renders without crashing', () => {
         dateCurrentTo="2020-04-06"
         setDateCurrentTo={() => {}}
         user={{ isGovernment: true }}
+        showProcessing={true}
+        showProgressBar={true}
+        uploadProgress={1}
       />
     </Router>
   )

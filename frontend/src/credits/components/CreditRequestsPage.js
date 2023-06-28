@@ -8,7 +8,22 @@ import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests'
 import CreditRequestListTable from './CreditRequestListTable'
 
 const CreditRequestsPage = (props) => {
-  const { filtered, handleClear, setFiltered, submissions, user } = props
+  const {
+    handleClear,
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    filters,
+    setFilters,
+    setApplyFiltersCount,
+    sorts,
+    setSorts,
+    submissions,
+    submissionsCount,
+    loading,
+    user
+  } = props
 
   return (
     <div id="credit-requests-list" className="page">
@@ -22,7 +37,7 @@ const CreditRequestsPage = (props) => {
             type="button"
             className="button"
             onClick={handleClear}
-            disabled={filtered.length === 0}
+            disabled={filters.length === 0 && sorts.length === 0}
           >
             Clear Filters
           </button>
@@ -44,10 +59,19 @@ const CreditRequestsPage = (props) => {
       <div className="row">
         <div className="col-sm-12">
           <CreditRequestListTable
-            filtered={filtered}
+            page={page}
+            setPage={setPage}
+            pageSize={pageSize}
+            setPageSize={setPageSize}
+            filters={filters}
+            setFilters={setFilters}
+            setApplyFiltersCount={setApplyFiltersCount}
+            sorts={sorts}
+            setSorts={setSorts}
             items={submissions}
+            itemsCount={submissionsCount}
+            loading={loading}
             user={user}
-            setFiltered={setFiltered}
           />
         </div>
       </div>
@@ -55,13 +79,20 @@ const CreditRequestsPage = (props) => {
   )
 }
 
-CreditRequestsPage.defaultProps = {}
-
 CreditRequestsPage.propTypes = {
-  filtered: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   handleClear: PropTypes.func.isRequired,
-  setFiltered: PropTypes.func.isRequired,
+  page: PropTypes.number.isRequired,
+  setPage: PropTypes.func.isRequired,
+  pageSize: PropTypes.number.isRequired,
+  setPageSize: PropTypes.func.isRequired,
+  filters: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  setFilters: PropTypes.func.isRequired,
+  setApplyFiltersCount: PropTypes.func.isRequired,
+  sorts: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  setSorts: PropTypes.func.isRequired,
   submissions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  submissionsCount: PropTypes.number.isRequired,
+  loading: PropTypes.bool.isRequired,
   user: CustomPropTypes.user.isRequired
 }
 

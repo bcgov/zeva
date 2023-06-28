@@ -1,0 +1,32 @@
+# Please refer to ./readme.md for how to build single pull request
+
+# Update this workflow name per pull request
+name: Build PR on Dev
+
+on:
+  pull_request:
+    types: [opened, edited, reopened]
+    branches:
+          - 'release-*'
+  
+jobs:
+
+  call-unit-test:
+    uses: ./.github/workflows/unit-test-template.yaml
+    with:
+      pr-number: ${{ github.event.pull_request.number }}
+
+  call-pr-build:
+    if: endsWith( github.event.pull_request.title, 'build-on-dev' )
+    needs: call-unit-test
+    uses: ./.github/workflows/pr-build-template.yaml
+    with:
+      pr-number: ${{ github.event.pull_request.number }}
+      version: ${{ github.event.pull_request.base.ref }}
+    secrets:
+      tools-namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
+      dev-namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
+      zeva-dev-username: ${{ secrets.ZEVA_DEV_USERNAME }}
+      zeva-dev-password: ${{ secrets.ZEVA_DEV_PASSWORD }}
+      openshift-server: ${{ secrets.OPENSHIFT_SERVER }}
+      openshift-token: ${{ secrets.OPENSHIFT_TOKEN }}

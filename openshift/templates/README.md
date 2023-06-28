@@ -58,3 +58,16 @@ openshift/templates/nagios/README.md
 ## 6. Database migration
 
 - openshift/templates/patroni/README.md [Database Migration from Openshift v3 to Openshift 4]
+
+## create 
+oc -n e52f12-tools create secret docker-registry zeva-image-pull-secret \
+    --docker-server=registry.redhat.io \
+    --docker-username=<RedHat Registry Service Account user>\
+    --docker-password=<password> \
+    --docker-email=<email>
+# REMOVE
+SECRET zeva-keycloak
+zeva-test-rabbitmq-cluster-secret
+
+verify zeva-django and zeva-django-test
+

@@ -1,9 +1,9 @@
 import React from 'react'
 import { render, cleanup, queryByTestId, findByTestId } from '@testing-library/react'
-import { BrowserRouter } from 'react-router-dom'
+import { MemoryRouter } from 'react-router-dom'
 import Router from '../router'
 import axios from 'axios'
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom/extend-expect'
 
 afterEach(cleanup)
 
@@ -59,12 +59,12 @@ describe('Router Success', () => {
     axios.get.mockImplementationOnce(() => Promise.resolve(successfulResponse))
     axios.get.mockImplementationOnce(() => Promise.resolve(dashboardResponse))
     const { container } = render(
-      <BrowserRouter>
+      <MemoryRouter>
         <Router
           keycloak={keycloak}
           logout={logout}
         />
-      </BrowserRouter>
+      </MemoryRouter>
     )
     const unverifiedUser = queryByTestId(container, 'unverified-user')
     expect(unverifiedUser).not.toBeInTheDocument()
@@ -73,12 +73,12 @@ describe('Router Success', () => {
   it('loads the unverified page when the current user call fails', async () => {
     axios.get.mockImplementationOnce(() => Promise.reject(failedResponse))
     const { container } = render(
-      <BrowserRouter>
+      <MemoryRouter>
         <Router
           keycloak={keycloak}
           logout={logout}
         />
-      </BrowserRouter>
+      </MemoryRouter>
     )
     const unverifiedUser = await findByTestId(container, 'unverified-user')
     expect(unverifiedUser).toBeInTheDocument()
@@ -87,12 +87,12 @@ describe('Router Success', () => {
   it('renders without crashing', () => {
     axios.get.mockImplementationOnce(() => Promise.reject(failedResponse))
     render(
-      <BrowserRouter>
+      <MemoryRouter>
         <Router
           keycloak={keycloak}
           logout={logout}
         />
-      </BrowserRouter>
+      </MemoryRouter>
     )
   })
 })

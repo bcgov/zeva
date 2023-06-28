@@ -14,11 +14,14 @@ import os
 import sys
 
 from pika import ConnectionParameters, PlainCredentials
+from django.db.models import BigAutoField
 
 from . import database, amqp, email, keycloak, minio
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+ENV_NAME = os.getenv('ENV_NAME', 'dev')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -34,10 +37,11 @@ WELL_KNOWN_ENDPOINT = os.getenv('WELL_KNOWN_ENDPOINT',
   'https://dev.loginproxy.gov.bc.ca/auth/realms/standard/.well-known/openid-configuration')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
+DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'true'
 DEVELOPMENT = os.getenv('DEVELOPMENT', 'False') == 'True'
 TESTING = 'test' in sys.argv
 RUNSERVER = 'runserver' in sys.argv
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 ALLOWED_HOSTS = ['*']
 

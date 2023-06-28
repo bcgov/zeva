@@ -1,5 +1,6 @@
+import json
 from rest_framework.serializers import ValidationError
-
+from django.utils import timezone
 from .base_test_case import BaseTestCase
 from ..models.credit_transfer import CreditTransfer
 from ..models.credit_transaction import CreditTransaction
@@ -9,7 +10,10 @@ from ..models.model_year import ModelYear
 from ..models.weight_class import WeightClass
 from ..models.credit_transaction_type import CreditTransactionType
 from ..services.credit_transaction import validate_transfer
-from ..models.account_balance import AccountBalance
+from ..models.organization import Organization
+from ..models.signing_authority_confirmation import SigningAuthorityConfirmation
+from ..models.signing_authority_assertion import SigningAuthorityAssertion
+from unittest.mock import patch
 
 
 class TestTransfers(BaseTestCase):
@@ -38,7 +42,6 @@ class TestTransfers(BaseTestCase):
             credit_to=org1,
             debit_from=org2,
         )
-
 
 
     def test_list_transfer(self):
@@ -87,8 +90,7 @@ class TestTransfers(BaseTestCase):
     # test that if the supplier does have enough of credit type/year the
     # transfer will work, a record will be added for each row in transfer
     # content (or unique credit type/year/weight) in the transaction table,
-    #  and a new row for each credit type for each organization in the
-    # account balance table. 
+    # and organization balances are calculated correctly
 
     def test_transfer_pass(self):
         transaction = CreditTransaction.objects.create(
@@ -100,7 +102,8 @@ class TestTransfers(BaseTestCase):
             number_of_credits=100,
             total_value=400,
             transaction_type=CreditTransactionType.objects.get(
-                transaction_type="Validation")
+                transaction_type="Validation"),
+            transaction_timestamp=timezone.now()
         )
         transfer_enough = CreditTransfer.objects.create(
             credit_to=self.users['RTAN_BCEID'].organization,
@@ -120,27 +123,54 @@ class TestTransfers(BaseTestCase):
 
         validate_transfer(transfer_enough)
 
-        seller_balance = AccountBalance.objects.filter(
-            organization_id=self.users['EMHILLIE_BCEID'].organization.id,
-            expiration_date=None,
-            credit_class=CreditClass.objects.get(credit_class="A")
-        ).first()
+        seller_balance = Organization.objects.filter(
+            id=self.users['EMHILLIE_BCEID'].organization.id
+        ).first().balance['A']
 
-        buyer_balance = AccountBalance.objects.filter(
-            organization_id=self.users['RTAN_BCEID'].organization.id,
-            expiration_date=None,
-            credit_class=CreditClass.objects.get(credit_class="A")
-        ).first()
+        buyer_balance = Organization.objects.filter(
+            id=self.users['RTAN_BCEID'].organization.id
+        ).first().balance['A']
 
-        self.assertEqual(seller_balance.balance, -10)
-        self.assertEqual(buyer_balance.balance, 10)
+        self.assertEqual(seller_balance, 390)
+        self.assertEqual(buyer_balance, 10)
 
-        credit_transaction_record = CreditTransaction.objects.filter(
-            credit_to=self.users['RTAN_BCEID'].organization,
-            debit_from=self.users['EMHILLIE_BCEID'].organization,
-            credit_class=CreditClass.objects.get(credit_class="A"),
-        ).order_by('-id').first()
-        self.assertEqual(credit_transaction_record.id, seller_balance.credit_transaction_id)
 
-        
-       
+    def test_credit_transfer_create(self):
+        with patch('api.services.send_email.send_credit_transfer_emails') as mock_send_credit_transfer_emails:
+            self.test_transfer_pass()
+
+            assertion = SigningAuthorityAssertion.objects.create(
+                id = 1,
+                display_order=100
+            )
+            confirmation = SigningAuthorityConfirmation.objects.create(
+                create_user=self.users['EMHILLIE_BCEID'],
+                has_accepted=True,
+                title='Admin',
+                signing_authority_assertion_id=assertion.id
+            )
+
+            response = self.clients['RTAN_BCEID'].post(
+              "/api/credit-transfers",
+              content_type='application/json',
+              data=json.dumps({
+                  'status': "SUBMITTED",
+                  'signing_confirmation': [confirmation.id],
+                  'debit_from': self.users['EMHILLIE_BCEID'].organization.id,
+                  'credit_to': self.users['RTAN_BCEID'].organization.id,
+                  'content': [{
+                      'debit_from': self.users['EMHILLIE_BCEID'].organization.id,
+                      'credit_to': self.users['RTAN_BCEID'].organization.id,
+                      'model_year': '2020',
+                      'credit_class': 'A',
+                      'weight_class': 'LDV',
+                      'credit_value': 5,
+                      'dollar_value': 100
+                  }]
+              })
+            )
+
+            self.assertEqual(response.status_code, 201)
+            
+            # Test that email method is called properly
+            mock_send_credit_transfer_emails.assert_called()

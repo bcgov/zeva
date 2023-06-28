@@ -12,28 +12,6 @@ import getTotalReduction from '../../app/utilities/getTotalReduction'
 import getUnspecifiedClassReduction from '../../app/utilities/getUnspecifiedClassReduction'
 
 const CreditActivity = (props) => {
-
-  useEffect(() => {
-    let structuredProvisionalBalance = {}
-
-    structuredProvisionalBalance.title = "ProvisionalBalanceAfterCreditReduction"
-    
-    let index = null
-    updatedBalances.balances.forEach((obj, i) => {
-      if(obj.modelYear === reportYear){
-        index = i
-      }
-    })
-    if(index !== null) {
-      structuredProvisionalBalance.modelYear = updatedBalances.balances[index].modelYear
-      structuredProvisionalBalance.creditA = updatedBalances.balances[index].newCreditA
-      structuredProvisionalBalance.creditB = updatedBalances.balances[index].newCreditB
-      structuredProvisionalBalance.originalAValue = updatedBalances.balances[index].creditA
-      structuredProvisionalBalance.originalBValue = updatedBalances.balances[index].creditB
-    }
-    handleSupplementalChange(structuredProvisionalBalance)
-  }, [newLdvSales])
-
   const {
     creditReductionSelection,
     details,
@@ -47,11 +25,42 @@ const CreditActivity = (props) => {
     supplierClass,
     isEditable
   } = props
+
   let newLdvSales =
     newData && newData.supplierInfo && newData.supplierInfo.ldvSales
+
   if (newLdvSales === null || !newLdvSales) {
     newLdvSales = ldvSales
   }
+
+  useEffect(() => {
+    const structuredProvisionalBalances = []
+
+    updatedBalances.balances.forEach((obj, i) => {
+      const structuredProvisionalBalance = {}
+      structuredProvisionalBalance.title = 'ProvisionalBalanceAfterCreditReduction'
+      structuredProvisionalBalance.modelYear = updatedBalances.balances[i].modelYear
+      structuredProvisionalBalance.creditA = updatedBalances.balances[i].newCreditA
+      structuredProvisionalBalance.creditB = updatedBalances.balances[i].newCreditB
+      structuredProvisionalBalance.originalAValue = updatedBalances.balances[i].creditA
+      structuredProvisionalBalance.originalBValue = updatedBalances.balances[i].creditB
+      structuredProvisionalBalances.push(structuredProvisionalBalance)
+    })
+
+    updatedBalances.deficits.forEach((obj, i) => {
+      const structuredProvisionalBalance = {}
+      structuredProvisionalBalance.title = 'CreditDeficit'
+      structuredProvisionalBalance.modelYear = updatedBalances.deficits[i].modelYear
+      structuredProvisionalBalance.creditA = updatedBalances.deficits[i].newCreditA || 0
+      structuredProvisionalBalance.creditB = updatedBalances.deficits[i].newCreditB || 0
+      structuredProvisionalBalance.originalAValue = updatedBalances.deficits[i].creditA
+      structuredProvisionalBalance.originalBValue = updatedBalances.deficits[i].creditB
+      structuredProvisionalBalances.push(structuredProvisionalBalance)
+    })
+
+    handleSupplementalChange(structuredProvisionalBalances)
+  }, [newLdvSales])
+
   let reportYear = false
 
   if (details && details.assessmentData) {

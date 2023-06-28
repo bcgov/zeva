@@ -20,24 +20,31 @@ from api.models.icbc_registration_data import IcbcRegistrationData
 from api.models.record_of_sale import RecordOfSale
 from api.models.sales_submission import SalesSubmission
 from api.models.sales_submission_content import SalesSubmissionContent
-from api.models.sales_submission_content_reason import \
-    SalesSubmissionContentReason
+from api.models.sales_submission_content_reason import SalesSubmissionContentReason
 from api.models.sales_submission_statuses import SalesSubmissionStatuses
 from api.permissions.credit_request import CreditRequestPermissions
-from api.serializers.sales_submission import SalesSubmissionSerializer, \
-    SalesSubmissionListSerializer, SalesSubmissionSaveSerializer
-from api.serializers.sales_submission_content import \
-    SalesSubmissionContentSerializer
-from api.serializers.sales_submission_content_reason import \
-    SalesSubmissionContentReasonSerializer
+from api.serializers.sales_submission import (
+    SalesSubmissionSerializer,
+    SalesSubmissionBaseListSerializer,
+    SalesSubmissionListSerializer,
+    SalesSubmissionSaveSerializer,
+)
+from api.serializers.sales_submission_content import SalesSubmissionContentSerializer
 from api.services.credit_transaction import award_credits
+from api.services.sales_submission import check_validation_status_change
 from api.services.minio import minio_put_object
-from api.services.sales_spreadsheet import create_sales_spreadsheet, \
-    ingest_sales_spreadsheet, validate_spreadsheet, \
-    create_errors_spreadsheet, create_details_spreadsheet
-from api.services.send_email import notifications_credit_application
+from api.services.sales_spreadsheet import (
+    create_sales_spreadsheet,
+    ingest_sales_spreadsheet,
+    validate_spreadsheet,
+    create_errors_spreadsheet,
+    create_details_spreadsheet,
+)
 from auditable.views import AuditableMixin
 import numpy as np
+from api.paginations import BasicPagination
+from api.services.filter_utilities import get_search_terms, get_search_q_object
+from api.services.sales_submission import get_map_of_sales_submission_ids_to_timestamps
 
 
 class CreditRequestViewset(
@@ -45,6 +52,7 @@ class CreditRequestViewset(
         mixins.ListModelMixin, mixins.RetrieveModelMixin,
         mixins.UpdateModelMixin
 ):
+    pagination_class = BasicPagination
     permission_classes = (CreditRequestPermissions,)
     http_method_names = ['get', 'patch', 'post', 'put']
 
@@ -72,7 +80,11 @@ class CreditRequestViewset(
         'partial_update': SalesSubmissionSaveSerializer,
         'update': SalesSubmissionSaveSerializer,
         'content': SalesSubmissionContentSerializer,
+        'paginated': SalesSubmissionBaseListSerializer
     }
+
+    default_delimiter = ","
+    default_search_type = "icontains"
 
     def get_serializer_class(self):
         if self.action in list(self.serializer_classes.keys()):
@@ -81,13 +93,131 @@ class CreditRequestViewset(
         return self.serializer_classes['default']
 
     def perform_update(self, serializer):
+        validation_status = self.request.data.get("validation_status")
+
+        submission_check = SalesSubmission.objects.filter(
+            id=serializer.instance.id,
+        ).first()
+
         submission = serializer.save()
+        check_validation_status_change(submission_check.validation_status, validation_status, submission)
 
         if submission.validation_status == SalesSubmissionStatuses.VALIDATED:
             award_credits(submission)
 
-        if self.request.method != "PATCH":
-            notifications_credit_application(submission)
+
+    @action(detail=False, methods=['post'])
+    def paginated(self, request):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        filters = request.data.get("filters")
+        sorts = request.data.get("sorts")
+        sort_by_date = False
+        sort_by_date_direction = None
+
+        for filter in filters:
+            id = filter.get("id")
+            value = filter.get("value")
+            delimiter = filter.get("delimiter", self.default_delimiter)
+            search_type = filter.get("search_type", self.default_search_type)
+            search_terms = get_search_terms(value, delimiter)
+            if id == "id":
+                q_obj = get_search_q_object(search_terms, search_type, "id")
+                if q_obj:
+                    queryset = queryset.filter(q_obj)
+            elif id == "supplier":
+                q_obj = get_search_q_object(
+                    search_terms, search_type, "organization__short_name"
+                )
+                if q_obj:
+                    queryset = queryset.filter(q_obj)
+            elif id == "status":
+                queryset = self.filter_by_status(queryset, search_type, search_terms)
+        for sort in sorts:
+            id = sort.get("id")
+            desc = sort.get("desc")
+            if id == "id":
+                if desc:
+                    queryset = queryset.order_by("-id")
+                else:
+                    queryset = queryset.order_by("id")
+            elif id == "supplier":
+                if desc:
+                    queryset = queryset.order_by("-organization__short_name")
+                else:
+                    queryset = queryset.order_by("organization__short_name")
+            elif id == "date":
+                sort_by_date = True
+                sort_by_date_direction = "DESC" if desc else "ASC"
+
+        if len(sorts) == 0:
+            queryset = queryset.order_by("-id")
+
+        if sort_by_date and sort_by_date_direction:
+            user_is_government = request.user.is_government
+            map_of_sales_submission_ids_to_timestamps = (
+                get_map_of_sales_submission_ids_to_timestamps(user_is_government)
+            )
+            sales_submissions = list(queryset)
+            reverse = True if sort_by_date_direction == "DESC" else False
+            sorted_sales_submissions = sorted(
+                sales_submissions,
+                key=lambda x: map_of_sales_submission_ids_to_timestamps[x.id],
+                reverse=reverse,
+            )
+            queryset = sorted_sales_submissions
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def filter_by_status(self, queryset, search_type, search_terms):
+        mappings = {
+            "validated": SalesSubmissionStatuses.CHECKED.value,
+            "issued": SalesSubmissionStatuses.VALIDATED.value,
+            "recommend issuance": SalesSubmissionStatuses.RECOMMEND_APPROVAL.value,
+            "new": SalesSubmissionStatuses.NEW.value,
+            "draft": SalesSubmissionStatuses.DRAFT.value,
+            "submitted": SalesSubmissionStatuses.SUBMITTED.value,
+            "rejected": SalesSubmissionStatuses.REJECTED.value,
+            "recommend rejection": SalesSubmissionStatuses.RECOMMEND_REJECTION.value,
+        }
+        mapping_keys = list(mappings.keys())
+        contains_unmapped_search_term = False
+        mapped_search_terms = []
+
+        if search_type == "iexact":
+            for search_term in search_terms:
+                transformed_search_term = search_term.lower()
+                mapped_search_term = mappings.get(transformed_search_term)
+                if mapped_search_term:
+                    mapped_search_terms.append(mapped_search_term)
+                else:
+                    contains_unmapped_search_term = True
+        else:
+            for search_term in search_terms:
+                transformed_search_term = search_term.lower()
+                for mapping_key in mapping_keys:
+                    if transformed_search_term in mapping_key:
+                        mapped_search_terms.append(mappings[mapping_key])
+                    else:
+                        contains_unmapped_search_term = True
+
+        final_q = get_search_q_object(
+            mapped_search_terms,
+            "exact",
+            "validation_status",
+            [Q(id=-1)] if contains_unmapped_search_term else [],
+        )
+
+        if final_q:
+            return queryset.filter(final_q)
+
+        return queryset
 
     @action(detail=False)
     def template(self, request):
@@ -389,7 +519,10 @@ class CreditRequestViewset(
         serializer = SalesSubmissionContentSerializer(
             paginated, many=True, read_only=True, context={'request': request}
         )
-        errorList = list(np.concatenate([x['warnings'] for x in serializer.data if 'warnings' in x]))
+        errorList = []
+        list_of_warnings = [sc.warnings for sc in submission_content]
+        if list_of_warnings:
+            errorList = list(np.concatenate(list_of_warnings))
         newErrorList = []
         for error in errorList:
             if error == 'NO_ICBC_MATCH':

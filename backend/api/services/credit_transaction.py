@@ -5,7 +5,6 @@ from django.db.models.functions import Coalesce
 from django.db import transaction
 from rest_framework.serializers import ValidationError
 
-from api.models.account_balance import AccountBalance
 from api.models.credit_class import CreditClass
 from api.models.credit_transaction import CreditTransaction
 from api.models.credit_transaction_type import CreditTransactionType
@@ -78,7 +77,7 @@ def adjust_deficits(organization):
     total_current_reduction = 0
 
     for balance in balances:
-        remaining_balance = balance.get('total_value')
+        remaining_balance = Decimal(balance.get('total_value'))
 
         if remaining_balance <= 0:
             continue
@@ -116,26 +115,6 @@ def adjust_deficits(organization):
                 deficit.credit_value -= amount_to_reduce
                 deficit.save()
                 total_current_reduction += amount_to_reduce
-
-    if credit_transaction:
-        current_account_balance = AccountBalance.objects.filter(
-            organization_id=organization.id,
-            expiration_date=None,
-            credit_class_id=selected_credit_class.id
-        ).order_by('-id').first()
-
-        new_balance = current_account_balance.balance - total_current_reduction
-
-        current_account_balance.expiration_date = date.today()
-        current_account_balance.save()
-
-        AccountBalance.objects.create(
-            balance=new_balance,
-            effective_date=date.today(),
-            credit_class_id=selected_credit_class.id,
-            credit_transaction=credit_transaction,
-            organization_id=organization.id
-        )
 
     return True
 
@@ -191,28 +170,6 @@ def award_credits(submission):
             SalesSubmissionCreditTransaction.objects.create(
                 sales_submission_id=submission.id,
                 credit_transaction_id=credit_transaction.id
-            )
-
-            current_balance = AccountBalance.objects.filter(
-                credit_class=vehicle_credit_class,
-                organization_id=submission.organization.id,
-                expiration_date=None
-            ).order_by('-id').first()
-
-            if current_balance:
-                new_balance = Decimal(current_balance.balance) + \
-                    Decimal(total_value)
-                current_balance.expiration_date = date.today()
-                current_balance.save()
-            else:
-                new_balance = total_value
-
-            AccountBalance.objects.create(
-                balance=new_balance,
-                effective_date=date.today(),
-                credit_class=vehicle_credit_class,
-                credit_transaction=credit_transaction,
-                organization_id=submission.organization.id
             )
 
             adjust_deficits(submission.organization)
@@ -392,48 +349,14 @@ def validate_transfer(transfer):
                 update_user=transfer.update_user,
             )
 
-    for each_supplier in [initiating_supplier, receiving_supplier]:
-        reduce_total = each_supplier == transfer.debit_from
-        add_total = each_supplier == transfer.credit_to
-        for credit_class, credit_value in credit_total_no_years.items():
-            new_balance = 0
-            current_balance = AccountBalance.objects.filter(
-                credit_class=credit_class,
-                organization_id=each_supplier.id,
-                expiration_date=None
-                ).order_by('-id').first()
-            if current_balance:
-                if reduce_total:
-                    new_balance = Decimal(current_balance.balance) - \
-                        Decimal(credit_value)
-                if add_total:
-                    new_balance = Decimal(current_balance.balance) + \
-                        Decimal(credit_value)
-                current_balance.expiration_date = date.today()
-                current_balance.save()
-            else:
-                if add_total:
-                    new_balance = credit_value
-                elif reduce_total:
-                    # if they don't have a balance we should probably not allow this transfer
-                    new_balance = 0 - credit_value
-
-            new_account_balance = AccountBalance.objects.create(
-                balance=new_balance,
-                effective_date=date.today(),
-                credit_class=CreditClass.objects.get(
-                    id=credit_class
-                ),
-                credit_transaction=added_transaction,
-                organization_id=each_supplier.id
-            )
-
     for year, v in credit_total.items():
         for credit_class, credit_value in v.items():
-            new_account_balance = AccountBalance.objects.filter(
-                organization_id=transfer.credit_to.id,
-                expiration_date=None,
-                credit_class_id=credit_class
-            ).order_by('-id').first()
-
             adjust_deficits(transfer.credit_to)
+
+
+def get_map_of_credit_transactions(key_field, value_field):
+    result = {}
+    credit_transactions = CreditTransaction.objects.only(key_field, value_field)
+    for credit_transaction in credit_transactions:
+        result[getattr(credit_transaction, key_field)] = getattr(credit_transaction, value_field)
+    return result

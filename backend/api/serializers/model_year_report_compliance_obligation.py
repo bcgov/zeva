@@ -1,34 +1,26 @@
-from datetime import date
-from django.db.models import Sum, Value
 from rest_framework import serializers
-from api.models.account_balance import AccountBalance
-from api.models.credit_transaction import CreditTransaction
-from api.models.model_year import ModelYear
-from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_compliance_obligation import ModelYearReportComplianceObligation
 from api.models.model_year_report_credit_offset import ModelYearReportCreditOffset
-from api.models.sales_submission import SalesSubmission
-from api.models.vehicle import Vehicle
-from api.models.vehicle_statuses import VehicleDefinitionStatuses
 from api.serializers.vehicle import ModelYearSerializer
 
 
-class ModelYearReportComplianceObligationOutputSerializer(serializers.ModelSerializer):
-    model_year = ModelYearSerializer(read_only=True)
-    A = serializers.SerializerMethodField()
-    B = serializers.SerializerMethodField()
+## CAN BE REMOVED LATER
+# class ModelYearReportComplianceObligationOutputSerializer(serializers.ModelSerializer):
+#     model_year = ModelYearSerializer(read_only=True)
+#     A = serializers.SerializerMethodField()
+#     B = serializers.SerializerMethodField()
 
-    def get_A(self, obj, *args, **kwargs):
-        return obj.credit_a_value
+#     def get_A(self, obj, *args, **kwargs):
+#         return obj.credit_a_value
 
-    def get_B(self, obj, *args, **kwargs):
-        return obj.credit_b_value
+#     def get_B(self, obj, *args, **kwargs):
+#         return obj.credit_b_value
 
-    class Meta:
-        model = ModelYearReportComplianceObligation
-        fields = (
-            'model_year', 'A', 'B'
-        )
+#     class Meta:
+#         model = ModelYearReportComplianceObligation
+#         fields = (
+#             'model_year', 'A', 'B'
+#         )
 
 
 class ModelYearReportComplianceObligationOffsetSerializer(serializers.ModelSerializer):
@@ -53,44 +45,32 @@ class ModelYearReportComplianceObligationSnapshotSerializer(serializers.ModelSer
         )
 
 
-class ModelYearReportComplianceObligationDetailsSerializer(serializers.ModelSerializer):
-    """
-    """
-    prior_year_balance = serializers.SerializerMethodField()
-    report_year_balance = serializers.SerializerMethodField()
-    report_year_transactions = serializers.SerializerMethodField()
-    pending_balance = serializers.SerializerMethodField()
-    def retrieve_year(self, report_id):
-        report = ModelYearReport.objects.get(
-            id=report_id
-        )
-        report_year_obj = ModelYear.objects.get(
-            id=report.model_year_id
-        )
-        report_year = int(report_year_obj.name)
-        return report_year
+# class ModelYearReportComplianceObligationDetailsSerializer(serializers.ModelSerializer):
+#     """
+#     """
+#     prior_year_balance = serializers.SerializerMethodField()
+#     report_year_balance = serializers.SerializerMethodField()
+#     report_year_transactions = serializers.SerializerMethodField()
+#     pending_balance = serializers.SerializerMethodField()
+#     def retrieve_year(self, report_id):
+#         report = ModelYearReport.objects.get(
+#             id=report_id
+#         )
+#         report_year_obj = ModelYear.objects.get(
+#             id=report.model_year_id
+#         )
+#         report_year = int(report_year_obj.name)
+#         return report_year
 
-    def retrieve_balance(self, year, credit_type):
-        request = self.context.get('request')
-        balance = AccountBalance.objects.filter(
-            organization=request.user.organization,
-            effective_date__lte=date(year, 9, 30),
-            credit_class_id=credit_type
-        ).order_by('-effective_date').first()
-        if balance:
-            return balance.balance
-        else:
-            return 0
-
-    def get_prior_year_balance(self, obj, *args, **kwargs):
-        ## this needs to change to grab to grab values from the prior year snapshot
-        kwargs = self.context.get('kwargs')
-        report_id = int(kwargs.get('id'))
-        report_year = self.retrieve_year(report_id)
-        prior_year = report_year-1
-        prior_year_balance_a = self.retrieve_balance(prior_year, 1)
-        prior_year_balance_b = self.retrieve_balance(prior_year, 2)
-        return {'year': prior_year, 'A': prior_year_balance_a, 'B': prior_year_balance_b}
+#     def get_prior_year_balance(self, obj, *args, **kwargs):
+#         ## this needs to change to grab to grab values from the prior year snapshot
+#         kwargs = self.context.get('kwargs')
+#         report_id = int(kwargs.get('id'))
+#         report_year = self.retrieve_year(report_id)
+#         prior_year = report_year-1
+#         prior_year_balance_a = self.retrieve_balance(prior_year, 1)
+#         prior_year_balance_b = self.retrieve_balance(prior_year, 2)
+#         return {'year': prior_year, 'A': prior_year_balance_a, 'B': prior_year_balance_b}
 
     # def get_report_year_transactions(self, obj, *args, **kwargs):
     #     request = self.context.get('request')
@@ -110,7 +90,7 @@ class ModelYearReportComplianceObligationDetailsSerializer(serializers.ModelSeri
     #     ).order_by(
     #         'credit_class_id', 'model_year_id'
     #     )
-        
+
     #     transfers_out = CreditTransaction.objects.filter(
     #         debit_from=request.user.organization,
     #         transaction_type__transaction_type='Credit Transfer',
@@ -149,50 +129,52 @@ class ModelYearReportComplianceObligationDetailsSerializer(serializers.ModelSeri
     #         }
     #     return content
 
-    def get_pending_balance(self, obj, *args, **kwargs):
-        kwargs = self.context.get('kwargs')
-        report_id = int(kwargs.get('id'))
-        report_year = self.retrieve_year(report_id)
-        request = self.context.get('request')
-        pending_sales_submissions = SalesSubmission.objects.filter(
-            organization=request.user.organization,
-            validation_status__in=['SUBMITTED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'CHECKED']
-        )
-        totals = {}
-        for obj in pending_sales_submissions:
-            for record in obj.get_content_totals_by_vehicles():
-                try:
-                    model_year = float(record['xls_model_year'])
-                except ValueError:
-                    continue
-                if int(model_year) != int(report_year):
-                    continue
-                vehicle = Vehicle.objects.filter(
-                    make__iexact=record['xls_make'],
-                    model_name=record['xls_model'],
-                    model_year__name=int(model_year),
-                    validation_status=VehicleDefinitionStatuses.VALIDATED,
-                ).first()
-                if vehicle:
-                    model_year_str = str(int(model_year))
-                    if model_year_str not in totals.keys():
-                        totals[model_year_str] = {'A': 0, 'B': 0}
-                    totals[model_year_str][vehicle.get_credit_class()] += vehicle.get_credit_value() * record['num_vins']
-        return totals
+    # def get_pending_balance(self, obj, *args, **kwargs):
+    #     kwargs = self.context.get('kwargs')
+    #     report_id = int(kwargs.get('id'))
+    #     report_year = self.retrieve_year(report_id)
+    #     request = self.context.get('request')
+    #     pending_sales_submissions = SalesSubmission.objects.filter(
+    #         organization=request.user.organization,
+    #         validation_status__in=['SUBMITTED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'CHECKED']
+    #     )
+    #     totals = {}
+    #     for obj in pending_sales_submissions:
+    #         for record in obj.get_content_totals_by_vehicles():
+    #             try:
+    #                 model_year = float(record['xls_model_year'])
+    #             except ValueError:
+    #                 continue
+    #             if int(model_year) != int(report_year):
+    #                 continue
+    #             vehicle = Vehicle.objects.filter(
+    #                 make__iexact=record['xls_make'],
+    #                 model_name=record['xls_model'],
+    #                 model_year__name=int(model_year),
+    #                 validation_status=VehicleDefinitionStatuses.VALIDATED,
+    #             ).first()
+    #             if vehicle:
+    #                 model_year_str = str(int(model_year))
+    #                 if model_year_str not in totals.keys():
+    #                     totals[model_year_str] = {'A': 0, 'B': 0}
+    #                 totals[model_year_str][vehicle.get_credit_class()] += vehicle.get_credit_value() * record['num_vins']
+    #     return totals
 
-    class Meta:
-        model = CreditTransaction
-        fields = (
-            'report_year_balance', 'pending_balance', 'prior_year_balance', 'report_year_transactions'
-        )
+    # class Meta:
+    #     model = CreditTransaction
+    #     fields = (
+    #         'report_year_balance', 'pending_balance', 'prior_year_balance', 'report_year_transactions'
+    #     )
 
-class ModelYearReportComplianceObligationSaveSerializer(serializers.ModelSerializer):
-    model_year = ModelYearSerializer()
 
-    def create(self, validated_data):
-        return obj
+## CAN BE REMOVED LATER
+# class ModelYearReportComplianceObligationSaveSerializer(serializers.ModelSerializer):
+#     model_year = ModelYearSerializer()
 
-    class Meta:
-        model = ModelYearReportComplianceObligation
-        fields = ('model_year_report', 'model_year', 'credit_a_value',
-                  'credit_b_value', 'category')
+#     def create(self, obj, validated_data):
+#         return obj
+
+#     class Meta:
+#         model = ModelYearReportComplianceObligation
+#         fields = ('model_year_report', 'model_year', 'credit_a_value',
+#                   'credit_b_value', 'category')

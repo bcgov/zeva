@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Comment component renders correctly with comments 1`] = `
+<div
+  className="bcgov-callout"
+  role="alert"
+>
+  <span>
+    <p>
+      John Doe
+      ,
+       
+      2022-01-01 1:00 am
+      :
+       
+      A sample comment
+    </p>
+    <p>
+      Jane Doe
+      ,
+       
+      2022-01-02 2:00 am
+      :
+       
+      Another sample comment
+    </p>
+  </span>
+</div>
+`;
+
+exports[`Comment component renders correctly with empty commentArray 1`] = `
+<div
+  className="bcgov-callout"
+  role="alert"
+>
+  <span />
+</div>
+`;

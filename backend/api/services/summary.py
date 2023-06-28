@@ -1,5 +1,4 @@
 from datetime import date
-from api.models.account_balance import AccountBalance
 from api.models.credit_transaction import CreditTransaction
 from django.db.models import Sum
 
@@ -32,19 +31,6 @@ def parse_summary_serializer(lst, serializer_data, category):
             'category': category,
             'model_year': {'name': model_year}
         })
-
-
-def retrieve_balance(organization_id, year, credit_type):
-    balance = AccountBalance.objects.filter(
-        organization_id=organization_id,
-        effective_date__lte=date(year, 9, 30),
-        credit_class__credit_class=credit_type
-    ).order_by('-effective_date').first()
-
-    if balance:
-        return balance.balance
-
-    return 0
 
 
 def get_current_year_balance(organization_id, year, credit_type):

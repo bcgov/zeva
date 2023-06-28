@@ -22,8 +22,8 @@
     * oc process -f ./knp-env-pr-new-zeva-spilo.yaml ENVIRONMENT=test | oc apply -f - -n 0ab226-test    
 
 ## Heml command
-helm install -n e52f12-test -f ./values-test.yaml zeva-spilo .
-helm uninstall -n e52f12-test zeva-spilo
+helm install -n e52f12-test -f ./values-test.yaml zeva-spilo-test .
+helm uninstall -n e52f12-test zeva-spilo-test
 
 ## Migrate Postgresql 10 on Patroni to 14 on Spilo container
 
@@ -32,7 +32,7 @@ helm uninstall -n e52f12-test zeva-spilo
 ### Run a final backup on backup container
 
 ### Create zeva database user and database
-* Login to the zeva-spilo leader pod
+* Login to the zeva-spilo-test leader pod
 * If the username contains upper case letters, should be double quoted
     * create user for zeva database, the username should be the same on v10 otherwise the restore may encounter issue
         * create user [username] with password '[password]'
@@ -40,14 +40,14 @@ helm uninstall -n e52f12-test zeva-spilo
     * create zeva database
         * create database zeva owner [username] ENCODING 'UTF8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE = 'en_US.UTF-8'
 ### Reset postgresql logging
-* login zeva-spilo leader pod, run the following psql to only keep 24 hours log files, otherwise they take too much space
+* login zeva-spilo-testleader pod, run the following psql to only keep 24 hours log files, otherwise they take too much space
     ALTER SYSTEM SET log_filename='postgresql-%H.log';
     ALTER SYSTEM SET log_connections='off';
     ALTER SYSTEM SET log_disconnections='off';
     ALTER SYSTEM SET log_checkpoints='off';
     select pg_reload_conf();
 ### Create metabase user
-* login zeva-spilo leader pod
+* login zeva-spilo-test leader pod
     CREATE USER metabaseuser WITH PASSWORD 'xxxxxx';
     GRANT CONNECT ON DATABASE zeva TO metabaseuser;
     GRANT USAGE ON SCHEMA public TO metabaseuser;
@@ -67,17 +67,17 @@ helm uninstall -n e52f12-test zeva-spilo
     * psql zeva < ./zeva.sql >> ./restore.log 2>&1
     * verify the restore.log when complete
 * Point the applications to v14 cluster, update the following key/value pairs in configmap zeva-patroni-app 
-    * database_service_name to zeva-spilo
-    * postgresql_service_host to zeva-spilo.e52f12-test.svc.cluster.local
+    * database_service_name to zeva-spilo-test
+    * postgresql_service_host to zeva-spilo-test.e52f12-test.svc.cluster.local
 * Bring down the v10 cluster
 * Roll out zeva-backend-test to make sure migration is correct
 * Bring up the zeva appliation
 * Update patroni backup to only backup minio data
 * Update metabase connection from CTHUB
-* Update dbServiceName to be zeva-spilo in .pipeline/lib/config.js
+* Update dbServiceName to be zeva-spilo-test in .pipeline/lib/config.js
 
-## Notes for uninstalling zeva-spilo when needed
+## Notes for uninstalling zeva-spilo-test when needed
 * After the helm uninstall command, remember to remove the followings:
-    * The two configmaps: zeva-spilo-config, zeva-spilo-leader
-    * The PVCs storage-volume-zeva-spilo-*
+    * The two configmaps: zeva-spilo-test-config, zeva-spilo-test-leader
+    * The PVCs storage-volume-zeva-spilo-test-*
     * The backup bucket in object storage

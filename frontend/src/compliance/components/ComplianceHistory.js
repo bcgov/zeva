@@ -13,64 +13,109 @@ require('bootstrap/js/dist/collapse.js')
 const ComplianceHistory = (props) => {
   const {
     id, activePage, supplementaryId: detailsId,
-    reportYear, isReassessment, tabName
+    reportYear, isReassessment, tabName, user
   } = props
-
   let { supplementaryId } = useParams()
 
   if (!supplementaryId && detailsId) {
     supplementaryId = detailsId
   }
 
-  const [supplementalReportHistory, setSupplementalReportHistory] = useState(
-    []
-  )
+  const [supplementalReportHistory, setSupplementalReportHistory] = useState([])
+  const [startedAsSupplemental, setStartedAsSupplemental] = useState(false)
 
   useEffect(() => {
     axios
       .get(ROUTES_COMPLIANCE.SUPPLEMENTAL_HISTORY.replace(/:id/g, id))
       .then((response) => {
+        response.data.forEach(report => {
+          let latestReturn = 0
+          let submitted = null
+          // Loop over report history to find the latest returned status to use as a starting point
+          for (let i = 0; i < report.history.length; i++) {
+            if (!report.history[i].status) {
+              continue
+            } else {
+              if (report.history[i].status === 'SUBMITTED') {
+                submitted = i
+              } else if (report.history[i].status === 'RETURNED') {
+                latestReturn = i
+              }
+            }
+          }
+          // If there is a return status, then filter out old entries but keep the original submission
+          if (latestReturn > 0) {
+            report.history.filter((value, index) => index === submitted || index >= latestReturn)
+          } else { // Otherwise use the original submission index as the starting point and remove anything prior if they exist
+            report.history.filter((value, index) => index >= submitted)
+          }
+        })
         setSupplementalReportHistory(response.data)
+        response.data.forEach((report) => {
+          if (report.isSupplementary === true) {
+            report.history.forEach((row) => {
+              if (row.isReassessment === false) {
+                setStartedAsSupplemental(true)
+              }
+            })
+          }
+        })
       })
   }, [])
 
   const getHistory = (itemHistory) => {
     const tempHistory = []
-
     if (itemHistory) {
       itemHistory.forEach((obj) => {
-        if (['SUBMITTED', 'DRAFT'].indexOf(obj.status) >= 0) {
+        if (['SUBMITTED'].indexOf(obj.status) >= 0) {
           const found = tempHistory.findIndex(
-            (each) => ['SUBMITTED', 'DRAFT'].indexOf(each.status) >= 0
+            (each) => ['SUBMITTED'].indexOf(each.status) >= 0
           )
-
           if (found < 0) {
             tempHistory.push(obj)
           }
         }
-
+        if (['DRAFT'].indexOf(obj.status) >= 0) {
+          const found = tempHistory.findIndex(
+            (each) => ['DRAFT'].indexOf(each.status) >= 0
+          )
+          if (found < 0 && ['DRAFT', 'SUBMITTED'].includes(obj.status)) {
+            tempHistory.push(obj)
+          }
+        }
         if (
           ['RECOMMENDED', 'ASSESSED', 'REASSESSED'].indexOf(obj.status) >= 0
         ) {
           const found = tempHistory.findIndex(
             (each) => obj.status === each.status
           )
-
           if (found < 0) {
             tempHistory.push(obj)
           }
         }
       })
     }
-
     return tempHistory
   }
-
+  const getTitle = (item) => {
+    const type = item.isSupplementary ? startedAsSupplemental ? 'Supplementary Report' : 'Reassessment' : 'Model Year Report'
+    let status = item.status
+    if (item.isSupplementary) {
+      if (item.status === 'RECOMMENDED') {
+        status = 'REASSESSMENT RECOMMENDED'
+      } else if (item.status === 'ASSESSED') {
+        status = ' REASSESSED'
+      }
+    } else if (item.status === 'RECOMMENDED') {
+      status = 'ASSESSMENT RECOMMENDED'
+    }
+    return `${type} - ${status}`
+  }
   const getStatus = (item, each) => {
     let status = each.status.toLowerCase()
 
     if (status === 'draft') {
-      status = ' saved '
+      status = ' created '
     }
     if (status === 'recommended') {
       if (item.isSupplementary) {
@@ -90,7 +135,9 @@ const ComplianceHistory = (props) => {
 
     if (status === 'assessed') {
       status = ' assessed '
-      byUser = ' by Government of B.C. '
+      if (!user.isGovernment) {
+        byUser = ' by Government of B.C. '
+      }
     }
 
     let reportType = 'Model year report '
@@ -108,7 +155,6 @@ const ComplianceHistory = (props) => {
         byUser = ' by Government of B.C. '
       }
     }
-
     return `${reportType} ${status} ${moment(each.updateTimestamp).format(
       'MMM D, YYYY'
     )} ${byUser}`
@@ -185,9 +231,7 @@ const ComplianceHistory = (props) => {
                             ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
                               ':id',
                               id
-                            ).replace(':supplementaryId', item.id) +
-                              (isReassessment ? '?reassessment=Y' : '') +
-                              `?tab=${tabName}`
+                            ).replace(':supplementaryId', item.id)
                           )
                         } else {
                           history.push(
@@ -200,11 +244,7 @@ const ComplianceHistory = (props) => {
                         }
                       }}
                     >
-                      Model Year {item.isSupplementary ? 'Supplementary' : ''}{' '}
-                      Report -{' '}
-                      {item.status === 'RECOMMENDED'
-                        ? 'ASSESSMENT RECOMMENDED'
-                        : item.status}
+                     {getTitle(item)}
                     </button>
                   </h2>
                 </div>

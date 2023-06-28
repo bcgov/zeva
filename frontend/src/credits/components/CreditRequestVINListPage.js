@@ -169,7 +169,7 @@ const CreditRequestVINListPage = (props) => {
               <option value="21">21 - VIN already issued credits ({errors.VIN_ALREADY_AWARDED ? errors.VIN_ALREADY_AWARDED : 0})</option>
               <option value="31">31 - Duplicate VIN ({errors.DUPLICATE_VIN ? errors.DUPLICATE_VIN : 0})</option>
               <option value="41">
-                41 - Model year and/or make does not match ({errors.ERROR_41 ? errors.ERROR_41 : 0})
+                41 - Model year and/or make does not match ({errors.ERROR41 ? errors.ERROR41 : 0})
               </option>
               <option value="51">51 - Sale prior to Jan 2018 ({errors.EXPIRED_REGISTRATION_DATE ? errors.EXPIRED_REGISTRATION_DATE : 0})</option>
               <option value="61">61 - Invalid date format ({errors.INVALID_DATE ? errors.INVALID_DATE : 0})</option>

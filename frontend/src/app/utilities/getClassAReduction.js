@@ -3,7 +3,7 @@ const getClassAReduction = (ldvSales, zevClassARatio, supplierClass = 'L') => {
     return 0
   }
 
-  const totalReduction = ldvSales * (zevClassARatio / 100)
+  const totalReduction = Math.round(ldvSales * (zevClassARatio / 100) * 100) / 100
 
   return totalReduction
 }

@@ -354,57 +354,61 @@ const SupplementaryContainer = (props) => {
 
   const handleSupplementalChange = (obj) => {
     let creditActivity = []
+
     if (newData && newData.creditActivity) {
       creditActivity = [...newData.creditActivity]
     }
 
-    if (obj.modelYear && obj.title) {
-      const index = creditActivity.findIndex((each) => {
-        return (
-          Number(each.modelYear) === Number(obj.modelYear) &&
-          each.category === obj.title
-        )
-      })
-      if (index >= 0) {
-        if (
-          ((obj.creditA || obj.creditA === '') && (obj.creditB || obj.creditB === ''))
-        ) {
-          // contains both credit type changes
-          creditActivity[index] = {
-            ...newData.creditActivity[index],
-            creditAValue: obj.creditA,
-            creditBValue: obj.creditB,
-            originalAValue: obj.originalAValue,
-            originalBValue: obj.originalBValue
-          }
-        } else if (obj.creditA || obj.creditA === '') {
-          // contains A credit changes
-          creditActivity[index] = {
-            ...newData.creditActivity[index],
-            creditAValue: obj.creditA,
-            originalAValue: obj.originalAValue,
-            originalBValue: obj.originalBValue
-          }
-        } else if (obj.creditB || obj.creditB === '') {
-          // contains B credit changes
-          creditActivity[index] = {
-            ...newData.creditActivity[index],
-            creditBValue: obj.creditB,
-            originalAValue: obj.originalAValue,
-            originalBValue: obj.originalBValue
-          }
-        }
-      } else {
-        creditActivity.push({
-          originalAValue: obj.originalAValue,
-          originalBValue: obj.originalBValue,
-          category: obj.title,
-          modelYear: obj.modelYear,
-          creditAValue: obj.creditA,
-          creditBValue: obj.creditB
+    obj.forEach((balance) => {
+      if (balance.modelYear && balance.title) {
+        const index = creditActivity.findIndex((each) => {
+          return (
+            Number(each.modelYear) === Number(balance.modelYear) &&
+            each.category === balance.title
+          )
         })
+        if (index >= 0) {
+          if (
+            ((balance.creditA || balance.creditA === '' || balance.creditA === 0) &&
+              (balance.creditB || balance.creditB === '' || balance.creditB === 0))
+          ) {
+            // contains both credit type changes
+            creditActivity[index] = {
+              ...newData.creditActivity[index],
+              creditAValue: balance.creditA,
+              creditBValue: balance.creditB,
+              originalAValue: balance.originalAValue,
+              originalBValue: balance.originalBValue
+            }
+          } else if (balance.creditA || balance.creditA === '' || balance.creditA === 0) {
+            // contains A credit changes
+            creditActivity[index] = {
+              ...newData.creditActivity[index],
+              creditAValue: balance.creditA,
+              originalAValue: balance.originalAValue,
+              originalBValue: balance.originalBValue
+            }
+          } else if (balance.creditB || balance.creditB === '' || balance.creditB === 0) {
+            // contains B credit changes
+            creditActivity[index] = {
+              ...newData.creditActivity[index],
+              creditBValue: balance.creditB,
+              originalAValue: balance.originalAValue,
+              originalBValue: balance.originalBValue
+            }
+          }
+        } else {
+          creditActivity.push({
+            originalAValue: balance.originalAValue,
+            originalBValue: balance.originalBValue,
+            category: balance.title,
+            modelYear: balance.modelYear,
+            creditAValue: balance.creditA,
+            creditBValue: balance.creditB
+          })
+        }
       }
-    }
+    })
     setNewData({
       ...newData,
       creditActivity
@@ -451,6 +455,7 @@ const SupplementaryContainer = (props) => {
           }
           creditActivity.push(creditActivityAddition)
         }
+
         setNewData({ ...newData, creditActivity })
         if (status) {
           const data = {

@@ -7,6 +7,7 @@ const CREDIT_REQUESTS = {
   DOWNLOAD_DETAILS: `${API_BASE_PATH}/:id/download_details`,
   EDIT: `${API_BASE_PATH}/:id/edit`,
   LIST: API_BASE_PATH,
+  LIST_PAGINATED: `${API_BASE_PATH}/paginated`,
   MINIO_URL: `${API_BASE_PATH}/:id/minio_url`,
   NEW: `${API_BASE_PATH}/new`,
   REASONS: `${API_BASE_PATH}/reasons`,

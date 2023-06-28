@@ -40,7 +40,7 @@ from api.permissions.model_year_report import ModelYearReportPermissions
 from api.services.minio import minio_put_object, minio_remove_object
 from api.services.model_year_report import (
     get_model_year_report_statuses,
-    adjust_credits,
+    adjust_credits, adjust_credits_reassessment
 )
 from api.services.model_year_report import check_validation_status_change
 from api.serializers.organization_ldv_sales import OrganizationLDVSalesSerializer
@@ -441,9 +441,10 @@ class ModelYearReportViewset(
                 # returning a 200 to bypass the rest of the update
                 return HttpResponse(status=200, content="Recommendation is required")
 
-            check_validation_status_change(model_year_report_check.validation_status, validation_status, request)
-            model_year_report_update.update(validation_status=validation_status)
-            model_year_report_update.update(update_user=request.user.username)
+            number_of_updated_records = model_year_report_update.update(validation_status=validation_status, update_user=request.user.username)
+            if number_of_updated_records > 0:
+                model_year_report = model_year_report_update.first()
+                check_validation_status_change(model_year_report_check.validation_status, model_year_report)
 
             ModelYearReportHistory.objects.create(
                 model_year_report_id=model_year_report_id,
@@ -465,7 +466,7 @@ class ModelYearReportViewset(
                     defaults={
                         "update_user": request.user.username,
                         "model_year_report_assessment_description_id": description,
-                        "penalty": penalty,
+                        "penalty": None if penalty == "" else penalty,
                     },
                 )
 
@@ -560,8 +561,6 @@ class ModelYearReportViewset(
                         ).delete()
 
         report = get_object_or_404(ModelYearReport, pk=pk)
-
-        check_validation_status_change(report.validation_status, request.data.get('validation_status'), request)
 
         serializer = ModelYearReportSerializer(report, context={"request": request})
 
@@ -729,7 +728,6 @@ class ModelYearReportViewset(
     @action(detail=True, methods=["get"])
     def supplemental_assessment(self, request, pk):
         report = get_object_or_404(ModelYearReport, pk=pk)
-
         if report.supplemental is None:
             serializer = SupplementalReportAssessmentSerializer(
                 0, context={"request": request}
@@ -756,11 +754,11 @@ class ModelYearReportViewset(
                 ):
                     supplemental_id = 0
 
-                if supplemental_report.status.value in ["RETURNED", "DELETED"]:
+                if supplemental_report.status.value in ["DELETED"]:
                     supplemental_id = 0
             elif supplemental_report and not request.user.is_government:
                 if (
-                    supplemental_report.status.value == "DRAFT"
+                    supplemental_report.status.value in ["DRAFT", "RETURNED"]
                     and create_user.is_government
                 ):
                     supplemental_id = 0
@@ -788,8 +786,6 @@ class ModelYearReportViewset(
         create_user = None
         supplemental_id = None
 
-        check_validation_status_change(report.validation_status, validation_status, request)
-
         # update the existing supplemental if it exists
         supplemental_report = report.get_latest_supplemental(request)
         if supplemental_report:
@@ -797,24 +793,27 @@ class ModelYearReportViewset(
                 username=supplemental_report.create_user
             ).first()
             supplemental_id = supplemental_report.id
+        if validation_status == "RETURNED":
+            previous_status = SupplementalReportHistory.objects.filter(
+                supplemental_report_id=supplemental_id
+            ).order_by('-update_timestamp').first().validation_status
+            if previous_status == validation_status:
+                SupplementalReportHistory.objects.create(
+                    supplemental_report_id=supplemental_id,
+                    validation_status=validation_status,
+                    update_user=request.user.username,
+                    create_user=request.user.username,
+                )
 
-        if request.data.get("status") == "RETURNED":
-            SupplementalReportHistory.objects.create(
-                supplemental_report_id=supplemental_id,
-                validation_status=validation_status,
-                update_user=request.user.username,
-                create_user=request.user.username,
-            )
+                serializer = ModelYearReportSupplementalSerializer(
+                    supplemental_report, data=request.data, context={"request": request}
+                )
+                serializer.is_valid(raise_exception=True)
+                serializer.save(
+                    model_year_report_id=report.id, update_user=request.user.username
+                )
 
-            serializer = ModelYearReportSupplementalSerializer(
-                supplemental_report, data=request.data, context={"request": request}
-            )
-            serializer.is_valid(raise_exception=True)
-            serializer.save(
-                model_year_report_id=report.id, update_user=request.user.username
-            )
-
-            return Response(serializer.data)
+                return Response(serializer.data)
         if (
             create_user
             and create_user.is_government == request.user.is_government
@@ -872,7 +871,7 @@ class ModelYearReportViewset(
                 if (
                     validation_status == "RECOMMENDED"
                     and analyst_action
-                    or (validation_status in ["DRAFT", "SUBMITTED"] and description)
+                    or (validation_status in ["DRAFT", "SUBMITTED", "RETURNED"] and description)
                 ):
                     # do "update or create" to create the assessment object
                     penalty = request.data.get("penalty")
@@ -909,6 +908,11 @@ class ModelYearReportViewset(
                                 update_sup_report.update(
                                     update_user=request.user.username
                                 )
+
+                if validation_status == "ASSESSED":
+                    # adjust credits etc the same way as is done with
+                    # model year reports excpt pass it the supplemental
+                    adjust_credits_reassessment(supplemental_id, request)
 
                 SupplementalReportHistory.objects.create(
                     supplemental_report_id=supplemental_id,
@@ -963,6 +967,7 @@ class ModelYearReportViewset(
             supplemental_id = supplemental_report.id
 
         supplier_information = request.data.get("supplier_info")
+  
         if supplier_information:
             SupplementalReportSupplierInformation.objects.filter(
                 supplemental_report_id=supplemental_id

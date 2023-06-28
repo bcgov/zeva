@@ -6,8 +6,9 @@ const getUnspecifiedClassReduction = (_totalReduction, _classAReduction) => {
     return 0
   }
 
-  let unspecifiedReduction = Number(totalReduction)
-  unspecifiedReduction -= Number(classAReduction)
+  let unspecifiedReduction = Math.round(Number(totalReduction) * 100) / 100
+  unspecifiedReduction -= Math.round(Number(classAReduction) * 100) / 100
+  unspecifiedReduction = Math.round(unspecifiedReduction * 100) / 100
 
   return unspecifiedReduction
 }

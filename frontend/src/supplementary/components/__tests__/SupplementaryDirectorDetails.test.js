@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, fireEvent, screen } from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
-import { BrowserRouter } from 'react-router-dom'
+import { MemoryRouter } from 'react-router-dom'
 import SupplementaryDirectorDetails from '../SupplementaryDirectorDetails'
 import CONFIG from '../../../app/config'
 
@@ -186,11 +186,11 @@ describe('SupplementaryDirectorDetails', () => {
 
   it('renders without crashing', () => {
     render(
-      <BrowserRouter>
+      <MemoryRouter>
         <SupplementaryDirectorDetails
           {...props}
         />
-      </BrowserRouter>
+      </MemoryRouter>
     )
   })
 
@@ -208,7 +208,7 @@ describe('SupplementaryDirectorDetails', () => {
     const selectedTab = 'Summary'
     const currentStatus = 'DRAFT'
     const { getByText } = render(
-      <BrowserRouter>
+      <MemoryRouter>
         <SupplementaryDirectorDetails
           {...props}
           id={id}
@@ -222,7 +222,7 @@ describe('SupplementaryDirectorDetails', () => {
           details={details}
           commentArray={commentArray}
         />
-      </BrowserRouter>
+      </MemoryRouter>
     )
     expect(getByText('ComplianceHistory')).toBeInTheDocument()
     expect(getByText('SupplierInformation')).toBeInTheDocument()
@@ -232,13 +232,13 @@ describe('SupplementaryDirectorDetails', () => {
 
   it('renders the correct style of ReassessmentDetailsPage when conditions are met', () => {
     const { queryByText } = render(
-      <BrowserRouter>
+      <MemoryRouter>
         <SupplementaryDirectorDetails
           {...props}
           isReassessment={true}
           query={{ tab: 'reassessment' }}
         />
-      </BrowserRouter>
+      </MemoryRouter>
     )
     expect(queryByText('ReassessmentDetailsPage')).toBeInTheDocument()
     expect(queryByText('SupplierInformation')).not.toBeInTheDocument()
@@ -248,12 +248,12 @@ describe('SupplementaryDirectorDetails', () => {
 
   it('does not render ReassessmentDetailsPage when conditions are incorrect', () => {
     const { queryByText } = render(
-      <BrowserRouter>
+      <MemoryRouter>
         <SupplementaryDirectorDetails
           {...props}
           isReassessment={false}
         />
-      </BrowserRouter>
+      </MemoryRouter>
     )
     expect(queryByText('ReassessmentDetailsPage')).not.toBeInTheDocument()
     expect(queryByText('SupplierInformation')).toBeInTheDocument()
@@ -264,13 +264,13 @@ describe('SupplementaryDirectorDetails', () => {
   // Test rendering of EditableCommentList when conditions are met
   it('renders EditableCommentList when conditions are met', () => {
     const { getByText } = render(
-      <BrowserRouter>
+      <MemoryRouter>
         <SupplementaryDirectorDetails
           {...props}
           details={{ ...details, actualStatus: 'RECOMMENDED' }}
           query={{ tab: 'reassessment' }}
         />
-      </BrowserRouter>
+      </MemoryRouter>
     )
     expect(getByText('EditableCommentList')).toBeInTheDocument()
   })
@@ -279,11 +279,11 @@ describe('SupplementaryDirectorDetails', () => {
   it('click on Print Page button', () => {
     window.print = jest.fn()
     const { getByText } = render(
-      <BrowserRouter>
+      <MemoryRouter>
         <SupplementaryDirectorDetails
           {...props}
         />
-      </BrowserRouter>
+      </MemoryRouter>
     )
     fireEvent.click(getByText('Print Page'))
     expect(window.print).toHaveBeenCalledTimes(1)
@@ -291,12 +291,12 @@ describe('SupplementaryDirectorDetails', () => {
 
   it('should not render "Director Reassessment" section when conditions are not met', () => {
     render(
-      <BrowserRouter>
+      <MemoryRouter>
         <SupplementaryDirectorDetails
           {...props}
           currentStatus={'INCORRECT_STATUS'}
         />
-      </BrowserRouter>
+      </MemoryRouter>
     )
     const reassessmentHeader = screen.queryByText('Director Reassessment')
     expect(reassessmentHeader).not.toBeInTheDocument()
@@ -304,7 +304,7 @@ describe('SupplementaryDirectorDetails', () => {
 
   it('should render "Director Reassessment" section when conditions are met', () => {
     render(
-      <BrowserRouter>
+      <MemoryRouter>
         <SupplementaryDirectorDetails
           {...props}
           details={{ ...details, actualStatus: 'ASSESSED' }}
@@ -318,7 +318,7 @@ describe('SupplementaryDirectorDetails', () => {
             }
           }
         />
-      </BrowserRouter>
+      </MemoryRouter>
     )
     const reassessmentHeader = screen.getByText('Director Reassessment')
     expect(reassessmentHeader).toBeInTheDocument()
@@ -326,7 +326,7 @@ describe('SupplementaryDirectorDetails', () => {
 
   it('should display assessment decision text correctly', () => {
     render(
-      <BrowserRouter>
+      <MemoryRouter>
         <SupplementaryDirectorDetails
           {...props}
           details={{ ...details, actualStatus: 'ASSESSED' }}
@@ -341,7 +341,7 @@ describe('SupplementaryDirectorDetails', () => {
           }
           assessmentDecision={'Complaint'}
         />
-      </BrowserRouter>
+      </MemoryRouter>
     )
     const decisionText = screen.getByText('The Director has assessed that this model year of 2021 is assessed.')
     expect(decisionText).toBeInTheDocument()
@@ -349,7 +349,7 @@ describe('SupplementaryDirectorDetails', () => {
 
   it('should display comment when available', () => {
     render(
-      <BrowserRouter>
+      <MemoryRouter>
         <SupplementaryDirectorDetails
           {...props}
           details={{ ...details, actualStatus: 'ASSESSED' }}
@@ -371,16 +371,16 @@ describe('SupplementaryDirectorDetails', () => {
             }
          }
         />
-      </BrowserRouter>
+      </MemoryRouter>
     )
     const commentText = screen.getByText('This is a sample comment.')
     expect(commentText).toBeInTheDocument()
   })
 
-  it('should trigger setSupplementaryAssessmentData when input changes', () => {
+  it('should render Recommended Header', () => {
     const setSupplementaryAssessmentData = jest.fn()
     render(
-      <BrowserRouter>
+      <MemoryRouter>
         <SupplementaryDirectorDetails
           {...props}
           details={{ ...details, actualStatus: 'ASSESSED' }}
@@ -394,25 +394,21 @@ describe('SupplementaryDirectorDetails', () => {
           }
           query={{ tab: 'recommendation' }}
         />
-      </BrowserRouter>
+      </MemoryRouter>
     )
     const recommendedHeader = screen.queryByText('Analyst Recommended Director Assessment')
     expect(recommendedHeader).toBeInTheDocument()
-
-    fireEvent.change(screen.getByRole('spinbutton'), { target: { value: 5 } })
-
-    expect(setSupplementaryAssessmentData).toHaveBeenCalled()
   })
 
   it('should render back button', () => {
     const { getByTestId } = render(
-      <BrowserRouter>
+      <MemoryRouter>
         <SupplementaryDirectorDetails
           {...props}
           details={{ ...details, actualStatus: 'RECOMMENDED' }}
           handleSubmit={mockHandleSubmit}
         />
-      </BrowserRouter>
+      </MemoryRouter>
     )
     const backButton = getByTestId('back')
     expect(backButton).toBeInTheDocument()
@@ -420,14 +416,14 @@ describe('SupplementaryDirectorDetails', () => {
 
   it('should trigger handleSubmit with "RETURNED" when return button is clicked', () => {
     const { queryByText } = render(
-      <BrowserRouter>
+      <MemoryRouter>
         <SupplementaryDirectorDetails
           {...props}
           details={{ ...details, actualStatus: 'RECOMMENDED' }}
           handleSubmit={mockHandleSubmit}
           query={{ tab: 'reassessment' }}
         />
-      </BrowserRouter>
+      </MemoryRouter>
     )
 
     const returnButton = queryByText('Return to Analyst')
@@ -438,14 +434,14 @@ describe('SupplementaryDirectorDetails', () => {
 
   it('should trigger handleSubmit with "ASSESSED" when issue assessment button is clicked', () => {
     const { queryByText } = render(
-      <BrowserRouter>
+      <MemoryRouter>
         <SupplementaryDirectorDetails
           {...props}
           details={{ ...details, actualStatus: 'RECOMMENDED' }}
           handleSubmit={mockHandleSubmit}
           query={{ tab: 'reassessment' }}
         />
-      </BrowserRouter>
+      </MemoryRouter>
     )
 
     const issueAssessmentButton = queryByText('Issue Assessment')

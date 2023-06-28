@@ -22,10 +22,11 @@ from api.models.credit_transaction import CreditTransaction
 from api.models.credit_transaction_type import CreditTransactionType
 from api.models.weight_class import WeightClass
 from api.models.organization import Organization
-from api.models.account_balance import AccountBalance
 from api.models.model_year_report_credit_transaction import ModelYearReportCreditTransaction
 from api.services.send_email import notifications_model_year_report
-
+from api.models.supplemental_report import SupplementalReport
+from api.models.supplemental_report_credit_activity import \
+    SupplementalReportCreditActivity
 
 def get_model_year_report_statuses(report, request_user=None):
     supplier_information_status = 'UNSAVED'
@@ -193,6 +194,71 @@ def get_model_year_report_statuses(report, request_user=None):
         }
     }
 
+def adjust_credits_reassessment(id, request):
+    ## this so far only updates LDV sales, we will need
+    ## to add the logic for reductions and deficits later
+    reassessment = SupplementalReport.objects.get(id=id)
+    model_year_report_id = SupplementalReport.objects.values_list(
+    'model_year_report_id', flat=True).filter(
+        id=id).first()
+    credit_class_a = CreditClass.objects.get(credit_class='A')
+    credit_class_b = CreditClass.objects.get(credit_class='B')
+    model_year_report = ModelYearReport.objects.get(id=model_year_report_id)
+    model_year_id = model_year_report.model_year.id
+    organization_id = model_year_report.organization.id
+    ldv_sales = reassessment.ldv_sales
+    if ldv_sales:
+        OrganizationLDVSales.objects.update_or_create(
+            organization_id=organization_id,
+            model_year_id=model_year_id,
+            defaults={
+            'ldv_sales': ldv_sales,
+            'update_user': request.user.username
+            }
+        )
+
+    deficits = SupplementalReportCreditActivity.objects.filter(
+        supplemental_report_id=reassessment.id,
+        category='CreditDeficit'
+    )
+    
+    for deficit in deficits:
+        if deficit.credit_a_value > 0:
+            OrganizationDeficits.objects.update_or_create(
+                credit_class=credit_class_a,
+                organization_id=organization_id,
+                model_year_id=model_year_id,
+                defaults={
+                    'credit_value': deficit.credit_a_value,
+                    'create_user': request.user.username,
+                    'update_user': request.user.username
+                }
+            )
+        else:
+            OrganizationDeficits.objects.filter(
+                credit_class=credit_class_a,
+                organization_id=organization_id,
+                model_year_id=model_year_id
+            ).delete()
+
+        if deficit.credit_b_value > 0:
+            OrganizationDeficits.objects.update_or_create(
+                credit_class=credit_class_b,
+                organization_id=organization_id,
+                model_year_id=model_year_id,
+                defaults={
+                    'credit_value': deficit.credit_b_value,
+                    'create_user': request.user.username,
+                    'update_user': request.user.username
+                }
+            )
+        else:
+            OrganizationDeficits.objects.filter(
+                credit_class=credit_class_b,
+                organization_id=organization_id,
+                model_year_id=model_year_id
+            ).delete()
+
 
 def adjust_credits(id, request):
     model_year = request.data.get('model_year')
@@ -296,42 +362,6 @@ def adjust_credits(id, request):
                         credit_transaction_id=added_transaction.id
                     )
 
-    balance_changes = [{
-        'credit_class': 'A',
-        'credit_value': total_a_value
-    }, {
-        'credit_class': 'B',
-        'credit_value': total_b_value
-    }]
-
-    for balance_change in balance_changes:
-        credit_class_obj = balance_change.get('credit_class')
-        credit_class = credit_class_a if credit_class_obj == 'A' else credit_class_b
-
-        credit_value = Decimal(balance_change.get('credit_value'))
-
-        current_balance = AccountBalance.objects.filter(
-            credit_class=credit_class,
-            organization_id=organization_id,
-            expiration_date=None
-        ).order_by('-id').first()
-
-        if current_balance:
-            new_balance = Decimal(current_balance.balance) -\
-                credit_value
-            current_balance.expiration_date = model_year_report_timestamp
-            current_balance.save()
-        else:
-            new_balance = 0 - credit_value
-
-        AccountBalance.objects.create(
-            balance=new_balance,
-            effective_date=model_year_report_timestamp,
-            credit_class=credit_class,
-            credit_transaction=added_transaction,
-            organization_id=organization_id
-        )
-
     deficits = ModelYearReportComplianceObligation.objects.filter(
         model_year_report_id=id,
         category='CreditDeficit',
@@ -375,11 +405,10 @@ def adjust_credits(id, request):
                 model_year_id=model_year_id
             ).delete()
 
-def check_validation_status_change(current_status, new_status, request):
-        if type(current_status) is ModelYearReportStatuses:
-            current_status = current_status.name
-        elif type(new_status) is ModelYearReportStatuses:
-            new_status = new_status.name
-            
-        if new_status != current_status or new_status == ModelYearReportStatuses.ASSESSED.name and current_status == ModelYearReportStatuses.ASSESSED.name:
-            notifications_model_year_report(new_status, request, current_status)
+def check_validation_status_change(old_status, updated_model_year_report):
+        new_status = updated_model_year_report.validation_status
+        if new_status != old_status:
+            report_returned_to_supplier = False
+            if old_status != ModelYearReportStatuses.DRAFT and new_status == ModelYearReportStatuses.DRAFT:
+                report_returned_to_supplier = True
+            notifications_model_year_report(updated_model_year_report, report_returned_to_supplier)

@@ -254,6 +254,7 @@ class CreditTransferSaveSerializer(ModelSerializer):
         content = request.data.get('content')
         signing_confirmation = request.data.get('signing_confirmation', None)
         credit_transfer_comment = request.data.get('credit_transfer_comment')
+        old_status = instance.status
         if content:
             CreditTransferContent.objects.filter(credit_transfer_id=instance.id).delete()
             serializer = CreditTransferContentSaveSerializer(
@@ -303,6 +304,7 @@ class CreditTransferSaveSerializer(ModelSerializer):
                     signing_authority_assertion_id=confirmation
                 )
 
+        instance.old_status = old_status
         return instance
 
     def create(self, validated_data):
@@ -346,7 +348,7 @@ class CreditTransferSaveSerializer(ModelSerializer):
                     signing_authority_assertion_id=confirmation
                 )
 
-            notifications_credit_transfers(credit_transfer)
+            notifications_credit_transfers(credit_transfer, False, False)
 
         serializer = CreditTransferSerializer(
             credit_transfer, read_only=True,

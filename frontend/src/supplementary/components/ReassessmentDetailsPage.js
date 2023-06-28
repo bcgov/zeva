@@ -28,24 +28,15 @@ const ReassessmentDetailsPage = (props) => {
   if (newData && newData.supplierInfo && newData.supplierInfo.legalName) {
     supplierName = newData.supplierInfo.legalName
   }
-
-  let addresses = details.assessmentData.reportAddress
-  let addressesAreStrings = false
-  if (
-    newData &&
-    newData.supplierInfo &&
-    newData.supplierInfo.recordsAddress &&
-    typeof newData.supplierInfo.recordsAddress === 'string' &&
-    newData.supplierInfo.serviceAddress &&
-    typeof newData.supplierInfo.serviceAddress === 'string'
-  ) {
-    addressesAreStrings = true
-    addresses = [
-      newData.supplierInfo.serviceAddress,
-      newData.supplierInfo.recordsAddress
-    ]
+  const addresses = details.assessmentData.reportAddress
+  let reassessmentRecordsAddress
+  let reassessmentServiceAddress
+  if (newData.supplierInfo && newData.supplierInfo.recordsAddress) {
+    reassessmentRecordsAddress = newData.supplierInfo.recordsAddress
   }
-
+  if (newData.supplierInfo && newData.supplierInfo.serviceAddress) {
+    reassessmentServiceAddress = newData.supplierInfo.serviceAddress
+  }
   let makes = details.assessmentData.makes
   if (newData && newData.supplierInfo && newData.supplierInfo.ldvMakes) {
     makes = newData.supplierInfo.ldvMakes.split('\n')
@@ -233,7 +224,8 @@ const ReassessmentDetailsPage = (props) => {
       <NoticeOfAssessmentSection
         name={supplierName}
         addresses={addresses}
-        addressesAreStrings={addressesAreStrings}
+        reassessmentServiceAddress={reassessmentServiceAddress}
+        reassessmentRecordsAddress={reassessmentRecordsAddress}
         makes={makes}
         supplierClass={supplierClass}
         disabledInputs={false}

@@ -26,6 +26,9 @@ it('renders without crashing', () => {
         handleCheckboxClick={baseProps.handleCheckboxClick}
         notifications={baseProps.notifications}
         user={{ isGovernment: true }}
+        displayList={true}
+        loading={false}
+        handleChange={() => {}}
       />
     </Router>
   )

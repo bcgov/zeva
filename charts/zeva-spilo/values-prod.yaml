@@ -5,7 +5,7 @@ spilo:
   credentials:
     useExistingSecret: true
     existingSecret:
-      name: itvr-patroni-admin
+      name: zeva-patroni-admin
       superuserKey: password-superuser
       adminKey: password-admin
       standbyKey: password-standby
@@ -13,16 +13,16 @@ spilo:
   continuousArchive:
     enabled: true
     scheduleCronJob: "0 */3 * * *"
-    retainBackups: 3
+    retainBackups: 10
     storage: s3
     s3:
-      bucket: itvrpr
-      secretName: itvr-db-backup-s3
+      bucket: zevapr
+      secretName: zeva-db-backup-s3
 
   shipLogs:
     enabled: false
 #    s3:
-#      bucket: s3://itvrpr
+#      bucket: s3://zevapr
 #      shipSchedule: 0 7 * * *
 
   persistentVolume:
@@ -31,10 +31,10 @@ spilo:
 
   resources:
     limits:
-      cpu: 120m
+      cpu: 360m
       memory: 400Mi
     requests:
-      cpu: 60m
+      cpu: 180m
       memory: 200Mi  
 
   podDisruptionBudget:

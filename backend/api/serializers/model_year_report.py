@@ -268,8 +268,7 @@ class ModelYearReportListSerializer(ModelSerializer, EnumSupportSerializerMixin)
 
         def get_ldv_sales(obj):
             if (
-                consider_supplemental
-                and latest_assessed_supplemental
+                latest_assessed_supplemental
                 and latest_assessed_supplemental.ldv_sales
             ):
                 return latest_assessed_supplemental.ldv_sales
@@ -296,9 +295,9 @@ class ModelYearReportListSerializer(ModelSerializer, EnumSupportSerializerMixin)
                 if obj.validation_status != ModelYearReportStatuses.ASSESSED:
                     return "-"
 
-                assessment = ModelYearReportAssessment.objects.get(
+                assessment = ModelYearReportAssessment.objects.filter(
                     model_year_report_id=obj.id
-                )
+                ).first()
 
                 if assessment:
                     found = assessment.model_year_report_assessment_description.description.find(
@@ -330,9 +329,8 @@ class ModelYearReportListSerializer(ModelSerializer, EnumSupportSerializerMixin)
 
                 if create_user.is_government:
                     if sup_status == "RETURNED":
-                        # this record was created by idir but
-                        # should show up as supplementary returned
-                        return ("SUPPLEMENTARY {}").format(sup_status)
+                        return ("REASSESSMENT {}").format(sup_status)
+
                     if sup_status == "REASSESSED" or sup_status == "ASSESSED":
                         # bceid and idir can see just 'reassessed' as status
                         return "REASSESSED"

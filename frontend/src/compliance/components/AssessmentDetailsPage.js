@@ -143,7 +143,8 @@ const AssessmentDetailsPage = (props) => {
               decision: {
                 description: each.description,
                 id: each.id
-              }
+              },
+              assessmentPenalty: ''
             }
           })
         }}
@@ -400,7 +401,6 @@ const AssessmentDetailsPage = (props) => {
             <NoticeOfAssessmentSection
               name={details.organization.name}
               addresses={details.organization.organizationAddress}
-              addressesAreStrings={false}
               makes={makes}
               supplierClass={supplierClass}
               disabledInputs={disabledInputs}
@@ -508,9 +508,7 @@ const AssessmentDetailsPage = (props) => {
                               }
                               type="number"
                               className="ml-4 mr-1"
-                              defaultValue={
-                                details.assessment.assessmentPenalty
-                              }
+                              value={details.assessment.assessmentPenalty || ''}
                               name="penalty-amount"
                               onChange={(e) => {
                                 setDetails({
@@ -567,7 +565,7 @@ const AssessmentDetailsPage = (props) => {
                   Return to Analyst
                 </button>
               )}
-              {analystAction && (
+              {analystAction && !createdByGov && (
                 <button
                   className="button text-danger"
                   onClick={() => {

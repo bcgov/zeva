@@ -8,7 +8,6 @@ from api.models.credit_transaction_type import CreditTransactionType
 from api.models.credit_agreement_transaction_types import \
     CreditAgreementTransactionTypes
 from api.models.weight_class import WeightClass
-from api.models.account_balance import AccountBalance
 from api.models.credit_agreement_credit_transaction import \
     CreditAgreementCreditTransaction
 
@@ -75,50 +74,4 @@ def adjust_credits(agreement):
             credit_transaction_id=added_transaction.id,
             credit_agreement_id=agreement.id,
             update_user=agreement.update_user,
-        )
-
-    balance_changes = [{
-        'credit_class': credit_class_a,
-        'credit_value': total_a_value
-    }, {
-        'credit_class': credit_class_b,
-        'credit_value': total_b_value
-    }]
-
-    for balance_change in balance_changes:
-        credit_class = balance_change.get('credit_class')
-        credit_value = Decimal(balance_change.get('credit_value'))
-        new_balance = 0
-
-        current_balance = AccountBalance.objects.filter(
-            credit_class=credit_class,
-            organization_id=agreement.organization.id,
-            expiration_date=None
-        ).order_by('-id').first()
-
-        if current_balance:
-            if reduce_total:
-                new_balance = Decimal(current_balance.balance) - \
-                    Decimal(credit_value)
-            if add_total:
-                new_balance = Decimal(current_balance.balance) + \
-                    Decimal(credit_value)
-            if reset_total:
-                new_balance = 0
-            current_balance.expiration_date = date.today()
-            current_balance.save()
-        else:
-            if add_total:
-                new_balance = credit_value
-            elif reduce_total:
-                new_balance = 0 - credit_value
-            elif reset_total:
-                new_balance = 0
-
-        AccountBalance.objects.create(
-            balance=new_balance,
-            effective_date=date.today(),
-            credit_class=credit_class,
-            credit_transaction=added_transaction,
-            organization_id=agreement.organization.id
         )

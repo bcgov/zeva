@@ -36,16 +36,16 @@ const submission = {
     id: 1,
     isActive: true,
     isGovernment: false,
-    ldvSales:[
+    ldvSales: [
       {
-        "id": 248,
-        "ldvSales": 4736,
-        "modelYear": "2021"
+        id: 248,
+        ldvSales: 4736,
+        modelYear: '2021'
       },
       {
-        "id": 139,
-        "ldvSales": 5280,
-        "modelYear": "2020"
+        id: 139,
+        ldvSales: 5280,
+        modelYear: '2020'
       }
     ],
     name: 'FCA Canada Inc.',
@@ -93,16 +93,16 @@ const submission = {
     id: 61,
     isActive: true,
     isGovernment: false,
-    ldvSales:[
+    ldvSales: [
       {
-        "id": 248,
-        "ldvSales": 4736,
-        "modelYear": "2021"
+        id: 248,
+        ldvSales: 4736,
+        modelYear: '2021'
       },
       {
-        "id": 139,
-        "ldvSales": 5280,
-        "modelYear": "2020"
+        id: 139,
+        ldvSales: 5280,
+        modelYear: '2020'
       }
     ],
     name: 'Toyota Canada Inc.',
@@ -143,8 +143,7 @@ jest.mock('react-router-dom', () => ({
 }))
 
 jest.mock('../../../app/components/Button', () => {
-  const React = require('react');
-  const { Link } = require('react-router-dom')
+  const React = require('react')
   return jest.fn().mockImplementation(({ buttonType, action, optionalText, optionalClassname, locationRoute, buttonTooltip, disabled, ...props }) => {
     const buttonText = optionalText
     return (
@@ -164,9 +163,12 @@ const RenderCreditTransfersDetailsPage = (user) => {
         submission={submission}
         assertions={[]}
         user={user}
+        sufficientCredit={true}
+        handleCheckboxClick={() => {}}
         handleSubmit={() => {
           console.log('submit!')
         }}
+        errorMessage={[]}
       />
     </>
   )
@@ -287,7 +289,7 @@ it('shows the submission and approved signature dates if status is approved', ()
   expect(getByTestId(container, 'approve-signature')).toBeInTheDocument()
 })
 it('shows the comment box to the director if user is analyst', () => {
-  submission.status = 'RECOMMEND_REJECTION' 
+  submission.status = 'RECOMMEND_REJECTION'
   submission.history = [
     {
       status: 'RECOMMEND_REJECTION',

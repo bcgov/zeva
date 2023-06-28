@@ -4,6 +4,7 @@ from .base_test_case import BaseTestCase
 from ..models.vehicle import Vehicle
 from ..models.user_role import UserRole
 from ..models.role import Role
+from unittest.mock import patch
 
 
 class TestVehicles(BaseTestCase):
@@ -40,12 +41,15 @@ class TestVehicles(BaseTestCase):
             vehicle.validation_status = 'DRAFT'
             vehicle.save()
 
-            response = self.clients['RTAN_BCEID'].patch(
-                "/api/vehicles/{}/state_change".format(vehicle.id),
-                content_type='application/json',
-                data=json.dumps({'validation_status': "SUBMITTED"})
-            )
-            self.assertEqual(response.status_code, 200)
+            with patch('api.services.send_email.send_zev_model_emails') as mock_send_zev_model_emails:
+                response = self.clients['RTAN_BCEID'].patch(
+                    "/api/vehicles/{}/state_change".format(vehicle.id),
+                    content_type='application/json',
+                    data=json.dumps({'validation_status': "SUBMITTED"})
+                )
+                self.assertEqual(response.status_code, 200)
+                # Test that email method is called properly
+                mock_send_zev_model_emails.assert_called()
 
             response = self.clients['RTAN_BCEID'].get("/api/vehicles")
             self.assertEqual(response.status_code, 200)

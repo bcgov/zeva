@@ -57,7 +57,7 @@ const user = {
 it('renders without crashing', () => {
   render(
     <Router>
-      <CreditTransactions items={data} user={user} balances={balance} />
+      <CreditTransactions items={data} user={user} balances={balance} reports={[]} />
     </Router>
   )
 })

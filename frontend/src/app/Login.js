@@ -21,7 +21,6 @@ const Login = (props) => {
               <button
                 type="button"
                 onClick={() => keycloak.login({
-                  pkceMethod: 'S256',
                   redirectUri: CONFIG.KEYCLOAK.CALLBACK_URL,
                   idpHint: IDENTITY_PROVIDERS.BCEID_BUSINESS
                 })}
@@ -40,7 +39,6 @@ const Login = (props) => {
               <button
                 type="button"
                 onClick={() => keycloak.login({
-                  pkceMethod: 'S256',
                   redirectUri: CONFIG.KEYCLOAK.CALLBACK_URL,
                   idpHint: IDENTITY_PROVIDERS.IDIR
                 })}

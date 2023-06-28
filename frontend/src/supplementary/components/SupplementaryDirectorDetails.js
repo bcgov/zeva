@@ -43,7 +43,6 @@ const SupplementaryDirectorDetails = (props) => {
     radioDescriptions,
     ratios,
     salesRows,
-    setSupplementaryAssessmentData,
     supplementaryAssessmentData,
     user,
     newData,
@@ -66,44 +65,52 @@ const SupplementaryDirectorDetails = (props) => {
   const [showModalDelete, setShowModalDelete] = useState(false)
   const reportYear = details.assessmentData && details.assessmentData.modelYear
   const supplierClass =
-    details.assessmentData && details.assessmentData.supplierClass[0]
+  details.assessmentData && details.assessmentData.supplierClass[0]
   const creditReductionSelection =
-    details.assessmentData && details.assessmentData.creditReductionSelection
+  details.assessmentData && details.assessmentData.creditReductionSelection
   let currentStatus = details.actualStatus
     ? details.actualStatus
     : details.status
   if (currentStatus === 'ASSESSED' && newReport) {
     currentStatus = 'DRAFT'
   }
+  const { supplementaryAssessment } = supplementaryAssessmentData
 
-  const isAssessed = currentStatus === 'ASSESSED' ||
-    currentStatus === 'REASSESSED'
+  const isAssessed =
+    currentStatus === 'ASSESSED' || currentStatus === 'REASSESSED'
 
   const isRecommended = currentStatus === 'RECOMMENDED'
 
   const tabNames = ['supplemental', 'recommendation', 'reassessment']
-  const selectedTab = query?.tab ? query.tab : isAssessed || isRecommended ? tabNames[2] : tabNames[1]
+  let selectedTab
 
-  const formattedPenalty = details.assessment
-    ? formatNumeric(details.assessment.assessmentPenalty, 0)
-    : 0
+  if (query?.tab) {
+    selectedTab = query.tab
+  } else {
+    if (isAssessed || isRecommended) {
+      selectedTab = tabNames[2]
+    } else {
+      selectedTab = tabNames[1]
+    }
+  }
+
   const assessmentDecision =
-    supplementaryAssessmentData.supplementaryAssessment.decision &&
-    supplementaryAssessmentData.supplementaryAssessment.decision.description
-      ? supplementaryAssessmentData.supplementaryAssessment.decision.description
+    supplementaryAssessment &&
+    supplementaryAssessment.decision &&
+    supplementaryAssessment.decision.description
+      ? supplementaryAssessment.decision.description
         .replace(
           /{user.organization.name}/g,
           details.assessmentData.legalName
         )
         .replace(/{modelYear}/g, details.assessmentData.modelYear)
-        .replace(/{penalty}/g, `$${formattedPenalty} CAD`)
+        .replace(/{penalty}/g, `$${formatNumeric(supplementaryAssessment.assessmentPenalty, 0) || 0} CAD`)
       : ''
   const showDescription = (each) => {
     const selectedId =
-      supplementaryAssessmentData &&
-      supplementaryAssessmentData.supplementaryAssessment &&
-      supplementaryAssessmentData.supplementaryAssessment.decision &&
-      supplementaryAssessmentData.supplementaryAssessment.decision.id
+      supplementaryAssessment &&
+      supplementaryAssessment.decision &&
+      supplementaryAssessment.decision.id
 
     return (
       <div className="mb-3" key={each.id}>
@@ -113,18 +120,6 @@ const SupplementaryDirectorDetails = (props) => {
           type="radio"
           name="assessment"
           disabled={ true }
-          onChange={() => {
-            setSupplementaryAssessmentData({
-              ...supplementaryAssessmentData,
-              supplementaryAssessment: {
-                ...supplementaryAssessmentData.supplementaryAssessment,
-                decision: {
-                  description: each.description,
-                  id: each.id
-                }
-              }
-            })
-          }}
         />
         {each.description && (
           <label className="d-inline text-blue" htmlFor="complied">
@@ -134,7 +129,7 @@ const SupplementaryDirectorDetails = (props) => {
                 details.assessmentData.legalName
               )
               .replace(/{modelYear}/g, details.assessmentData.modelYear)
-              .replace(/{penalty}/g, `$${formattedPenalty} CAD`)}
+              .replace(/{penalty}/g, `$${formatNumeric(supplementaryAssessment.assessmentPenalty, 0) || 0} CAD`)} CAD`)
           </label>
         )}
       </div>
@@ -217,9 +212,12 @@ const SupplementaryDirectorDetails = (props) => {
   )
 
   const tabUrl = (supplementalId, tabName) => {
-    return ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id)
-      .replace(':supplementaryId', supplementalId) +
-        `?tab=${tabName}`
+    return (
+      ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(
+        ':supplementaryId',
+        supplementalId
+      ) + `?tab=${tabName}`
+    )
   }
 
   const renderTabs = () => {
@@ -229,21 +227,30 @@ const SupplementaryDirectorDetails = (props) => {
         key="tabs"
         role="tablist"
       >
-        <ReactTooltip/>
-        {supplementaryReportId && (<SupplementaryTab
-          selected={selectedTab === tabNames[0]}
-          title={'Supplementary Report'}
-          url={tabUrl(supplementaryReportId, tabNames[0])}
-          tooltip={'No supplementary report found. Analyst initiated reassessment.'}
-          status={reassessmentStatus}
-          assessed={isAssessed}
-        />)}
+        <ReactTooltip />
+        {supplementaryReportId && (
+          <SupplementaryTab
+            selected={selectedTab === tabNames[0]}
+            title={'Supplementary Report'}
+            url={tabUrl(supplementaryReportId, tabNames[0])}
+            tooltip={
+              'No supplementary report found. Analyst initiated reassessment.'
+            }
+            status={reassessmentStatus}
+            assessed={isAssessed}
+          />
+        )}
         <SupplementaryTab
           selected={selectedTab === tabNames[1]}
           title={'Reassessment Recommendation'}
-          url={tabUrl(newReport ? supplementaryReportId : reassessmentReportId, tabNames[1])}
+          url={tabUrl(
+            newReport ? supplementaryReportId : reassessmentReportId,
+            tabNames[1]
+          )}
           disabled={false}
-          tooltip={'No supplementary report found. Analyst initiated reassessment.'}
+          tooltip={
+            'No supplementary report found. Analyst initiated reassessment.'
+          }
           status={reassessmentStatus}
           assessed={isAssessed}
         />
@@ -252,7 +259,9 @@ const SupplementaryDirectorDetails = (props) => {
           title={'Reassessment'}
           url={tabUrl(reassessmentReportId, tabNames[2])}
           // disabled={!isAssessed}
-          tooltip={'Reassessment visible once a director approves the recommendation.'}
+          tooltip={
+            'Reassessment visible once a director approves the recommendation.'
+          }
           status={reassessmentStatus}
           assessed={isAssessed}
         />
@@ -262,21 +271,21 @@ const SupplementaryDirectorDetails = (props) => {
 
   return (
     <div id="supplementary" className="page">
-        <ComplianceHistory
-          activePage="supplementary"
-          id={id}
-          isReassessment={isReassessment}
-          reportYear={reportYear}
-          supplementaryId={
-            isReassessment &&
-            supplementaryReportId &&
-            !supplementaryReportIsReassessment
-              ? supplementaryReportId
-              : details.id
-          }
-          user={user}
-          tabName={selectedTab}
-        />
+      <ComplianceHistory
+        activePage="supplementary"
+        id={id}
+        isReassessment={isReassessment}
+        reportYear={reportYear}
+        supplementaryId={
+          isReassessment &&
+          supplementaryReportId &&
+          !supplementaryReportIsReassessment
+            ? supplementaryReportId
+            : details.id
+        }
+        user={user}
+        tabName={selectedTab}
+      />
       {renderTabs()}
       {selectedTab === tabNames[2] && (
         // director can see comments on the REASSESSMENT tab in any status
@@ -286,28 +295,27 @@ const SupplementaryDirectorDetails = (props) => {
             commentArray.idirComment &&
             commentArray.idirComment.length > 0 && (
               <div className="supplementary-form my-3">
-              <EditableCommentList
-                enableEditing={currentStatus === 'RECOMMENDED'}
-                comments={commentArray.idirComment}
-                user={user}
-                handleCommentEdit={handleEditIdirComment}
-                handleCommentDelete={handleDeleteIdirComment}
-              />
+                <EditableCommentList
+                  enableEditing={currentStatus === 'RECOMMENDED'}
+                  comments={commentArray.idirComment}
+                  user={user}
+                  handleCommentEdit={handleEditIdirComment}
+                  handleCommentDelete={handleDeleteIdirComment}
+                />
               </div>
           )}
           {currentStatus === 'RECOMMENDED' && (
-          <div id="comment-input">
-            <CommentInput
-              handleCommentChange={handleCommentChangeIdir}
-              title='Add comment to the analyst: '
-              buttonText="Add Comment"
-              handleAddComment={handleAddIdirComment}
-              tooltip="Please save the report first, before adding comments"
-            />
-          </div>
+            <div id="comment-input">
+              <CommentInput
+                handleCommentChange={handleCommentChangeIdir}
+                title="Add comment to the analyst: "
+                buttonText="Add Comment"
+                handleAddComment={handleAddIdirComment}
+                tooltip="Please save the report first, before adding comments"
+              />
+            </div>
           )}
         </>
-
       )}
       <div className="supplementary-form mt-2">
         <Button
@@ -319,8 +327,7 @@ const SupplementaryDirectorDetails = (props) => {
           }}
         />
         <div>
-          {isReassessment &&
-            selectedTab === tabNames[2]
+          {isReassessment && selectedTab === tabNames[2]
             ? (
             <ReassessmentDetailsPage
               details={details}
@@ -384,7 +391,7 @@ const SupplementaryDirectorDetails = (props) => {
                 details.attachments &&
                 details.attachments.length > 0 && (
                   <div className="supplier-attachment mt-2">
-                    <h4>Supplementary Report Attachments</h4>
+                    <h4>Attachments</h4>
                     {details.attachments
                       .filter(
                         (attachment) => deleteFiles.indexOf(attachment.id) < 0
@@ -429,31 +436,50 @@ const SupplementaryDirectorDetails = (props) => {
             </div>
         )}
       </div>
-      {supplementaryAssessmentData.supplementaryAssessment &&
-        supplementaryAssessmentData.supplementaryAssessment.decision &&
-        supplementaryAssessmentData.supplementaryAssessment.decision.description &&
-          ['ASSESSED', 'RECOMMENDED'].indexOf(currentStatus) >= 0 &&
-            <>
-              <h3 className="mt-4 mb-1">Director Reassessment</h3>
-              <div className="row mb-3">
-                <div className="col-12">
-                  <div className="grey-border-area comment-box p-3 mt-2">
-                    <div className="text-blue">
-                      <div>
-                        The Director has assessed that {assessmentDecision}
-                      </div>
-                      {commentArray.bceidComment &&
-                        commentArray.bceidComment.comment && (
-                          <div className="mt-2">
-                            {parse(commentArray.bceidComment.comment)}
-                          </div>
-                      )}
+      {supplementaryAssessment &&
+        supplementaryAssessment.decision &&
+        supplementaryAssessment.decision.description &&
+        ['ASSESSED', 'RECOMMENDED'].indexOf(currentStatus) >= 0 && (
+          <>
+            <h3 className="mt-4 mb-1">Director Reassessment</h3>
+            <div className="row mb-3">
+              <div className="col-12">
+                <div className="grey-border-area comment-box p-3 mt-2">
+                  <div className="text-blue">
+                    <div>
+                      The Director has assessed that {assessmentDecision}
                     </div>
+                    {commentArray.bceidComment &&
+                      commentArray.bceidComment.comment && (
+                        <div className="mt-2">
+                          {parse(commentArray.bceidComment.comment)}
+                        </div>
+                    )}
                   </div>
                 </div>
               </div>
-            </>
-        }
+            </div>
+          </>
+      )}
+      {selectedTab === tabNames[2] && (
+        <>
+          {currentStatus === 'RECOMMENDED' && (
+            <div className="grey-border-area  p-3 mt-2">
+              <div id="comment-input">
+                <CommentInput
+                  defaultComment={
+                    commentArray && commentArray.bceidComment
+                      ? commentArray.bceidComment
+                      : {}
+                  }
+                  handleCommentChange={handleCommentChangeBceid}
+                  title="Assessment Message to the Supplier: "
+                />
+              </div>
+            </div>
+          )}
+        </>
+      )}
       {selectedTab === tabNames[1] && (
         <>
           {['RECOMMENDED', 'RETURNED'].indexOf(currentStatus) < 0 && (
@@ -463,10 +489,10 @@ const SupplementaryDirectorDetails = (props) => {
           )}
           <div className="row mb-3">
             <div className="col-12">
-              <div className="grey-border-area  p-3 mt-2">
-                <div>
-                  {['RECOMMENDED', 'RETURNED'].indexOf(currentStatus) < 0 && (
-                    <>
+              {['RECOMMENDED', 'RETURNED'].indexOf(currentStatus) < 0 && (
+                <>
+                  <div className="grey-border-area  p-3 mt-2">
+                    <div>
                       {radioDescriptions &&
                         radioDescriptions.map(
                           (each) =>
@@ -481,7 +507,7 @@ const SupplementaryDirectorDetails = (props) => {
                         <div>
                           <input
                             disabled={
-                              (currentStatus === 'RECOMMENDED') ||
+                              currentStatus === 'RECOMMENDED' ||
                               assessmentDecision.indexOf(
                                 'Section 10 (3) applies'
                               ) < 0
@@ -489,42 +515,19 @@ const SupplementaryDirectorDetails = (props) => {
                             type="number"
                             className="ml-4 mr-1"
                             defaultValue={
-                              supplementaryAssessmentData
-                                .supplementaryAssessment.assessmentPenalty
+                              supplementaryAssessment.assessmentPenalty
                             }
                             name="penalty-amount"
-                            onChange={(e) => {
-                              setSupplementaryAssessmentData({
-                                ...supplementaryAssessmentData,
-                                supplementaryAssessment: {
-                                  ...supplementaryAssessmentData.supplementaryAssessment,
-                                  assessmentPenalty: e.target.value
-                                }
-                              })
-                            }}
                           />
                           <label className="text-grey" htmlFor="penalty-amount">
                             $5,000 CAD x ZEV unit deficit
                           </label>
                         </div>
                       </label>
-                    </>
-                  )}
-                  {currentStatus === 'RECOMMENDED' && (
-                  <div id="comment-input">
-                    <CommentInput
-                      defaultComment={
-                        commentArray && commentArray.bceidComment
-                          ? commentArray.bceidComment
-                          : {}
-                      }
-                      handleCommentChange={handleCommentChangeBceid}
-                      title="Assessment Message to the Supplier: "
-                    />
+                    </div>
                   </div>
-                  )}
-                </div>
-              </div>
+                </>
+              )}
             </div>
           </div>
         </>
@@ -542,7 +545,7 @@ const SupplementaryDirectorDetails = (props) => {
               />
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
                 selectedTab === tabNames[2] &&
-                  currentStatus === 'RECOMMENDED' &&
+                currentStatus === 'RECOMMENDED' && (
                   <button
                     className="button text-danger"
                     onClick={() => {
@@ -552,10 +555,11 @@ const SupplementaryDirectorDetails = (props) => {
                   >
                     Return to Analyst
                   </button>
-              }
+              )}
             </span>
             <span className="right-content">
-              {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED && currentStatus === 'RECOMMENDED' && (
+              {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
+                currentStatus === 'RECOMMENDED' && (
                   <Button
                     tooltip="only analysts can save reports at this stage"
                     buttonType="save"
@@ -565,7 +569,8 @@ const SupplementaryDirectorDetails = (props) => {
                   />
               )}
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
-                currentStatus === 'RECOMMENDED' && selectedTab === tabNames[2] && (
+                currentStatus === 'RECOMMENDED' &&
+                selectedTab === tabNames[2] && (
                   <Button
                     buttonType="submit"
                     optionalClassname="button primary"

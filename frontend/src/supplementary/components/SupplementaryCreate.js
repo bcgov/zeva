@@ -105,11 +105,10 @@ const SupplementaryCreate = (props) => {
 
   return (
     <div id="supplementary" className="page">
-
       <div className="row">
         <div className="col">
           <h2 className="mb-2 mt-3">
-              {`${reportYear} Model Year Supplementary Report`}
+            {`${reportYear} Model Year Reassessment Report`}
           </h2>
         </div>
       </div>
@@ -153,19 +152,23 @@ const SupplementaryCreate = (props) => {
             isEditable={true}
           />
         </div>
-        <div id="comment-input">
-          <CommentInput
-            defaultComment={
-              details &&
-              details.fromSupplierComments &&
-              details.fromSupplierComments.length > 0
-                ? details.fromSupplierComments[0]
-                : {}
-            }
-            handleCommentChange={handleCommentChange}
-            title="Provide details in the comment box below for any changes above."
-          />
-        </div>
+        {!user.isGovernment && (
+          <>
+            <div id="comment-input">
+              <CommentInput
+                defaultComment={
+                  details &&
+                  details.fromSupplierComments &&
+                  details.fromSupplierComments.length > 0
+                    ? details.fromSupplierComments[0]
+                    : {}
+                }
+                handleCommentChange={handleCommentChange}
+                title="Provide details in the comment box below for any changes above."
+              />
+            </div>
+          </>
+        )}
         <UploadEvidence
           details={details}
           deleteFiles={deleteFiles}
@@ -173,7 +176,6 @@ const SupplementaryCreate = (props) => {
           setDeleteFiles={setDeleteFiles}
           setUploadFiles={setUploadFiles}
         />
-
       </div>
 
       {/* TODO CHECK IS GOV HAS THIS PERMISSION */}
@@ -183,6 +185,7 @@ const SupplementaryCreate = (props) => {
             defaultChecked={checkboxConfirmed}
             className="mr-2"
             id="supplier-confirm-checkbox"
+            data-testid="supplier-confirm-checkbox"
             name="confirmations"
             onChange={(event) => {
               handleCheckboxClick(event)
@@ -190,7 +193,7 @@ const SupplementaryCreate = (props) => {
             type="checkbox"
           />
           <label htmlFor="supplier-confirm-checkbox">
-            On behalf of {details.assessmentData.legalName} I confirm the
+            On behalf of {details.assessmentData && details.assessmentData.legalName} I confirm the
             information included in the this Supplementary Report is complete
             and correct.
           </label>
@@ -208,17 +211,17 @@ const SupplementaryCreate = (props) => {
                   id
                 )}
               />
-
             </span>
             <span className="right-content">
-              {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
+              {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED && (
                 <Button
                   buttonType="save"
                   action={() => {
                     handleSubmit('DRAFT', true)
                   }}
+                  testid="supplementary-create-button"
                 />
-              }
+              )}
             </span>
           </div>
         </div>

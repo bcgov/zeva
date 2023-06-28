@@ -4,8 +4,12 @@ import ReactTable from '../../app/components/ReactTable'
 
 const ConsumerSalesLDVModalTable = (props) => {
   const { vehicles } = props
-  const totalPendingSales = vehicles.map(v => v.pendingSales).reduce((a, b) => a + b)
-  const totalSalesIssued = vehicles.map(v => v.salesIssued).reduce((a, b) => a + b)
+  let totalPendingSales
+  let totalSalesIssued
+  if (vehicles.length > 0) {
+    totalSalesIssued = vehicles.map(v => v.salesIssued).reduce((a, b) => a + b)
+    totalPendingSales = vehicles.map(v => v.pendingSales).reduce((a, b) => a + b)
+  }
 
   const columns = [
     {

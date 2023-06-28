@@ -16,7 +16,7 @@ jest.mock('../../config', () => ({
       ENABLED: true
     }
   }
-}));
+}))
 afterEach(cleanup)
 
 const user = {

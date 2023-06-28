@@ -6,7 +6,7 @@ const SessionTimeout = (props) => {
   const [showTimeout, setShowTimeout] = useState(false)
 
   // the following code is for retrieving the time until warning from keycloak settings
-  const diffTime = getSessionTimeout(new Date(keycloak.refreshTokenParsed.exp * 1000))
+  const diffTime = getSessionTimeout(new Date(keycloak.refreshTokenParsed?.exp * 1000))
 
   let timeout = setTimeout(() => {
     setShowTimeout(true)

@@ -5,8 +5,6 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { withRouter } from 'react-router'
-
-import Loading from '../app/components/Loading'
 import CreditTransactionTabs from '../app/components/CreditTransactionTabs'
 import ROUTES_CREDIT_REQUESTS from '../app/routes/CreditRequests'
 import CustomPropTypes from '../app/utilities/props'
@@ -15,51 +13,72 @@ import CreditRequestsPage from './components/CreditRequestsPage'
 const qs = require('qs')
 
 const CreditRequestListContainer = (props) => {
+  const getInitialFilters = () => {
+    let locationStateFilters = []
+    const paramFilters = []
+    if (location && location.state && location.state.filters) {
+      locationStateFilters = location.state.filters
+    }
+    const query = qs.parse(location.search, { ignoreQueryPrefix: true })
+    Object.entries(query).forEach(([key, value]) => {
+      paramFilters.push({ id: key, value })
+    })
+    return [...paramFilters, ...locationStateFilters]
+  }
+
   const { location, user } = props
   const [loading, setLoading] = useState(true)
   const [submissions, setSubmissions] = useState([])
-  const [filtered, setFiltered] = useState([])
-
-  const query = qs.parse(location.search, { ignoreQueryPrefix: true })
+  const [page, setPage] = useState(location && location.state && location.state.page ? location.state.page : 1)
+  const [pageSize, setPageSize] = useState(location && location.state && location.state.pageSize ? location.state.pageSize : 10)
+  const [filters, setFilters] = useState(getInitialFilters())
+  const [applyFiltersCount, setApplyFiltersCount] = useState(0)
+  const [sorts, setSorts] = useState(location && location.state && location.state.sorts ? location.state.sorts : [])
+  const [submissionsCount, setSubmissionsCount] = useState(0)
 
   const handleClear = () => {
-    setFiltered([])
+    setFilters([])
+    setSorts([])
+    setPage(1)
   }
 
-  const refreshList = (showLoading) => {
-    setLoading(showLoading)
+  const refreshList = () => {
+    setLoading(true)
 
-    const queryFilter = []
-    Object.entries(query).forEach(([key, value]) => {
-      queryFilter.push({ id: key, value })
-    })
-    setFiltered([...filtered, ...queryFilter])
-    if (location.state) {
-      setFiltered([...filtered, ...location.state])
+    const url = `${ROUTES_CREDIT_REQUESTS.LIST_PAGINATED}?page=${page}&size=${pageSize}`
+    const data = {
+      filters,
+      sorts
     }
 
-    axios.get(ROUTES_CREDIT_REQUESTS.LIST).then((response) => {
-      setSubmissions(response.data)
+    axios.post(url, data).then((response) => {
+      setSubmissions(response.data.results)
+      setSubmissionsCount(response.data.count)
       setLoading(false)
     })
   }
 
   useEffect(() => {
-    refreshList(true)
-  }, [])
-
-  if (loading) {
-    return <Loading />
-  }
+    refreshList()
+  }, [page, pageSize, applyFiltersCount, sorts])
 
   return [
     <CreditTransactionTabs active="credit-requests" key="tabs" user={user} />,
     <CreditRequestsPage
-      filtered={filtered}
       handleClear={handleClear}
       key="page"
-      setFiltered={setFiltered}
+      page={page}
+      setPage={setPage}
+      pageSize={pageSize}
+      setPageSize={setPageSize}
+      filters={filters}
+      setFilters={setFilters}
+      setApplyFiltersCount={setApplyFiltersCount}
+      sorts={sorts}
+      setSorts={setSorts}
       submissions={submissions}
+      submissionsCount={submissionsCount}
+      loading={loading}
       user={user}
     />
   ]

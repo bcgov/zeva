@@ -23,7 +23,7 @@ jest.mock('../../config', () => ({
       ENABLED: false
     }
   }
-}));
+}))
 
 let container = null
 beforeEach(() => {

@@ -79,6 +79,7 @@ const SupplementaryAnalystDetails = (props) => {
     ? details.actualStatus
     : details.status
 
+  const { supplementaryAssessment } = supplementaryAssessmentData
   const isAssessed = currentStatus === 'ASSESSED' || currentStatus === 'REASSESSED'
 
   const tabNames = ['supplemental', 'recommendation', 'reassessment']
@@ -95,30 +96,24 @@ const SupplementaryAnalystDetails = (props) => {
   if (selectedTab === tabNames[2]) {
     isEditable = false
   }
-
-  const formattedPenalty = details.assessment
-    ? formatNumeric(details.assessment.assessmentPenalty, 0)
-    : 0
-
   const assessmentDecision =
-    supplementaryAssessmentData.supplementaryAssessment.decision &&
-    supplementaryAssessmentData.supplementaryAssessment.decision.description
-      ? supplementaryAssessmentData.supplementaryAssessment.decision.description
+    supplementaryAssessment &&
+    supplementaryAssessment.decision &&
+    supplementaryAssessment.decision.description
+      ? supplementaryAssessment.decision.description
         .replace(
           /{user.organization.name}/g,
           details.assessmentData.legalName
         )
         .replace(/{modelYear}/g, details.assessmentData.modelYear)
-        .replace(/{penalty}/g, `$${formattedPenalty} CAD`)
+        .replace(/{penalty}/g, `$${formatNumeric(supplementaryAssessment.assessmentPenalty, 0) || 0} CAD`)
       : ''
 
   const showDescription = (each) => {
     const selectedId =
-      supplementaryAssessmentData &&
-      supplementaryAssessmentData.supplementaryAssessment &&
-      supplementaryAssessmentData.supplementaryAssessment.decision &&
-      supplementaryAssessmentData.supplementaryAssessment.decision.id
-
+      supplementaryAssessment &&
+      supplementaryAssessment.decision &&
+      supplementaryAssessment.decision.id
     return (
       <div className="mb-3" key={each.id}>
         <input
@@ -129,6 +124,7 @@ const SupplementaryAnalystDetails = (props) => {
           disabled={
             ['RECOMMENDED', 'ASSESSED'].indexOf(currentStatus) >= 0
           }
+          data-testid={'recommendation-' + each.id}
           onChange={() => {
             setSupplementaryAssessmentData({
               ...supplementaryAssessmentData,
@@ -137,7 +133,8 @@ const SupplementaryAnalystDetails = (props) => {
                 decision: {
                   description: each.description,
                   id: each.id
-                }
+                },
+                assessmentPenalty: ''
               }
             })
           }}
@@ -150,7 +147,7 @@ const SupplementaryAnalystDetails = (props) => {
                 details.assessmentData.legalName
               )
               .replace(/{modelYear}/g, details.assessmentData.modelYear)
-              .replace(/{penalty}/g, `$${formattedPenalty} CAD`)}
+              .replace(/{penalty}/g, `$${formatNumeric(supplementaryAssessment.assessmentPenalty, 0) || 0} CAD`)}
           </label>
         )}
       </div>
@@ -405,7 +402,7 @@ const SupplementaryAnalystDetails = (props) => {
                 details.attachments &&
                 details.attachments.length > 0 && (
                   <div className="supplier-attachment mt-2">
-                    <h4>Supplementary Report Attachments</h4>
+                    <h4>Attachments</h4>
                     {details.attachments
                       .filter(
                         (attachment) => deleteFiles.indexOf(attachment.id) < 0
@@ -450,9 +447,9 @@ const SupplementaryAnalystDetails = (props) => {
             </div>
         )}
       </div>
-      {supplementaryAssessmentData.supplementaryAssessment &&
-        supplementaryAssessmentData.supplementaryAssessment.decision &&
-        supplementaryAssessmentData.supplementaryAssessment.decision.description &&
+      {supplementaryAssessment &&
+        supplementaryAssessment.decision &&
+        supplementaryAssessment.decision.description &&
           (['ASSESSED', 'RECOMMENDED'].indexOf(currentStatus) >= 0) && (
           <>
             <h3 className="mt-4 mb-1">Director Reassessment</h3>
@@ -501,17 +498,14 @@ const SupplementaryAnalystDetails = (props) => {
                       <label className="d-inline" htmlFor="penalty-radio">
                         <div>
                           <input
-                            disabled={
-                              assessmentDecision.indexOf(
+                            disabled= {
+                              !assessmentDecision.includes(
                                 'Section 10 (3) applies'
-                              ) < 0
+                              )
                             }
                             type="number"
                             className="ml-4 mr-1"
-                            defaultValue={
-                              supplementaryAssessmentData
-                                .supplementaryAssessment.assessmentPenalty
-                            }
+                            value={supplementaryAssessment.assessmentPenalty || ''}
                             name="penalty-amount"
                             onChange={(e) => {
                               setSupplementaryAssessmentData({
@@ -584,6 +578,7 @@ const SupplementaryAnalystDetails = (props) => {
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
                 selectedTab === tabNames[1] &&
                 ['DRAFT'].indexOf(details.status) < 0 &&
+                supplementaryReportId !== null &&
                 (isEditable ||
                   ['SUBMITTED'].indexOf(details.status) >= 0) &&
                     <button
@@ -592,6 +587,7 @@ const SupplementaryAnalystDetails = (props) => {
                         handleSubmit('DRAFT')
                       }}
                       type="button"
+                      data-testid="return-button"
                     >
                       Return to Vehicle Supplier
                     </button>
@@ -605,11 +601,12 @@ const SupplementaryAnalystDetails = (props) => {
                     action={() => {
                       handleSubmit(currentStatus, false)
                     }}
+                    testid="save-button"
                   />
               )}
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
                 isEditable &&
-                ['DRAFT', 'SUBMITTED'].indexOf(details.status) >= 0 &&
+                ['DRAFT', 'SUBMITTED', 'RETURNED'].indexOf(details.status) >= 0 &&
                 (
                   <Button
                     buttonTooltip={recommendTooltip}
@@ -620,6 +617,7 @@ const SupplementaryAnalystDetails = (props) => {
                     action={() => {
                       handleSubmit('RECOMMENDED')
                     }}
+                    testid="recommend-button"
                   />
                 )}
 
