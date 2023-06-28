@@ -394,9 +394,11 @@ const ComplianceObligationTableCreditsIssued = (props) => {
         (automaticAdministrativePenalty &&
           Object.keys(automaticAdministrativePenalty).length > 0)) && (
         <>
+        {supplementalReport && (
           <div className="text-blue my-3">
             Only credits of the same model year of this report can be edited.
           </div>
+        )}
           <table className="mb-4">
             <tbody>
               {automaticAdministrativePenalty &&
