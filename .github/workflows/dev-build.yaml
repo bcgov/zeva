@@ -1,7 +1,7 @@
 ## For each release, please update the value of workflow name, branches and PR_NUMBER
 ## Also update frontend/package.json version
 
-name: Dev Build 1.47.0
+name: Dev Build 1.48.0
 
 on:
   push:
