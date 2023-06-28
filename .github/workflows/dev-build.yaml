@@ -5,7 +5,7 @@ name: Dev Build 1.47.0
 
 on:
   push:
-    branches: [ release-1.47.0 ]
+    branches: [ release-1.48.0 ]
     paths:
       - frontend/**
       - backend/**
@@ -15,7 +15,7 @@ on:
 env:
   ## The pull request number of the Tracking pull request to merge the release branch to main
   PR_NUMBER: 1564
-  VERSION: 1.47.0
+  VERSION: 1.48.0
   GIT_URL: https://github.com/bcgov/zeva.git 
   TOOLS_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
   DEV_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev

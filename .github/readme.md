@@ -26,9 +26,22 @@ When the pull request is merged to the release branch, the pipeline "Teardown PR
 * Create the release on GitHub from master branch
 * Create the new release branch from master branch
 * Change the new release branch as the default branch in the repo and update the branch protection rules https://github.com/bcgov/zeva/settings/branches
-* Notify the developers that the new release branch has been created, it is ready for the new pull requests
+
 
 ## Updates for the new release branch
 
-* Also update frontend/package.json version and create the new tracking pull request
-* Update the value of workflow name, branches and PR_NUMBER in the workflows/release-build.yaml
+* Update frontend/package.json version and create the new tracking pull request
+* Update workflows/dev-build
+  * name
+  * on -> push -> branches
+  * env -> PR_NUMBER
+  * env -> VERSION
+  * jobs -> call-unit-test -> with -> pr-number
+* Update workflows/release-build
+  * name
+  * on -> push -> branches
+  * env -> PR_NUMBER
+  * env -> VERSION
+  * jobs -> call-unit-test -> with -> pr-numb
+* Notify the developers that the new release branch has been created, it is ready for the new pull requests
+
