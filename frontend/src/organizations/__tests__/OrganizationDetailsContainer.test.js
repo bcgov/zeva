@@ -86,7 +86,7 @@ describe('OrganizationDetailsContainer', () => {
       )
     })
     await act(async () => {
-      mockAxios.mockResponse({ data: {users: members} })
+      mockAxios.mockResponse({ data: { users: members } })
     })
     expect(mockOrganizationDetailsPage).toHaveBeenCalledWith(
       expect.objectContaining({
