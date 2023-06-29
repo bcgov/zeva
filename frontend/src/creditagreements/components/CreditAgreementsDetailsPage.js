@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import axios from 'axios'
 import moment from 'moment-timezone'
 import PropTypes from 'prop-types'
@@ -12,6 +12,8 @@ import CommentInput from '../../app/components/CommentInput'
 import history from '../../app/History'
 import ROUTES_CREDIT_AGREEMENTS from '../../app/routes/CreditAgreements'
 import CustomPropTypes from '../../app/utilities/props'
+import Modal from '../../app/components/Modal'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const CreditAgreementsDetailsPage = (props) => {
   const {
@@ -25,6 +27,41 @@ const CreditAgreementsDetailsPage = (props) => {
     id,
     user
   } = props
+
+  const [showModal, setShowModal] = useState(false)
+
+  const modal = (
+    <Modal
+      confirmLabel={(analystAction ? 'Submit' : 'Issue')}
+      handleCancel={() => {
+        setShowModal(false)
+      }}
+      handleSubmit={() => {
+        setShowModal(false)
+        handleSubmit((analystAction ? 'RECOMMEND' : 'ISSUE'))
+      }}
+      modalClass="w-75"
+      showModal={showModal}
+      confirmClass="button primary"
+      icon={<FontAwesomeIcon icon="paper-plane" />}
+    >
+      <div>
+        <div>
+          <br />
+          <br />
+        </div>
+        <h3 className="d-inline">
+          {(analystAction ? 'Would you like to submit this to the director?' : 
+          'Would you like to issue this?')}
+        </h3>
+        <div>
+          <br />
+          <br />
+        </div>
+      </div>
+    </Modal>
+  )
+
   return (
     <div id="credit-agreements-detail-page" className="page">
       <div className="row mt-3 mb-2">
@@ -218,7 +255,7 @@ const CreditAgreementsDetailsPage = (props) => {
                     optionalClassname="button primary"
                     optionalText="Issue Transaction"
                     action={() => {
-                      handleSubmit('ISSUED')
+                      setShowModal(true)
                     }}
                   />
                 </span>
@@ -255,7 +292,7 @@ const CreditAgreementsDetailsPage = (props) => {
                       optionalClassname="button primary"
                       optionalText="Submit to Director"
                       action={() => {
-                        handleSubmit('RECOMMENDED')
+                        setShowModal(true)
                       }}
                     />
                   </span>
@@ -275,6 +312,7 @@ const CreditAgreementsDetailsPage = (props) => {
           </div>
         </div>
       </div>
+      {modal}
     </div>
   )
 }
