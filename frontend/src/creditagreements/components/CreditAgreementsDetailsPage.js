@@ -51,8 +51,8 @@ const CreditAgreementsDetailsPage = (props) => {
           <br />
         </div>
         <h3 className="d-inline">
-          {(analystAction ? 'Would you like to submit this to the director?' : 
-          'Would you like to issue this?')}
+          {(analystAction ? 'Submit this to the director?' : 
+          'Issue credits to the supplier?')}
         </h3>
         <div>
           <br />
