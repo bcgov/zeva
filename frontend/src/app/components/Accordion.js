@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 // an accordion component + helping components you can use
 // the keys of the opened accordion items should be supplied by the calling component, and so you must also supply a handler that updates these keys
-// you can use the accordionItemClickHandler below if you do not need behaviour additional to opening/closing an item
+// you can use only the accordionItemClickHandler below if you do not need behaviour additional to opening/closing an item
 
 const accordionItemClickHandler = (state, stateSetter, itemKey) => {
   const index = state.findIndex((keyOfItem) => {
@@ -19,9 +19,9 @@ const accordionItemClickHandler = (state, stateSetter, itemKey) => {
 }
 
 const AccordionHeader = ({ itemKey, title, keysOfOpenItems = [], handleItemClick }) => {
-  let icon = "chevron-down"
+  let icon = 'chevron-down'
   if (keysOfOpenItems.includes(itemKey)) {
-    icon = "chevron-up"
+    icon = 'chevron-up'
   }
   return (
     <div className="accordion-header">

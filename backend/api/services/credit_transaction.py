@@ -36,7 +36,7 @@ from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 
 
-def aggregate_credit_balance_details(organization, credit_transaction_queryset=None):
+def aggregate_credit_balance_details(organization, *credit_transaction_q_objs):
     balance_credits = Coalesce(Sum('total_value', filter=Q(
         credit_to=organization
     )), Value(0), output_field=FloatField())
@@ -46,8 +46,8 @@ def aggregate_credit_balance_details(organization, credit_transaction_queryset=N
     )), Value(0), output_field=FloatField())
 
     root_qs = CreditTransaction.objects
-    if credit_transaction_queryset is not None:
-        root_qs = credit_transaction_queryset
+    for q_obj in credit_transaction_q_objs:
+        root_qs = root_qs.filter(q_obj)
 
     balance = root_qs.filter(
         Q(credit_to=organization) | Q(debit_from=organization)
@@ -192,7 +192,7 @@ def award_credits(submission):
             adjust_deficits(submission.organization)
 
 
-def aggregate_transactions_by_submission(organization):
+def aggregate_transactions_by_submission(organization, *credit_transaction_q_objs):
     balance_credits = Coalesce(Sum('total_value', filter=Q(
         credit_to=organization
     )), Value(0), output_field=FloatField())
@@ -247,7 +247,11 @@ def aggregate_transactions_by_submission(organization):
         default=Value(None)
     )
 
-    transactions = CreditTransaction.objects.filter(
+    root_qs = CreditTransaction.objects
+    for q_obj in credit_transaction_q_objs:
+        root_qs = root_qs.filter(q_obj)
+
+    transactions = root_qs.filter(
         Q(credit_to=organization) | Q(debit_from=organization)
     ).values(
         'credit_class_id', 'transaction_type_id', 'model_year_id'
@@ -444,6 +448,7 @@ def update_credit_reductions(
         updated_reductions.append(original_reduction)
         ids_of_retrieved_reductions.append(original_reduction.id)
     CreditTransaction.objects.bulk_update(updated_reductions, ["credit_value", "total_value", "update_timestamp"])
+
 def get_current_compliance_period_split_date():
     now = timezone.now()
     year = now.year
@@ -451,12 +456,37 @@ def get_current_compliance_period_split_date():
         year = year -1
     return timezone.make_aware(datetime(year, 10, 1))
     
+def get_compliance_period_bounds(compliance_year):
+    compliance_year_int = int(compliance_year)
+    start = timezone.make_aware(datetime(compliance_year_int, 10, 1))
+    end = timezone.make_aware(datetime(compliance_year_int + 1, 9, 30, 11, 59, 59))
+    return [start, end]
 
-def get_credit_transactions_queryset_by_date(date, lookup):
-    filter_lookup = {
-        "transaction_timestamp__{lookup}".format(
-            lookup=lookup
-        ): date
-    }
-    return CreditTransaction.objects.filter(**filter_lookup)
 
+def get_credit_transactions_q_obj_by_date(date, lookup):
+    filter_lookup = {"transaction_timestamp__{lookup}".format(lookup=lookup): date}
+    return Q(**filter_lookup)
+
+
+def get_compliance_years(organization):
+    compliance_years = []
+    credit_transactions = CreditTransaction.objects.only("transaction_timestamp").filter(
+        Q(credit_to=organization) | Q(debit_from=organization)
+    )
+    for credit_transaction in credit_transactions:
+        timestamp = credit_transaction.transaction_timestamp
+        year = timestamp.year
+        if timestamp.month < 10:
+            year = year - 1
+        if year not in compliance_years:
+            compliance_years.append(year)
+    return compliance_years
+
+
+def get_timestamp_of_most_recent_reduction(organization):
+    credit_transaction = CreditTransaction.objects.only("transaction_timestamp").filter(
+        Q(credit_to=organization) | Q(debit_from=organization)
+    ).filter(transaction_type__transaction_type="Reduction").order_by("-transaction_timestamp").first()
+    if credit_transaction:
+        return credit_transaction.transaction_timestamp
+    return None
