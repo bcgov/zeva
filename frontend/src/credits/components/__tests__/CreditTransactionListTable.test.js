@@ -56,10 +56,12 @@ const reports = [
   }
 ]
 
+const availableComplianceYears = [2020]
+
 it('renders without crashing', () => {
   render(
     <Router>
-      <CreditTransactionListTable items={data} reports={reports} />
+      <CreditTransactionListTable items={data} reports={reports} availableComplianceYears={availableComplianceYears}/>
     </Router>
   )
 })
@@ -67,11 +69,11 @@ it('renders without crashing', () => {
 it('rounds the credit balance correctly', () => {
   const { getAllByText } = render(
     <Router>
-      <CreditTransactionListTable items={data} reports={reports} />
+      <CreditTransactionListTable items={data} reports={reports} availableComplianceYears={availableComplianceYears}/>
     </Router>
   )
   const totalValue = getAllByText(/10\.14/)
-  expect(totalValue).toHaveLength(2)
+  expect(totalValue).toHaveLength(1)
   totalValue.forEach((value) => {
     expect(value).toBeInTheDocument()
   })
