@@ -8,7 +8,7 @@ import CreditTransactions from '../../credits/components/CreditTransactions'
 import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations'
 
 const VehicleSupplierSalesListPage = (props) => {
-  const { loading, locationState, user, items, reports, balances, assessedBalances } = props
+  const { availableComplianceYears, loading, locationState, user, items, handleGetCreditTransactions, reports, balances, assessedBalances } = props
 
   if (loading) {
     return <Loading />
@@ -19,10 +19,12 @@ const VehicleSupplierSalesListPage = (props) => {
       <div className="row">
         <div className="col-sm-12">
           <CreditTransactions
+            availableComplianceYears={availableComplianceYears}
             balances={balances}
             assessedBalances={assessedBalances}
             reports={reports}
             items={items}
+            handleGetCreditTransactions={handleGetCreditTransactions}
             user={user}
           />
         </div>
@@ -51,13 +53,15 @@ VehicleSupplierSalesListPage.defaultProps = {
 }
 
 VehicleSupplierSalesListPage.propTypes = {
-  balances: PropTypes.shape({}).isRequired,
+  availableComplianceYears: PropTypes.arrayOf(PropTypes.number).isRequired,
+  balances: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   assessedBalances: PropTypes.shape({}).isRequired,
   items: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   loading: PropTypes.bool.isRequired,
   locationState: PropTypes.arrayOf(PropTypes.shape()),
   reports: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  user: CustomPropTypes.user.isRequired
+  user: CustomPropTypes.user.isRequired,
+  handleGetCreditTransactions: PropTypes.func
 }
 
 export default VehicleSupplierSalesListPage

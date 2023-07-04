@@ -12,11 +12,13 @@ const ORGANIZATIONS = {
   REPORTS: `${API_BASE_PATH}/:id/reports`,
   SALES: `${API_BASE_PATH}/:id/sales`,
   SUPPLIER_TRANSACTIONS: `${API_BASE_PATH}/:id/supplier_transactions`,
-  SUPPLIER_BALANCE: `${API_BASE_PATH}/:id/supplier_balance`,
+  RECENT_SUPPLIER_BALANCE: `${API_BASE_PATH}/:id/recent_supplier_balance`,
   TRANSACTIONS: `${API_BASE_PATH}/:id/credit-transactions`,
   USERS: `${API_BASE_PATH}/:id/users`,
-  VEHICLES: `${API_BASE_PATH}/:id/vehicles`, 
-  MOST_RECENT_MYR_ID: `${API_BASE_PATH}/:id/most_recent_myr_id`
+  VEHICLES: `${API_BASE_PATH}/:id/vehicles`,
+  MOST_RECENT_MYR_ID: `${API_BASE_PATH}/:id/most_recent_myr_id`,
+  COMPLIANCE_YEARS: `${API_BASE_PATH}/:id/compliance_years`,
+  LIST_BY_YEAR: `${API_BASE_PATH}/:id/list_by_year?year=:year`
 }
 
 export default ORGANIZATIONS

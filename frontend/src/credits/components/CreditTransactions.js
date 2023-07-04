@@ -5,7 +5,7 @@ import CreditBalanceTable from './CreditBalanceTable'
 import CreditTransactionListTable from './CreditTransactionListTable'
 
 const CreditTransactions = (props) => {
-  const { balances, assessedBalances, items, reports, user } = props
+  const { availableComplianceYears, balances, assessedBalances, items, handleGetCreditTransactions, reports, user } = props
 
   return (
     <div id="credit-transaction" className="page">
@@ -20,7 +20,9 @@ const CreditTransactions = (props) => {
         <div className="col-sm-12">
           <h2 className="mb-2">Credit Transactions</h2>
           <CreditTransactionListTable
+            availableComplianceYears={availableComplianceYears}
             items={items}
+            handleGetCreditTransactions={handleGetCreditTransactions}
             reports={reports}
             user={user}
           />
@@ -31,14 +33,16 @@ const CreditTransactions = (props) => {
 }
 
 CreditTransactions.propTypes = {
-  balances: PropTypes.shape({}).isRequired,
-  assessedBalances:PropTypes.shape({}).isRequired,
+  availableComplianceYears: PropTypes.arrayOf(PropTypes.number).isRequired,
+  balances: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  assessedBalances: PropTypes.shape({}).isRequired,
   items: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   reports: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   user: PropTypes.shape({
     isGovernment: PropTypes.bool,
     organization: PropTypes.shape()
-  }).isRequired
+  }).isRequired,
+  handleGetCreditTransactions: PropTypes.func
 }
 
 export default CreditTransactions
