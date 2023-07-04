@@ -5,7 +5,8 @@ import PropTypes from 'prop-types'
 import React, { useState } from 'react'
 import moment from 'moment-timezone'
 
-import ReactTable from '../../app/components/ReactTable'
+import CustomReactTable from '../../app/components/ReactTable'
+import ReactTable from 'react-table'
 import formatNumeric from '../../app/utilities/formatNumeric'
 import history from '../../app/History'
 import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests'
@@ -17,23 +18,8 @@ import { accordionItemClickHandler, Accordion } from '../../app/components/Accor
 import getComplianceYear from '../../app/utilities/getComplianceYear'
 
 const CreditTransactionListTable = (props) => {
-  const { items, reports } = props
-
-  const getInitialExpandedModelYears = () => {
-    let latestModelYear = 0
-    items.forEach((item) => {
-      const modelYear = item.modelYear?.name
-      if (modelYear && parseInt(modelYear) > parseInt(latestModelYear)) {
-        latestModelYear = modelYear
-      }
-    })
-    if (latestModelYear) {
-      return [latestModelYear]
-    }
-    return []
-  }
-
-  const [expandedModelYears, setExpandedModelYears] = useState(getInitialExpandedModelYears())
+  const { items, reports, availableComplianceYears, handleGetCreditTransactions } = props
+  const [expandedComplianceYears, setExpandedComplianceYears] = useState(availableComplianceYears.length > 0 ? [availableComplianceYears[0]] : [])
 
   const translateTransactionType = (item) => {
     if (!item.transactionType) {
@@ -117,9 +103,6 @@ const CreditTransactionListTable = (props) => {
     }
   }
 
-  let totalA = 0
-  let totalB = 0
-
   const transactions = []
 
   items.sort((a, b) => {
@@ -153,32 +136,14 @@ const CreditTransactionListTable = (props) => {
     const totalValue =
       Math.round((item.totalValue + Number.EPSILON) * 100) / 100
 
-    if (item.creditClass.creditClass === 'A') {
-      totalA += parseFloat(totalValue)
-    }
-
-    if (item.creditClass.creditClass === 'B') {
-      totalB += parseFloat(totalValue)
-    }
-
-    let found = -1
-
-    if (item.transactionType?.transactionType === 'Reduction') {
-      found = transactions.findIndex(
-        (transaction) => 
-          transaction.transactionType?.transactionType === 'Reduction' &&
-          transaction.transactionTimestamp === item.transactionTimestamp
-      )
-    } else {
-      found = transactions.findIndex(
-        (transaction) =>
-          transaction.foreignKey === item.foreignKey &&
-          transaction.transactionType &&
-          item.transactionType &&
-          transaction.transactionType.transactionType ===
-            item.transactionType.transactionType
-      )
-    }
+    const found = transactions.findIndex(
+      (transaction) =>
+        transaction.foreignKey === item.foreignKey &&
+        transaction.transactionType &&
+        item.transactionType &&
+        transaction.transactionType.transactionType ===
+          item.transactionType.transactionType
+    )
 
     if (found >= 0) {
       transactions[found] = {
@@ -190,22 +155,12 @@ const CreditTransactionListTable = (props) => {
         creditsB:
           item.creditClass.creditClass === 'B'
             ? transactions[found].creditsB + totalValue
-            : transactions[found].creditsB,
-        displayTotalA:
-          item.creditClass.creditClass === 'A'
-            ? transactions[found].displayTotalA + totalValue
-            : transactions[found].displayTotalA,
-        displayTotalB:
-          item.creditClass.creditClass === 'B'
-            ? transactions[found].displayTotalB + totalValue
-            : transactions[found].displayTotalB
+            : transactions[found].creditsB
       }
     } else {
       transactions.push({
         creditsA: item.creditClass.creditClass === 'A' ? totalValue : 0,
         creditsB: item.creditClass.creditClass === 'B' ? totalValue : 0,
-        displayTotalA: totalA,
-        displayTotalB: totalB,
         foreignKey: item.foreignKey,
         transactionTimestamp: item.transactionTimestamp,
         modelYear: item.modelYear,
@@ -319,107 +274,58 @@ const CreditTransactionListTable = (props) => {
           maxWidth: 175
         }
       ]
-    },
-    {
-      Header: 'Balance',
-      headerClassName: 'header-group balance-left',
-      columns: [
-        {
-          accessor: (item) =>
-            item.displayTotalA
-              ? formatNumeric(item.displayTotalA, 2, true)
-              : '-',
-          className: 'text-right balance-left',
-          Cell: (item) => (
-            <span className={item.value < 0 ? 'text-danger' : ''}>
-              {item.value}
-            </span>
-          ),
-          Header: 'A',
-          headerClassName: 'balance-left',
-          id: 'credit-balance-a',
-          maxWidth: 175
-        },
-        {
-          accessor: (item) =>
-            item.displayTotalB
-              ? formatNumeric(item.displayTotalB, 2, true)
-              : '-',
-          className: 'text-right',
-          Cell: (item) => (
-            <span className={item.value < 0 ? 'text-danger' : ''}>
-              {item.value}
-            </span>
-          ),
-          Header: 'B',
-          id: 'credit-balance-b',
-          maxWidth: 175
-        }
-      ]
     }
   ]
 
   const getReactTable = (transactions) => {
     return (
-      <ReactTable
-      className="credit-transaction-list-table"
-      columns={columns}
-      data={transactions}
-      defaultSorted={[]}
-      sortable={false}
-      filterable={false}
-      getTrProps={(state, row) => {
-        if (row && row.original) {
-          return {
-            onClick: () => {
-              if (!row.original.transactionType) {
-                return false
-              }
+      <CustomReactTable
+        className="credit-transaction-list-table"
+        columns={columns}
+        data={transactions}
+        defaultSorted={[]}
+        sortable={false}
+        filterable={false}
+        getTrProps={(state, row) => {
+          if (row && row.original) {
+            return {
+              onClick: () => {
+                if (!row.original.transactionType) {
+                  return false
+                }
 
-              const item = row.original
+                const item = row.original
 
-              const { transactionType } = item.transactionType
-              switch (transactionType.toLowerCase()) {
-                case 'credit transfer':
-                  history.push(
-                    ROUTES_CREDIT_TRANSFERS.DETAILS.replace(
-                      /:id/g,
-                      item.foreignKey
-                    ),
-                    { href: ROUTES_CREDITS.LIST }
-                  )
-                  break
-                case 'validation':
-                  history.push(
-                    ROUTES_CREDIT_REQUESTS.DETAILS.replace(
-                      /:id/g,
-                      item.foreignKey
-                    ),
-                    { href: ROUTES_CREDITS.LIST }
-                  )
-                  break
-                case 'credit adjustment validation':
-                  history.push(
-                    ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(
-                      /:id/g,
-                      item.foreignKey
-                    ),
-                    { href: ROUTES_CREDITS.LIST }
-                  )
-                  break
-                case 'reduction':
-                  if (assessedSupplementalsMap[item.foreignKey]) {
+                const { transactionType } = item.transactionType
+                switch (transactionType.toLowerCase()) {
+                  case 'credit transfer':
                     history.push(
-                      ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
+                      ROUTES_CREDIT_TRANSFERS.DETAILS.replace(
                         /:id/g,
                         item.foreignKey
-                      ).replace(
-                        /:supplementaryId/g,
-                        assessedSupplementalsMap[item.foreignKey]
                       ),
                       { href: ROUTES_CREDITS.LIST }
                     )
-                  } else {
+                    break
+                  case 'validation':
+                    history.push(
+                      ROUTES_CREDIT_REQUESTS.DETAILS.replace(
+                        /:id/g,
+                        item.foreignKey
+                      ),
+                      { href: ROUTES_CREDITS.LIST }
+                    )
+                    break
+                  case 'credit adjustment validation':
+                    history.push(
+                      ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(
+                        /:id/g,
+                        item.foreignKey
+                      ),
+                      { href: ROUTES_CREDITS.LIST }
+                    )
+                    break
+                  case 'reduction':
                     history.push(
                       ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(
                         /:id/g,
@@ -427,34 +333,48 @@ const CreditTransactionListTable = (props) => {
                       ),
                       { href: ROUTES_CREDITS.LIST }
                     )
-                  }
-                  break
-                case 'credit adjustment reduction':
-                  history.push(
-                    ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(
-                      /:id/g,
-                      item.foreignKey
-                    ),
-                    { href: ROUTES_CREDITS.LIST }
-                  )
-                  break
-                default:
-              }
+                    break
+                  case 'credit adjustment reduction':
+                    history.push(
+                      ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(
+                        /:id/g,
+                        item.foreignKey
+                      ),
+                      { href: ROUTES_CREDITS.LIST }
+                    )
+                    break
+                  default:
+                }
 
-              return false
-            },
-            className: 'clickable'
+                return false
+              },
+              className: 'clickable'
+            }
           }
-        }
 
-        return {}
-      }}
-    />
+          return {}
+        }}
+      />
     )
   }
 
-  const handleTransactionsGroupClick = (modelYear) => {
-    accordionItemClickHandler(expandedModelYears, setExpandedModelYears, modelYear)
+  const getLoadingReactTable = () => {
+    return (
+      <ReactTable
+        className="credit-transaction-list-table"
+        loading={true}
+        columns={columns}
+        pageSize={3}
+        showPagination={false}
+      />
+    )
+  }
+
+  const handleTransactionsGroupClick = (complianceYear) => {
+    if (!expandedComplianceYears.includes(complianceYear) && handleGetCreditTransactions) {
+      handleGetCreditTransactions(complianceYear)
+    }
+    accordionItemClickHandler(expandedComplianceYears, setExpandedComplianceYears, complianceYear)
   }
 
   const transactionsByCompliancePeriod = {}
@@ -472,19 +392,23 @@ const CreditTransactionListTable = (props) => {
 
   const accordionItems = []
 
-  for (const [year, transactionGroup] of Object.entries(transactionsByCompliancePeriod).reverse()) {
+  for (const year of availableComplianceYears) {
     const item = {}
     item.key = year
     item.title = `Credit Transactions for the ${year} Compliance Period (Oct.1, ${year} - Sept.30, ${parseInt(year) + 1})`
-    item.content = getReactTable(transactionGroup)
+    if (transactionsByCompliancePeriod[year]) {
+      item.content = getReactTable(transactionsByCompliancePeriod[year])
+    } else {
+      item.content = getLoadingReactTable()
+    }
     accordionItems.push(item)
   }
 
   return (
     <Accordion
       items={accordionItems}
-      keysOfOpenItems={expandedModelYears}
-      handleItemClick={handleTransactionsGroupClick}    
+      keysOfOpenItems={expandedComplianceYears}
+      handleItemClick={handleTransactionsGroupClick}
     />
   )
 }
@@ -493,8 +417,10 @@ CreditTransactionListTable.defaultProps = {}
 
 CreditTransactionListTable.propTypes = {
   assessedSupplementalsMap: PropTypes.shape().isRequired,
+  availableComplianceYears: PropTypes.arrayOf(PropTypes.number).isRequired,
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  reports: PropTypes.arrayOf(PropTypes.shape({})).isRequired
+  reports: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  handleGetCreditTransactions: PropTypes.func
 }
 
 export default CreditTransactionListTable

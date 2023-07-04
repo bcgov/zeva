@@ -9,11 +9,10 @@ import formatNumeric from '../../app/utilities/formatNumeric'
 
 const CreditBalanceTable = (props) => {
   const { balances, assessedBalances } = props
-  const complianceYear = balances.complianceYear
 
   const currentBalances = {}
-  if (balances.balances) {
-    balances.balances.forEach((balance) => {
+  if (balances) {
+    balances.forEach((balance) => {
       if (balance.modelYear?.name && balance.creditClass?.creditClass) {
         const modelYear = balance.modelYear.name
         const creditClass = balance.creditClass.creditClass
@@ -58,7 +57,7 @@ const CreditBalanceTable = (props) => {
 
   if ((deficitAExists || deficitBExists) && Object.keys(assessedDeficits).length === 1) {
     const key = Object.keys(assessedDeficits)[0]
-    assessedDeficits.Deficit = assessedDeficits[key]
+    assessedDeficits['Deficit from last assessment'] = assessedDeficits[key]
     delete assessedDeficits[key]
   }
 
@@ -193,23 +192,35 @@ const CreditBalanceTable = (props) => {
     )
   }
 
-  const getRows = (object, suffixForModelYears) => {
+  const getRows = (object, suffixForModelYears, reverse, removeZeroRows) => {
     const result = []
     for (const [key, structure] of Object.entries(object)) {
+      if (removeZeroRows && !structure.A && !structure.B) {
+        continue
+      }
       let label = key
       if (!isNaN(parseInt(key))) {
         label = key + suffixForModelYears
       }
-      result.push({ label: label, A: structure.A, B: structure.B })
+      result.push({ label, A: structure.A, B: structure.B })
     }
-    return result.reverse()
+    if (reverse) {
+      result.reverse()
+    }
+    return result
+  }
+
+  if (deficitAExists || deficitBExists) {
+    return (
+      <>
+        {getReactTable('Your total balance cannot be calculated due to having an assessed deficit.', deficitBExists ? 'Unspecified' : 'B', getRows(assessedDeficits, ' Deficit', true, true).concat(getRows(bCreditsInCaseOfDeficit, ' Model Year Credits', true, true)))}
+      </>
+    )
   }
 
   return (
     <>
-      {getReactTable(`Credits Issued during the ${complianceYear} Compliance Period (Oct.1, ${complianceYear} - Sept.30, ${complianceYear + 1})`, 'B', getRows(currentBalances, ' Credits'))}
-      {getReactTable(`Assessed Balance at the End of Sept.30, ${complianceYear}`, deficitBExists ? 'Unspecified' : 'B', (deficitAExists || deficitBExists) ? (getRows(assessedDeficits, ' Deficit')).concat(getRows(bCreditsInCaseOfDeficit, ' Credits')) : getRows(assessedCredits, ' Credits'))}
-      {getReactTable('', 'B', getRows(totalCredits, ' Credits'))}
+      {getReactTable('', 'B', getRows(totalCredits, ' Model Year Credits', true, true))}
     </>
   )
 }
@@ -217,10 +228,7 @@ const CreditBalanceTable = (props) => {
 CreditBalanceTable.defaultProps = {}
 
 CreditBalanceTable.propTypes = {
-  balances: PropTypes.shape({
-    complianceYear: PropTypes.number.isRequired,
-    balances: PropTypes.arrayOf(PropTypes.shape()).isRequired
-  }).isRequired,
+  balances: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   assessedBalances: PropTypes.shape({
     balances: PropTypes.arrayOf(PropTypes.shape()),
     deficits: PropTypes.arrayOf(PropTypes.shape())

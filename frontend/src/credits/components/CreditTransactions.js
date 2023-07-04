@@ -5,7 +5,7 @@ import CreditBalanceTable from './CreditBalanceTable'
 import CreditTransactionListTable from './CreditTransactionListTable'
 
 const CreditTransactions = (props) => {
-  const { assessedSupplementalsMap, balances, assessedBalances, items, reports, user } = props
+  const { assessedSupplementalsMap, availableComplianceYears, balances, assessedBalances, items, handleGetCreditTransactions, reports, user } = props
 
   return (
     <div id="credit-transaction" className="page">
@@ -21,7 +21,9 @@ const CreditTransactions = (props) => {
           <h2 className="mb-2">Credit Transactions</h2>
           <CreditTransactionListTable
             assessedSupplementalsMap={assessedSupplementalsMap}
+            availableComplianceYears={availableComplianceYears}
             items={items}
+            handleGetCreditTransactions={handleGetCreditTransactions}
             reports={reports}
             user={user}
           />
@@ -33,14 +35,16 @@ const CreditTransactions = (props) => {
 
 CreditTransactions.propTypes = {
   assessedSupplementalsMap: PropTypes.shape().isRequired,
-  balances: PropTypes.shape({}).isRequired,
+  balances: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   assessedBalances:PropTypes.shape({}).isRequired,
+  availableComplianceYears: PropTypes.arrayOf(PropTypes.number).isRequired,
   items: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   reports: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   user: PropTypes.shape({
     isGovernment: PropTypes.bool,
     organization: PropTypes.shape()
-  }).isRequired
+  }).isRequired,
+  handleGetCreditTransactions: PropTypes.func
 }
 
 export default CreditTransactions

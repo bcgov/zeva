@@ -423,3 +423,16 @@ def check_validation_status_change(old_status, updated_model_year_report):
             if old_status != ModelYearReportStatuses.DRAFT and new_status == ModelYearReportStatuses.DRAFT:
                 report_returned_to_supplier = True
             notifications_model_year_report(updated_model_year_report, report_returned_to_supplier)
+
+
+def get_most_recent_myr_id(organization, *statuses):
+    model_year_report = (
+        ModelYearReport.objects.only("id")
+        .filter(organization=organization)
+        .filter(
+            validation_status__in=statuses
+        )
+        .order_by("-model_year__effective_date")
+        .first()
+    )
+    return model_year_report

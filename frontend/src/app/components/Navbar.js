@@ -83,9 +83,7 @@ class Navbar extends Component {
                     className="credit-balance d-print-none"
                     to={ROUTES_CREDITS.LIST}
                   >
-                    Credit Balance: A-
-                    {formatNumeric(user.organization.balance.A, 2, true)}/ B-
-                    {formatNumeric(user.organization.balance.B, 2, true)}
+                    See Credit Balance &gt;
                   </Link>
                 )}
               </div>
