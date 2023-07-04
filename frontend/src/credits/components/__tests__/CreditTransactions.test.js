@@ -28,27 +28,26 @@ const data = [
   }
 ]
 
-const balances = {
-  complianceYear: 2022,
-  balances: [
-    {
-      creditValue: '37.82',
-      creditClass: { creditClass: 'A' },
-      modelYear: {
-        name: '2019',
-        effectiveDate: '2019-01-01',
-        expirationDate: '2019-12-31'
-      },
-      weightClass: {
-        id: 1,
-        weightClassCode: 'LDV',
-        description: 'Light Duty Vehicle'
-      }
+const balances = [
+  {
+    creditValue: '37.82',
+    creditClass: { creditClass: 'A' },
+    modelYear: {
+      name: '2019',
+      effectiveDate: '2019-01-01',
+      expirationDate: '2019-12-31'
+    },
+    weightClass: {
+      id: 1,
+      weightClassCode: 'LDV',
+      description: 'Light Duty Vehicle'
     }
-  ]
-}
+  }
+]
 
 const assessedBalances = {}
+
+const availableComplianceYears = []
 
 const user = {
   organization: {
@@ -62,7 +61,7 @@ const user = {
 it('renders without crashing', () => {
   render(
     <Router>
-      <CreditTransactions items={data} user={user} balances={balances} assessedBalances={{}} reports={[]} />
+      <CreditTransactions items={data} user={user} balances={balances} assessedBalances={assessedBalances} reports={[]} availableComplianceYears={availableComplianceYears} />
     </Router>
   )
 })
