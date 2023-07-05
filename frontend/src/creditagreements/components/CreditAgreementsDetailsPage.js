@@ -38,7 +38,7 @@ const CreditAgreementsDetailsPage = (props) => {
       }}
       handleSubmit={() => {
         setShowModal(false)
-        handleSubmit((analystAction ? 'RECOMMEND' : 'ISSUE'))
+        handleSubmit((analystAction ? 'RECOMMENDED' : 'ISSUED'))
       }}
       modalClass="w-75"
       showModal={showModal}
