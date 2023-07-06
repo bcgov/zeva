@@ -79,7 +79,7 @@ const CreditRequestsUploadPage = (props) => {
 
       <div className="row mt-5 mb-2">
         <div className="col-12">
-          <h2 className="mb-2">Upload ZEV Sales Information</h2>
+          <h2 className="mb-2">Upload ZEV Sales Information (Maximum 2,000 VIN per application)</h2>
           <p>
             Credits can be issued for active ZEV sales made prior to {icbcDate}.
           </p>

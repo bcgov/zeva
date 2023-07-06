@@ -28,7 +28,7 @@ logger = logging.getLogger('zeva.sales_spreadsheet')
 
 MAGIC = [0x00, 0xd3, 0xc0, 0xde]
 OUTPUT_ROWS = 50
-MAX_READ_ROWS = 50000
+MAX_READ_ROWS = 2000
 
 BOLD = xlwt.easyxf('font: name Times New Roman, bold on;')
 LOCKED = xlwt.easyxf('protection: cell_locked true;')
@@ -338,6 +338,13 @@ def validate_spreadsheet(data, user_organization=None, skip_authorization=False)
         )
 
     start_row = 1
+
+    if sheet.nrows > MAX_READ_ROWS + start_row:
+        raise ValidationError(
+            'Number of records cannot exceed 2000. '
+            'Please download the template again and try again.'
+        )
+
     row = start_row
 
     while row < min((MAX_READ_ROWS + start_row), sheet.nrows):
