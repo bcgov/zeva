@@ -52,14 +52,12 @@ const ComplianceHistory = (props) => {
           const found = tempHistory.findIndex(
             (each) => ['DRAFT'].indexOf(each.status) >= 0
           )
-          console.log(reportType)
           // Check to see if a report has been returned to a draft status from submitted and if it has
           // Then we need to modify the recorded object to correctly display the returned status instead of draft
           // We also never capture returns in a reassessment because it is strictly internal
           if (itemHistory[i + 1]?.status === "SUBMITTED" && !reportType.includes("Reassessment")){
             let actuallyReturned = {...obj}
             actuallyReturned.status = "RETURNED"
-            console.log(actuallyReturned, obj)
             tempHistory.push(actuallyReturned)
           }
           else if (found < 0 && ['DRAFT', 'SUBMITTED'].includes(obj.status)){
