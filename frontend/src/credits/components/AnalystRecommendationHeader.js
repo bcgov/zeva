@@ -48,6 +48,7 @@ const AnalystRecommendationHeader = (props) => {
               <div className="col-1">
                 <input
                   id="analyst-checkbox"
+                  data-testid="analyst-checkbox"
                   name="confirmations"
                   onChange={(event) => {
                     handleCheckboxClick(event)
