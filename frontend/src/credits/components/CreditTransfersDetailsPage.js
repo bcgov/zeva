@@ -305,7 +305,8 @@ const CreditTransfersDetailsPage = (props) => {
     if (history.status === 'SUBMITTED') {
       latestSubmit = history
     }
-    if (history.status === 'APPROVED') {
+    if (!history.createUser.isGovernment &&
+      history.status === 'APPROVED') {
       latestApprove = history
     }
   })
