@@ -231,7 +231,6 @@ class SupplementalModelYearReportSerializer(ModelSerializer):
         if request.user.is_government:
             history = history.exclude(
                 validation_status__in=[
-                    ModelYearReportStatuses.DRAFT,
                     ModelYearReportStatuses.DELETED,
                 ]
             )
