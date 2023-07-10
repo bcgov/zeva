@@ -77,7 +77,7 @@ const ComplianceHistory = (props) => {
           // Checking to find any return to a supplier, we don't want to capture when a director returns to an analyst
           // The history reads from most recent to least recent so i + 1 to check the previous status
           // There is a case where the entry before a return is Recommended but it is correctly returned to a supplier so we also need to look at i - 1 to see if it is submitted
-          if(["RETURNED", "SUBMITTED"].includes(itemHistory[i + 1].status) && !reportType.includes("Reassessment") || itemHistory[i - 1]?.status === "SUBMITTED" && !reportType.includes("Reassessment")){
+          if(["RETURNED", "SUBMITTED"].includes(itemHistory[i + 1]?.status) && !reportType.includes("Reassessment") || itemHistory[i - 1]?.status === "SUBMITTED" && !reportType.includes("Reassessment")){
               tempHistory.push(obj)
           }
         }
