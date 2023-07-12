@@ -341,8 +341,7 @@ def validate_spreadsheet(data, user_organization=None, skip_authorization=False)
 
     if sheet.nrows > MAX_READ_ROWS + start_row:
         raise ValidationError(
-            'Number of records cannot exceed {maxRecords}. '
-            'Please download the template again and try again.'.format(maxRecords=MAX_READ_ROWS)
+            'Number of records cannot exceed {maxRecords}.'.format(maxRecords=MAX_READ_ROWS)
         )
 
     row = start_row
