@@ -65,7 +65,8 @@ class CustomReactTable extends Component {
       filtered,
       getTrProps,
       onFilteredChange,
-      setFiltered
+      setFiltered,
+      showPagination
     } = this.props
 
     return (
@@ -77,7 +78,7 @@ class CustomReactTable extends Component {
         sortable={sortable}
         data={data}
         defaultFilterMethod={CustomReactTable.defaultFilterMethod}
-        defaultPageSize={this.defaultPageSize}
+        defaultPageSize={10}
         defaultSorted={defaultSorted}
         filterable={filterable}
         getTdProps={() => ({
@@ -107,9 +108,7 @@ class CustomReactTable extends Component {
           this.pageSize =
             this.table.current.getResolvedState().sortedData.length
         }}
-        pageSize={this.pageSize > 0 ? this.pageSize : 3}
-        pageSizeOptions={[this.pageSize]}
-        showPagination={false}
+        showPagination={showPagination ? showPagination : false}
       />
     )
   }
