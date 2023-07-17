@@ -69,7 +69,20 @@ class CustomReactTable extends Component {
       showPagination
     } = this.props
 
-    return (
+    let paginationProps = {
+      pageSize: this.pageSize > 0 ? this.pageSize : 3,
+      pageSizeOptions: [this.pageSize],
+      showPagination: false,
+      defaultPageSize: this.defaultPageSize
+    }
+    
+    if (showPagination) {
+      paginationProps = {
+        showPagination: true,
+        defaultPageSize: 10
+      }
+    }    
+    return ( 
       <ReactTable
         ref={this.table}
         className={`searchable ${className}`}
@@ -78,7 +91,6 @@ class CustomReactTable extends Component {
         sortable={sortable}
         data={data}
         defaultFilterMethod={CustomReactTable.defaultFilterMethod}
-        defaultPageSize={10}
         defaultSorted={defaultSorted}
         filterable={filterable}
         getTdProps={() => ({
@@ -108,7 +120,7 @@ class CustomReactTable extends Component {
           this.pageSize =
             this.table.current.getResolvedState().sortedData.length
         }}
-        showPagination={showPagination ? showPagination : false}
+        {...paginationProps}
       />
     )
   }
@@ -133,7 +145,8 @@ CustomReactTable.propTypes = {
   filtered: PropTypes.arrayOf(PropTypes.shape({})),
   getTrProps: PropTypes.func,
   onFilteredChange: PropTypes.func,
-  setFiltered: PropTypes.func
+  setFiltered: PropTypes.func,
+  showPagination: PropTypes.bool
 }
 
 export default CustomReactTable
