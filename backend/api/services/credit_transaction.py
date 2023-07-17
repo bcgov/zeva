@@ -22,6 +22,7 @@ from api.models.sales_submission import SalesSubmission
 
 from api.services.credit_transfer import aggregate_credit_transfer_details
 from django.utils import timezone
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def aggregate_credit_balance_details(organization):
@@ -393,7 +394,7 @@ def update_credit_reductions(
             .first()
         )
         if original_reduction is None:
-            raise Exception("corresponding credit reduction not found")
+            raise ObjectDoesNotExist("corresponding credit reduction not found")
         original_reduction.credit_value = new_value
         original_reduction.total_value = new_value
         original_reduction.update_timestamp = timezone.now()

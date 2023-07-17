@@ -894,7 +894,7 @@ const SupplementaryContainer = (props) => {
     return (
       <SupplementaryDirectorDetails
         {...detailsProps}
-        {...{setReductionDifferences}}
+        setReductionDifferences={setReductionDifferences}
       />)
   } else if (isAnalyst) {
     return (

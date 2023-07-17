@@ -628,7 +628,8 @@ SupplementaryDirectorDetails.propTypes = {
   salesRows: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   setSupplementaryAssessmentData: PropTypes.func.isRequired,
   supplementaryAssessmentData: PropTypes.shape().isRequired,
-  user: CustomPropTypes.user.isRequired
+  user: CustomPropTypes.user.isRequired,
+  setReductionDifferences: PropTypes.func.isRequired
 }
 
 export default SupplementaryDirectorDetails
