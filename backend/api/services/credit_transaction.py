@@ -21,6 +21,7 @@ from api.models.model_year_report_statuses import ModelYearReportStatuses
 from api.models.sales_submission import SalesSubmission
 
 from api.services.credit_transfer import aggregate_credit_transfer_details
+from django.utils import timezone
 
 
 def aggregate_credit_balance_details(organization):
@@ -360,3 +361,42 @@ def get_map_of_credit_transactions(key_field, value_field):
     for credit_transaction in credit_transactions:
         result[getattr(credit_transaction, key_field)] = getattr(credit_transaction, value_field)
     return result
+
+
+def update_credit_reductions(
+    original_model_year_report, reduction_differences
+):
+    organization = original_model_year_report.organization
+    model_year_of_original_model_year_report = original_model_year_report.model_year
+    credit_transaction_reduction_type = CreditTransactionType.objects.get(
+        transaction_type="Reduction"
+    )
+    transaction_timestamp = "{}-09-30".format(
+        int(model_year_of_original_model_year_report.name) + 1
+    )
+    updated_transactions = []
+    ids_of_retrieved_reductions = []
+    for difference in reduction_differences:
+        credit_class = difference["credit_class"]
+        model_year = difference["model_year"]
+        old_value = difference["old_value"]
+        new_value = difference["new_value"]
+        original_reduction = (
+            CreditTransaction.objects.filter(debit_from=organization)
+            .filter(transaction_type=credit_transaction_reduction_type)
+            .filter(transaction_timestamp=transaction_timestamp)
+            .filter(credit_class__credit_class=credit_class)
+            .filter(model_year__name=model_year)
+            .filter(number_of_credits=1)
+            .filter(total_value=Decimal("{0:.2f}".format(old_value)))
+            .exclude(id__in=ids_of_retrieved_reductions)
+            .first()
+        )
+        if original_reduction is None:
+            raise Exception("corresponding credit reduction not found")
+        original_reduction.credit_value = new_value
+        original_reduction.total_value = new_value
+        original_reduction.update_timestamp = timezone.now()
+        updated_transactions.append(original_reduction)
+        ids_of_retrieved_reductions.append(original_reduction.id)
+    CreditTransaction.objects.bulk_update(updated_transactions, ["credit_value", "total_value", "update_timestamp"])

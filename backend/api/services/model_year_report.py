@@ -27,6 +27,7 @@ from api.services.send_email import notifications_model_year_report
 from api.models.supplemental_report import SupplementalReport
 from api.models.supplemental_report_credit_activity import \
     SupplementalReportCreditActivity
+from api.services.credit_transaction import update_credit_reductions
 
 def get_model_year_report_statuses(report, request_user=None):
     supplier_information_status = 'UNSAVED'
@@ -195,8 +196,8 @@ def get_model_year_report_statuses(report, request_user=None):
     }
 
 def adjust_credits_reassessment(id, request):
-    ## this so far only updates LDV sales, we will need
-    ## to add the logic for reductions and deficits later
+    ## this so far only updates LDV sales and reductions, we will need
+    ## to add the logic for deficits later
     reassessment = SupplementalReport.objects.get(id=id)
     model_year_report_id = SupplementalReport.objects.values_list(
     'model_year_report_id', flat=True).filter(
@@ -258,6 +259,9 @@ def adjust_credits_reassessment(id, request):
                 organization_id=organization_id,
                 model_year_id=model_year_id
             ).delete()
+
+    reduction_differences = request.data.get("reduction_differences")
+    update_credit_reductions(model_year_report, reduction_differences)
 
 
 def adjust_credits(id, request):

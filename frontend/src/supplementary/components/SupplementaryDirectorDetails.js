@@ -52,7 +52,8 @@ const SupplementaryDirectorDetails = (props) => {
     reassessmentStatus,
     supplementaryReportId,
     reassessmentReportId,
-    supplementaryReportIsReassessment
+    supplementaryReportIsReassessment,
+    setReductionDifferences
   } = props
 
   if (loading) {
@@ -337,6 +338,7 @@ const SupplementaryDirectorDetails = (props) => {
               obligationDetails={obligationDetails}
               ratios={ratios}
               user={user}
+              setReductionDifferences={setReductionDifferences}
             />
               )
             : (
