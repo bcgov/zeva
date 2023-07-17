@@ -175,22 +175,23 @@ const ComplianceReportsTable = (props) => {
 
   return (
     <ReactTable
-      className="compliance-reports-table"
-      columns={columns}
-      data={data}
-      filterable
-      filtered={filtered}
+        className="compliance-reports-table"
+        columns={columns}
+        data={data}
+        filterable
+        filtered={filtered}
+        showPagination={true}
       setFiltered={setFiltered}
-      getTrProps={(state, row) => {
-        if (row && row.original && user) {
-          return {
-            onClick: () => {
-              const {
-                id,
-                validationStatus,
-                supplementalId,
-                supplementalStatus
-              } = row.original
+        getTrProps={(state, row) => {
+          if (row && row.original && user) {
+            return {
+              onClick: () => {
+                const {
+                  id,
+                  validationStatus,
+                  supplementalId,
+                  supplementalStatus
+                } = row.original
 
               if (
                 supplementalStatus === 'SUPPLEMENTARY SUBMITTED' &&

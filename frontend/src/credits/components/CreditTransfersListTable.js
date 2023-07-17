@@ -164,6 +164,7 @@ const CreditTransfersListTable = (props) => {
     <ReactTable
       columns={columns}
       data={items}
+      showPagination={true}
       filtered={filtered}
       setFiltered={setFiltered}
       getTrProps={(state, row) => {

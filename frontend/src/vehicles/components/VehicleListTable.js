@@ -113,6 +113,7 @@ const VehicleListTable = (props) => {
       columns={columns}
       filtered={filtered}
       data={items}
+      showPagination={true}
       defaultSorted={[
         {
           id: user.isGovernment ? 'col-supplier' : 'make'
