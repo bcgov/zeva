@@ -1,6 +1,6 @@
 // intended only for directors to view an assessed reassessment
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import calculateCreditReduction from '../../app/utilities/calculateCreditReduction'
 import getClassAReduction from '../../app/utilities/getClassAReduction'
 import getComplianceObligationDetails from '../../app/utilities/getComplianceObligationDetails'
@@ -10,6 +10,7 @@ import ComplianceObligationAmountsTable from '../../compliance/components/Compli
 import ComplianceObligationReductionOffsetTable from '../../compliance/components/ComplianceObligationReductionOffsetTable'
 import ComplianceObligationTableCreditsIssued from '../../compliance/components/ComplianceObligationTableCreditsIssued'
 import NoticeOfAssessmentSection from '../../compliance/components/NoticeOfAssessmentSection'
+import calculateReductionDifferences from '../../app/utilities/calculateReductionDifferences'
 
 const ReassessmentDetailsPage = (props) => {
   // from props, reconcile existing data with new data, then pass to downstream components
@@ -21,7 +22,8 @@ const ReassessmentDetailsPage = (props) => {
     newData,
     obligationDetails,
     ratios,
-    user
+    user,
+    setReductionDifferences
   } = props
 
   let supplierName = details.assessmentData.legalName
@@ -66,6 +68,7 @@ const ReassessmentDetailsPage = (props) => {
     ratios.zevClassA,
     supplierClass
   )
+  const prevClassAReductionValue = classAReductionValue
   if (newData && newData.supplierInfo && newData.supplierInfo.ldvSales) {
     classAReductionValue = getClassAReduction(
       newData.supplierInfo.ldvSales,
@@ -73,6 +76,13 @@ const ReassessmentDetailsPage = (props) => {
       supplierClass
     )
   }
+
+  const prevClassAReductions = [
+    {
+      modelYear: reportYear,
+      value: prevClassAReductionValue
+    }
+  ]
 
   const classAReductions = [
     {
@@ -87,6 +97,7 @@ const ReassessmentDetailsPage = (props) => {
   }
 
   let totalReduction = getTotalReduction(ldvSales, ratios.complianceRatio)
+  const prevTotalReduction = totalReduction
   if (newData && newData.supplierInfo && newData.supplierInfo.ldvSales) {
     totalReduction = getTotalReduction(
       newData.supplierInfo.ldvSales,
@@ -94,10 +105,22 @@ const ReassessmentDetailsPage = (props) => {
     )
   }
 
+  const prevUnspecifiedReductionValue = getUnspecifiedClassReduction(
+    prevTotalReduction,
+    prevClassAReductionValue
+  )
+
   const unspecifiedReductionValue = getUnspecifiedClassReduction(
     totalReduction,
     classAReductionValue
   )
+
+  const prevUnspecifiedReductions = [
+    {
+      modelYear: reportYear,
+      value: prevUnspecifiedReductionValue
+    }
+  ]
 
   const unspecifiedReductions = [
     {
@@ -181,6 +204,8 @@ const ReassessmentDetailsPage = (props) => {
     automaticAdministrativePenalty
   } = getComplianceObligationDetails(complianceObligationDetails)
 
+  const prevProvisionalBalance = getComplianceObligationDetails(obligationDetails).provisionalBalance
+
   const reportDetails = {
     creditBalanceStart,
     creditBalanceEnd,
@@ -201,6 +226,16 @@ const ReassessmentDetailsPage = (props) => {
   const creditReductionSelection =
     details.assessmentData && details.assessmentData.creditReductionSelection
 
+  const transformedBalances = []
+  Object.keys(prevProvisionalBalance).forEach((year) => {
+    const { A: creditA, B: creditB } = prevProvisionalBalance[year]
+    transformedBalances.push({
+      modelYear: Number(year),
+      creditA,
+      creditB
+    })
+  })
+
   const transformedNewBalances = []
   Object.keys(newBalances).forEach((year) => {
     const { A: creditA, B: creditB } = newBalances[year]
@@ -210,6 +245,13 @@ const ReassessmentDetailsPage = (props) => {
       creditB
     })
   })
+
+  const prevCreditReduction = calculateCreditReduction(
+    transformedBalances,
+    prevClassAReductions,
+    prevUnspecifiedReductions,
+    creditReductionSelection
+  )
   const creditReduction = calculateCreditReduction(
     transformedNewBalances,
     classAReductions,
@@ -217,7 +259,14 @@ const ReassessmentDetailsPage = (props) => {
     creditReductionSelection
   )
   const { deductions, balances, deficits } = creditReduction
+  const prevDeductions = prevCreditReduction.deductions
   const updatedBalances = { balances, deficits }
+
+  useEffect(() => {
+    if (setReductionDifferences) {
+      setReductionDifferences(calculateReductionDifferences(deductions, prevDeductions))
+    }
+  }, [deductions.length, prevDeductions.length])
 
   return (
     <div id="supplementary" className="page">

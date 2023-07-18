@@ -149,7 +149,8 @@ class TestSupplementalReports(BaseTestCase):
 
         data = json.dumps({
           "newReport": False,
-          "status": "ASSESSED"
+          "status": "ASSESSED",
+          "reduction_differences": []
         })
         self.clients['RTAN'].patch(SAVE_API, data=data, content_type=CONTENT_TYPE)
 
