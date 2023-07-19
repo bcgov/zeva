@@ -40,7 +40,7 @@ const SupplementaryContainer = (props) => {
     { id: 0, description: '' }
   ])
   const location = useLocation()
-  const [reductionDifferences, setReductionDifferences] = useState([])
+  const [reassessmentReductions, setReassessmentReductions] = useState({})
 
   const query = qs.parse(location.search, { ignoreQueryPrefix: true })
 
@@ -485,7 +485,7 @@ const SupplementaryContainer = (props) => {
             data.supplierInfo.ldvSales = ldvSales
           }
           if (status === 'ASSESSED') {
-            data.reductionDifferences = reductionDifferences
+            data.reassessmentReductions = reassessmentReductions
           }
           axios
             .patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data)
@@ -894,7 +894,7 @@ const SupplementaryContainer = (props) => {
     return (
       <SupplementaryDirectorDetails
         {...detailsProps}
-        setReductionDifferences={setReductionDifferences}
+        setReassessmentReductions={setReassessmentReductions}
       />)
   } else if (isAnalyst) {
     return (
