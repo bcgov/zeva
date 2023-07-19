@@ -199,7 +199,7 @@ const CreditActivity = (props) => {
   const { deductions } = creditReduction
   const { deductions: newDeductions } = newCreditReduction
 
-  const getNewDeduction = (deduction, arr) => {
+  const getAssociatedDeduction = (deduction, arr) => {
     const values = {
       creditA: deduction.creditA,
       creditB: deduction.creditB
@@ -463,7 +463,7 @@ const CreditActivity = (props) => {
                           </th>
                         </tr>
                       )}
-                      {deductions
+                      {newDeductions
                         .filter(
                           (deduction) => deduction.type === 'classAReduction'
                         )
@@ -471,6 +471,56 @@ const CreditActivity = (props) => {
                           <tr key={deduction.modelYear}>
                             <td className="text-blue">
                               &bull; &nbsp; &nbsp; {deduction.modelYear} Credits
+                            </td>
+                            <td
+                              className={`text-right ${
+                                deduction.creditA !==
+                                Number(
+                                  getAssociatedDeduction(deduction, deductions)
+                                    .creditA
+                                )
+                                  ? 'highlight'
+                                  : ''
+                              }`}
+                            >
+                              {getAssociatedDeduction(deduction, deductions)
+                                .creditA > 0 && (
+                                <span className="text-red">
+                                  -
+                                  {formatNumeric(
+                                    getAssociatedDeduction(deduction, deductions)
+                                      .creditA,
+                                    2
+                                  )}
+                                </span>
+                              )}
+                              {!getAssociatedDeduction(deduction, deductions)
+                                .creditA && <span>0.00</span>}
+                            </td>
+                            <td
+                              className={`text-right ${
+                                deduction.creditB !==
+                                Number(
+                                  getAssociatedDeduction(deduction, deductions)
+                                    .creditB
+                                )
+                                  ? 'highlight'
+                                  : ''
+                              }`}
+                            >
+                              {getAssociatedDeduction(deduction, deductions)
+                                .creditB > 0 && (
+                                <span className="text-red">
+                                  -
+                                  {formatNumeric(
+                                    getAssociatedDeduction(deduction, deductions)
+                                      .creditB,
+                                    2
+                                  )}
+                                </span>
+                              )}
+                              {!getAssociatedDeduction(deduction, deductions)
+                                .creditB && <span>0.00</span>}
                             </td>
                             <td className="text-right">
                               {deduction.creditA > 0 && (
@@ -487,56 +537,6 @@ const CreditActivity = (props) => {
                                 </span>
                               )}
                               {!deduction.creditB && <span>0.00</span>}
-                            </td>
-                            <td
-                              className={`text-right ${
-                                deduction.creditA !==
-                                Number(
-                                  getNewDeduction(deduction, newDeductions)
-                                    .creditA
-                                )
-                                  ? 'highlight'
-                                  : ''
-                              }`}
-                            >
-                              {getNewDeduction(deduction, newDeductions)
-                                .creditA > 0 && (
-                                <span className="text-red">
-                                  -
-                                  {formatNumeric(
-                                    getNewDeduction(deduction, newDeductions)
-                                      .creditA,
-                                    2
-                                  )}
-                                </span>
-                              )}
-                              {!getNewDeduction(deduction, newDeductions)
-                                .creditA && <span>0.00</span>}
-                            </td>
-                            <td
-                              className={`text-right ${
-                                deduction.creditB !==
-                                Number(
-                                  getNewDeduction(deduction, newDeductions)
-                                    .creditB
-                                )
-                                  ? 'highlight'
-                                  : ''
-                              }`}
-                            >
-                              {getNewDeduction(deduction, newDeductions)
-                                .creditB > 0 && (
-                                <span className="text-red">
-                                  -
-                                  {formatNumeric(
-                                    getNewDeduction(deduction, newDeductions)
-                                      .creditB,
-                                    2
-                                  )}
-                                </span>
-                              )}
-                              {!getNewDeduction(deduction, newDeductions)
-                                .creditB && <span>0.00</span>}
                             </td>
                           </tr>
                         ))}
@@ -586,16 +586,61 @@ const CreditActivity = (props) => {
                       </th>
                     </tr>
                   )}
-                  {deductions
+                  {newDeductions
                     .filter(
                       (deduction) =>
-                        deduction.type === 'unspecifiedReduction' &&
-                        (deduction.creditA > 0 || deduction.creditB > 0)
+                        deduction.type === 'unspecifiedReduction'
                     )
                     .map((deduction) => (
                       <tr key={deduction.modelYear}>
                         <td className="text-blue">
                           &bull; &nbsp; &nbsp; {deduction.modelYear} Credits
+                        </td>
+                        <td
+                          className={`text-right ${
+                            Number(
+                              getAssociatedDeduction(deduction, deductions).creditA
+                            ) !== deduction.creditA
+                              ? 'highlight'
+                              : ''
+                          }`}
+                        >
+                          {getAssociatedDeduction(deduction, deductions).creditA >
+                            0 && (
+                            <span className="text-red">
+                              -
+                              {formatNumeric(
+                                getAssociatedDeduction(deduction, deductions)
+                                  .creditA,
+                                2
+                              )}
+                            </span>
+                          )}
+                          {!getAssociatedDeduction(deduction, deductions)
+                            .creditA && <span>0.00</span>}
+                        </td>
+                        <td
+                          className={`text-right ${
+                            Number(
+                              getAssociatedDeduction(deduction, deductions).creditB
+                            ) !== deduction.creditB
+                              ? 'highlight'
+                              : ''
+                          }`}
+                        >
+                          {getAssociatedDeduction(deduction, deductions).creditB >
+                            0 && (
+                            <span className="text-red">
+                              -
+                              {formatNumeric(
+                                getAssociatedDeduction(deduction, deductions)
+                                  .creditB,
+                                2
+                              )}
+                            </span>
+                          )}
+                          {!getAssociatedDeduction(deduction, deductions)
+                            .creditB && <span>0.00</span>}
                         </td>
                         <td className="text-right">
                           {deduction.creditA > 0 && (
@@ -612,52 +657,6 @@ const CreditActivity = (props) => {
                             </span>
                           )}
                           {!deduction.creditB && <span>0.00</span>}
-                        </td>
-                        <td
-                          className={`text-right ${
-                            Number(
-                              getNewDeduction(deduction, newDeductions).creditA
-                            ) !== deduction.creditA
-                              ? 'highlight'
-                              : ''
-                          }`}
-                        >
-                          {getNewDeduction(deduction, newDeductions).creditA >
-                            0 && (
-                            <span className="text-red">
-                              -
-                              {formatNumeric(
-                                getNewDeduction(deduction, newDeductions)
-                                  .creditA,
-                                2
-                              )}
-                            </span>
-                          )}
-                          {!getNewDeduction(deduction, newDeductions)
-                            .creditA && <span>0.00</span>}
-                        </td>
-                        <td
-                          className={`text-right ${
-                            Number(
-                              getNewDeduction(deduction, newDeductions).creditB
-                            ) !== deduction.creditB
-                              ? 'highlight'
-                              : ''
-                          }`}
-                        >
-                          {getNewDeduction(deduction, newDeductions).creditB >
-                            0 && (
-                            <span className="text-red">
-                              -
-                              {formatNumeric(
-                                getNewDeduction(deduction, newDeductions)
-                                  .creditB,
-                                2
-                              )}
-                            </span>
-                          )}
-                          {!getNewDeduction(deduction, newDeductions)
-                            .creditB && <span>0.00</span>}
                         </td>
                       </tr>
                     ))}
