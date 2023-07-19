@@ -53,7 +53,7 @@ const SupplementaryDirectorDetails = (props) => {
     supplementaryReportId,
     reassessmentReportId,
     supplementaryReportIsReassessment,
-    setReductionDifferences
+    setReassessmentReductions
   } = props
 
   if (loading) {
@@ -338,7 +338,7 @@ const SupplementaryDirectorDetails = (props) => {
               obligationDetails={obligationDetails}
               ratios={ratios}
               user={user}
-              setReductionDifferences={setReductionDifferences}
+              setReassessmentReductions={setReassessmentReductions}
             />
               )
             : (
@@ -629,7 +629,7 @@ SupplementaryDirectorDetails.propTypes = {
   setSupplementaryAssessmentData: PropTypes.func.isRequired,
   supplementaryAssessmentData: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
-  setReductionDifferences: PropTypes.func.isRequired
+  setReassessmentReductions: PropTypes.func.isRequired
 }
 
 export default SupplementaryDirectorDetails

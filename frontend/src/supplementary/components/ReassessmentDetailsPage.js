@@ -10,7 +10,7 @@ import ComplianceObligationAmountsTable from '../../compliance/components/Compli
 import ComplianceObligationReductionOffsetTable from '../../compliance/components/ComplianceObligationReductionOffsetTable'
 import ComplianceObligationTableCreditsIssued from '../../compliance/components/ComplianceObligationTableCreditsIssued'
 import NoticeOfAssessmentSection from '../../compliance/components/NoticeOfAssessmentSection'
-import calculateReductionDifferences from '../../app/utilities/calculateReductionDifferences'
+import constructReassessmentReductions from '../../app/utilities/constructReassessmentReductions'
 
 const ReassessmentDetailsPage = (props) => {
   // from props, reconcile existing data with new data, then pass to downstream components
@@ -23,7 +23,7 @@ const ReassessmentDetailsPage = (props) => {
     obligationDetails,
     ratios,
     user,
-    setReductionDifferences
+    setReassessmentReductions
   } = props
 
   let supplierName = details.assessmentData.legalName
@@ -263,8 +263,8 @@ const ReassessmentDetailsPage = (props) => {
   const updatedBalances = { balances, deficits }
 
   useEffect(() => {
-    if (setReductionDifferences) {
-      setReductionDifferences(calculateReductionDifferences(deductions, prevDeductions))
+    if (setReassessmentReductions) {
+      setReassessmentReductions(constructReassessmentReductions(deductions, prevDeductions))
     }
   }, [deductions.length, prevDeductions.length])
 

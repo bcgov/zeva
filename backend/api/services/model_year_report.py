@@ -27,7 +27,13 @@ from api.services.send_email import notifications_model_year_report
 from api.models.supplemental_report import SupplementalReport
 from api.models.supplemental_report_credit_activity import \
     SupplementalReportCreditActivity
-from api.services.credit_transaction import update_credit_reductions
+from api.services.credit_transaction import update_credit_reductions, add_credit_reductions
+from api.utilities.credit_transaction import (
+    get_reduction_number_of_credits,
+    get_reduction_timestamp,
+    get_reduction_transaction_type,
+    get_reduction_weight_class
+)
 
 def get_model_year_report_statuses(report, request_user=None):
     supplier_information_status = 'UNSAVED'
@@ -260,14 +266,19 @@ def adjust_credits_reassessment(id, request):
                 model_year_id=model_year_id
             ).delete()
 
-    reduction_differences = request.data.get("reduction_differences")
-    update_credit_reductions(model_year_report, reduction_differences)
+    reassessment_reductions = request.data.get("reassessment_reductions")
+    if reassessment_reductions is not None:
+        reductions_to_update = reassessment_reductions.get("reductions_to_update")
+        reductions_to_add = reassessment_reductions.get("reductions_to_add")
+        if reductions_to_update is not None:
+            update_credit_reductions(model_year_report, reductions_to_update)
+        if reductions_to_add is not None:
+            add_credit_reductions(model_year_report, request.user, reductions_to_add)
 
 
 def adjust_credits(id, request):
     model_year = request.data.get('model_year')
-    model_year_report_timestamp = "{}-09-30".format(
-        int(model_year) + 1)
+    model_year_report_timestamp = get_reduction_timestamp(model_year)
     credit_class_a = CreditClass.objects.get(credit_class='A')
     credit_class_b = CreditClass.objects.get(credit_class='B')
     model_year_id = ModelYear.objects.values_list('id', flat=True).filter(
@@ -291,8 +302,6 @@ def adjust_credits(id, request):
             'update_user': request.user.username
         }
     )
-
-    weight_class = WeightClass.objects.get(weight_class_code='LDV')
 
     credit_reductions = {}
 
@@ -346,15 +355,13 @@ def adjust_credits(id, request):
                             id=organization_id
                         ),
                         model_year_id=year,
-                        number_of_credits=1,
+                        number_of_credits=get_reduction_number_of_credits(),
                         credit_value=credit_value,
                         transaction_timestamp=model_year_report_timestamp,
-                        transaction_type=CreditTransactionType.objects.get(
-                            transaction_type="Reduction"
-                        ),
+                        transaction_type=get_reduction_transaction_type(),
                         total_value=credit_value,
                         update_user=request.user.username,
-                        weight_class=weight_class
+                        weight_class=get_reduction_weight_class()
                     )
 
                     if credit_class_obj == 'A':
