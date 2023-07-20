@@ -201,8 +201,8 @@ const CreditActivity = (props) => {
 
   const getAssociatedDeduction = (deduction, arr) => {
     const values = {
-      creditA: deduction.creditA,
-      creditB: deduction.creditB
+      creditA: 0,
+      creditB: 0
     }
 
     const found = arr.find(
