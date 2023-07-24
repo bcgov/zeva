@@ -142,14 +142,24 @@ const CreditTransactionListTable = (props) => {
       totalB += parseFloat(totalValue)
     }
 
-    const found = transactions.findIndex(
-      (transaction) =>
-        transaction.foreignKey === item.foreignKey &&
-        transaction.transactionType &&
-        item.transactionType &&
-        transaction.transactionType.transactionType ===
-          item.transactionType.transactionType
-    )
+    let found = -1
+
+    if (item.transactionType?.transactionType === 'Reduction') {
+      found = transactions.findIndex(
+        (transaction) => 
+          transaction.transactionType?.transactionType === 'Reduction' &&
+          transaction.transactionTimestamp === item.transactionTimestamp
+      )
+    } else {
+      found = transactions.findIndex(
+        (transaction) =>
+          transaction.foreignKey === item.foreignKey &&
+          transaction.transactionType &&
+          item.transactionType &&
+          transaction.transactionType.transactionType ===
+            item.transactionType.transactionType
+      )
+    }
 
     if (found >= 0) {
       transactions[found] = {
