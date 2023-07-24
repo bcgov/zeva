@@ -63,11 +63,11 @@ const ComplianceObligationAmountsTable = (props) => {
                   <td className="text-blue font-weight-bold" width="25%">
                     Compliance Ratio Credit Reduction:
                   </td>
-                  {supplierClass === 'S' ? formatNumeric(0, 2) : 
-                    <td className="font-weight-bold" width="25%">
-                      {formatNumeric(totalReduction, 2)}
-                    </td>
-                  }
+                  <td className="font-weight-bold" width="25%">
+                    {supplierClass === 'S' ? formatNumeric(0, 2) : 
+                      formatNumeric(totalReduction, 2)
+                    }
+                  </td>
                 </tr>
                 {supplierClass === 'L' && (
                   <tr>
@@ -81,17 +81,17 @@ const ComplianceObligationAmountsTable = (props) => {
                     <td>{formatNumeric(filteredClassAReductions.value, 2)}</td>
                   </tr>
                 )}
-                {supplierClass !== 'S' && (
-                  <tr>
-                    <td colSpan="2" />
-                    <td className="text-blue">
-                      &bull; Unspecified ZEV Class Credit Reduction:
-                    </td>
-                    <td>
-                      {formatNumeric(filteredUnspecifiedReductions.value, 2)}
-                    </td>
-                  </tr>
-                )}
+                <tr>
+                  <td colSpan="2" />
+                  <td className="text-blue">
+                    &bull; Unspecified ZEV Class Credit Reduction:
+                  </td>
+                  <td>
+                    {supplierClass === 'S' ? formatNumeric(0, 2) : 
+                      formatNumeric(filteredUnspecifiedReductions.value, 2)
+                    }
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
