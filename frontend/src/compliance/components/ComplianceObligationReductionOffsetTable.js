@@ -98,7 +98,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                       <input
                         checked={creditReductionSelection === 'A'}
                         disabled={
-                          user.isGovernment ||
+                          supplierClass === 'S' || user.isGovernment ||
                           ['SUBMITTED', 'CONFIRMED', 'ASSESSED'].indexOf(
                             statuses.complianceObligation.status
                           ) >= 0
@@ -127,7 +127,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                         <input
                           checked={creditReductionSelection === 'B'}
                           disabled={
-                            user.isGovernment ||
+                            supplierClass === 'S' || user.isGovernment ||
                             ['SUBMITTED', 'CONFIRMED', 'ASSESSED'].indexOf(
                               statuses.complianceObligation.status
                             ) >= 0
