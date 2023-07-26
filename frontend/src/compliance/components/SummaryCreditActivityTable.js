@@ -120,11 +120,13 @@ const SummaryCreditActivityTable = (props) => {
           </td>
           <td />
           <td className="text-right font-weight-bold">
-            {complianceRatios.length > 0 &&
+            {supplierClass === 'Small' ? formatNumeric(0, 2) :
+              complianceRatios.length > 0 &&
               formatNumeric(
                 ldvSales * (complianceRatios[0].complianceRatio / 100),
                 2
-              )}
+              )
+            }
           </td>
         </tr>
         {supplierClass === 'Large' && (
@@ -156,12 +158,14 @@ const SummaryCreditActivityTable = (props) => {
                   ldvSales * (complianceRatios[0].zevClassA / 100),
                 2
               )}
-            {complianceRatios.length > 0 &&
+            {supplierClass === 'Small' ? formatNumeric(0, 2) :
+              complianceRatios.length > 0 &&
               supplierClass !== 'Large' &&
               formatNumeric(
                 ldvSales * (complianceRatios[0].complianceRatio / 100),
                 2
-              )}
+              )
+            }
           </td>
         </tr>
       </tbody>
