@@ -3,8 +3,6 @@ name: Teardown PR on Dev
 on:
   pull_request:
     types: closed
-    branches:
-          - 'release-*'
 
 env:
   TOOLS_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
