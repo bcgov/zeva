@@ -7,8 +7,8 @@ on:
   pull_request:
     types: [opened, edited, reopened]
     branches:
-          - 'release-*'
-  
+          # - 'release-*'
+      - 'add-db-load-to-pipeline-1.48.0'
 jobs:
 
   call-unit-test:
