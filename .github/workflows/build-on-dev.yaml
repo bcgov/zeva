@@ -5,7 +5,7 @@ name: Build PR on Dev
 
 on:
   pull_request:
-    types: [opened, edited, reopened]
+    types: [opened, edited, synchronize, reopened]
     branches:
           # - 'release-*'
       - 'add-db-load-to-pipeline-1.48.0'
