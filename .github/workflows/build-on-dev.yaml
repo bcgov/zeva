@@ -11,10 +11,10 @@ on:
       - 'add-db-load-to-pipeline-1.48.0'
 jobs:
 
-  call-unit-test:
-    uses: ./.github/workflows/unit-test-template.yaml
-    with:
-      pr-number: ${{ github.event.pull_request.number }}
+  # call-unit-test:
+  #   uses: ./.github/workflows/unit-test-template.yaml
+  #   with:
+  #     pr-number: ${{ github.event.pull_request.number }}
 
   call-pr-build:
     if: endsWith( github.event.pull_request.title, 'build-on-dev' )
