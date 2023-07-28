@@ -76,7 +76,7 @@ jobs:
             oc -n ${{ secrets.dev-namespace }} exec zeva-spilo-dev-${{ inputs.pr-number }}-0 -- psql -c "ALTER SYSTEM SET log_disconnections='off'" || true
             oc -n ${{ secrets.dev-namespace }} exec zeva-spilo-dev-${{ inputs.pr-number }}-0 -- psql -c "ALTER SYSTEM SET log_checkpoints='off'" || true
             oc -n ${{ secrets.dev-namespace }} exec zeva-spilo-dev-${{ inputs.pr-number }}-0 -- psql -c "select pg_reload_conf()" || true
-            oc -n ${{ secrets.dev-namespace }} exec zeva-spilo-dev-${{ inputs.pr-number }}-0 -- "psql zeva < /dataload/LatestBuild.sql >> /dataload/logs/zeva-spilo-dev-${{ inputs.pr-number }}$(date +"%Y%m%d-%I%M%p").log 2>&1"
+            oc -n ${{ secrets.dev-namespace }} exec zeva-spilo-dev-${{ inputs.pr-number }}-0 -- bash -c "psql zeva < /dataload/LatestBuild.sql >> /tmp/zeva-spilo-dev-${{ inputs.pr-number }}-$(date +"%Y%m%d-%I%M%S%p").log 2>&1"
             echo "==> Spilo is ready for use"
           fi
 
