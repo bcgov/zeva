@@ -49,6 +49,8 @@ jobs:
           insecure_skip_tls_verify: true
           namespace: ${{ secrets.tools-namespace }}    
 
+
+# oc -n ${{ secrets.dev-namespace }} wait --for=jsonpath='{.status.availableReplicas}'=1 --timeout=180s statefulset/zeva-spilo-dev-${{ inputs.pr-number }}
       - name: Setup Database
         shell: bash {0}
         run: |
@@ -63,8 +65,8 @@ jobs:
             echo "==> Spilo is up and running"
             echo "==> Mounting dataload PVC"
             oc -n ${{ secrets.dev-namespace }} set volume statefulset/zeva-spilo-dev-${{ inputs.pr-number }} --add --name=dataload -t pvc --claim-name=pr-dev-build-data --overwrite --mount-path=/dataload || true
-            sleep 10
-            oc -n ${{ secrets.dev-namespace }} wait --for=jsonpath='{.status.availableReplicas}'=1 --timeout=180s statefulset/zeva-spilo-dev-${{ inputs.pr-number }}
+            sleep 120
+            oc -n ${{ secrets.dev-namespace }} wait --for=condition=Ready pod/zeva-spilo-dev-${{ inputs.pr-number }}-0
             echo "==> Spilo is up and running again"
             echo "==> Creating user and database and loading test data"
             oc -n ${{ secrets.dev-namespace }} exec zeva-spilo-dev-${{ inputs.pr-number }}-0 -- psql -c "create user ${{ secrets.zeva-dev-username }} WITH PASSWORD '${{ secrets.zeva-dev-password }}'" || true
