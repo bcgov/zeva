@@ -18,7 +18,7 @@ jobs:
 
   call-pr-build:
     if: endsWith( github.event.pull_request.title, 'build-on-dev' )
-    needs: call-unit-test
+    # needs: call-unit-test
     uses: ./.github/workflows/pr-build-template.yaml
     with:
       pr-number: ${{ github.event.pull_request.number }}
