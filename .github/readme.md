@@ -48,4 +48,3 @@ When the pull request is merged to the release branch, the pipeline "Teardown PR
 dddd
 
 fff
-dd
