@@ -64,7 +64,7 @@ jobs:
             echo "==> Mounting dataload PVC"
             oc -n ${{ secrets.dev-namespace }} set volume statefulset/zeva-spilo-dev-${{ inputs.pr-number }} --add --name=dataload -t pvc --claim-name=pr-dev-build-data --overwrite --mount-path=/dataload || true
             sleep 10
-            oc -n ${{ secrets.dev-namespace }} wait --for=condition=Ready pod/zeva-spilo-dev-${{ inputs.pr-number }}-0
+            oc -n ${{ secrets.dev-namespace }} wait --for=jsonpath='{.status.availableReplicas}'=1 --timeout=180s statefulset/zeva-spilo-dev-${{ inputs.pr-number }}
             echo "==> Spilo is up and running again"
             echo "==> Creating user and database and loading test data"
             oc -n ${{ secrets.dev-namespace }} exec zeva-spilo-dev-${{ inputs.pr-number }}-0 -- psql -c "create user ${{ secrets.zeva-dev-username }} WITH PASSWORD '${{ secrets.zeva-dev-password }}'" || true
@@ -74,7 +74,7 @@ jobs:
             oc -n ${{ secrets.dev-namespace }} exec tfrs-spilo${{ inputs.dev-suffix }}-0 -- psql -c "ALTER SYSTEM SET log_disconnections='off'" || true
             oc -n ${{ secrets.dev-namespace }} exec tfrs-spilo${{ inputs.dev-suffix }}-0 -- psql -c "ALTER SYSTEM SET log_checkpoints='off'" || true
             oc -n ${{ secrets.dev-namespace }} exec tfrs-spilo${{ inputs.dev-suffix }}-0 -- psql -c "select pg_reload_conf()" || true
-            true || oc -n ${{ secrets.dev-namespace }} exec zeva-spilo-dev-${{ inputs.pr-number }}-0 -- psql -c "zeva < /dataload/LatestBuild.sql >> /dataload/logs/zeva-spilo-dev-${{ inputs.pr-number }}$(date + \"%Y%m%d-%I%M%p\").log 2>&1"
+            oc -n ${{ secrets.dev-namespace }} exec zeva-spilo-dev-${{ inputs.pr-number }}-0 -- psql -c "zeva < /dataload/LatestBuild.sql >> /dataload/logs/zeva-spilo-dev-${{ inputs.pr-number }}$(date + \"%Y%m%d-%I%M%p\").log 2>&1"
             echo "==> Spilo is ready for use"
           fi
 
