@@ -45,7 +45,3 @@ When the pull request is merged to the release branch, the pipeline "Teardown PR
   * jobs -> call-unit-test -> with -> pr-numb
 * Notify the developers that the new release branch has been created, it is ready for the new pull requests
 
-
-
-fff
-ss
