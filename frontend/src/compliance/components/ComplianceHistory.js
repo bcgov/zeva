@@ -43,12 +43,13 @@ const ComplianceHistory = (props) => {
 
   const getHistory = (itemHistory, reportType) => {
     const tempHistory = []
+    console.log(itemHistory)
     if (itemHistory) {
       itemHistory.forEach((obj, i) => {
         if(i === 0 && reportType.includes("Model Year Report")){
           tempHistory.push(itemHistory[itemHistory.length - 1])
         }
-        if (['DRAFT'].indexOf(obj.status) >= 0) {
+        else if (['DRAFT'].indexOf(obj.status) >= 0) {
           const found = tempHistory.findIndex(
             (each) => ['DRAFT'].indexOf(each.status) >= 0
           )
@@ -64,14 +65,14 @@ const ComplianceHistory = (props) => {
             tempHistory.push(obj)
           }
         }
-        if (['SUBMITTED'].indexOf(obj.status) >= 0) {
+        else if (['SUBMITTED'].indexOf(obj.status) >= 0) {
           // Check if a submitted history status comes after a returned/draft status or if there is nothing before it
           // In both cases we capture the history entry as either it's been re-submitted, or it's the first submission
-          if(["RETURNED", "DRAFT"].includes(itemHistory[i + 1]?.status) || !itemHistory[i + 1]){
+          if(["RETURNED", "DRAFT"].includes(itemHistory[i + 1]?.status)){
             tempHistory.push(obj)
           }
         }
-        if (
+        else if (
           ['RETURNED'].indexOf(obj.status) >= 0
         ) {
           // Checking to find any return to a supplier, we don't want to capture when a director returns to an analyst
@@ -98,6 +99,8 @@ const ComplianceHistory = (props) => {
     if(reportType.includes("Model Year Report")){
       tempHistory.push(tempHistory.shift())
     }
+
+    console.log(tempHistory)
     return tempHistory
   }
   const getTitle = (item) => {
