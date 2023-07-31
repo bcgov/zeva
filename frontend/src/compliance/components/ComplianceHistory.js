@@ -65,8 +65,8 @@ const ComplianceHistory = (props) => {
           }
         }
         else if (['SUBMITTED'].indexOf(obj.status) >= 0) {
-          // Check if a submitted history status comes after a returned/draft status or if there is nothing before it
-          // In both cases we capture the history entry as either it's been re-submitted, or it's the first submission
+          // Check if a submitted history status comes after a returned/draft status
+          // We capture this as it has been re-submitted
           if(["RETURNED", "DRAFT"].includes(itemHistory[i + 1]?.status)){
             tempHistory.push(obj)
           }
