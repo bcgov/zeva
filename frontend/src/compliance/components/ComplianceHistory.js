@@ -43,7 +43,6 @@ const ComplianceHistory = (props) => {
 
   const getHistory = (itemHistory, reportType) => {
     const tempHistory = []
-    console.log(itemHistory)
     if (itemHistory) {
       itemHistory.forEach((obj, i) => {
         if(i === 0 && reportType.includes("Model Year Report")){
@@ -99,8 +98,6 @@ const ComplianceHistory = (props) => {
     if(reportType.includes("Model Year Report")){
       tempHistory.push(tempHistory.shift())
     }
-
-    console.log(tempHistory)
     return tempHistory
   }
   const getTitle = (item) => {
