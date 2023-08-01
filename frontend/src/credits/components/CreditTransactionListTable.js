@@ -13,9 +13,10 @@ import ROUTES_CREDIT_AGREEMENTS from '../../app/routes/CreditAgreements'
 import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers'
 import ROUTES_CREDITS from '../../app/routes/Credits'
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
+import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport'
 
 const CreditTransactionListTable = (props) => {
-  const { items, reports } = props
+  const { assessedSupplementalsMap, items, reports } = props
   const translateTransactionType = (item) => {
     if (!item.transactionType) {
       return false
@@ -388,13 +389,26 @@ const CreditTransactionListTable = (props) => {
                   )
                   break
                 case 'reduction':
-                  history.push(
-                    ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(
-                      /:id/g,
-                      item.foreignKey
-                    ),
-                    { href: ROUTES_CREDITS.LIST }
-                  )
+                  if (assessedSupplementalsMap[item.foreignKey]) {
+                    history.push(
+                      ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
+                        /:id/g,
+                        item.foreignKey
+                      ).replace(
+                        /:supplementaryId/g,
+                        assessedSupplementalsMap[item.foreignKey]
+                      ),
+                      { href: ROUTES_CREDITS.LIST }
+                    )
+                  } else {
+                    history.push(
+                      ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(
+                        /:id/g,
+                        item.foreignKey
+                      ),
+                      { href: ROUTES_CREDITS.LIST }
+                    )
+                  }
                   break
                 case 'credit adjustment reduction':
                   history.push(
@@ -423,6 +437,7 @@ const CreditTransactionListTable = (props) => {
 CreditTransactionListTable.defaultProps = {}
 
 CreditTransactionListTable.propTypes = {
+  assessedSupplementalsMap: PropTypes.shape().isRequired,
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   reports: PropTypes.arrayOf(PropTypes.shape({})).isRequired
 }

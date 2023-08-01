@@ -22,6 +22,7 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
   const [balances, setBalances] = useState([])
   const [reports, setReports] = useState([])
   const [creditTransactions, setCreditTransactions] = useState([])
+  const [assessedSupplementalsMap, setAssessedSupplementalsMap] = useState({})
   const { keycloak, location, user } = props
   const { state: locationState } = location
 
@@ -51,11 +52,18 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
         setReports(response.data)
       })
 
+    const assessedSupplementalsMapPromise = axios
+      .get(ROUTES_ORGANIZATIONS.ASSESSED_SUPPLEMENTALS_MAP.replace(/:id/gi, id))
+      .then((response) => {
+        setAssessedSupplementalsMap(response.data)
+      })
+
     Promise.all([
       balancePromise,
       listPromise,
       detailsPromise,
-      reportsPromise
+      reportsPromise,
+      assessedSupplementalsMapPromise
     ]).then(() => {
       setLoading(false)
     })
@@ -75,6 +83,7 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
         user={user}
       />
       <VehicleSupplierSalesListPage
+        assessedSupplementalsMap={assessedSupplementalsMap}
         loading={loading}
         locationState={locationState}
         balances={balances}
