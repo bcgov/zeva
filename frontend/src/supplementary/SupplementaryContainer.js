@@ -55,6 +55,10 @@ const SupplementaryContainer = (props) => {
     return value
   }
 
+  const isSupplier = !user.isGovernment
+  const isAnalyst = user.isGovernment && !user.roles.some((r) => r.roleCode === 'Director')
+  const isDirector = user.isGovernment && user.roles.some((r) => r.roleCode === 'Director')
+
   const analystAction =
     user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT')
 
@@ -491,7 +495,7 @@ const SupplementaryContainer = (props) => {
             .patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data)
             .then((response) => {
               const { id: supplementalId } = response.data
-              if (status === 'DELETED' || status === 'RETURNED') {
+              if (status === 'DELETED' || (status === 'RETURNED' && isDirector)) {
                 history.push(ROUTES_COMPLIANCE.REPORTS)
               } else {
                 const commentData = {
@@ -834,9 +838,6 @@ const SupplementaryContainer = (props) => {
     : (!isReassessment ? details.id : null)
   const reassessmentReportId = reassessment?.reassessmentReportId ? reassessment?.reassessmentReportId : details.id
   const supplementaryReportIsReassessment = reassessment?.supplementaryReportIsReassessment
-  const isSupplier = !user.isGovernment
-  const isAnalyst = user.isGovernment && !user.roles.some((r) => r.roleCode === 'Director')
-  const isDirector = user.isGovernment && user.roles.some((r) => r.roleCode === 'Director')
   const detailsProps = {
     addSalesRow,
     analystAction,
