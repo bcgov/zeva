@@ -157,7 +157,7 @@ const ComplianceReportSummaryContainer = (props) => {
             )
 
             // CREDIT ACTIVITY
-            const creditBalanceStart = { year: '', A: 0, B: 0 }
+            const creditBalanceStart = { A: 0, B: 0 }
             const creditBalanceEnd = { A: 0, B: 0 }
             const provisionalBalanceBeforeOffset = { A: 0, B: 0 }
             const provisionalBalanceAfterOffset = { A: 0, B: 0 }
@@ -180,11 +180,10 @@ const ComplianceReportSummaryContainer = (props) => {
               timestampCreditActivity = item.updateTimestamp
 
               if (item.category === 'creditBalanceStart') {
-                creditBalanceStart.year = item.modelYear.name
                 const aValue = parseFloat(item.creditAValue)
                 const bValue = parseFloat(item.creditBValue)
-                creditBalanceStart.A = aValue
-                creditBalanceStart.B = bValue
+                creditBalanceStart.A += aValue
+                creditBalanceStart.B += bValue
                 provisionalBalanceAfterCreditReduction.A += aValue
                 provisionalBalanceAfterCreditReduction.B += bValue
               }
