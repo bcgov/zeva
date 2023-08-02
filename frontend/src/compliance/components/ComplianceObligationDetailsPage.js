@@ -157,7 +157,15 @@ const ComplianceObligationDetailsPage = (props) => {
           />
         </div>
         <h3 className="mt-4 mb-2">Credit Reduction</h3>
-        You must select your ZEV class credit preference below.
+        {supplierClass === 'L' ? (
+          <>
+          You must select your ZEV class credit preference below.
+          </>
+        ) : (
+          <>
+          Small volume suppliers have no compliance obligation or credit reduction.
+          </>
+        )}
         <ComplianceObligationReductionOffsetTable
           creditReductionSelection={creditReductionSelection}
           deductions={deductions}
