@@ -20,6 +20,8 @@ from api.services.credit_transaction import aggregate_credit_balance_details, \
     aggregate_transactions_by_submission
 from api.permissions.organization import OrganizationPermissions
 from auditable.views import AuditableMixin
+from api.services.supplemental_report import get_map_of_model_year_report_ids_to_latest_supplemental_ids
+from api.models.model_year_report_statuses import ModelYearReportStatuses
 
 
 class OrganizationViewSet(
@@ -181,3 +183,9 @@ class OrganizationViewSet(
         serializer = OrganizationLDVSalesSerializer(ldv_sales, many=True)
 
         return Response(serializer.data)
+    
+    @action(detail=True, methods=['get'])
+    def assessed_supplementals_map(self, request, pk=None):
+        result = get_map_of_model_year_report_ids_to_latest_supplemental_ids(pk, ModelYearReportStatuses.ASSESSED, ModelYearReportStatuses.REASSESSED)
+        return Response(result)
+        

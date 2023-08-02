@@ -15,7 +15,8 @@ const ORGANIZATIONS = {
   SUPPLIER_BALANCE: `${API_BASE_PATH}/:id/supplier_balance`,
   TRANSACTIONS: `${API_BASE_PATH}/:id/credit-transactions`,
   USERS: `${API_BASE_PATH}/:id/users`,
-  VEHICLES: `${API_BASE_PATH}/:id/vehicles`
+  VEHICLES: `${API_BASE_PATH}/:id/vehicles`,
+  ASSESSED_SUPPLEMENTALS_MAP: `${API_BASE_PATH}/:id/assessed_supplementals_map`
 }
 
 export default ORGANIZATIONS

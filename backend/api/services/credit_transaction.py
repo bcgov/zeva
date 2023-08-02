@@ -20,6 +20,7 @@ from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_statuses import ModelYearReportStatuses
 from api.models.sales_submission import SalesSubmission
 from api.models.model_year import ModelYear
+from api.models.model_year_report_credit_transaction import ModelYearReportCreditTransaction
 
 from api.services.credit_transfer import aggregate_credit_transfer_details
 from api.utilities.credit_transaction import (
@@ -382,7 +383,7 @@ def add_credit_reductions(
         credit_class = CreditClass.objects.get(credit_class=reduction["credit_class"])
         model_year = ModelYear.objects.get_by_natural_key(reduction["model_year"])
         value = Decimal("{0:.2f}".format(reduction["value"]))
-        CreditTransaction.objects.create(
+        transaction = CreditTransaction.objects.create(
             create_user=user.username, 
             credit_class=credit_class,
             debit_from=organization,
@@ -394,6 +395,10 @@ def add_credit_reductions(
             total_value=value,
             update_user=user.username,
             weight_class=get_reduction_weight_class()
+        )
+        ModelYearReportCreditTransaction.objects.create(
+            model_year_report_id=original_model_year_report.id,
+            credit_transaction_id=transaction.id
         )
 
 
