@@ -432,14 +432,21 @@ class ModelYearReportComplianceObligationViewset(
                     report.ldv_sales = current_supplemental.ldv_sales
 
             elif previous_report:
-                # If there is no supplemental from the previous year or the current year then this is a new or existing report and should be pulling values from the year prior.
-                starting_balances = ModelYearReportComplianceObligation.objects.filter(
-                    model_year_report_id=previous_report.id,
-                    category='ProvisionalBalanceAfterCreditReduction',
-                    from_gov=True
-                ).order_by(
-                    'model_year__name'
-                )
+                if previous_report_latest_supplemental:
+                    starting_balances = SupplementalReportCreditActivity.objects.filter(
+                        supplemental_report=previous_report_latest_supplemental.id,
+                        category='ProvisionalBalanceAfterCreditReduction'
+                    ).order_by(
+                        'model_year__name'
+                    )
+                else:
+                    starting_balances = ModelYearReportComplianceObligation.objects.filter(
+                        model_year_report_id=previous_report.id,
+                        category='ProvisionalBalanceAfterCreditReduction',
+                        from_gov=True
+                    ).order_by(
+                        'model_year__name'
+                    )
 
             if starting_balances:
                 for balance in starting_balances:
