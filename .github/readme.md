@@ -19,7 +19,7 @@ The "Build PR on Dev" pipeline will be triggered when it identified pull request
 
 * Squash merge the tracking pull request to master
 * Create the release on GitHub from master branch
-* Create the new release branch from master branch
+* Create the new release branch from master branch (this is done automatically by pipeline create-release.yaml)
 * Change the new release branch as the default branch in the repo and update the branch protection rules https://github.com/bcgov/zeva/settings/branches
 
 ## Updates for the new release branch
@@ -36,6 +36,7 @@ The "Build PR on Dev" pipeline will be triggered when it identified pull request
   * env -> PR_NUMBER
   * env -> VERSION
   * jobs -> call-unit-test -> with -> pr-numb
+* Create the trackings pull request to merge the new release branch to master. Update the abour PR_NUMBER after the trackings pull request is created.
 
 # Pipelines
 
