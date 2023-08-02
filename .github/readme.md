@@ -44,6 +44,7 @@ The "Build PR on Dev" pipeline will be triggered when it identified pull request
 * build-on-dev.yaml (Build PR on Dev): Build pull request if the string build-on-dev is appended at the end of pull request title
 * dev-build.yaml (Dev Build 1.48.0): Every commit on the current release branch is automatically released to Dev.
 * release-build.yaml (Release Build 1.48.0): This is a manually managed pipeline. It needs to be triggered manually to build the current release branch and deploy on Test and further on Prod.
+* create-release.yaml (Create Release after merging to master): Tag and create the release after merging release branch to master. The description of the tracking pull request becomes release notes.
 
 ## Other Pipelines
 
