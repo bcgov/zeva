@@ -157,7 +157,7 @@ const ComplianceObligationDetailsPage = (props) => {
           />
         </div>
         <h3 className="mt-4 mb-2">Credit Reduction</h3>
-        {supplierClass === 'L' ? (
+        {supplierClass !== 'S' ? (
           <>
           You must select your ZEV class credit preference below.
           </>

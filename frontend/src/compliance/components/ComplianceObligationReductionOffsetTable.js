@@ -79,7 +79,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                     </tr>
                   </>
                 )}
-                {supplierClass !== 'L' || 'S' && (
+                {supplierClass !== 'L' ||  supplierClass !== 'S' && (
                   <tr className="subclass">
                     <th className="large-column">
                       Compliance Ratio Credit Reduction
