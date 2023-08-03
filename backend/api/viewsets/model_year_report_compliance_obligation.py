@@ -38,6 +38,7 @@ from api.serializers.credit_transaction import \
 from api.services.summary import parse_summary_serializer, \
     get_current_year_balance
 from api.models.organization_deficits import OrganizationDeficits
+from api.services.supplemental_report import get_latest_assessed_supplemental
 
 
 class ModelYearReportComplianceObligationViewset(
@@ -402,8 +403,10 @@ class ModelYearReportComplianceObligationViewset(
             current_supplemental = report.get_latest_supplemental(request)
             previous_report = report.get_previous_model_report()
             previous_report_latest_supplemental = None
+            previous_report_latest_assesed_supplemental = None
             if(previous_report):
                 previous_report_latest_supplemental = previous_report.get_latest_supplemental(request)
+                previous_report_latest_assesed_supplemental = get_latest_assessed_supplemental(previous_report)
 
             prior_year_balance_a = 0
             prior_year_balance_b = 0
@@ -432,14 +435,21 @@ class ModelYearReportComplianceObligationViewset(
                     report.ldv_sales = current_supplemental.ldv_sales
 
             elif previous_report:
-                # If there is no supplemental from the previous year or the current year then this is a new or existing report and should be pulling values from the year prior.
-                starting_balances = ModelYearReportComplianceObligation.objects.filter(
-                    model_year_report_id=previous_report.id,
-                    category='ProvisionalBalanceAfterCreditReduction',
-                    from_gov=True
-                ).order_by(
-                    'model_year__name'
-                )
+                if previous_report_latest_assesed_supplemental:
+                    starting_balances = SupplementalReportCreditActivity.objects.filter(
+                        supplemental_report=previous_report_latest_assesed_supplemental.id,
+                        category='ProvisionalBalanceAfterCreditReduction'
+                    ).order_by(
+                        'model_year__name'
+                    )
+                else:
+                    starting_balances = ModelYearReportComplianceObligation.objects.filter(
+                        model_year_report_id=previous_report.id,
+                        category='ProvisionalBalanceAfterCreditReduction',
+                        from_gov=True
+                    ).order_by(
+                        'model_year__name'
+                    )
 
             if starting_balances:
                 for balance in starting_balances:
