@@ -79,7 +79,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                     </tr>
                   </>
                 )}
-                {supplierClass !== 'L' && (
+                {supplierClass !== 'L' ||  supplierClass !== 'S' && (
                   <tr className="subclass">
                     <th className="large-column">
                       Compliance Ratio Credit Reduction
@@ -88,7 +88,8 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                     <th className="text-center small-column">B</th>
                   </tr>
                 )}
-                <tr className="credit-selection">
+                {supplierClass !== 'S' && (
+                  <tr className="credit-selection">
                   <td>
                     Do you want to use ZEV Class A or B credits first for your
                     unspecified ZEV class reduction?
@@ -98,7 +99,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                       <input
                         checked={creditReductionSelection === 'A'}
                         disabled={
-                          supplierClass === 'S' || user.isGovernment ||
+                          user.isGovernment ||
                           ['SUBMITTED', 'CONFIRMED', 'ASSESSED'].indexOf(
                             statuses.complianceObligation.status
                           ) >= 0
@@ -127,7 +128,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                         <input
                           checked={creditReductionSelection === 'B'}
                           disabled={
-                            supplierClass === 'S' || user.isGovernment ||
+                            user.isGovernment ||
                             ['SUBMITTED', 'CONFIRMED', 'ASSESSED'].indexOf(
                               statuses.complianceObligation.status
                             ) >= 0
@@ -151,6 +152,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                     )}
                   </td>
                 </tr>
+                )}
                 {deductions
                   .filter(
                     (deduction) =>
