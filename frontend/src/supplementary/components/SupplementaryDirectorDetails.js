@@ -561,7 +561,8 @@ const SupplementaryDirectorDetails = (props) => {
             </span>
             <span className="right-content">
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
-                currentStatus === 'RECOMMENDED' && (
+                currentStatus === 'RECOMMENDED' && 
+                selectedTab === tabNames[2] && (
                   <Button
                     tooltip="only analysts can save reports at this stage"
                     buttonType="save"
