@@ -68,7 +68,8 @@ const ComplianceHistory = (props) => {
       itemHistory.forEach((obj, i) => {
         if (i === 0 && reportType.includes('Model Year Report')) {
           tempHistory.push(itemHistory[itemHistory.length - 1])
-        } else if (['DRAFT'].indexOf(obj.status) >= 0) {
+        }
+        if (['DRAFT'].indexOf(obj.status) >= 0) {
           const found = tempHistory.findIndex(
             (each) => ['DRAFT'].indexOf(each.status) >= 0
           )
@@ -79,7 +80,7 @@ const ComplianceHistory = (props) => {
             const actuallyReturned = { ...obj }
             actuallyReturned.status = 'RETURNED'
             tempHistory.push(actuallyReturned)
-          } else if (found < 0 && ['DRAFT', 'SUBMITTED'].includes(obj.status)) {
+          } else if (found < 0 && ['SUBMITTED'].includes(obj.status)) {
             tempHistory.push(obj)
           }
         } else if (['SUBMITTED'].indexOf(obj.status) >= 0) {
