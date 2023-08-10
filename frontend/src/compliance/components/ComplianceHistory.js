@@ -136,6 +136,10 @@ const ComplianceHistory = (props) => {
       byUser = ` by ${each.createUser.displayName} `
     }
 
+    if (status === 'returned' && !user.isGovernment) {
+      byUser = ' by Government of B.C. '
+    }
+
     if (status === 'assessed') {
       status = ' assessed '
       if (!user.isGovernment) {
