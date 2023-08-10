@@ -29,7 +29,13 @@ const ConsumerSalesDetailsPage = (props) => {
   } = props
 
   const [showModal, setShowModal] = useState(false)
+  const [buttonClicked, setButtonClicked] = useState(false)
   let disabledCheckboxes = propsDisabledCheckboxes
+
+  const handleButtonClick = (event) => {
+    handleSave(event);
+    setButtonClicked(true);
+  };
 
   if (loading) {
     return <Loading />
@@ -208,14 +214,14 @@ const ConsumerSalesDetailsPage = (props) => {
                   {!user.isGovernment && (
                     <Button
                       buttonType="save"
-                      disabled={
+                      disabled={ buttonClicked ||
                         ['SAVED', 'UNSAVED'].indexOf(
                           statuses.consumerSales.status
                         ) < 0 || disableSave()
                       }
                       optionalClassname="button primary"
                       action={(event) => {
-                        handleSave(event)
+                        handleButtonClick(event)
                       }}
                     />
                   )}
