@@ -13,16 +13,27 @@ Notes: the change may take about 20 minutes to be promoted to Zeva development e
 
 The "Build PR on Dev" pipeline will be triggered when it identified pull request's title ends with "build-on-dev"
 
-# Post production release
+# Production release
 
-## Merge the tracking pull request and create the new release branch
+## Pre-production release
+
+* Update the description of the tracking pull request
+* Verify the changes made during the previous post production release
+
+## Production release
+
+* Manually trigger the pipeline release-build.yaml (Release Build 1.49.0)
+
+## Post production release
+
+### Merge the tracking pull request and create the new release branch
 
 * Squash merge the tracking pull request to master
 * Create the release on GitHub from master branch
 * Create the new release branch from master branch (this is done automatically by pipeline create-release.yaml)
 * Change the new release branch as the default branch in the repo and update the branch protection rules https://github.com/bcgov/zeva/settings/branches
 
-## Updates for the new release branch
+### Updates for the new release branch
 
 * dev-build.yaml 
   * on -> push -> branches
@@ -43,9 +54,9 @@ The "Build PR on Dev" pipeline will be triggered when it identified pull request
 ## Primary Pipelines
 
 * build-on-dev.yaml (Build PR on Dev): Build pull request if the string build-on-dev is appended at the end of pull request title
-* dev-build.yaml (Dev Build 1.48.0): Every commit on the current release branch is automatically released to Dev.
-* release-build.yaml (Release Build 1.48.0): This is a manually managed pipeline. It needs to be triggered manually to build the current release branch and deploy on Test and further on Prod.
-* create-release.yaml (Create Release after merging to master): Tag and create the release after merging release branch to master. The description of the tracking pull request becomes release notes.
+* dev-build.yaml (Dev Build 1.49.0): Every commit on the current release branch is automatically released to Dev.
+* release-build.yaml (Release Build 1.49.0): This is a manually managed pipeline. It needs to be triggered manually to build the current release branch and deploy on Test and further on Prod.
+* create-release.yaml (Create Release after merging to master): Automatically tag and create the release after merging release branch to master. The description of the tracking pull request becomes release notes.
 
 ## Other Pipelines
 
@@ -55,5 +66,5 @@ The "Build PR on Dev" pipeline will be triggered when it identified pull request
 * pr-build-template.yaml (PR Build Template): a pipeline template for pull request build
 * pr-lable.yaml (Label PR): ignore this one for now, it is automatically triggered after the pull request is merged or closed
 * pr-teardown.yaml (Teardown PR on Dev): remove the deployed pull request on Dev
-* release-build.yaml (Release Build 1.48.0): a pipeline to build release branch
+* release-build.yaml (Release Build 1.49.0): a pipeline to build release branch
 * unit-test-template.yaml (Unit Test Template): a pipeline template for unit test
