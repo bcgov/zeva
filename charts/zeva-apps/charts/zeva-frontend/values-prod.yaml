@@ -28,7 +28,7 @@ frontendConfigMap:
   notificationsEnabled: true
   rolesEnabled: false
   creditAgreementsEnabled: true
-  supplementalEnabled: false
+  supplementalEnabled: true
 
 resources:
   limits:

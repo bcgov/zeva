@@ -50,6 +50,7 @@ const UsersTable = (props) => {
     <ReactTable
       columns={columns}
       data={items}
+      showPagination={true}
       defaultSorted={[
         {
           id: 'displayName'

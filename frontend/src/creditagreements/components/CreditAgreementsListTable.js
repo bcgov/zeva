@@ -147,6 +147,7 @@ const CreditAgreementsListTable = (props) => {
       data={items}
       filtered={filtered}
       setFiltered={setFiltered}
+      showPagination={true}
       getTrProps={(state, row) => {
         if (row && row.original) {
           return {

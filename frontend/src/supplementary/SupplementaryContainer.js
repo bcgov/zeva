@@ -40,6 +40,7 @@ const SupplementaryContainer = (props) => {
     { id: 0, description: '' }
   ])
   const location = useLocation()
+  const [reassessmentReductions, setReassessmentReductions] = useState({})
 
   const query = qs.parse(location.search, { ignoreQueryPrefix: true })
 
@@ -53,6 +54,10 @@ const SupplementaryContainer = (props) => {
 
     return value
   }
+
+  const isSupplier = !user.isGovernment
+  const isAnalyst = user.isGovernment && !user.roles.some((r) => r.roleCode === 'Director')
+  const isDirector = user.isGovernment && user.roles.some((r) => r.roleCode === 'Director')
 
   const analystAction =
     user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT')
@@ -483,11 +488,14 @@ const SupplementaryContainer = (props) => {
           if (data.supplierInfo.ldvSales === '') {
             data.supplierInfo.ldvSales = ldvSales
           }
+          if (status === 'ASSESSED') {
+            data.reassessmentReductions = reassessmentReductions
+          }
           axios
             .patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data)
             .then((response) => {
               const { id: supplementalId } = response.data
-              if (status === 'DELETED' || status === 'RETURNED') {
+              if (status === 'DELETED' || (status === 'RETURNED' && isDirector)) {
                 history.push(ROUTES_COMPLIANCE.REPORTS)
               } else {
                 const commentData = {
@@ -830,9 +838,6 @@ const SupplementaryContainer = (props) => {
     : (!isReassessment ? details.id : null)
   const reassessmentReportId = reassessment?.reassessmentReportId ? reassessment?.reassessmentReportId : details.id
   const supplementaryReportIsReassessment = reassessment?.supplementaryReportIsReassessment
-  const isSupplier = !user.isGovernment
-  const isAnalyst = user.isGovernment && !user.roles.some((r) => r.roleCode === 'Director')
-  const isDirector = user.isGovernment && user.roles.some((r) => r.roleCode === 'Director')
   const detailsProps = {
     addSalesRow,
     analystAction,
@@ -890,6 +895,7 @@ const SupplementaryContainer = (props) => {
     return (
       <SupplementaryDirectorDetails
         {...detailsProps}
+        setReassessmentReductions={setReassessmentReductions}
       />)
   } else if (isAnalyst) {
     return (

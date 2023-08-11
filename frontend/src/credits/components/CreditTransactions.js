@@ -5,7 +5,7 @@ import CreditBalanceTable from './CreditBalanceTable'
 import CreditTransactionListTable from './CreditTransactionListTable'
 
 const CreditTransactions = (props) => {
-  const { balances, items, reports, user } = props
+  const { assessedSupplementalsMap, balances, items, reports, user } = props
 
   return (
     <div id="credit-transaction" className="page">
@@ -20,6 +20,7 @@ const CreditTransactions = (props) => {
         <div className="col-sm-12">
           <h2 className="mb-2">Credit Transactions</h2>
           <CreditTransactionListTable
+            assessedSupplementalsMap={assessedSupplementalsMap}
             items={items}
             reports={reports}
             user={user}
@@ -31,6 +32,7 @@ const CreditTransactions = (props) => {
 }
 
 CreditTransactions.propTypes = {
+  assessedSupplementalsMap: PropTypes.shape().isRequired,
   balances: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   items: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   reports: PropTypes.arrayOf(PropTypes.shape()).isRequired,

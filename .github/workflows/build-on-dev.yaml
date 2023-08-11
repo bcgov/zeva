@@ -5,10 +5,9 @@ name: Build PR on Dev
 
 on:
   pull_request:
-    types: [opened, edited, reopened]
+    types: [opened, edited, synchronize, reopened]
     branches:
-          - 'release-*'
-  
+      - 'release-*'
 jobs:
 
   call-unit-test:

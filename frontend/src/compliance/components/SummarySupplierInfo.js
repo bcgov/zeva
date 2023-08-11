@@ -14,7 +14,7 @@ const SummarySupplierInfo = ({
   const formatAddressType = (addressType) => {
     if (organization.organizationAddress) {
       const addresses = organization.organizationAddress.filter(address => address.addressType.addressType === addressType)
-      addresses.map((address) => {
+      return addresses.map((address) => {
         return (
           <div key={address.id}>
             {address.representativeName && (

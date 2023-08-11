@@ -28,28 +28,6 @@ const ComplianceHistory = (props) => {
     axios
       .get(ROUTES_COMPLIANCE.SUPPLEMENTAL_HISTORY.replace(/:id/g, id))
       .then((response) => {
-        response.data.forEach(report => {
-          let latestReturn = 0
-          let submitted = null
-          // Loop over report history to find the latest returned status to use as a starting point
-          for (let i = 0; i < report.history.length; i++) {
-            if (!report.history[i].status) {
-              continue
-            } else {
-              if (report.history[i].status === 'SUBMITTED') {
-                submitted = i
-              } else if (report.history[i].status === 'RETURNED') {
-                latestReturn = i
-              }
-            }
-          }
-          // If there is a return status, then filter out old entries but keep the original submission
-          if (latestReturn > 0) {
-            report.history.filter((value, index) => index === submitted || index >= latestReturn)
-          } else { // Otherwise use the original submission index as the starting point and remove anything prior if they exist
-            report.history.filter((value, index) => index >= submitted)
-          }
-        })
         setSupplementalReportHistory(response.data)
         response.data.forEach((report) => {
           if (report.isSupplementary === true) {
@@ -63,28 +41,70 @@ const ComplianceHistory = (props) => {
       })
   }, [])
 
-  const getHistory = (itemHistory) => {
+  // assumes passed in history is in order from most recent to earliest
+  // returns a history that is also from most recent to earliest
+  const removeSequentialRecommendations = (history) => {
+    const result = []
+    let previousItemStatusIsRecommended = false
+    const reversedHistory = history.toReversed()
+    reversedHistory.forEach((item) => {
+      const itemStatus = item.status
+      if (itemStatus === 'RECOMMENDED') {
+        if (!previousItemStatusIsRecommended) {
+          result.unshift(item)
+        }
+        previousItemStatusIsRecommended = true
+      } else {
+        result.unshift(item)
+        previousItemStatusIsRecommended = false
+      }
+    })
+    return result
+  }
+
+  const getHistory = (itemHistory, reportType) => {
     const tempHistory = []
     if (itemHistory) {
-      itemHistory.forEach((obj) => {
-        if (['SUBMITTED'].indexOf(obj.status) >= 0) {
-          const found = tempHistory.findIndex(
-            (each) => ['SUBMITTED'].indexOf(each.status) >= 0
-          )
-          if (found < 0) {
-            tempHistory.push(obj)
-          }
+      itemHistory.forEach((obj, i) => {
+        if (i === 0 && reportType.includes('Model Year Report')) {
+          tempHistory.push(itemHistory[itemHistory.length - 1])
         }
         if (['DRAFT'].indexOf(obj.status) >= 0) {
           const found = tempHistory.findIndex(
             (each) => ['DRAFT'].indexOf(each.status) >= 0
           )
-          if (found < 0 && ['DRAFT', 'SUBMITTED'].includes(obj.status)) {
+          // Check to see if a report has been returned to a draft status from submitted and if it has
+          // Then we need to modify the recorded object to correctly display the returned status instead of draft
+          // We also never capture returns in a reassessment because it is strictly internal
+          if (itemHistory[i + 1]?.status === 'SUBMITTED' && !reportType.includes('Reassessment')) {
+            const actuallyReturned = { ...obj }
+            actuallyReturned.status = 'RETURNED'
+            tempHistory.push(actuallyReturned)
+          } else if (found < 0 && ['SUBMITTED'].includes(obj.status)) {
             tempHistory.push(obj)
           }
+        } else if (['SUBMITTED'].indexOf(obj.status) >= 0) {
+          // Check if a submitted history status comes after a returned/draft status
+          // We capture this as it has been re-submitted
+          if (['RETURNED', 'DRAFT'].includes(itemHistory[i + 1]?.status)) {
+            tempHistory.push(obj)
+          }
+        } else if (
+          ['RETURNED'].indexOf(obj.status) >= 0
+        ) {
+          // Checking to find any return to a supplier, we don't want to capture when a director returns to an analyst
+          // The history reads from most recent to least recent so i + 1 to check the previous status
+          // There is a case where the entry before a return is Recommended but it is correctly returned to a supplier so we also need to look at i - 1 to see if it is submitted
+          if ((['RETURNED', 'SUBMITTED'].includes(itemHistory[i + 1]?.status) && !reportType.includes('Reassessment')) || (itemHistory[i - 1]?.status === 'SUBMITTED' && !reportType.includes('Reassessment'))) {
+            tempHistory.push(obj)
+          }
+        } else if (
+          ['RECOMMENDED'].indexOf(obj.status) >= 0
+        ) {
+          tempHistory.push(obj)
         }
         if (
-          ['RECOMMENDED', 'ASSESSED', 'REASSESSED'].indexOf(obj.status) >= 0
+          ['ASSESSED', 'REASSESSED'].indexOf(obj.status) >= 0
         ) {
           const found = tempHistory.findIndex(
             (each) => obj.status === each.status
@@ -95,7 +115,12 @@ const ComplianceHistory = (props) => {
         }
       })
     }
-    return tempHistory
+    // If we are in a model year report it will have a created status at the top
+    // Therefore we need to move the first entry to the end of the history array
+    if (reportType.includes('Model Year Report')) {
+      tempHistory.push(tempHistory.shift())
+    }
+    return removeSequentialRecommendations(tempHistory)
   }
   const getTitle = (item) => {
     const type = item.isSupplementary ? startedAsSupplemental ? 'Supplementary Report' : 'Reassessment' : 'Model Year Report'
@@ -131,6 +156,10 @@ const ComplianceHistory = (props) => {
     let byUser = ''
     if (each.createUser) {
       byUser = ` by ${each.createUser.displayName} `
+    }
+
+    if (status === 'returned' && !user.isGovernment) {
+      byUser = ' by Government of B.C. '
     }
 
     if (status === 'assessed') {
@@ -244,7 +273,7 @@ const ComplianceHistory = (props) => {
                         }
                       }}
                     >
-                     {getTitle(item)}
+                      {getTitle(item)}
                     </button>
                   </h2>
                 </div>
@@ -256,7 +285,7 @@ const ComplianceHistory = (props) => {
                   <div className="card-body p-2">
                     <ul className="py-0 my-0 px-4">
                       {item.history &&
-                        getHistory(item.history).map((each, eachIndex) => (
+                        getHistory(item.history, getTitle(item)).map((each, eachIndex) => (
                           <li
                             id={`each-${eachIndex}`}
                             key={`each-${eachIndex}`}

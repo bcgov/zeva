@@ -19,8 +19,19 @@ from api.models.organization_deficits import OrganizationDeficits
 from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_statuses import ModelYearReportStatuses
 from api.models.sales_submission import SalesSubmission
+from api.models.model_year import ModelYear
+from api.models.model_year_report_credit_transaction import ModelYearReportCreditTransaction
 
 from api.services.credit_transfer import aggregate_credit_transfer_details
+from api.utilities.credit_transaction import (
+    get_reduction_number_of_credits,
+    get_reduction_timestamp,
+    get_reduction_transaction_type,
+    get_reduction_weight_class,
+    get_reduction_weight_class_code
+)
+from django.utils import timezone
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def aggregate_credit_balance_details(organization):
@@ -360,3 +371,67 @@ def get_map_of_credit_transactions(key_field, value_field):
     for credit_transaction in credit_transactions:
         result[getattr(credit_transaction, key_field)] = getattr(credit_transaction, value_field)
     return result
+
+
+def add_credit_reductions(
+    original_model_year_report, user, reductions
+):
+    organization = original_model_year_report.organization
+    model_year_of_original_model_year_report = original_model_year_report.model_year
+    transaction_timestamp = get_reduction_timestamp(model_year_of_original_model_year_report.name)
+    for reduction in reductions:
+        credit_class = CreditClass.objects.get(credit_class=reduction["credit_class"])
+        model_year = ModelYear.objects.get_by_natural_key(reduction["model_year"])
+        value = Decimal("{0:.2f}".format(reduction["value"]))
+        transaction = CreditTransaction.objects.create(
+            create_user=user.username, 
+            credit_class=credit_class,
+            debit_from=organization,
+            model_year=model_year,
+            number_of_credits=get_reduction_number_of_credits(),
+            credit_value=value,
+            transaction_timestamp=transaction_timestamp,
+            transaction_type=get_reduction_transaction_type(),
+            total_value=value,
+            update_user=user.username,
+            weight_class=get_reduction_weight_class()
+        )
+        ModelYearReportCreditTransaction.objects.create(
+            model_year_report_id=original_model_year_report.id,
+            credit_transaction_id=transaction.id
+        )
+
+
+def update_credit_reductions(
+    original_model_year_report, reductions
+):
+    organization = original_model_year_report.organization
+    model_year_of_original_model_year_report = original_model_year_report.model_year
+    transaction_timestamp = get_reduction_timestamp(model_year_of_original_model_year_report.name)
+    updated_reductions = []
+    ids_of_retrieved_reductions = []
+    for reduction in reductions:
+        credit_class = reduction["credit_class"]
+        model_year = reduction["model_year"]
+        old_value = Decimal("{0:.2f}".format(reduction["old_value"]))
+        new_value = Decimal("{0:.2f}".format(reduction["new_value"]))
+        original_reduction = (
+            CreditTransaction.objects.filter(debit_from=organization)
+            .filter(transaction_type=get_reduction_transaction_type())
+            .filter(transaction_timestamp=transaction_timestamp)
+            .filter(credit_class__credit_class=credit_class)
+            .filter(model_year__name=model_year)
+            .filter(number_of_credits=get_reduction_number_of_credits())
+            .filter(total_value=old_value)
+            .filter(weight_class__weight_class_code=get_reduction_weight_class_code())
+            .exclude(id__in=ids_of_retrieved_reductions)
+            .first()
+        )
+        if original_reduction is None:
+            raise ObjectDoesNotExist("corresponding credit reduction not found")
+        original_reduction.credit_value = new_value
+        original_reduction.total_value = new_value
+        original_reduction.update_timestamp = timezone.now()
+        updated_reductions.append(original_reduction)
+        ids_of_retrieved_reductions.append(original_reduction.id)
+    CreditTransaction.objects.bulk_update(updated_reductions, ["credit_value", "total_value", "update_timestamp"])

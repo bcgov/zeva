@@ -115,12 +115,13 @@ const ComplianceObligationContainer = (props) => {
         creditReductionSelection
       )
 
-      setDeductions(creditReduction.deductions)
-
-      setUpdatedBalances({
-        balances: creditReduction.balances,
-        deficits: creditReduction.deficits
-      })
+      if (supplierClass !== 'S') {
+        setDeductions(creditReduction.deductions)
+        setUpdatedBalances({
+          balances: creditReduction.balances,
+          deficits: creditReduction.deficits
+        })
+      }
     }
   }
 
@@ -139,21 +140,23 @@ const ComplianceObligationContainer = (props) => {
   }
 
   const handleUnspecifiedCreditReduction = (radioId) => {
-    setCreditReductionSelection(radioId)
+    if (supplierClass !== 'S') {
+      setCreditReductionSelection(radioId)
 
-    const creditReduction = calculateCreditReduction(
-      balances,
-      classAReductions,
-      unspecifiedReductions,
-      radioId
-    )
-
-    setDeductions(creditReduction.deductions)
-
-    setUpdatedBalances({
-      balances: creditReduction.balances,
-      deficits: creditReduction.deficits
-    })
+      const creditReduction = calculateCreditReduction(
+        balances,
+        classAReductions,
+        unspecifiedReductions,
+        radioId
+      )
+  
+      setDeductions(creditReduction.deductions)
+  
+      setUpdatedBalances({
+        balances: creditReduction.balances,
+        deficits: creditReduction.deficits
+      })
+    }
   }
 
   const handleSave = () => {
@@ -289,9 +292,13 @@ const ComplianceObligationContainer = (props) => {
               }
             })
 
-            setCreditReductionSelection(radioSelection)
-
             setSupplierClass(tempSupplierClass)
+
+            if (tempSupplierClass === 'S') {
+              setCreditReductionSelection('B')
+            } else {
+              setCreditReductionSelection(radioSelection)
+            }
 
             const currentReportYear = Number(modelYear.name)
             setReportYear(currentReportYear)
@@ -415,12 +422,18 @@ const ComplianceObligationContainer = (props) => {
               radioSelection
             )
 
-            setDeductions(creditReduction.deductions)
-
-            setUpdatedBalances({
-              balances: creditReduction.balances,
-              deficits: creditReduction.deficits
-            })
+            if (tempSupplierClass === 'S') {
+              setUpdatedBalances({
+                balances: tempBalances,
+                deficits: []
+              })
+            } else {
+              setDeductions(creditReduction.deductions)
+              setUpdatedBalances({
+                balances: creditReduction.balances,
+                deficits: creditReduction.deficits
+              })
+            }            
 
             axios
               .get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST)
