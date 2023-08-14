@@ -347,19 +347,21 @@ class ModelYearReportViewset(
                 if (
                     report.status.value not in ["ASSESSED", "REASSESSED"]
                     and not request.user.is_government
-                ):
+                ):  
                     exclude_supplemental_reports.append(report.id)
 
                 # If it's a reassessment report from a supplementary
-                # we don't need it as we've already added an entry to the
-                # history for the actual supplementary report created by
-                # the bceid user
+                # we need to remove the supplemental report from the history
+                # in order to display the reassessment because it is the most recent report
+                # in the process
                 supplemental_report = SupplementalReport.objects.filter(
                     supplemental_id=report.supplemental_id
                 ).first()
-
+    
                 if supplemental_report and supplemental_report.from_supplemental:
-                    exclude_supplemental_reports.append(report.id)
+                    for re_report in supplemental_reports:
+                        if not re_report.is_reassessment and not re_report.from_supplemental:
+                            exclude_supplemental_reports.append(re_report.id)
 
         supplemental_reports = supplemental_reports.exclude(
             id__in=exclude_supplemental_reports
