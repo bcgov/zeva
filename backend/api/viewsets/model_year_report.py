@@ -69,6 +69,7 @@ from api.serializers.model_year_report_noa import (
     SupplementalModelYearReportSerializer,
 )
 from api.models.organization import Organization
+from api.services.supplemental_report import get_ordered_list_of_supplemental_reports
 
 
 class ModelYearReportViewset(
@@ -1176,3 +1177,12 @@ class ModelYearReportViewset(
             data, context={"request": request}, many=True
         )
         return Response(serializer.data)
+    
+    @action(detail=True, methods=["get"])
+    def latest_supplemental_status(self, request, pk):
+        result = None
+        supplementals = get_ordered_list_of_supplemental_reports(pk, "status")
+        if supplementals:
+            result = supplementals[-1].status.value
+        return Response(result)
+

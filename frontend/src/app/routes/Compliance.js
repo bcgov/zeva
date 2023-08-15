@@ -28,7 +28,8 @@ const COMPLIANCE = {
   MAKES: `${API_BASE_PATH}/reports/:id/makes`,
   SUPPLEMENTAL_CREATE: `${API_BASE_PATH}/reports/:id/supplemental_save`,
   NOA_HISTORY: `${API_BASE_PATH}/reports/:id/noa_history`,
-  SUPPLEMENTAL_HISTORY: `${API_BASE_PATH}/reports/:id/supplemental_history`
+  SUPPLEMENTAL_HISTORY: `${API_BASE_PATH}/reports/:id/supplemental_history`,
+  LATEST_SUPPLEMENTAL_STATUS: `${API_BASE_PATH}/reports/:id/latest_supplemental_status`
 }
 
 export default COMPLIANCE
