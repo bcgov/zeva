@@ -339,29 +339,21 @@ class ModelYearReportViewset(
         exclude_supplemental_reports = []
         for report in supplemental_reports:
             if report.status.value in ["DRAFT", "RETURNED"] and (
-                request.user.is_government and not report.is_reassessment
-            ):
-                exclude_supplemental_reports.append(report.id)
+                    request.user.is_government and not report.is_reassessment
+                ):
+                    exclude_supplemental_reports.append(report.id)
 
             if report.is_reassessment:
                 if (
                     report.status.value not in ["ASSESSED", "REASSESSED"]
                     and not request.user.is_government
-                ):  
-                    exclude_supplemental_reports.append(report.id)
-
-                # If it's a reassessment report from a supplementary
-                # we need to remove the supplemental report from the history
-                # in order to display the reassessment because it is the most recent report
-                # in the process
-                supplemental_report = SupplementalReport.objects.filter(
-                    supplemental_id=report.supplemental_id
-                ).first()
-    
-                if supplemental_report and supplemental_report.from_supplemental:
-                    for re_report in supplemental_reports:
-                        if not re_report.is_reassessment and not re_report.from_supplemental:
-                            exclude_supplemental_reports.append(re_report.id)
+                ):
+                        exclude_supplemental_reports.append(report.id)
+            else:
+                if request.user.is_government and report.status.value == 'SUBMITTED':
+                    next_report = SupplementalReport.objects.filter(supplemental_id=report.id).exclude(status=ModelYearReportStatuses.DELETED).first()
+                    if next_report and next_report.is_reassessment:
+                        exclude_supplemental_reports.append(report.id)
 
         supplemental_reports = supplemental_reports.exclude(
             id__in=exclude_supplemental_reports
