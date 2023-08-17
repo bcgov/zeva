@@ -57,7 +57,7 @@ const TransferFormRow = (props) => {
           label="quantity of credits"
           id="quantityOfCredits"
           name="quantity"
-          defaultValue={rows[rowId].quantity || 0}
+          defaultValue={rows[rowId].quantity}
           handleInputChange={(event) => {
             handleRowInputChange(event, rowId)
           }}
@@ -71,7 +71,7 @@ const TransferFormRow = (props) => {
           label="value per credit"
           id="valuePerCredit"
           name="value"
-          defaultValue={rows[rowId].value || 0}
+          defaultValue={rows[rowId].value}
           handleInputChange={(event) => {
             handleRowInputChange(event, rowId)
           }}
