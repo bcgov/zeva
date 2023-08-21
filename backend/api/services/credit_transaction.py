@@ -259,16 +259,19 @@ def aggregate_transactions_by_submission(organization):
     return transactions
 
 
-def calculate_insufficient_credits(org_id):
+def calculate_insufficient_credits(org_id, credit_transfer_to_exclude=None):
     issued_balances = aggregate_credit_balance_details(org_id)
     issued_balances_list = list(issued_balances)
     pending_balance = aggregate_credit_transfer_details(org_id)
     for index, balance in enumerate(issued_balances_list):
-        pending = pending_balance.filter(
+        pending_qs  = pending_balance.filter(
             model_year_id=balance['model_year_id'],
             credit_class_id=balance['credit_class_id'],
             weight_class_id=balance['weight_class_id']
-            ).first()
+            )
+        if credit_transfer_to_exclude is not None:
+            pending_qs = pending_qs.exclude(credit_transfer=credit_transfer_to_exclude)
+        pending = pending_qs.first()
         if pending:
             total_balance = balance['total_value'] + pending['credit_value']
             update_list = {
