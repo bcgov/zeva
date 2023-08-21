@@ -157,26 +157,27 @@ class CreditTransferSerializer(
         request = self.context.get('request')
         if request.user.is_government:
             supplier_balance = calculate_insufficient_credits(
-                self.instance.debit_from)
+                self.instance.debit_from, self.instance)
             content = CreditTransferContent.objects.filter(
                 credit_transfer_id=self.instance.id
             )
-            content_count = 0
             for each in content:
-                content_count += 1
                 request_year = each.model_year.id
                 request_credit_class = each.credit_class.id
+                request_weight = each.weight_class.id
+                request_credit_value = each.credit_value
 
-                request_weight = 1
                 for record in supplier_balance:
                     if request_weight == record['weight_class_id']:
                         if request_year == record['model_year_id']:
                             if request_credit_class == record['credit_class_id']:
-                                content_count -= 1
-                                if record['total_value'] < 0:
-                                    has_credits = False
-                if content_count > 0:
+                                record['total_value'] = Decimal(record['total_value']) - request_credit_value
+            
+            for record in supplier_balance:
+                if record['total_value'] < 0:
                     has_credits = False
+                    break
+
         return has_credits
 
     def get_status(self, obj):
