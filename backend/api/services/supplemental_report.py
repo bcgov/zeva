@@ -22,6 +22,7 @@ def get_map_of_model_year_report_ids_to_latest_supplemental_ids(
 def get_ordered_list_of_supplemental_reports(model_year_report, *fields):
     reports = list(
         SupplementalReport.objects.filter(model_year_report=model_year_report)
+        .exclude(status=ModelYearReportStatuses.DELETED)
         .only("id", "supplemental_id", *fields)
         .order_by("create_timestamp")
     )
