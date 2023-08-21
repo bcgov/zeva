@@ -43,6 +43,13 @@ const ComplianceObligationDetailsPage = (props) => {
   } = props
 
   const [showModal, setShowModal] = useState(false)
+  const [buttonClicked, setButtonClicked] = useState(false)
+
+  const handleButtonClick = () => {
+    handleSave();
+    setButtonClicked(true);
+  };
+
   let disabledCheckboxes = ''
   let hoverText = ''
 
@@ -212,14 +219,14 @@ const ComplianceObligationDetailsPage = (props) => {
                   {!user.isGovernment && (
                     <Button
                       buttonType="save"
-                      disabled={
+                      disabled={ buttonClicked ||
                         ['SAVED', 'UNSAVED'].indexOf(
                           statuses.complianceObligation.status
                         ) < 0
                       }
                       optionalClassname="button primary"
                       action={() => {
-                        handleSave()
+                        handleButtonClick()
                       }}
                     />
                   )}
