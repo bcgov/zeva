@@ -39,6 +39,7 @@ from api.services.summary import parse_summary_serializer, \
     get_current_year_balance
 from api.models.organization_deficits import OrganizationDeficits
 from api.services.supplemental_report import get_latest_assessed_supplemental
+from api.services.model_year_report_ldv_sales import get_most_recent_ldv_sales
 
 
 class ModelYearReportComplianceObligationViewset(
@@ -162,6 +163,9 @@ class ModelYearReportComplianceObligationViewset(
     def details(self, request, *args, **kwargs):
         summary_param = request.GET.get('summary', None)
         summary = True if summary_param == "true" else None
+
+        most_recent_ldv_sales_param = request.GET.get("most_recent_ldv_sales", None)
+        most_recent_ldv_sales = True if most_recent_ldv_sales_param == "true" else False
 
         organization = request.user.organization
         id = kwargs.get('id')
@@ -526,7 +530,7 @@ class ModelYearReportComplianceObligationViewset(
             return Response({
                 'compliance_obligation': content + serializer.data,
                 'compliance_offset': compliance_offset,
-                'ldv_sales': report.ldv_sales
+                'ldv_sales': get_most_recent_ldv_sales(report) if most_recent_ldv_sales else report.ldv_sales
             })
         else:
             serializer = ModelYearReportComplianceObligationSnapshotSerializer(
@@ -535,5 +539,5 @@ class ModelYearReportComplianceObligationViewset(
         return Response({
             'compliance_obligation': serializer.data,
             'compliance_offset': compliance_offset,
-            'ldv_sales': report.ldv_sales
+            'ldv_sales': get_most_recent_ldv_sales(report) if most_recent_ldv_sales else report.ldv_sales
         })

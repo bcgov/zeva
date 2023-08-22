@@ -203,7 +203,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                       defaultValue={`${
                         title === 'Transferred Away' ||
                         title === 'Administrative Credit Reduction'
-                          ? '-'
+                          ? (Number(each.A) === 0 ? '' : '-')
                           : ''
                       }${getDefault(category, each, 'creditAValue')}`}
                       type="text"
@@ -246,7 +246,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                       defaultValue={`${
                         title === 'Transferred Away' ||
                         title === 'Administrative Credit Reduction'
-                          ? '-'
+                          ? (Number(each.B) === 0 ? '' : '-')
                           : ''
                       }${getDefault(category, each, 'creditBValue')}`}
                       type="text"

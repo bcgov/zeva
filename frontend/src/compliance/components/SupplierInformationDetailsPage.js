@@ -33,11 +33,17 @@ const SupplierInformationDetailsPage = (props) => {
     id
   } = props
   const [showModal, setShowModal] = useState(false)
+  const [buttonClicked, setButtonClicked] = useState(false)
   let disabledCheckboxes = propsDisabledCheckboxes
   let disabledInputs = false
   if (loading) {
     return <Loading />
   }
+
+  const handleButtonClick = (event) => {
+    handleSubmit(event);
+    setButtonClicked(true);
+  };
 
   const modal = (
     <Modal
@@ -345,14 +351,14 @@ const SupplierInformationDetailsPage = (props) => {
                   {!user.isGovernment && (
                     <Button
                       buttonType="save"
-                      disabled={
+                      disabled={ buttonClicked ||
                         ['SAVED', 'UNSAVED'].indexOf(
                           statuses.supplierInformation.status
                         ) < 0
                       }
                       optionalClassname="button primary"
                       action={(event) => {
-                        handleSubmit(event)
+                        handleButtonClick(event)
                       }}
                     />
                   )}

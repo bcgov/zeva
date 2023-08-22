@@ -69,6 +69,7 @@ from api.serializers.model_year_report_noa import (
     SupplementalModelYearReportSerializer,
 )
 from api.models.organization import Organization
+from api.services.supplemental_report import get_ordered_list_of_supplemental_reports
 
 
 class ModelYearReportViewset(
@@ -339,27 +340,21 @@ class ModelYearReportViewset(
         exclude_supplemental_reports = []
         for report in supplemental_reports:
             if report.status.value in ["DRAFT", "RETURNED"] and (
-                request.user.is_government and not report.is_reassessment
-            ):
-                exclude_supplemental_reports.append(report.id)
+                    request.user.is_government and not report.is_reassessment
+                ):
+                    exclude_supplemental_reports.append(report.id)
 
             if report.is_reassessment:
                 if (
                     report.status.value not in ["ASSESSED", "REASSESSED"]
                     and not request.user.is_government
                 ):
-                    exclude_supplemental_reports.append(report.id)
-
-                # If it's a reassessment report from a supplementary
-                # we don't need it as we've already added an entry to the
-                # history for the actual supplementary report created by
-                # the bceid user
-                supplemental_report = SupplementalReport.objects.filter(
-                    supplemental_id=report.supplemental_id
-                ).first()
-
-                if supplemental_report and supplemental_report.from_supplemental:
-                    exclude_supplemental_reports.append(report.id)
+                        exclude_supplemental_reports.append(report.id)
+            else:
+                if request.user.is_government and report.status.value == 'SUBMITTED':
+                    next_report = SupplementalReport.objects.filter(supplemental_id=report.id).exclude(status=ModelYearReportStatuses.DELETED).first()
+                    if next_report and next_report.is_reassessment:
+                        exclude_supplemental_reports.append(report.id)
 
         supplemental_reports = supplemental_reports.exclude(
             id__in=exclude_supplemental_reports
@@ -1176,3 +1171,12 @@ class ModelYearReportViewset(
             data, context={"request": request}, many=True
         )
         return Response(serializer.data)
+    
+    @action(detail=True, methods=["get"])
+    def latest_supplemental_status(self, request, pk):
+        result = None
+        supplementals = get_ordered_list_of_supplemental_reports(pk, "status")
+        if supplementals:
+            result = supplementals[-1].status.value
+        return Response(result)
+

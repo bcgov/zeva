@@ -322,56 +322,6 @@ const AssessmentDetailsPage = (props) => {
         <div className="col-12">
           <div id="compliance-obligation-page">
             <span className="float-right d-print-none">
-              {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
-                !user.isGovernment &&
-                statuses.assessment.status === 'ASSESSED' &&
-                ((!supplementaryId && supplementaryStatus === 'DRAFT') ||
-                  (supplementaryStatus === 'DRAFT' && createdByGov) ||
-                  supplementaryStatus === 'DELETED' ||
-                  supplementaryStatus === 'ASSESSED') && (
-                  <Button
-                    buttonTooltip={reassessmentTooltip}
-                    buttonType="submit"
-                    optionalClassname="btn button primary"
-                    optionalText="Create Supplementary Report"
-                    disabled={reassessmentExists}
-                    action={() => {
-                      history.push(
-                        `${ROUTES_SUPPLEMENTARY.CREATE.replace(
-                          /:id/g,
-                          id
-                        )}`
-                      )
-                    }}
-                  />
-              )}
-
-              {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
-                user.isGovernment &&
-                user.hasPermission('RECOMMEND_COMPLIANCE_REPORT') &&
-                statuses.assessment.status === 'ASSESSED' &&
-                ((!supplementaryId && supplementaryStatus === 'DRAFT') ||
-                  (supplementaryStatus === 'DRAFT' && !createdByGov) ||
-                  supplementaryStatus === 'DELETED' ||
-                  supplementaryStatus === 'ASSESSED') && (
-                  <>
-                    <button
-                      className="btn button primary"
-                      onClick={() => {
-                        history.push(
-                          `${ROUTES_SUPPLEMENTARY.REASSESSMENT.replace(
-                            /:id/g,
-                            id
-                          )}`
-                        )
-                      }}
-                      type="button"
-                    >
-                      Create Reassessment Report
-                    </button>
-                  </>
-              )}
-
               {analystAction &&
                 ['RETURNED', 'SUBMITTED', 'UNSAVED'].indexOf(
                   statuses.assessment.status
@@ -388,14 +338,6 @@ const AssessmentDetailsPage = (props) => {
                     Edit
                   </button>
               )}
-              <Button
-                buttonType="button"
-                optionalClassname="ml-2 mr-2 button btn"
-                optionalText="Print Page"
-                action={() => {
-                  window.print()
-                }}
-              />
             </span>
 
             <NoticeOfAssessmentSection
