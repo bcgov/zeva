@@ -25,7 +25,7 @@ const CreditRequestDetailsContainer = (props) => {
   const [loading, setLoading] = useState(true)
   const [nonValidated, setNonValidated] = useState([])
   const [ICBCUploadDate, setICBCUploadDate] = useState(null)
-  const [issueAsMY, setIssueAsMY] = useState(false)
+  const [issueAsMY, setIssueAsMY] = useState(true)
 
   const refreshDetails = () => {
     axios

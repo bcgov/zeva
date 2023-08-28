@@ -1,0 +1,35 @@
+.myr-alert{
+    display: flex;
+    flex-direction: row;
+    padding: 1rem .5rem;
+    border: 1px solid $border-grey;
+    background-color: #f8f0f0;
+    margin: 0.5rem 0;
+    span {
+      margin-top: auto;
+      margin-bottom: auto;
+      svg {
+        margin-left: 1rem;
+        margin-right: 1rem;
+      }
+    }
+}
+
+.myr-alert-header{
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.myr-alert-wrapper{
+    display: flex;
+    padding-top: 0.5rem;
+}
+
+.myr-column-wrapper{
+    display: flex;
+    flex-direction: column;
+}
+
+#analyst-checkbox{
+    margin-right: 1rem;
+}
