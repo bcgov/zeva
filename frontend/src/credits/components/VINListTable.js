@@ -236,7 +236,7 @@ const VINListTable = (props) => {
                 onChange={(event) => {
                   handleCheckboxClick(event)
                 }}
-                disabled={readOnly}
+                disabled={readOnly || row.warnings.includes('WRONG_MODEL_YEAR')}
                 type="checkbox"
                 value={row.id}
               />
@@ -344,7 +344,7 @@ const VINListTable = (props) => {
         if (rowInfo) {
           const warnings = rowInfo.row.warning.split(', ')
 
-          if (warnings.some((each) => ['21', '31', '51'].includes(each))) {
+          if (warnings.some((each) => ['21', '31', '51', '71'].includes(each))) {
             return {
               className: 'icbc-danger'
             }
@@ -353,7 +353,7 @@ const VINListTable = (props) => {
           if (warnings.some((each) => ['11', '41', '61'].includes(each))) {
             let className = 'icbc-warning'
 
-            if (rowInfo.original.warnings.includes('INVALID_DATE')) {
+            if (rowInfo.original.warnings.includes('INVALID_DATE', 'WRONG_MODEL_YEAR')) {
               className += ' warning-sales-date'
             }
 
