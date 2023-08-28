@@ -45,32 +45,11 @@ const AnalystRecommendationHeader = (props) => {
                 </>
             )}
             <div className="row mt-2">
-              <div className="col-1">
-                <input
-                  id="analyst-checkbox"
-                  data-testid="analyst-checkbox"
-                  name="confirmations"
-                  onChange={(event) => {
-                    handleCheckboxClick(event)
-                  }}
-                  type="checkbox"
-                  defaultChecked={issueAsMY}
-                  disabled={
-                    !!(user.hasPermission('SIGN_SALES') &&
-                    [
-                      'RECOMMEND_APPROVAL',
-                      'RECOMMEND_REJECTION',
-                      'REJECTED',
-                      'VALIDATED'
-                    ].indexOf(validationStatus) >= 0)
-                  }
-                />
-              </div>
               <div className="col-9">
                 <ul className="pl-0" style={{ listStyle: 'none' }}>
                   <li className="font-italic text-blue">
                     <label className="pl-0 text-blue">
-                      Issue as Sept 30 as part of a Model Year Report{' '}
+                      View sales not eligible for credits or overridden by the analyst from system default{' '}
                     </label>
                   </li>
                 </ul>

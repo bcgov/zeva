@@ -2,6 +2,8 @@ import json
 import uuid
 
 from datetime import datetime
+from django.db.models import FloatField
+from django.db.models.functions import Cast
 from django.core.paginator import Paginator
 from django.core.exceptions import ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
@@ -29,6 +31,7 @@ from api.serializers.sales_submission import (
     SalesSubmissionListSerializer,
     SalesSubmissionSaveSerializer,
 )
+from api.models.model_year_report import ModelYearReport
 from api.serializers.sales_submission_content import SalesSubmissionContentSerializer
 from api.services.credit_transaction import award_credits
 from api.services.sales_submission import check_validation_status_change
@@ -377,6 +380,7 @@ class CreditRequestViewset(
                 mismatch_vins = Q(xls_vin__in=[])
                 invalid_date = Q(xls_vin__in=[])
                 overridden_vins = Q(xls_vin__in=[])
+                wrong_model_year = Q(xls_vin__in=[])
 
                 if submission_filters['warning'] == '1' or \
                         '3' in submission_filters['warning']:
@@ -436,6 +440,26 @@ class CreditRequestViewset(
                             AND submission_id = %s",
                         (pk,)
                     ))
+                
+                if submission_filters['warning'] == '1' or \
+                    '71' in submission_filters['warning']:
+
+                    makes = list(submission_content.values_list('xls_make', flat=True).distinct())
+                    makes_upper = [make.upper() for make in makes]
+
+                    subquery = Subquery(
+                        ModelYearReport.objects
+                        .filter(
+                            validation_status__in=['SUBMITTED', 'RECOMMENDED', 'RETURNED'],
+                            organization__short_name__in=makes_upper
+                        )
+                        .annotate(conflict_year=Cast('model_year__name', FloatField()))
+                        .values('conflict_year')
+                    )
+
+                    wrong_model_year = submission_content.filter(
+                        xls_model_year__in=subquery
+                    ).values_list('id', flat=True)
 
                 if 'include_overrides' in submission_filters and \
                         submission_filters['include_overrides']:
@@ -448,7 +472,8 @@ class CreditRequestViewset(
                     sale_date |
                     invalid_date |
                     mismatch_vins |
-                    overridden_vins
+                    overridden_vins |
+                    Q(xls_vin__in=wrong_model_year)
                 )
 
             if 'model_year.description' in submission_filters:
@@ -537,6 +562,8 @@ class CreditRequestViewset(
                 newErrorList.append('EXPIRED_REGISTRATION_DATE')
             if error == 'INVALID_DATE':
                 newErrorList.append('INVALID_DATE')
+            if error == "WRONG_MODEL_YEAR":
+                newErrorList.append('WRONG_MODEL_YEAR')
             else:
                 pass
         errorKey, errorCounts = np.unique(newErrorList, return_counts=True)
