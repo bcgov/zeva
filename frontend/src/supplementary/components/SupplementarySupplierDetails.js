@@ -20,6 +20,7 @@ import CONFIG from '../../app/config'
 import SupplementaryTab from './SupplementaryTab'
 import ReactTooltip from 'react-tooltip'
 import ReassessmentDetailsPage from './ReassessmentDetailsPage'
+import CreateReassessmentHeader from '../../compliance/components/CreateReassessmentHeader'
 
 const SupplementarySupplierDetails = (props) => {
   const {
@@ -182,6 +183,10 @@ const SupplementarySupplierDetails = (props) => {
 
   return (
     <div id="supplementary" className="page">
+        <CreateReassessmentHeader 
+          user={user}
+          id={id}
+        />
         <ComplianceHistory
           activePage="supplementary"
           id={id}
@@ -200,14 +205,6 @@ const SupplementarySupplierDetails = (props) => {
       {renderTabs()}
 
       <div className="supplementary-form mt-2">
-        <Button
-          buttonType="button"
-          optionalClassname="ml-2 mr-2 button btn float-right d-print-none"
-          optionalText="Print Page"
-          action={() => {
-            window.print()
-          }}
-        />
         <div>
           {isReassessment &&
             (currentStatus === 'ASSESSED' || (isReassessment &&

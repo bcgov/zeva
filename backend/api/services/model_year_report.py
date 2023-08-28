@@ -423,3 +423,6 @@ def check_validation_status_change(old_status, updated_model_year_report):
             if old_status != ModelYearReportStatuses.DRAFT and new_status == ModelYearReportStatuses.DRAFT:
                 report_returned_to_supplier = True
             notifications_model_year_report(updated_model_year_report, report_returned_to_supplier)
+
+def get_model_year_report(model_year_report_id, *fields):
+    return ModelYearReport.objects.filter(id=model_year_report_id).only(*fields).first()

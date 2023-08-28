@@ -2,7 +2,6 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import parse from 'html-react-parser'
-import CONFIG from '../../app/config'
 import Button from '../../app/components/Button'
 import Loading from '../../app/components/Loading'
 import history from '../../app/History'
@@ -15,11 +14,11 @@ import formatNumeric from '../../app/utilities/formatNumeric'
 import ComplianceObligationReductionOffsetTable from './ComplianceObligationReductionOffsetTable'
 import ComplianceObligationTableCreditsIssued from './ComplianceObligationTableCreditsIssued'
 import CommentInput from '../../app/components/CommentInput'
-import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport'
 import ComplianceHistory from './ComplianceHistory'
 import AssessmentEditableCommentList from './AssessmentEditableCommentList'
 import AssessmentEditableCommentInput from './AssessmentEditableCommentInput'
 import NoticeOfAssessmentSection from './NoticeOfAssessmentSection'
+import CreateReassessmentHeader from './CreateReassessmentHeader'
 
 const AssessmentDetailsPage = (props) => {
   const {
@@ -211,6 +210,10 @@ const AssessmentDetailsPage = (props) => {
 
   return (
     <div id="assessment-details" className="page">
+      <CreateReassessmentHeader 
+        user={user}
+        id={id}
+      />
       <ComplianceHistory
         user={user}
         id={id}

@@ -42,7 +42,7 @@ from api.services.model_year_report import (
     get_model_year_report_statuses,
     adjust_credits, adjust_credits_reassessment
 )
-from api.services.model_year_report import check_validation_status_change
+from api.services.model_year_report import check_validation_status_change, get_model_year_report
 from api.serializers.organization_ldv_sales import OrganizationLDVSalesSerializer
 from api.serializers.model_year_report import (
     ModelYearReportSerializer,
@@ -1173,10 +1173,16 @@ class ModelYearReportViewset(
         return Response(serializer.data)
     
     @action(detail=True, methods=["get"])
-    def latest_supplemental_status(self, request, pk):
-        result = None
-        supplementals = get_ordered_list_of_supplemental_reports(pk, "status")
-        if supplementals:
-            result = supplementals[-1].status.value
+    def statuses_allow_reassessment(self, request, pk):
+        result = False
+        model_year_report = get_model_year_report(pk, "validation_status")
+        if model_year_report.validation_status in [ModelYearReportStatuses.ASSESSED, ModelYearReportStatuses.REASSESSED]:
+            supplementals = get_ordered_list_of_supplemental_reports(pk, "status")
+            if supplementals:
+                latest_supplemental_status = supplementals[-1].status
+                if latest_supplemental_status in [ModelYearReportStatuses.ASSESSED, ModelYearReportStatuses.REASSESSED]:
+                    result = True
+            else:
+                result = True
         return Response(result)
 
