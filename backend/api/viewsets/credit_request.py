@@ -2,6 +2,8 @@ import json
 import uuid
 
 from datetime import datetime
+from django.db.models import FloatField
+from django.db.models.functions import Cast
 from django.core.paginator import Paginator
 from django.core.exceptions import ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
@@ -30,6 +32,7 @@ from api.serializers.sales_submission import (
     SalesSubmissionSaveSerializer,
 )
 from api.serializers.sales_submission_content import SalesSubmissionContentSerializer, SalesSubmissionContentBulkSerializer
+from api.models.model_year_report import ModelYearReport
 from api.services.credit_transaction import award_credits
 from api.services.sales_submission import check_validation_status_change
 from api.services.minio import minio_put_object
@@ -514,6 +517,8 @@ class CreditRequestViewset(
                 newErrorList.append('EXPIRED_REGISTRATION_DATE')
             if error == 'INVALID_DATE':
                 newErrorList.append('INVALID_DATE')
+            if error == "WRONG_MODEL_YEAR":
+                newErrorList.append('WRONG_MODEL_YEAR')
             else:
                 pass
         errorKey, errorCounts = np.unique(newErrorList, return_counts=True)
