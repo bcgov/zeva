@@ -24,7 +24,9 @@ const AnalystRecommendationHeader = (props) => {
               'RECOMMEND_APPROVAL',
               'RECOMMEND_REJECTION',
               'REJECTED',
-              'VALIDATED'
+              'VALIDATED',
+              'SUBMITTED',
+              'CHECKED'
             ].indexOf(validationStatus) >= 0 &&
               (user.hasPermission('RECOMMEND_SALES') ||
                 user.hasPermission('SIGN_SALES')) && (
@@ -37,24 +39,12 @@ const AnalystRecommendationHeader = (props) => {
                           id
                         )}
                       >
-                        View the credit application detail as processed by the
-                        analyst.
+                        View sales not eligible for credits or overridden by the analyst from system default
                       </Link>
                     </li>
                   </ul>
                 </>
             )}
-            <div className="row mt-2">
-              <div className="col-9">
-                <ul className="pl-0" style={{ listStyle: 'none' }}>
-                  <li className="font-italic text-blue">
-                    <label className="pl-0 text-blue">
-                      View sales not eligible for credits or overridden by the analyst from system default{' '}
-                    </label>
-                  </li>
-                </ul>
-              </div>
-            </div>
           </>
       )}
     </div>
