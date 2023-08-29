@@ -14,11 +14,12 @@ import ROUTES_CREDIT_AGREEMENTS from '../../app/routes/CreditAgreements'
 import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers'
 import ROUTES_CREDITS from '../../app/routes/Credits'
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
+import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport'
 import { accordionItemClickHandler, Accordion } from '../../app/components/Accordion'
 import getComplianceYear from '../../app/utilities/getComplianceYear'
 
 const CreditTransactionListTable = (props) => {
-  const { items, reports, availableComplianceYears, handleGetCreditTransactions } = props
+  const { assessedSupplementalsMap, items, reports, availableComplianceYears, handleGetCreditTransactions } = props
   const [expandedComplianceYears, setExpandedComplianceYears] = useState(availableComplianceYears.length > 0 ? [availableComplianceYears[0]] : [])
 
   const translateTransactionType = (item) => {
@@ -326,13 +327,26 @@ const CreditTransactionListTable = (props) => {
                     )
                     break
                   case 'reduction':
-                    history.push(
-                      ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(
-                        /:id/g,
-                        item.foreignKey
-                      ),
-                      { href: ROUTES_CREDITS.LIST }
-                    )
+                    if (assessedSupplementalsMap[item.foreignKey]) {
+                      history.push(
+                        ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
+                          /:id/g,
+                          item.foreignKey
+                        ).replace(
+                          /:supplementaryId/g,
+                          assessedSupplementalsMap[item.foreignKey]
+                        ),
+                        { href: ROUTES_CREDITS.LIST }
+                      )
+                    } else {
+                      history.push(
+                        ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(
+                          /:id/g,
+                          item.foreignKey
+                        ),
+                        { href: ROUTES_CREDITS.LIST }
+                      )
+                    }
                     break
                   case 'credit adjustment reduction':
                     history.push(

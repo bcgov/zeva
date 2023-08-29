@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import formatNumeric from '../utilities/formatNumeric'
 import CONFIG from '../config'
 import CustomPropTypes from '../utilities/props'
 import ROUTES_CREDITS from '../routes/Credits'
@@ -10,6 +9,7 @@ import ROUTES_ORGANIZATIONS from '../routes/Organizations'
 import ROUTES_ROLES from '../routes/Roles'
 import ROUTES_VEHICLES from '../routes/Vehicles'
 import ROUTES_COMPLIANCE from '../routes/Compliance'
+import CreditBalanceHeader from './CreditBalanceHeader'
 
 class Navbar extends Component {
   constructor (props) {
@@ -79,12 +79,9 @@ class Navbar extends Component {
                   {user.organization ? user.organization.name : ''}
                 </h5>
                 {!user.isGovernment && user.organization && (
-                  <Link
-                    className="credit-balance d-print-none"
-                    to={ROUTES_CREDITS.LIST}
-                  >
-                    See Credit Balance &gt;
-                  </Link>
+                  <CreditBalanceHeader 
+                    organization={user.organization}
+                  />
                 )}
               </div>
             </div>

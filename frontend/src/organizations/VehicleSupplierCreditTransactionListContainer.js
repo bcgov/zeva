@@ -14,7 +14,7 @@ import ROUTES_ORGANIZATIONS from '../app/routes/Organizations'
 import ROUTES_COMPLIANCE from '../app/routes/Compliance'
 import VehicleSupplierTabs from '../app/components/VehicleSupplierTabs'
 import VehicleSupplierSalesListPage from './components/VehicleSupplierSalesListPage'
-import { getMostRecentModelYearReportId, getModelYearReportCreditBalances } from '../app/utilities/getModelYearReportCreditBalances'
+import { getMostRecentModelYearReportBalances, getPostRecentModelYearReportBalances } from '../app/utilities/getModelYearReportCreditBalances'
 
 const VehicleSupplierCreditTransactionListContainer = (props) => {
   const { id } = useParams()
@@ -35,11 +35,9 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
 
   const refreshDetails = () => {
     setLoading(true)
-    const balancePromise = axios
-      .get(ROUTES_ORGANIZATIONS.RECENT_SUPPLIER_BALANCE.replace(/:id/g, id))
-      .then((response) => {
-        setBalances(response.data)
-      })
+    const balancePromise = getPostRecentModelYearReportBalances(id).then((balances) => {
+      setBalances(balances)
+    })
 
     const complianceYearsPromise = axios.get(ROUTES_ORGANIZATIONS.COMPLIANCE_YEARS.replace(/:id/g, id)).then((response) => {
       const complianceYears = response.data
@@ -76,10 +74,8 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
         setAssessedSupplementalsMap(response.data)
       })
 
-    const assessedBalancesPromise = getMostRecentModelYearReportId(id).then((modelYearReportId) => {
-      return getModelYearReportCreditBalances(modelYearReportId)
-    }).then((modelYearReportBalances) => {
-      setAssessedBalances(modelYearReportBalances)
+    const assessedBalancesPromise = getMostRecentModelYearReportBalances(id).then((assessedBalances) => {
+      setAssessedBalances(assessedBalances)
     })
 
     Promise.all([
