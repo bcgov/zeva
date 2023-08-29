@@ -2,8 +2,8 @@ import json
 import uuid
 
 from datetime import datetime
-from django.db.models import FloatField
-from django.db.models.functions import Cast
+from django.db.models.functions import Upper
+from django.db.models import F
 from django.core.paginator import Paginator
 from django.core.exceptions import ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
