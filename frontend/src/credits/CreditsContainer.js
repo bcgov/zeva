@@ -8,7 +8,7 @@ import ROUTES_CREDITS from '../app/routes/Credits'
 import ROUTES_COMPLIANCE from '../app/routes/Compliance'
 import ROUTES_ORGANIZATION from '../app/routes/Organizations'
 import CustomPropTypes from '../app/utilities/props'
-import { getMostRecentModelYearReportId, getModelYearReportCreditBalances } from '../app/utilities/getModelYearReportCreditBalances'
+import { getMostRecentModelYearReportBalances, getPostRecentModelYearReportBalances } from '../app/utilities/getModelYearReportCreditBalances'
 
 const CreditsContainer = (props) => {
   const [loading, setLoading] = useState(true)
@@ -26,11 +26,9 @@ const CreditsContainer = (props) => {
 
   const refreshList = (showLoading) => {
     setLoading(showLoading)
-    const balancePromise = axios
-      .get(ROUTES_CREDITS.RECENT_CREDIT_BALANCES)
-      .then((response) => {
-        setBalances(response.data)
-      })
+    const balancePromise = getPostRecentModelYearReportBalances().then((balances) => {
+      setBalances(balances)
+    })
 
     const complianceYearsPromise = axios.get(ROUTES_CREDITS.COMPLIANCE_YEARS).then((response) => {
       const complianceYears = response.data
@@ -61,10 +59,8 @@ const CreditsContainer = (props) => {
         setAssessedSupplementalsMap(response.data)
       })
 
-    const assessedBalancesPromise = getMostRecentModelYearReportId(user.organization.id).then((modelYearReportId) => {
-      return getModelYearReportCreditBalances(modelYearReportId)
-    }).then((modelYearReportBalances) => {
-      setAssessedBalances(modelYearReportBalances)
+    const assessedBalancesPromise = getMostRecentModelYearReportBalances(user.organization.id).then((assessedBalances) => {
+      setAssessedBalances(assessedBalances)
     })
 
     Promise.all([complianceYearsPromise, balancePromise, reportsPromise, assessedBalancesPromise, assessedSupplementalsMapPromise]).then(() => {

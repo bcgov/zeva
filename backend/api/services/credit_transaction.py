@@ -448,13 +448,6 @@ def update_credit_reductions(
         updated_reductions.append(original_reduction)
         ids_of_retrieved_reductions.append(original_reduction.id)
     CreditTransaction.objects.bulk_update(updated_reductions, ["credit_value", "total_value", "update_timestamp"])
-
-def get_current_compliance_period_split_date():
-    now = timezone.now()
-    year = now.year
-    if now.month < 10:
-        year = year -1
-    return timezone.make_aware(datetime(year, 10, 1))
     
 def get_compliance_period_bounds(compliance_year):
     compliance_year_int = int(compliance_year)

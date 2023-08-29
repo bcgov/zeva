@@ -1,6 +1,7 @@
 import axios from 'axios'
 import ROUTES_COMPLIANCE from '../routes/Compliance'
-import ROUTES_ORGANIZATION from '../routes/Organizations'
+import ROUTES_ORGANIZATIONS from '../routes/Organizations'
+import ROUTES_CREDITS from '../routes/Credits'
 import getComplianceObligationDetails from './getComplianceObligationDetails'
 import getClassAReduction from './getClassAReduction'
 import getTotalReduction from './getTotalReduction'
@@ -8,7 +9,7 @@ import getUnspecifiedClassReduction from './getUnspecifiedClassReduction'
 import calculateCreditReduction from './calculateCreditReduction'
 
 const getMostRecentModelYearReportId = (organizationId) => {
-  return axios.get(ROUTES_ORGANIZATION.MOST_RECENT_MYR_ID.replace(/:id/g, organizationId)).then((response) => {
+  return axios.get(ROUTES_ORGANIZATIONS.MOST_RECENT_MYR_ID.replace(/:id/g, organizationId)).then((response) => {
     return response.data
   })
 }
@@ -107,4 +108,23 @@ const getModelYearReportCreditBalances = (modelYearReportId) => {
   }))
 }
 
-export { getMostRecentModelYearReportId, getModelYearReportCreditBalances }
+const getMostRecentModelYearReportBalances = (organizationId) => {
+  return getMostRecentModelYearReportId(organizationId).then((modelYearReportId) => {
+    return getModelYearReportCreditBalances(modelYearReportId)
+  }).then((modelYearReportBalances) => {
+    return modelYearReportBalances
+  })
+}
+
+const getPostRecentModelYearReportBalances = (organizationId) => {
+  if (organizationId) {
+    return axios.get(ROUTES_ORGANIZATIONS.RECENT_SUPPLIER_BALANCE.replace(/:id/g, organizationId)).then((response) => {
+      return response.data
+    })
+  }
+  return axios.get(ROUTES_CREDITS.RECENT_CREDIT_BALANCES).then((response) => {
+    return response.data
+  })
+}
+
+export { getMostRecentModelYearReportId, getModelYearReportCreditBalances, getMostRecentModelYearReportBalances, getPostRecentModelYearReportBalances }
