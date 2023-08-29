@@ -5,7 +5,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 
 const ModelYearReportWarning = (props) => {
     const { submission, user, handleCheckboxClick, conflictingReport, issueAsMY} = props
-    const { id, validationStatus } = submission
+    const { validationStatus } = submission
 
     return (
         <>
