@@ -17,7 +17,6 @@ const ORGANIZATIONS = {
   USERS: `${API_BASE_PATH}/:id/users`,
   VEHICLES: `${API_BASE_PATH}/:id/vehicles`,
   ASSESSED_SUPPLEMENTALS_MAP: `${API_BASE_PATH}/:id/assessed_supplementals_map`,
-  VEHICLES: `${API_BASE_PATH}/:id/vehicles`, 
   MOST_RECENT_MYR_ID: `${API_BASE_PATH}/:id/most_recent_myr_id`,
   COMPLIANCE_YEARS: `${API_BASE_PATH}/:id/compliance_years`,
   LIST_BY_YEAR: `${API_BASE_PATH}/:id/list_by_year?year=:year`
