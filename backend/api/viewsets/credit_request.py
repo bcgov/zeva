@@ -2,8 +2,8 @@ import json
 import uuid
 
 from datetime import datetime
-from django.db.models import FloatField
-from django.db.models.functions import Cast
+from django.db.models.functions import Upper
+from django.db.models import F
 from django.core.paginator import Paginator
 from django.core.exceptions import ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
@@ -447,23 +447,23 @@ class CreditRequestViewset(
                     makes = list(submission_content.values_list('xls_make', flat=True).distinct())
                     makes_upper = [make.upper() for make in makes]
 
-                    subquery = Subquery(
-                        ModelYearReport.objects
-                        .filter(
-                            validation_status__in=['SUBMITTED', 'RECOMMENDED', 'RETURNED'],
-                            organization__short_name__in=makes_upper
+                    reports = ModelYearReport.objects.annotate(
+                        upper_short_name=Upper(F('organization__short_name'))
+                    ).filter(
+                        validation_status__in=['SUBMITTED', 'RECOMMENDED', 'RETURNED'],
+                            upper_short_name__in=makes_upper
                         )
-                        .annotate(conflict_year=Cast('model_year__name', FloatField()))
-                        .values('conflict_year')
-                    )
+                    
+                    if reports:
+                        subquery = reports.values('model_year__name')
+                        wrong_model_year = ~Q(xls_model_year__in=Subquery(subquery))
 
-                    wrong_model_year = submission_content.filter(
-                        xls_model_year__in=subquery
-                    ).values_list('id', flat=True)
+
 
                 if 'include_overrides' in submission_filters and \
                         submission_filters['include_overrides']:
                     overridden_vins = Q(reason__isnull=False)
+
 
                 submission_content = submission_content.filter(
                     Q(xls_vin__in=duplicate_vins) |
@@ -473,7 +473,7 @@ class CreditRequestViewset(
                     invalid_date |
                     mismatch_vins |
                     overridden_vins |
-                    Q(xls_vin__in=wrong_model_year)
+                    wrong_model_year
                 )
 
             if 'model_year.description' in submission_filters:
