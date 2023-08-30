@@ -478,4 +478,7 @@ def delete_model_year_report(model_year_report):
         model_year_report=model_year_report
     ).delete()
     model_year_report.delete()
+<<<<<<< HEAD
 >>>>>>> a8b80b2c (Tracking pull request to merge release-1.51.0 to master (#1951))
+=======
+>>>>>>> d51295ab (feat: zeva-1755 - create reassessment header (#1933))
