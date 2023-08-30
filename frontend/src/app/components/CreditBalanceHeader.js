@@ -23,12 +23,10 @@ const CreditBalanceHeader = (props) => {
 
   const { deficitAExists, deficitBExists, totalCredits } = calculateCreditBalance(balances, assessedBalances)
 
-  if (loading) {
-    return null
-  }
-
   let content
-  if (deficitAExists || deficitBExists) {
+  if (loading) {
+    content = 'Loading Credit Balance...'
+  } else if (deficitAExists || deficitBExists) {
     content = 'Deficit'
   } else {
     content = `Credit Balance: A-
