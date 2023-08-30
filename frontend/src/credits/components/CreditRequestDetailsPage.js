@@ -53,7 +53,7 @@ const CreditRequestDetailsPage = (props) => {
     .then(response => {
       setReports(response.data)
 
-      if(response.data.some(report => ['SUBMITTED', 'RETURNED', 'RECOMMENDED'].includes(report.validationStatus)) && !showWarning){
+      if(response.data.some(report => ['SUBMITTED', 'RETURNED', 'RECOMMENDED'].includes(report.validationStatus)) || submission.partOfModelYearReport && !showWarning){
         setShowWarning(true)
       }
     })
@@ -372,7 +372,9 @@ const CreditRequestDetailsPage = (props) => {
                 submissionCommentsIdirOnly.length > 0) ||
                 (submissionCommentsToSupplier &&
                   submissionCommentsToSupplier.length > 0) ||
-                user.isGovernment) && (
+                (user.isGovernment && 
+                submissionCommentsIdirOnly &&
+                submissionCommentsIdirOnly.length > 0)) && (
                 <div className="comment-box mt-2">
                   {submissionCommentsIdirOnly &&
                     submissionCommentsIdirOnly.length > 0 &&
