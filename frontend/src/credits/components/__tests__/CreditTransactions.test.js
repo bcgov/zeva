@@ -28,7 +28,7 @@ const data = [
   }
 ]
 
-const balance = [
+const balances = [
   {
     creditValue: '37.82',
     creditClass: { creditClass: 'A' },
@@ -45,6 +45,10 @@ const balance = [
   }
 ]
 
+const assessedBalances = {}
+
+const availableComplianceYears = []
+
 const user = {
   organization: {
     balance: {
@@ -57,7 +61,7 @@ const user = {
 it('renders without crashing', () => {
   render(
     <Router>
-      <CreditTransactions items={data} user={user} balances={balance} reports={[]} />
+      <CreditTransactions items={data} user={user} balances={balances} assessedBalances={assessedBalances} reports={[]} availableComplianceYears={availableComplianceYears} />
     </Router>
   )
 })

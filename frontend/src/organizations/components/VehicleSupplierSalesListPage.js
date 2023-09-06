@@ -8,7 +8,7 @@ import CreditTransactions from '../../credits/components/CreditTransactions'
 import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations'
 
 const VehicleSupplierSalesListPage = (props) => {
-  const { assessedSupplementalsMap, loading, locationState, user, items, reports, balances } = props
+  const { assessedSupplementalsMap, availableComplianceYears, loading, locationState, user, items, handleGetCreditTransactions, reports, balances, assessedBalances } = props
 
   if (loading) {
     return <Loading />
@@ -20,9 +20,12 @@ const VehicleSupplierSalesListPage = (props) => {
         <div className="col-sm-12">
           <CreditTransactions
             assessedSupplementalsMap={assessedSupplementalsMap}
+            availableComplianceYears={availableComplianceYears}
             balances={balances}
+            assessedBalances={assessedBalances}
             reports={reports}
             items={items}
+            handleGetCreditTransactions={handleGetCreditTransactions}
             user={user}
           />
         </div>
@@ -53,11 +56,14 @@ VehicleSupplierSalesListPage.defaultProps = {
 VehicleSupplierSalesListPage.propTypes = {
   assessedSupplementalsMap: PropTypes.shape().isRequired,
   balances: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  availableComplianceYears: PropTypes.arrayOf(PropTypes.number).isRequired,
+  assessedBalances: PropTypes.shape({}).isRequired,
   items: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   loading: PropTypes.bool.isRequired,
   locationState: PropTypes.arrayOf(PropTypes.shape()),
   reports: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  user: CustomPropTypes.user.isRequired
+  user: CustomPropTypes.user.isRequired,
+  handleGetCreditTransactions: PropTypes.func
 }
 
 export default VehicleSupplierSalesListPage

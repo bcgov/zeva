@@ -8,24 +8,42 @@ import ROUTES_CREDITS from '../app/routes/Credits'
 import ROUTES_COMPLIANCE from '../app/routes/Compliance'
 import ROUTES_ORGANIZATION from '../app/routes/Organizations'
 import CustomPropTypes from '../app/utilities/props'
+import { getMostRecentModelYearReportBalances, getPostRecentModelYearReportBalances } from '../app/utilities/getModelYearReportCreditBalances'
 
 const CreditsContainer = (props) => {
   const [loading, setLoading] = useState(true)
   const [balances, setBalances] = useState([])
+  const [availableComplianceYears, setAvailableComplianceYears] = useState([])
   const [creditTransactions, setCreditTransactions] = useState([])
   const [reports, setReports] = useState([])
   const [assessedSupplementalsMap, setAssessedSupplementalsMap] = useState({})
+  const [assessedBalances, setAssessedBalances] = useState({})
   const { user } = props
+
+  const getCreditTransactions = (complianceYear) => {
+    return axios.get(ROUTES_CREDITS.LIST_BY_YEAR.replace(/:year/g, complianceYear))
+  }
 
   const refreshList = (showLoading) => {
     setLoading(showLoading)
-    const balancePromise = axios
-      .get(ROUTES_CREDITS.CREDIT_BALANCES)
-      .then((response) => {
-        setBalances(response.data)
-      })
+    const balancePromise = getPostRecentModelYearReportBalances().then((balances) => {
+      setBalances(balances)
+    })
 
-    const listPromise = axios.get(ROUTES_CREDITS.LIST).then((response) => {
+    const complianceYearsPromise = axios.get(ROUTES_CREDITS.COMPLIANCE_YEARS).then((response) => {
+      const complianceYears = response.data
+      complianceYears.sort((a, b) => { return (b - a) })
+      setAvailableComplianceYears(response.data)
+      if (complianceYears.length > 0) {
+        return complianceYears[0]
+      }
+      return null
+    }).then((complianceYear) => {
+      if (complianceYear) {
+        return getCreditTransactions(complianceYear)
+      }
+      return { data: [] }
+    }).then((response) => {
       setCreditTransactions(response.data)
     })
 
@@ -41,14 +59,26 @@ const CreditsContainer = (props) => {
         setAssessedSupplementalsMap(response.data)
       })
 
-    Promise.all([balancePromise, listPromise, reportsPromise, assessedSupplementalsMapPromise]).then(() => {
+    const assessedBalancesPromise = getMostRecentModelYearReportBalances(user.organization.id).then((assessedBalances) => {
+      setAssessedBalances(assessedBalances)
+    })
+
+    Promise.all([complianceYearsPromise, balancePromise, reportsPromise, assessedBalancesPromise, assessedSupplementalsMapPromise]).then(() => {
       setLoading(false)
+    })
+  }
+
+  const handleGetCreditTransactions = (complianceYear) => {
+    getCreditTransactions(complianceYear).then((response) => {
+      const updatedCreditTransactions = creditTransactions.concat(response.data)
+      setCreditTransactions(updatedCreditTransactions)
     })
   }
 
   useEffect(() => {
     refreshList(true)
   }, [])
+
   if (loading) {
     return <Loading />
   }
@@ -63,8 +93,11 @@ const CreditsContainer = (props) => {
         />
         <CreditTransactions
           assessedSupplementalsMap={assessedSupplementalsMap}
+          availableComplianceYears={availableComplianceYears}
           balances={balances}
+          assessedBalances={assessedBalances}
           items={creditTransactions}
+          handleGetCreditTransactions={handleGetCreditTransactions}
           reports={reports}
           user={user}
         />
