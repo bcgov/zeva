@@ -35,6 +35,7 @@ const AssessmentEditContainer = (props) => {
   const [ratios, setRatios] = useState({})
   const [years, setYears] = useState([])
   const [enableSave, setEnableSave] = useState(false)
+  const [supplierClass, setSupplierClass] = useState('S')
   const handleChangeMake = (event) => {
     const { value } = event.target
     setMake(value.toUpperCase())
@@ -190,6 +191,8 @@ const AssessmentEditContainer = (props) => {
       setYears(yearsResponse.data)
 
       setLoading(false)
+
+      setSupplierClass(supplierClass)
     })
   }
 
@@ -227,6 +230,7 @@ const AssessmentEditContainer = (props) => {
         supplierMakes={supplierMakesList}
         years={years}
         enableSave={enableSave}
+        supplierClass={supplierClass}
       />
     </>
   )

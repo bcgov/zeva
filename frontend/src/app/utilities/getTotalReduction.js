@@ -1,5 +1,5 @@
-const getTotalReduction = (ldvSales, complianceRatio) => {
-  if (!ldvSales || isNaN(ldvSales)) {
+const getTotalReduction = (ldvSales, complianceRatio, supplierClass) => {
+  if (!ldvSales || isNaN(ldvSales) || supplierClass === 'S') {
     return 0
   }
 
