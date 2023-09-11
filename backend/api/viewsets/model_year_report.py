@@ -777,6 +777,7 @@ class ModelYearReportViewset(
         description = request.data.get("description")
         analyst_action = request.data.get("analyst_action", None)
         new_report = request.data.get("new_report", None)
+        return_to_supplier = request.data.get("return_to_supplier", False)
 
         create_user = None
         supplemental_id = None
@@ -809,6 +810,23 @@ class ModelYearReportViewset(
                 )
 
                 return Response(serializer.data)
+            
+        if (
+            return_to_supplier and
+            supplemental_report and
+            supplemental_report.status == ModelYearReportStatuses.SUBMITTED and
+            validation_status == "DRAFT"
+        ):
+            SupplementalReportHistory.objects.create(
+                supplemental_report_id=supplemental_id,
+                validation_status="DRAFT",
+                update_user=request.user.username,
+                create_user=request.user.username,
+            )
+            supplemental_report.status = ModelYearReportStatuses.DRAFT
+            supplemental_report.save()
+            return HttpResponse(status=200)
+
         if (
             create_user
             and create_user.is_government == request.user.is_government
