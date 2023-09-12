@@ -9,6 +9,7 @@ import CustomPropTypes from '../app/utilities/props'
 import ComplianceReportTabs from './components/ComplianceReportTabs'
 import ComplianceReportSummaryDetailsPage from './components/ComplianceReportSummaryDetailsPage'
 import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions'
+import deleteModelYearReport from '../app/utilities/deleteModelYearReport'
 
 const ComplianceReportSummaryContainer = (props) => {
   const { user } = props
@@ -51,6 +52,10 @@ const ComplianceReportSummaryContainer = (props) => {
       history.push(ROUTES_COMPLIANCE.REPORTS)
       history.replace(ROUTES_COMPLIANCE.REPORT_SUMMARY.replace(':id', id))
     })
+  }
+
+  const handleDelete = () => {
+    deleteModelYearReport(id, setLoading)
   }
 
   const refreshDetails = () => {
@@ -371,6 +376,7 @@ const ComplianceReportSummaryContainer = (props) => {
         consumerSalesDetails={consumerSalesDetails}
         creditActivityDetails={creditActivityDetails}
         handleCheckboxClick={handleCheckboxClick}
+        handleDelete={handleDelete}
         handleSubmit={handleSubmit}
         loading={loading}
         makes={makes}
