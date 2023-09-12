@@ -13,6 +13,7 @@ import getClassAReduction from '../app/utilities/getClassAReduction'
 import getTotalReduction from '../app/utilities/getTotalReduction'
 import getUnspecifiedClassReduction from '../app/utilities/getUnspecifiedClassReduction'
 import getComplianceObligationDetails from '../app/utilities/getComplianceObligationDetails'
+import deleteModelYearReport from '../app/utilities/deleteModelYearReport'
 
 const ComplianceObligationContainer = (props) => {
   const { user } = props
@@ -157,6 +158,10 @@ const ComplianceObligationContainer = (props) => {
         deficits: creditReduction.deficits
       })
     }
+  }
+
+  const handleDelete = () => {
+    deleteModelYearReport(id, setLoading)
   }
 
   const handleSave = () => {
@@ -477,6 +482,7 @@ const ComplianceObligationContainer = (props) => {
         handleCancelConfirmation={handleCancelConfirmation}
         handleChangeSales={handleChangeSales}
         handleCheckboxClick={handleCheckboxClick}
+        handleDelete={handleDelete}
         handleSave={handleSave}
         handleUnspecifiedCreditReduction={handleUnspecifiedCreditReduction}
         id={id}

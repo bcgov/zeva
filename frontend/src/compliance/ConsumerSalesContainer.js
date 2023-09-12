@@ -9,6 +9,7 @@ import ComplianceReportTabs from './components/ComplianceReportTabs'
 import ConsumerSalesDetailsPage from './components/ConsumerSalesDetailsPage'
 import ROUTES_COMPLIANCE from '../app/routes/Compliance'
 import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions'
+import deleteModelYearReport from '../app/utilities/deleteModelYearReport'
 
 const ConsumerSalesContainer = (props) => {
   const { keycloak, user } = props
@@ -139,6 +140,10 @@ const ConsumerSalesContainer = (props) => {
       })
   }
 
+  const handleDelete = () => {
+    deleteModelYearReport(id, setLoading)
+  }
+
   useEffect(() => {
     refreshDetails(true)
   }, [keycloak.authenticated, modelYear])
@@ -167,6 +172,7 @@ const ConsumerSalesContainer = (props) => {
         id={id}
         handleCancelConfirmation={handleCancelConfirmation}
         checked={checked}
+        handleDelete={handleDelete}
       />
     </>
   )
