@@ -43,7 +43,6 @@ The "Build PR on Dev" pipeline will be triggered when it identified pull request
 * Update frontend/package.json version and create the new tracking pull request
 * Update release-build.yaml
   * name
-  * on -> push -> branches
   * env -> PR_NUMBER
   * env -> VERSION
   * jobs -> call-unit-test -> with -> pr-numb
