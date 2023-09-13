@@ -7,7 +7,6 @@ import { useParams } from 'react-router-dom'
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
 import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport'
 import history from '../../app/History'
-import CONFIG from '../../app/config'
 
 require('bootstrap/js/dist/collapse.js')
 
@@ -24,13 +23,10 @@ const ComplianceHistory = (props) => {
 
   const [supplementalReportHistory, setSupplementalReportHistory] = useState([])
   const [startedAsSupplemental, setStartedAsSupplemental] = useState(false)
-  const [canCreateSupplementalOrReassessment, setCanCreateSupplementalOrReassessment] = useState(false)
 
   useEffect(() => {
-    const getSupplementalHistory = axios.get(ROUTES_COMPLIANCE.SUPPLEMENTAL_HISTORY.replace(/:id/g, id))
-    const getLatestStatus = axios.get(ROUTES_COMPLIANCE.LATEST_SUPPLEMENTAL_STATUS.replace(/:id/g, id))
-    Promise.all([getSupplementalHistory, getLatestStatus]).then(([historyResponse, statusResponse]) => {
-      const historyData = historyResponse.data
+    axios.get(ROUTES_COMPLIANCE.SUPPLEMENTAL_HISTORY.replace(/:id/g, id)).then((response) => {
+      const historyData = response.data
       setSupplementalReportHistory(historyData)
       historyData.forEach((report) => {
         if (report.isSupplementary === true) {
@@ -41,23 +37,6 @@ const ComplianceHistory = (props) => {
           })
         }
       })
-      let modelYearReportAssessed = false
-      let hasPermissionToSupplementOrReassess = false
-      let latestSupplementalIfAnyIsAssessed = false
-      const modelYearReport = historyData[historyData.length - 1]
-      if (modelYearReport.status === 'ASSESSED' || modelYearReport.status === 'REASSESSED') {
-        modelYearReportAssessed = true
-      }
-      if (!user.isGovernment || (user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT'))) {
-        hasPermissionToSupplementOrReassess = true
-      }
-      const latestStatus = statusResponse.data
-      if (!latestStatus || latestStatus === 'ASSESSED' || latestStatus === 'REASSESSED') {
-        latestSupplementalIfAnyIsAssessed = true
-      }
-      if (CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED && modelYearReportAssessed && hasPermissionToSupplementOrReassess && latestSupplementalIfAnyIsAssessed) {
-        setCanCreateSupplementalOrReassessment(true)
-      }
     })
   }, [])
 
@@ -253,42 +232,10 @@ const ComplianceHistory = (props) => {
     return ''
   }
 
-  let supplementaryText = 'Supplementary'
-  let supplementaryRoute = ROUTES_SUPPLEMENTARY.CREATE
-  if (user.isGovernment) {
-    supplementaryText = 'Reassessment'
-    supplementaryRoute = ROUTES_SUPPLEMENTARY.REASSESSMENT
-  }
-
   return (
     Object.keys(supplementalReportHistory).length > 0 && (
       <div className="m-0 pt-2">
-        <div className='action-bar'>
-          <h3>{reportYear} Model Year Reporting History</h3>
-          <div>
-            {canCreateSupplementalOrReassessment && <button 
-                className='button primary ml-4'
-                onClick={() => {
-                  history.push(
-                    `${supplementaryRoute.replace(
-                      /:id/g,
-                      id
-                    )}`
-                  )
-                }}
-              >
-                {`Create ${supplementaryText} Report`}
-              </button>}
-            <button 
-              className='button ml-2'
-              onClick={() => {
-                window.print()
-              }}
-            >
-              Print Page
-            </button>
-          </div>
-        </div>
+        <h3>{reportYear} Model Year Reporting History</h3>
         <div className="mt-2" id="complianceHistory">
           {supplementalReportHistory &&
             supplementalReportHistory.map((item, index) => (

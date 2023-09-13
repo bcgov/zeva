@@ -20,6 +20,7 @@ import ReassessmentDetailsPage from './ReassessmentDetailsPage'
 import SupplementaryTab from './SupplementaryTab'
 import ReactTooltip from 'react-tooltip'
 import EditableCommentList from '../../app/components/EditableCommentList'
+import CreateReassessmentHeader from '../../compliance/components/CreateReassessmentHeader'
 
 const SupplementaryDirectorDetails = (props) => {
   const {
@@ -272,6 +273,10 @@ const SupplementaryDirectorDetails = (props) => {
 
   return (
     <div id="supplementary" className="page">
+      <CreateReassessmentHeader 
+        user={user}
+        id={id}
+      />
       <ComplianceHistory
         activePage="supplementary"
         id={id}
@@ -319,14 +324,6 @@ const SupplementaryDirectorDetails = (props) => {
         </>
       )}
       <div className="supplementary-form mt-2">
-        <Button
-          buttonType="button"
-          optionalClassname="ml-2 mr-2 button btn float-right d-print-none"
-          optionalText="Print Page"
-          action={() => {
-            window.print()
-          }}
-        />
         <div>
           {isReassessment && selectedTab === tabNames[2]
             ? (

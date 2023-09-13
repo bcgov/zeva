@@ -16,11 +16,21 @@ from api.serializers.organization import \
     OrganizationSaveSerializer
 from api.serializers.organization_ldv_sales import \
     OrganizationLDVSalesSerializer
-from api.services.credit_transaction import aggregate_credit_balance_details, \
-    aggregate_transactions_by_submission
 from api.permissions.organization import OrganizationPermissions
 from auditable.views import AuditableMixin
 from api.services.supplemental_report import get_map_of_model_year_report_ids_to_latest_supplemental_ids
+from api.services.credit_transaction import (
+    aggregate_credit_balance_details,
+    aggregate_transactions_by_submission,
+    get_credit_transactions_q_obj_by_date,
+    get_compliance_years,
+    get_compliance_period_bounds,
+    get_timestamp_of_most_recent_reduction
+)
+from api.services.model_year_report import (
+    get_most_recent_myr_id
+)
+from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_statuses import ModelYearReportStatuses
 
 
@@ -127,17 +137,20 @@ class OrganizationViewSet(
 
     @action(detail=True)
     @method_decorator(permission_required('VIEW_SALES'))
-    def supplier_balance(self, request, pk=None):
-        """
-        Get the credit balance of a specific organization
-        """
+    def recent_supplier_balance(self, request, pk=None):
         if not request.user.is_government:
             return Response(None)
 
-        balances = aggregate_credit_balance_details(pk)
+        timestamp = get_timestamp_of_most_recent_reduction(pk)
+        q_obj = None
+        if timestamp:
+            q_obj = get_credit_transactions_q_obj_by_date(timestamp, "gt")
+        if q_obj:
+            balances = aggregate_credit_balance_details(pk, q_obj)
+        else:
+            balances = aggregate_credit_balance_details(pk)
 
         serializer = CreditTransactionBalanceSerializer(balances, many=True)
-
         return Response(serializer.data)
 
     @action(detail=True)
@@ -189,3 +202,30 @@ class OrganizationViewSet(
         result = get_map_of_model_year_report_ids_to_latest_supplemental_ids(pk, ModelYearReportStatuses.ASSESSED, ModelYearReportStatuses.REASSESSED)
         return Response(result)
         
+
+    @action(detail=True, methods=["get"])
+    def most_recent_myr_id(self, request, pk=None):
+        model_year_report = get_most_recent_myr_id(pk, ModelYearReportStatuses.ASSESSED, ModelYearReportStatuses.REASSESSED)
+        if model_year_report:
+            return Response(model_year_report.id)
+        return Response(None)
+    
+    @action(detail=True, methods=['get'])
+    def compliance_years(self, request, pk=None):
+        compliance_years = get_compliance_years(pk)
+        return Response(compliance_years)
+    
+    @action(detail=True, methods=['get'])
+    @method_decorator(permission_required('VIEW_SALES'))
+    def list_by_year(self, request, pk=None):
+        if not request.user.is_government:
+            return Response([])
+        compliance_year = request.GET.get('year', None)
+        if compliance_year:
+            compliance_period_bounds = get_compliance_period_bounds(compliance_year)
+            q_obj_1 = get_credit_transactions_q_obj_by_date(compliance_period_bounds[0], "gte")
+            q_obj_2 = get_credit_transactions_q_obj_by_date(compliance_period_bounds[1], "lte")
+            transactions = aggregate_transactions_by_submission(pk, q_obj_1, q_obj_2)
+            serializer = CreditTransactionListSerializer(transactions, many=True)
+            return Response(serializer.data)
+        return Response([])
