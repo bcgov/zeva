@@ -374,6 +374,7 @@ const AssessmentDetailsPage = (props) => {
             </div>
 
             <h3 className="mt-4 mb-2">Credit Reduction</h3>
+            {supplierClass === 'S' && <>Small volume suppliers have no compliance obligation or credit reduction.</>}
 
             <ComplianceObligationReductionOffsetTable
               assessment
