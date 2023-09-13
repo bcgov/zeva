@@ -9,7 +9,7 @@ on:
 
 env:
   ## The pull request number of the Tracking pull request to merge the release branch to main
-  PR_NUMBER: 1931
+  PR_NUMBER: 1951
   VERSION: 1.51.0
   GIT_URL: https://github.com/bcgov/zeva.git 
   TOOLS_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
@@ -27,7 +27,7 @@ jobs:
   call-unit-test:
     uses: ./.github/workflows/unit-test-template.yaml
     with:
-      pr-number: 1931
+      pr-number: 1951
 
   build:
 
