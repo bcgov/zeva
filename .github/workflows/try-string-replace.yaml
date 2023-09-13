@@ -23,5 +23,5 @@ jobs:
 
       - name: replace
         run: |
-          echo ${{ env.rr/release-/v }}
+          echo ${{ env.rr/release/-/v }}
           
