@@ -1,0 +1,27 @@
+## For each release, please update the value of workflow name, branches and PR_NUMBER
+## Also update frontend/package.json version
+
+name: Try String Replace
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+env:
+  rr: release-1.11.0
+  
+jobs:
+
+  try-string-replace:
+
+    name: try-string-replace
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+
+    steps:
+
+      - name: replace
+        run: |
+          echo ${{ env.rr/release-/v }}
+          
