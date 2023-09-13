@@ -426,3 +426,18 @@ def check_validation_status_change(old_status, updated_model_year_report):
 
 def get_model_year_report(model_year_report_id, *fields):
     return ModelYearReport.objects.filter(id=model_year_report_id).only(*fields).first()
+<<<<<<< HEAD
+=======
+
+def get_most_recent_myr_id(organization, *statuses):
+    model_year_report = (
+        ModelYearReport.objects.only("id")
+        .filter(organization=organization)
+        .filter(
+            validation_status__in=statuses
+        )
+        .order_by("-model_year__effective_date")
+        .first()
+    )
+    return model_year_report
+>>>>>>> 93b88012 (Tracking pull request to merge release-1.50.0 to master (#1931))

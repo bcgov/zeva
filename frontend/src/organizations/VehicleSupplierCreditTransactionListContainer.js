@@ -14,31 +14,47 @@ import ROUTES_ORGANIZATIONS from '../app/routes/Organizations'
 import ROUTES_COMPLIANCE from '../app/routes/Compliance'
 import VehicleSupplierTabs from '../app/components/VehicleSupplierTabs'
 import VehicleSupplierSalesListPage from './components/VehicleSupplierSalesListPage'
+import { getMostRecentModelYearReportBalances, getPostRecentModelYearReportBalances } from '../app/utilities/getModelYearReportCreditBalances'
 
 const VehicleSupplierCreditTransactionListContainer = (props) => {
   const { id } = useParams()
   const [details, setDetails] = useState({})
   const [loading, setLoading] = useState(true)
   const [balances, setBalances] = useState([])
+  const [availableComplianceYears, setAvailableComplianceYears] = useState([])
+  const [assessedBalances, setAssessedBalances] = useState({})
   const [reports, setReports] = useState([])
   const [creditTransactions, setCreditTransactions] = useState([])
   const [assessedSupplementalsMap, setAssessedSupplementalsMap] = useState({})
   const { keycloak, location, user } = props
   const { state: locationState } = location
 
+  const getCreditTransactions = (complianceYear) => {
+    return axios.get(ROUTES_ORGANIZATIONS.LIST_BY_YEAR.replace(/:id/g, id).replace(/:year/g, complianceYear))
+  }
+
   const refreshDetails = () => {
     setLoading(true)
-    const balancePromise = axios
-      .get(ROUTES_ORGANIZATIONS.SUPPLIER_BALANCE.replace(/:id/gi, id))
-      .then((response) => {
-        setBalances(response.data)
-      })
+    const balancePromise = getPostRecentModelYearReportBalances(id).then((balances) => {
+      setBalances(balances)
+    })
 
-    const listPromise = axios
-      .get(ROUTES_ORGANIZATIONS.SUPPLIER_TRANSACTIONS.replace(/:id/gi, id))
-      .then((response) => {
-        setCreditTransactions(response.data)
-      })
+    const complianceYearsPromise = axios.get(ROUTES_ORGANIZATIONS.COMPLIANCE_YEARS.replace(/:id/g, id)).then((response) => {
+      const complianceYears = response.data
+      complianceYears.sort((a, b) => { return (b - a) })
+      setAvailableComplianceYears(response.data)
+      if (complianceYears.length > 0) {
+        return complianceYears[0]
+      }
+      return null
+    }).then((complianceYear) => {
+      if (complianceYear) {
+        return getCreditTransactions(complianceYear)
+      }
+      return { data: [] }
+    }).then((response) => {
+      setCreditTransactions(response.data)
+    })
 
     const detailsPromise = axios
       .get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id))
@@ -58,14 +74,26 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
         setAssessedSupplementalsMap(response.data)
       })
 
+    const assessedBalancesPromise = getMostRecentModelYearReportBalances(id).then((assessedBalances) => {
+      setAssessedBalances(assessedBalances)
+    })
+
     Promise.all([
       balancePromise,
-      listPromise,
+      complianceYearsPromise,
       detailsPromise,
       reportsPromise,
-      assessedSupplementalsMapPromise
+      assessedSupplementalsMapPromise,
+      assessedBalancesPromise
     ]).then(() => {
       setLoading(false)
+    })
+  }
+
+  const handleGetCreditTransactions = (complianceYear) => {
+    getCreditTransactions(complianceYear).then((response) => {
+      const updatedCreditTransactions = creditTransactions.concat(response.data)
+      setCreditTransactions(updatedCreditTransactions)
     })
   }
 
@@ -84,10 +112,13 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
       />
       <VehicleSupplierSalesListPage
         assessedSupplementalsMap={assessedSupplementalsMap}
+        availableComplianceYears={availableComplianceYears}
         loading={loading}
         locationState={locationState}
         balances={balances}
+        assessedBalances={assessedBalances}
         items={creditTransactions}
+        handleGetCreditTransactions={handleGetCreditTransactions}
         reports={reports}
         user={{ isGovernment: true }}
       />

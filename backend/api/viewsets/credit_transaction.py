@@ -9,7 +9,13 @@ from api.serializers.credit_transaction import CreditTransactionSerializer, \
     CreditTransactionBalanceSerializer, CreditTransactionListSerializer
 from api.services.credit_transaction import aggregate_credit_balance_details, \
     aggregate_transactions_by_submission
-from api.services.credit_transaction import calculate_insufficient_credits
+from api.services.credit_transaction import (
+    calculate_insufficient_credits, 
+    get_credit_transactions_q_obj_by_date, 
+    get_compliance_years,
+    get_compliance_period_bounds,
+    get_timestamp_of_most_recent_reduction
+)
 from auditable.views import AuditableMixin
 
 
@@ -53,11 +59,18 @@ class CreditTransactionViewSet(
         return Response(serializer.data)
 
     @action(detail=False)
-    def balances(self, request):
+    def recent_balances(self, request):
         user = self.request.user
-        balances = aggregate_credit_balance_details(user.organization)
-
-        serializer = self.get_serializer(balances, many=True)
+        timestamp = get_timestamp_of_most_recent_reduction(user.organization)
+        q_obj = None
+        if timestamp:
+            q_obj = get_credit_transactions_q_obj_by_date(timestamp, "gt")
+        if q_obj:
+            balances = aggregate_credit_balance_details(user.organization, q_obj)
+        else:
+            balances = aggregate_credit_balance_details(user.organization)
+    
+        serializer = CreditTransactionBalanceSerializer(balances, many=True)
         return Response(serializer.data)
 
     @action(detail=True)
@@ -66,3 +79,23 @@ class CreditTransactionViewSet(
         balances = calculate_insufficient_credits(org_id)
         serializer = CreditTransactionBalanceSerializer(balances, many=True)
         return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def compliance_years(self, request):
+        user = self.request.user
+        compliance_years = get_compliance_years(user.organization)
+        return Response(compliance_years)
+    
+    @action(detail=False, methods=['get'])
+    def list_by_year(self, request, pk=None):
+        user = self.request.user
+        compliance_year = request.GET.get('year', None)
+        if compliance_year:
+            compliance_period_bounds = get_compliance_period_bounds(compliance_year)
+            q_obj_1 = get_credit_transactions_q_obj_by_date(compliance_period_bounds[0], "gte")
+            q_obj_2 = get_credit_transactions_q_obj_by_date(compliance_period_bounds[1], "lte")
+            transactions = aggregate_transactions_by_submission(user.organization, q_obj_1, q_obj_2)
+            serializer = CreditTransactionListSerializer(transactions, many=True)
+            return Response(serializer.data)
+        return Response([])
+
