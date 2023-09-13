@@ -17,6 +17,8 @@ jobs:
     name: try-string-replace
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    env:
+      ddee: release-1.11.0
 
 
     steps:
@@ -24,5 +26,5 @@ jobs:
       - name: replace
         run: |
           echo "start"
-          echo "${{ env.RRTYW/release/-/v }}"
+          echo "${ddee/release-/v}"
           
