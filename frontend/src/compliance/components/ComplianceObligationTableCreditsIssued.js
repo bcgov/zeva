@@ -310,6 +310,24 @@ const ComplianceObligationTableCreditsIssued = (props) => {
     }
   }
 
+  const containsNegative = (creditBalance) => {
+    let result = false
+    if (creditBalance) {
+      for (const modelYear in creditBalance) {
+        const credits = creditBalance[modelYear]
+        if (credits) {
+          if (credits.A < 0 || credits.B < 0) {
+            result = true
+            break
+          }
+        }
+      }
+    }
+    return result
+  }
+
+  const creditBalanceStartInDeficit = containsNegative(creditBalanceStart)
+
   return (
     <>
       <table>
@@ -330,12 +348,12 @@ const ComplianceObligationTableCreditsIssued = (props) => {
           {Object.keys(creditBalanceStart).map((each) => {
             return (
               <tr key={each}>
-              <td className="text-blue">&bull; &nbsp; &nbsp; {each} Credits</td>
-              <td className="text-right">
-                {formatNumeric(creditBalanceStart[each].A, 2)}
+              <td className={`text-blue ${creditBalanceStartInDeficit ? "background-danger" : ""}`}>&bull; &nbsp; &nbsp; {each} {creditBalanceStartInDeficit ? "Deficit" : "Credits"}</td>
+              <td className={`text-right ${creditBalanceStartInDeficit ? "background-danger" : ""}`}>
+                {formatNumeric(creditBalanceStart[each].A, 2, true)}
               </td>
-              <td className="text-right">
-                {formatNumeric(creditBalanceStart[each].B, 2)}
+              <td className={`text-right ${creditBalanceStartInDeficit ? "background-danger" : ""}`}>
+                {formatNumeric(creditBalanceStart[each].B, 2, true)}
               </td>
               {supplementalReport && (
                 <>
