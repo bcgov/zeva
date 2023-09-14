@@ -37,6 +37,8 @@ from api.utilities.credit_transaction import (
 from api.models.model_year_report_address import ModelYearReportAddress
 from api.models.model_year_report_history import ModelYearReportHistory
 from api.models.model_year_report_make import ModelYearReportMake
+from api.models.model_year_report_assessment import ModelYearReportAssessment
+from api.models.model_year_report_assessment_comment import ModelYearReportAssessmentComment
 
 def get_model_year_report_statuses(report, request_user=None):
     supplier_information_status = 'UNSAVED'
@@ -462,6 +464,12 @@ def delete_model_year_report(model_year_report):
         model_year_report=model_year_report
     ).delete()
     ModelYearReportVehicle.objects.filter(
+        model_year_report=model_year_report
+    ).delete()
+    ModelYearReportAssessmentComment.objects.filter(
+        model_year_report=model_year_report
+    ).delete()
+    ModelYearReportAssessment.objects.filter(
         model_year_report=model_year_report
     ).delete()
     model_year_report.delete()
