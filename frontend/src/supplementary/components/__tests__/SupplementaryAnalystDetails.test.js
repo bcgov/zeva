@@ -269,7 +269,7 @@ describe('SupplementaryAnalystDetails', () => {
 
     const returnButton = getByTestId('return-button')
     fireEvent.click(returnButton)
-    expect(mockhandleSubmit).toHaveBeenCalledWith('DRAFT')
+    expect(mockhandleSubmit).toHaveBeenCalledWith('DRAFT', false, true)
   })
 
   describe('as an analyst, if i view a supplemental report in any status, I should be able to view all 3 tabs', () => {
