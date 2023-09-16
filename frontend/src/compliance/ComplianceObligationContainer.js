@@ -14,6 +14,7 @@ import getTotalReduction from '../app/utilities/getTotalReduction'
 import getUnspecifiedClassReduction from '../app/utilities/getUnspecifiedClassReduction'
 import getComplianceObligationDetails from '../app/utilities/getComplianceObligationDetails'
 import deleteModelYearReport from '../app/utilities/deleteModelYearReport'
+import getNewProvisionalBalance from '../app/utilities/getNewProvisionalBalance'
 
 const ComplianceObligationContainer = (props) => {
   const { user } = props
@@ -157,6 +158,9 @@ const ComplianceObligationContainer = (props) => {
         balances: creditReduction.balances,
         deficits: creditReduction.deficits
       })
+
+      const newProvisionalBalance = getNewProvisionalBalance(reportDetails.provisionalProvisionalBalance, reportDetails.totalDeficitA, reportDetails.totalDeficitUnspecified, radioId)
+      setReportDetails({ ...reportDetails, provisionalBalance: newProvisionalBalance })
     }
   }
 
@@ -328,6 +332,7 @@ const ComplianceObligationContainer = (props) => {
               creditBalanceStart,
               creditsIssuedSales,
               pendingBalance,
+              provisionalProvisionalBalance,
               provisionalBalance,
               transfersIn,
               transfersOut,
@@ -335,8 +340,10 @@ const ComplianceObligationContainer = (props) => {
               purchaseAgreement,
               administrativeAllocation,
               administrativeReduction,
-              automaticAdministrativePenalty
-            } = getComplianceObligationDetails(complianceResponseDetails)
+              automaticAdministrativePenalty,
+              totalDeficitA,
+              totalDeficitUnspecified
+            } = getComplianceObligationDetails(complianceResponseDetails, radioSelection)
 
             if (pendingBalance && pendingBalance.length > 0) {
               setPendingBalanceExist(true)
@@ -346,7 +353,10 @@ const ComplianceObligationContainer = (props) => {
               creditBalanceStart,
               creditBalanceEnd,
               pendingBalance,
+              provisionalProvisionalBalance,
               provisionalBalance,
+              totalDeficitA,
+              totalDeficitUnspecified,
               transactions: {
                 creditsIssuedSales,
                 transfersIn,
@@ -358,6 +368,8 @@ const ComplianceObligationContainer = (props) => {
                 automaticAdministrativePenalty
               }
             })
+
+            console.log(provisionalBalance)
 
             const tempTotalReduction = getTotalReduction(
               ldvSales,

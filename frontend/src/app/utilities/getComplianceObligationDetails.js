@@ -1,7 +1,9 @@
-const getComplianceObligationDetails = (complianceResponseDetails) => {
+import getNewProvisionalBalance from "./getNewProvisionalBalance"
+
+const getComplianceObligationDetails = (complianceResponseDetails, creditOffsetSelection) => {
   const creditBalanceStart = {}
   const creditBalanceEnd = {}
-  const provisionalBalance = {}
+  const provisionalProvisionalBalance = {}
   const pendingBalance = []
   const transfersIn = []
   const transfersOut = []
@@ -12,11 +14,14 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
   const administrativeReduction = []
   const automaticAdministrativePenalty = []
   const deficits = []
+  const deficitCollection = {}
   let pendingBalanceExist = false
 
   complianceResponseDetails.forEach((item) => {
     let endingBalanceA = 0
     let endingBalanceB = 0
+    let deficitA = 0
+    let deficitB = 0
 
     if (creditBalanceEnd[item.modelYear.name]) {
       endingBalanceA = Number(creditBalanceEnd[item.modelYear.name].A)
@@ -44,8 +49,8 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
         }
       }
 
-      endingBalanceA -= Number(item.creditAValue)
-      endingBalanceB -= Number(item.creditBValue)
+      deficitA -= Number(item.creditAValue)
+      deficitB -= Number(item.creditBValue)
     }
 
     if (item.category === 'transfersIn') {
@@ -151,11 +156,15 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
       A: Number(endingBalanceA),
       B: Number(endingBalanceB)
     }
+    deficitCollection[item.modelYear.name] = {
+      A: Number(deficitA),
+      B: Number(deficitB)
+    }
   })
 
-  // go through every year in end balance and push to provisional
+  // go through every year in end balance and push to provisionalProvisionalBalance
   Object.keys(creditBalanceEnd).forEach((item) => {
-    provisionalBalance[item] = {
+    provisionalProvisionalBalance[item] = {
       A: Number(creditBalanceEnd[item].A),
       B: Number(creditBalanceEnd[item].B)
     }
@@ -163,13 +172,40 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
 
   // go through every item in pending and add to total if year already there or create new
   pendingBalance.forEach((item) => {
-    if (provisionalBalance[item.modelYear]) {
-      provisionalBalance[item.modelYear].A += Number(item.A)
-      provisionalBalance[item.modelYear].B += Number(item.B)
+    if (provisionalProvisionalBalance[item.modelYear]) {
+      provisionalProvisionalBalance[item.modelYear].A += Number(item.A)
+      provisionalProvisionalBalance[item.modelYear].B += Number(item.B)
     } else {
-      provisionalBalance[item.modelYear] = {
+      provisionalProvisionalBalance[item.modelYear] = {
         A: item.A,
         B: item.B
+      }
+    }
+  })
+
+  // calculate total deficits; total deficits are >= 0
+  let totalDeficitA = 0
+  let totalDeficitUnspecified = 0
+  for (const balanceStart of Object.values(creditBalanceStart)) {
+    if (balanceStart.A < 0) {
+      totalDeficitA += balanceStart.A * -1
+    }
+    if (balanceStart.B < 0) {
+      totalDeficitUnspecified += balanceStart.B * -1
+    }
+  }
+
+  const provisionalBalance = getNewProvisionalBalance(provisionalProvisionalBalance, totalDeficitA, totalDeficitUnspecified, creditOffsetSelection)
+
+  //add deficits to creditBalanceEnd
+  Object.entries(deficitCollection).forEach(([modelYear, credits]) => {
+    if (modelYear in creditBalanceEnd) {
+      creditBalanceEnd[modelYear].A -= credits.A
+      creditBalanceEnd[modelYear].B -= credits.B
+    } else {
+      creditBalanceEnd[modelYear] = {
+        A: credits.A,
+        B: credits.B
       }
     }
   })
@@ -181,6 +217,7 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
     deficits,
     pendingBalance,
     pendingBalanceExist,
+    provisionalProvisionalBalance,
     provisionalBalance,
     transfersIn,
     transfersOut,
@@ -188,7 +225,9 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
     purchaseAgreement,
     administrativeAllocation,
     administrativeReduction,
-    automaticAdministrativePenalty
+    automaticAdministrativePenalty,
+    totalDeficitA,
+    totalDeficitUnspecified
   }
 }
 
