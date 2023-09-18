@@ -84,7 +84,7 @@ const CreditActivity = (props) => {
     administrativeAllocation,
     administrativeReduction,
     automaticAdministrativePenalty
-  } = getComplianceObligationDetails(obligationDetails)
+  } = getComplianceObligationDetails(obligationDetails, creditReductionSelection)
 
   const reportDetails = {
     creditBalanceStart,

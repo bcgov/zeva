@@ -287,7 +287,7 @@ const AssessmentContainer = (props) => {
                 administrativeAllocation,
                 administrativeReduction,
                 automaticAdministrativePenalty
-              } = getComplianceObligationDetails(complianceResponseDetails)
+              } = getComplianceObligationDetails(complianceResponseDetails, creditReductionSelection)
 
               setPendingBalanceExist(tempPendingBalanceExist)
 

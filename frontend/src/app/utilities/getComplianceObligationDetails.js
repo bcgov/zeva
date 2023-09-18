@@ -20,8 +20,6 @@ const getComplianceObligationDetails = (complianceResponseDetails, creditOffsetS
   complianceResponseDetails.forEach((item) => {
     let endingBalanceA = 0
     let endingBalanceB = 0
-    let deficitA = 0
-    let deficitB = 0
 
     if (creditBalanceEnd[item.modelYear.name]) {
       endingBalanceA = Number(creditBalanceEnd[item.modelYear.name].A)
@@ -49,8 +47,15 @@ const getComplianceObligationDetails = (complianceResponseDetails, creditOffsetS
         }
       }
 
-      deficitA -= Number(item.creditAValue)
-      deficitB -= Number(item.creditBValue)
+      if (item.modelYear.name in deficitCollection) {
+        deficitCollection[item.modelYear.name].A += Number(item.creditAValue)
+        deficitCollection[item.modelYear.name].unspecified += Number(item.creditBValue)
+      } else {
+        deficitCollection[item.modelYear.name] = {
+          A: Number(item.creditAValue),
+          unspecified: Number(item.creditBValue)
+        }
+      }
     }
 
     if (item.category === 'transfersIn') {
@@ -156,10 +161,6 @@ const getComplianceObligationDetails = (complianceResponseDetails, creditOffsetS
       A: Number(endingBalanceA),
       B: Number(endingBalanceB)
     }
-    deficitCollection[item.modelYear.name] = {
-      A: Number(deficitA),
-      B: Number(deficitB)
-    }
   })
 
   // go through every year in end balance and push to provisionalProvisionalBalance
@@ -183,29 +184,17 @@ const getComplianceObligationDetails = (complianceResponseDetails, creditOffsetS
     }
   })
 
-  // calculate total deficits; total deficits are >= 0
-  let totalDeficitA = 0
-  let totalDeficitUnspecified = 0
-  for (const balanceStart of Object.values(creditBalanceStart)) {
-    if (balanceStart.A < 0) {
-      totalDeficitA += balanceStart.A * -1
-    }
-    if (balanceStart.B < 0) {
-      totalDeficitUnspecified += balanceStart.B * -1
-    }
-  }
-
-  const provisionalBalance = getNewProvisionalBalance(provisionalProvisionalBalance, totalDeficitA, totalDeficitUnspecified, creditOffsetSelection)
+  const provisionalBalance = getNewProvisionalBalance(provisionalProvisionalBalance, deficitCollection, creditOffsetSelection)
 
   //add deficits to creditBalanceEnd
-  Object.entries(deficitCollection).forEach(([modelYear, credits]) => {
+  Object.entries(deficitCollection).forEach(([modelYear, deficits]) => {
     if (modelYear in creditBalanceEnd) {
-      creditBalanceEnd[modelYear].A -= credits.A
-      creditBalanceEnd[modelYear].B -= credits.B
+      creditBalanceEnd[modelYear].A -= deficits.A
+      creditBalanceEnd[modelYear].B -= deficits.unspecified
     } else {
       creditBalanceEnd[modelYear] = {
-        A: credits.A,
-        B: credits.B
+        A: deficits.A * -1,
+        B: deficits.unspecified * -1
       }
     }
   })
@@ -226,8 +215,7 @@ const getComplianceObligationDetails = (complianceResponseDetails, creditOffsetS
     administrativeAllocation,
     administrativeReduction,
     automaticAdministrativePenalty,
-    totalDeficitA,
-    totalDeficitUnspecified
+    deficitCollection
   }
 }
 

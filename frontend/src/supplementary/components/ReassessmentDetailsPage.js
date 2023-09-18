@@ -204,7 +204,7 @@ const ReassessmentDetailsPage = (props) => {
     automaticAdministrativePenalty
   } = getComplianceObligationDetails(complianceObligationDetails)
 
-  const prevProvisionalBalance = getComplianceObligationDetails(obligationDetails).provisionalBalance
+  const prevProvisionalBalance = getComplianceObligationDetails(obligationDetails, creditReductionSelection).provisionalBalance
 
   const reportDetails = {
     creditBalanceStart,

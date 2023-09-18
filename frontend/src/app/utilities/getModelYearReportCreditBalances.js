@@ -32,7 +32,7 @@ const getModelYearReportCreditBalances = (modelYearReportId) => {
 
     const {
       provisionalBalance
-    } = getComplianceObligationDetails(complianceResponseDetails)
+    } = getComplianceObligationDetails(complianceResponseDetails, creditReductionSelection)
 
     const {
       modelYear,
