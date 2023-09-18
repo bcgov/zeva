@@ -13,7 +13,6 @@ const getComplianceObligationDetails = (complianceResponseDetails, creditOffsetS
   const administrativeAllocation = []
   const administrativeReduction = []
   const automaticAdministrativePenalty = []
-  const deficits = []
   const deficitCollection = {}
   let pendingBalanceExist = false
 
@@ -203,7 +202,6 @@ const getComplianceObligationDetails = (complianceResponseDetails, creditOffsetS
     creditBalanceEnd,
     creditBalanceStart,
     creditsIssuedSales,
-    deficits,
     pendingBalance,
     pendingBalanceExist,
     provisionalProvisionalBalance,
