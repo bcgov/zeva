@@ -15,6 +15,7 @@ import getUnspecifiedClassReduction from '../app/utilities/getUnspecifiedClassRe
 import getComplianceObligationDetails from '../app/utilities/getComplianceObligationDetails'
 import deleteModelYearReport from '../app/utilities/deleteModelYearReport'
 import getNewProvisionalBalance from '../app/utilities/getNewProvisionalBalance'
+import { getNewBalancesStructure, getNewDeficitsStructure } from '../app/utilities/getNewStructures'
 
 const ComplianceObligationContainer = (props) => {
   const { user } = props
@@ -114,7 +115,8 @@ const ComplianceObligationContainer = (props) => {
         balances,
         tempClassAReductions,
         tempUnspecifiedReductions,
-        creditReductionSelection
+        creditReductionSelection,
+        reportDetails.carryOverDeficits
       )
 
       if (supplierClass !== 'S') {
@@ -142,14 +144,17 @@ const ComplianceObligationContainer = (props) => {
   }
 
   const handleUnspecifiedCreditReduction = (radioId) => {
+    const { provisionalBalance, reductionsToOffsetDeficit, carryOverDeficits } = getNewProvisionalBalance(reportDetails.provisionalProvisionalBalance, reportDetails.deficitCollection, radioId)
+    const newBalances = getNewBalancesStructure(provisionalBalance)
     if (supplierClass !== 'S') {
       setCreditReductionSelection(radioId)
 
       const creditReduction = calculateCreditReduction(
-        balances,
+        newBalances,
         classAReductions,
         unspecifiedReductions,
-        radioId
+        radioId,
+        carryOverDeficits
       )
   
       setDeductions(creditReduction.deductions)
@@ -158,10 +163,15 @@ const ComplianceObligationContainer = (props) => {
         balances: creditReduction.balances,
         deficits: creditReduction.deficits
       })
-
-      const newProvisionalBalance = getNewProvisionalBalance(reportDetails.provisionalProvisionalBalance, reportDetails.deficitCollection, radioId)
-      setReportDetails({ ...reportDetails, provisionalBalance: newProvisionalBalance })
+    } else {
+      const newDeficits = getNewDeficitsStructure(carryOverDeficits)
+      setUpdatedBalances({
+        balances: newBalances,
+        deficits: newDeficits
+      })
     }
+    setReportDetails({ ...reportDetails, provisionalBalance, reductionsToOffsetDeficit, carryOverDeficits })
+    setBalances(newBalances)
   }
 
   const handleDelete = () => {
@@ -171,7 +181,7 @@ const ComplianceObligationContainer = (props) => {
   const handleSave = () => {
     const reportDetailsArray = []
     Object.keys(reportDetails).forEach((each) => {
-      if (each === 'provisionalProvisionalBalance') {
+      if (each === 'provisionalProvisionalBalance' || each === 'carryOverDeficits') {
         return
       }
       Object.keys(reportDetails[each]).forEach((year) => {
@@ -184,8 +194,14 @@ const ComplianceObligationContainer = (props) => {
             a,
             b
           })
-        }
-        else if (each !== 'transactions' && each !== 'pendingBalance') {
+        } else if (each === 'reductionsToOffsetDeficit') {
+          reportDetailsArray.push({
+            category: 'ReductionsToOffsetDeficit',
+            year,
+            a: reportDetails[each][year].A,
+            b: reportDetails[each][year].B
+          })
+        } else if (each !== 'transactions' && each !== 'pendingBalance') {
           const a = reportDetails[each][year].A
           const b = reportDetails[each][year].B
           reportDetailsArray.push({
@@ -334,7 +350,7 @@ const ComplianceObligationContainer = (props) => {
 
             const complianceResponseDetails =
               complianceResponse.data.complianceObligation
-            const { ldvSales } = complianceResponse.data
+            const { ldvSales, fromSnapshot } = complianceResponse.data
 
             if (ldvSales) {
               setSales(Number(ldvSales))
@@ -354,7 +370,9 @@ const ComplianceObligationContainer = (props) => {
               administrativeAllocation,
               administrativeReduction,
               automaticAdministrativePenalty,
-              deficitCollection
+              deficitCollection,
+              reductionsToOffsetDeficit,
+              carryOverDeficits
             } = getComplianceObligationDetails(complianceResponseDetails, radioSelection)
 
             if (pendingBalance && pendingBalance.length > 0) {
@@ -368,6 +386,8 @@ const ComplianceObligationContainer = (props) => {
               provisionalProvisionalBalance,
               provisionalBalance,
               deficitCollection,
+              reductionsToOffsetDeficit,
+              carryOverDeficits,
               transactions: {
                 creditsIssuedSales,
                 transfersIn,
@@ -395,16 +415,7 @@ const ComplianceObligationContainer = (props) => {
             )
             setTotalReduction(tempTotalReduction)
 
-            const tempBalances = []
-
-            Object.keys(provisionalBalance).forEach((year) => {
-              const { A: creditA, B: creditB } = provisionalBalance[year]
-              tempBalances.push({
-                modelYear: Number(year),
-                creditA,
-                creditB
-              })
-            })
+            const tempBalances = getNewBalancesStructure(provisionalBalance)
 
             setBalances(tempBalances)
 
@@ -445,13 +456,14 @@ const ComplianceObligationContainer = (props) => {
               tempBalances,
               tempClassAReductions,
               tempUnspecifiedReductions,
-              radioSelection
+              radioSelection,
+              carryOverDeficits
             )
 
             if (tempSupplierClass === 'S') {
               setUpdatedBalances({
                 balances: tempBalances,
-                deficits: []
+                deficits: getNewDeficitsStructure(carryOverDeficits)
               })
             } else {
               setDeductions(creditReduction.deductions)

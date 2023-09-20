@@ -69,7 +69,8 @@ const calculateCreditReduction = (
   argBalances,
   classAReductions,
   unspecifiedReductions,
-  radioId
+  radioId,
+  carryOverDeficits
 ) => {
   let balances = argBalances.map((each) => ({ ...each })) // clone the balances array
 
@@ -227,6 +228,16 @@ const calculateCreditReduction = (
         }
       }
     })
+  }
+
+  for (const [modelYear, deficit] of Object.entries(carryOverDeficits)) {
+    if (deficit.A > 0 || deficit.unspecified > 0) {
+      deficits.push({
+        modelYear,
+        creditA: deficit.A,
+        creditB: deficit.unspecified
+      })
+    }
   }
 
   return {

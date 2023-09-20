@@ -25,14 +25,23 @@ const getComplianceObligationDetails = (complianceResponseDetails, creditOffsetS
       endingBalanceB = Number(creditBalanceEnd[item.modelYear.name].B)
     }
 
+    // if some value in creditBalanceStart is < 0, assume it is in deficits
     if (item.category === 'creditBalanceStart') {
-      creditBalanceStart[item.modelYear.name] = {
-        A: Number(item.creditAValue),
-        B: Number(item.creditBValue)
+      const startA = Number(item.creditAValue)
+      const startB = Number(item.creditBValue)
+      if (startA >= 0 || startB >= 0) {
+        if (item.modelYear.name in creditBalanceStart) {
+          creditBalanceStart[item.modelYear.name].A += (startA >= 0 ? startA : 0)
+          creditBalanceStart[item.modelYear.name].B += (startB >= 0 ? startB : 0)
+        } else {
+          creditBalanceStart[item.modelYear.name] = {
+            A: startA >= 0 ? startA : 0,
+            B: startB >= 0 ? startB : 0
+          }
+        }
+        endingBalanceA += (startA >= 0 ? startA : 0)
+        endingBalanceB += (startB >= 0 ? startB : 0)
       }
-
-      endingBalanceA += Number(item.creditAValue)
-      endingBalanceB += Number(item.creditBValue)
     }
 
     if (item.category === 'deficit') {
@@ -183,7 +192,7 @@ const getComplianceObligationDetails = (complianceResponseDetails, creditOffsetS
     }
   })
 
-  const provisionalBalance = getNewProvisionalBalance(provisionalProvisionalBalance, deficitCollection, creditOffsetSelection)
+  const { provisionalBalance, reductionsToOffsetDeficit, carryOverDeficits } = getNewProvisionalBalance(provisionalProvisionalBalance, deficitCollection, creditOffsetSelection)
 
   //add deficits to creditBalanceEnd
   Object.entries(deficitCollection).forEach(([modelYear, deficits]) => {
@@ -213,7 +222,9 @@ const getComplianceObligationDetails = (complianceResponseDetails, creditOffsetS
     administrativeAllocation,
     administrativeReduction,
     automaticAdministrativePenalty,
-    deficitCollection
+    deficitCollection,
+    reductionsToOffsetDeficit,
+    carryOverDeficits
   }
 }
 

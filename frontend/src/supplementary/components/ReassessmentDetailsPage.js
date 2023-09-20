@@ -11,6 +11,7 @@ import ComplianceObligationReductionOffsetTable from '../../compliance/component
 import ComplianceObligationTableCreditsIssued from '../../compliance/components/ComplianceObligationTableCreditsIssued'
 import NoticeOfAssessmentSection from '../../compliance/components/NoticeOfAssessmentSection'
 import constructReassessmentReductions from '../../app/utilities/constructReassessmentReductions'
+import { getNewBalancesStructure } from '../../app/utilities/getNewStructures'
 
 const ReassessmentDetailsPage = (props) => {
   // from props, reconcile existing data with new data, then pass to downstream components
@@ -201,10 +202,11 @@ const ReassessmentDetailsPage = (props) => {
     purchaseAgreement,
     administrativeAllocation,
     administrativeReduction,
-    automaticAdministrativePenalty
+    automaticAdministrativePenalty,
+    carryOverDeficits
   } = getComplianceObligationDetails(complianceObligationDetails, creditReductionSelection)
 
-  const prevProvisionalBalance = getComplianceObligationDetails(obligationDetails, creditReductionSelection).provisionalBalance
+  const { provisionalBalance: prevProvisionalBalance, carryOverDeficits: prevCarryOverDeficits } = getComplianceObligationDetails(obligationDetails, creditReductionSelection)
 
   const reportDetails = {
     creditBalanceStart,
@@ -226,37 +228,23 @@ const ReassessmentDetailsPage = (props) => {
   const creditReductionSelection =
     details.assessmentData && details.assessmentData.creditReductionSelection
 
-  const transformedBalances = []
-  Object.keys(prevProvisionalBalance).forEach((year) => {
-    const { A: creditA, B: creditB } = prevProvisionalBalance[year]
-    transformedBalances.push({
-      modelYear: Number(year),
-      creditA,
-      creditB
-    })
-  })
+  const transformedBalances = getNewBalancesStructure(prevProvisionalBalance)
 
-  const transformedNewBalances = []
-  Object.keys(newBalances).forEach((year) => {
-    const { A: creditA, B: creditB } = newBalances[year]
-    transformedNewBalances.push({
-      modelYear: Number(year),
-      creditA,
-      creditB
-    })
-  })
+  const transformedNewBalances = getNewBalancesStructure(newBalances)
 
   const prevCreditReduction = calculateCreditReduction(
     transformedBalances,
     prevClassAReductions,
     prevUnspecifiedReductions,
-    creditReductionSelection
+    creditReductionSelection,
+    prevCarryOverDeficits
   )
   const creditReduction = calculateCreditReduction(
     transformedNewBalances,
     classAReductions,
     unspecifiedReductions,
-    creditReductionSelection
+    creditReductionSelection,
+    carryOverDeficits
   )
   const { deductions, balances, deficits } = creditReduction
   const prevDeductions = prevCreditReduction.deductions

@@ -13,8 +13,12 @@ const getNewProvisionalBalance = (provisionalProvisionalBalance, deficitCollecti
     offset(provisionalBalance, deficitBalances, 'A', 'unspecified')
     offset(provisionalBalance, deficitBalances, 'B', 'unspecified')
   }
-  mergeDeficitsToBalances(provisionalBalance, deficitBalances)
-  return provisionalBalance
+  const reductionsToOffsetDeficit = getReductions(provisionalProvisionalBalance, provisionalBalance)
+  return {
+    provisionalBalance,
+    reductionsToOffsetDeficit,
+    carryOverDeficits: deficitBalances
+  }
 }
 
 // the "balances" parameter should be an object where the values are of the type {A: primitive of type Number, B: primitive of type Number}
@@ -85,22 +89,31 @@ const offset = (balances, deficitBalances, creditType, deficitType) => {
   }
 }
 
-// "balances" should be objects whose values are of the type {A: number, B: number}
-// "deficitBalances" should be objects whose values are of the type {A: number >= 0, unspecified: number >= 0}
-const mergeDeficitsToBalances = (balances, deficitBalances) => {
-  for (const [modelYear, deficits] of Object.entries(deficitBalances)) {
-    if (deficits.A > 0 || deficits.unspecified > 0) {
-      if (modelYear in balances) {
-        balances[modelYear].A -= deficits.A
-        balances[modelYear].B -= deficits.unspecified
-      } else {
-        balances[modelYear] = {
-          A: deficits.A,
-          B: deficits.unspecified
-        }
+// "initialBalances" should be objects whose values are of the type {A: number, B: number}
+// "endingBalances" should be objects whose values are of the type {A: number, B: number}
+const getReductions = (initialBalances, endingBalances) => {
+  const result = {}
+  for (const [modelYear, balance] of Object.entries(initialBalances)) {
+    let reductionA = 0
+    let reductionB = 0
+    const initialBalanceA = balance.A
+    const initialBalanceB = balance.B
+    const endingBalanceA = endingBalances[modelYear] ? endingBalances[modelYear].A : Number.POSITIVE_INFINITY
+    const endingBalanceB = endingBalances[modelYear] ? endingBalances[modelYear].B : Number.POSITIVE_INFINITY
+    if (initialBalanceA > 0 && endingBalanceA >= 0 && initialBalanceA > endingBalanceA) {
+      reductionA = initialBalanceA - endingBalanceA
+    }
+    if (initialBalanceB > 0 && endingBalanceB >= 0 && initialBalanceB > endingBalanceB) {
+      reductionB = initialBalanceB - endingBalanceB
+    }
+    if (reductionA || reductionB) {
+      result[modelYear] = {
+        A: reductionA,
+        B: reductionB
       }
     }
   }
+  return result
 }
 
 export default getNewProvisionalBalance
