@@ -62,6 +62,11 @@ spec:
                 configMapKeyRef:
                   name: zeva-config{{ .Values.suffix }}
                   key: database_service_name
+            - name: DATABASE_SERVICE_NAME_READONLY
+              valueFrom:
+                configMapKeyRef:
+                  name: zeva-config{{ .Values.suffix }}
+                  key: database_service_name_readonly
             - name: POSTGRESQL_SERVICE_HOST
               valueFrom:
                 configMapKeyRef:

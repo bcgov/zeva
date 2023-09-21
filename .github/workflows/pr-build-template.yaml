@@ -176,6 +176,7 @@ jobs:
               --set frontendConfigMap.keycloakPostLogoutUrl=https://zeva-dev-${{ inputs.pr-number }}.apps.silver.devops.gov.bc.ca\
               --set appConfigMap.backendHostName=zeva-backend-dev-${{ inputs.pr-number }}.apps.silver.devops.gov.bc.ca \
               --set appConfigMap.databaseServiceName=zeva-spilo-dev-${{ inputs.pr-number }} \
+              --set appConfigMap.databaseServiceNameReadonly=zeva-spilo-dev${{ inputs.pr-number }}-readonly \
               --set appConfigMap.hostName=zeva-dev-${{ inputs.pr-number }}.apps.silver.devops.gov.bc.ca \
               -n ${{ secrets.dev-namespace }} -f ./values-dev.yaml zeva-frontend-dev-${{ inputs.pr-number }} .
           else
@@ -188,6 +189,7 @@ jobs:
               --set frontendConfigMap.keycloakPostLogoutUrl=https://zeva-dev-${{ inputs.pr-number }}.apps.silver.devops.gov.bc.ca \
               --set appConfigMap.backendHostName=zeva-backend-dev-${{ inputs.pr-number }}.apps.silver.devops.gov.bc.ca \
               --set appConfigMap.databaseServiceName=zeva-spilo-dev-${{ inputs.pr-number }} \
+              --set appConfigMap.databaseServiceNameReadonly=zeva-spilo-dev${{ inputs.pr-number }}-readonly \
               --set appConfigMap.hostName=zeva-dev-${{ inputs.pr-number }}.apps.silver.devops.gov.bc.ca \
               -n ${{ secrets.dev-namespace }} -f ./values-dev.yaml zeva-frontend-dev-${{ inputs.pr-number }} .
           fi

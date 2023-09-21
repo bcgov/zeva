@@ -9,6 +9,7 @@ data:
   database_engine: postgresql
   database_name: zeva
   database_service_name: {{ .Values.appConfigMap.databaseServiceName }}
+  database_service_name_readonly: {{ .Values.appConfigMap.databaseServiceNameReadonly }}
   django_debug: '{{ .Values.appConfigMap.djangoDebug }}'
   email_from_address: donotreply@gov.bc.ca
   email_sending_enabled: 'False'

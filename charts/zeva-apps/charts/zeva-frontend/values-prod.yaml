@@ -41,6 +41,7 @@ resources:
 appConfigMap:
   backendHostName: zeva-backend-prod.apps.silver.devops.gov.bc.ca
   databaseServiceName: zeva-spilo-prod
+  databaseServiceNameReadonly: zeva-spilo-prod-readonly
   djangoDebug: false
   ssoName: loginproxy.gov.bc.ca
   keycloakRealm: standard
