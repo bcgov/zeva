@@ -471,9 +471,9 @@ class CreditRequestViewset(
         if sorts:
             order_by = []
             for sort in sorts:
-                id = sort.get("id")
+                sort_id = sort.get("id")
                 desc = sort.get("desc")
-                sort_string = "-" + id if desc is True else id
+                sort_string = "-" + sort_id if desc is True else sort_id
                 if sort_string in [
                     'model_year.description',
                     '-model_year.description',
