@@ -353,30 +353,30 @@ class CreditRequestViewset(
                 break
 
         for filter in filters:
-            id = filter.get("id")
+            filter_id = filter.get("id")
             value = filter.get("value")
 
-            if id == 'xls_make':
+            if filter_id == 'xls_make':
                 submission_content = submission_content.filter(
                     xls_make__icontains=value
                 )
 
-            elif id == 'xls_model':
+            elif filter_id == 'xls_model':
                 submission_content = submission_content.filter(
                     xls_model__icontains=value
                 )
 
-            elif id == 'xls_model_year':
+            elif filter_id == 'xls_model_year':
                 submission_content = submission_content.filter(
                     xls_model_year__icontains=value
                 )
 
-            elif id == 'xls_vin':
+            elif filter_id == 'xls_vin':
                 submission_content = submission_content.filter(
                     xls_vin__icontains=value
                 )
 
-            elif id == 'warning' or include_overrides is True:
+            elif filter_id == 'warning' or include_overrides is True:
                 duplicate_vins = []
                 awarded_vins = []
                 not_registered = Q(xls_vin__in=[])
@@ -451,17 +451,17 @@ class CreditRequestViewset(
                     overridden_vins
                 )
 
-            elif id == 'model_year.description':
+            elif filter_id == 'model_year.description':
                 extra_filter_by.append('UPPER(model_year.description) LIKE %s')
                 string = value.replace('%', '')
                 extra_filter_params.append('%' + string.upper() + '%')
 
-            elif id == 'icbc_vehicle.make':
+            elif filter_id == 'icbc_vehicle.make':
                 extra_filter_by.append('UPPER(icbc_vehicle.make) LIKE %s')
                 string = value.replace('%', '')
                 extra_filter_params.append('%' + string.upper() + '%')
 
-            elif id == 'icbc_vehicle.model_name':
+            elif filter_id == 'icbc_vehicle.model_name':
                 extra_filter_by.append('UPPER(icbc_vehicle.model_name) LIKE %s')
                 string = value.replace('%', '')
                 extra_filter_params.append('%' + string.upper() + '%')

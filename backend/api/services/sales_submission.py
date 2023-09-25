@@ -11,6 +11,7 @@ from xlrd import xldate, XL_CELL_TEXT, XL_CELL_DATE, XLDateError
 from dateutil.parser import parse
 import datetime
 from api.models.vehicle_statuses import VehicleDefinitionStatuses
+from django.core.exceptions import ValidationError
 
 
 def get_map_of_sales_submission_ids_to_timestamps(user_is_government):
@@ -200,7 +201,7 @@ def get_map_of_sales_submission_content_ids_to_vehicles(
 ):
     result = {}
     for content in sales_submission_contents:
-        id = content.id
+        content_id = content.id
         try:
             model_year = float(content.xls_model_year)
         except ValueError:
@@ -233,7 +234,7 @@ def get_map_of_sales_submission_content_ids_to_vehicles(
                 final_matching_vehicles.append(vehicle)
 
         if final_matching_vehicles:
-            result[id] = final_matching_vehicles[0]
+            result[content_id] = final_matching_vehicles[0]
 
     return result
 
@@ -249,9 +250,9 @@ def populate_invalid_model_warnings(
 ):
     warning = "INVALID_MODEL"
     for content in sales_submission_contents:
-        id = content.id
-        if map_of_sales_submission_content_ids_to_vehicles.get(id) is None:
-            add_warning(warnings, id, warning)
+        content_id = content.id
+        if map_of_sales_submission_content_ids_to_vehicles.get(content_id) is None:
+            add_warning(warnings, content_id, warning)
 
 
 def populate_row_not_selected_warnings(
@@ -262,14 +263,14 @@ def populate_row_not_selected_warnings(
 ):
     warning = "ROW_NOT_SELECTED"
     for content in sales_submission_contents:
-        id = content.id
+        content_id = content.id
         vin = content.xls_vin
         sale_records = map_of_vins_to_records_of_sales.get(vin)
         if sale_records is None:
-            add_warning(warnings, id, warning)
+            add_warning(warnings, content_id, warning)
             continue
         match_found = False
-        vehicle = map_of_sales_submission_content_ids_to_vehicles.get(id)
+        vehicle = map_of_sales_submission_content_ids_to_vehicles.get(content_id)
         for sale_record in sale_records:
             if (
                 sale_record.vehicle == vehicle
@@ -279,33 +280,33 @@ def populate_row_not_selected_warnings(
                 match_found = True
                 break
         if not match_found:
-            add_warning(warnings, id, warning)
+            add_warning(warnings, content_id, warning)
 
 
 def populate_date_warnings(warnings, sales_submission_contents):
     invalid_date_warning = "INVALID_DATE"
     expired_date_warning = "EXPIRED_REGISTRATION_DATE"
     for content in sales_submission_contents:
-        id = content.id
+        content_id = content.id
         if content.xls_date_type == XL_CELL_DATE:
             try:
                 date_float = float(content.xls_sale_date)
             except ValueError:
-                add_warning(warnings, id, invalid_date_warning)
+                add_warning(warnings, content_id, invalid_date_warning)
                 continue
 
             try:
                 return xldate.xldate_as_datetime(date_float, content.xls_date_mode)
             except XLDateError:
-                add_warning(warnings, id, invalid_date_warning)
+                add_warning(warnings, content_id, invalid_date_warning)
 
         elif content.xls_date_type == XL_CELL_TEXT:
             try:
                 sale_date = parse(str(content.xls_sale_date), fuzzy=True)
                 if sale_date < datetime.datetime(2018, 1, 2):
-                    add_warning(warnings, id, expired_date_warning)
+                    add_warning(warnings, content_id, expired_date_warning)
             except ValueError:
-                add_warning(warnings, id, invalid_date_warning)
+                add_warning(warnings, content_id, invalid_date_warning)
 
 
 def populate_already_awarded_warnings(
@@ -315,7 +316,7 @@ def populate_already_awarded_warnings(
 ):
     warning = "VIN_ALREADY_AWARDED"
     for content in sales_submission_contents:
-        id = content.id
+        content_id = content.id
         vin = content.xls_vin
         sale_records = map_of_vins_to_records_of_sales.get(vin)
         if sale_records is None:
@@ -328,7 +329,7 @@ def populate_already_awarded_warnings(
             ):
                 matching_records.append(sale_record)
         if matching_records:
-            add_warning(warnings, id, warning)
+            add_warning(warnings, content_id, warning)
 
 
 def populate_is_duplicate_warnings(warnings, sales_submission_contents):
@@ -342,12 +343,12 @@ def populate_is_duplicate_warnings(warnings, sales_submission_contents):
         vins.append(vin)
 
     for x in potential_duplicates:
-        id = x.id
+        content_id = x.id
         for y in potential_duplicates:
             if x == y:
                 continue
             if y.create_timestamp < x.update_timestamp:
-                add_warning(warnings, id, warning)
+                add_warning(warnings, content_id, warning)
                 break
 
 
@@ -362,7 +363,7 @@ def populate_icbc_warnings(
     make_mismatch_warning = "MAKE_MISMATCHED"
 
     for content in sales_submission_contents:
-        id = content.id
+        content_id = content.id
         vin = content.xls_vin
         icbc_record = map_of_vins_to_icbc_data.get(vin)
         if (
@@ -377,15 +378,15 @@ def populate_icbc_warnings(
             )
             >= content.update_timestamp
         ):
-            add_warning(warnings, id, no_match_warning)
+            add_warning(warnings, content_id, no_match_warning)
             continue
 
-        vehicle = map_of_sales_submission_content_ids_to_vehicles.get(id)
+        vehicle = map_of_sales_submission_content_ids_to_vehicles.get(content_id)
         if vehicle is not None:
             if icbc_record.icbc_vehicle.model_year != vehicle.model_year:
-                add_warning(warnings, id, model_year_mismatch_warning)
+                add_warning(warnings, content_id, model_year_mismatch_warning)
             if icbc_record.icbc_vehicle.make != vehicle.make:
-                add_warning(warnings, id, make_mismatch_warning)
+                add_warning(warnings, content_id, make_mismatch_warning)
 
 
 def get_warnings_and_maps(sales_submission_contents):
@@ -399,7 +400,9 @@ def get_warnings_and_maps(sales_submission_contents):
     sales_submission = None
     for index, content in enumerate(sales_submission_contents):
         if index != 0 and content.submission != sales_submission:
-            raise Exception
+            raise ValidationError(
+                "sales submission contents should all belong to the same sales submission"
+            )
         sales_submission = content.submission
 
     warnings = {}
