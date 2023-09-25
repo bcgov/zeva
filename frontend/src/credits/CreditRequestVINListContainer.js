@@ -21,13 +21,20 @@ const CreditRequestVINListContainer = (props) => {
 
   const [content, setContent] = useState([])
   const [submission, setSubmission] = useState([])
-  const [loading, setLoading] = useState(true)
   const [invalidatedList, setInvalidatedList] = useState([])
   const [reasons, setReasons] = useState([])
   const [modified, setModified] = useState([])
   const [reasonList, setReasonList] = useState([])
-  const [initialPageCount, setInitialPageCount] = useState(-1)
   const [errors, setError] = useState([])
+
+  const [contentCount, setContentCount] = useState(0)
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(100)
+  const [filters, setFilters] = useState([])
+  const [sorts, setSorts] = useState([{ id: 'xls_sale_date', desc: true }])
+
+  const [initialLoading, setInitialLoading] = useState(true)
+  const [tableLoading, setTableLoading] = useState(true)
 
   const query = qs.parse(location.search, { ignoreQueryPrefix: true })
   const reset = query && query.reset
@@ -36,7 +43,6 @@ const CreditRequestVINListContainer = (props) => {
     axios
       .all([
         axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id)),
-        axios.get(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', id) + (reset ? '?reset=Y' : '')),
         axios.get(ROUTES_CREDIT_REQUESTS.UNSELECTED.replace(':id', id), {
           params: query
         }),
@@ -46,7 +52,6 @@ const CreditRequestVINListContainer = (props) => {
         axios.spread(
           (
             submissionResponse,
-            contentResponse,
             unselectedResponse,
             reasonsResponse
           ) => {
@@ -56,35 +61,7 @@ const CreditRequestVINListContainer = (props) => {
             setInvalidatedList(unselected)
             const { data: reasonsData } = reasonsResponse
             setReasons(reasonsData)
-
-            // Initialize content and reason values
-            const { content: contentListData, pages: numPages, errors: errorDict } =
-              contentResponse.data
-            const reasonListData = []
-
-            // Set content and reason values for each model row
-            contentListData.forEach((row, idx) => {
-              const subId = Number(row.id)
-              const noMatch = row.warnings?.includes('NO_ICBC_MATCH')
-              if (reset) {
-                contentListData[idx].reason = noMatch ? reasons[0] : ''
-                reasonListData.push({
-                  id: subId,
-                  reason: noMatch ? reasons[0] : ''
-                })
-              } else {
-                reasonListData.push({
-                  id: subId,
-                  reason: row.reason
-                })
-              }
-            })
-
-            setInitialPageCount(numPages)
-            setContent(contentListData)
-            setReasonList(reasonListData)
-            setError(errorDict)
-            setLoading(false)
+            setInitialLoading(false)
           }
         )
       )
@@ -93,6 +70,69 @@ const CreditRequestVINListContainer = (props) => {
   useEffect(() => {
     refreshDetails()
   }, [id])
+
+  useEffect(() => {
+    setTableLoading(true)
+    const data = {
+      filters,
+      sorts,
+      pageSize,
+      page,
+      reset
+    }
+    axios.post(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', id), data).then((response) => {
+      // Initialize content and reason values
+      const { content: contentListData, count, errors: errorDict } = response.data
+      const reasonListData = []
+
+      // Set content and reason values for each model row
+      contentListData.forEach((row, idx) => {
+        const subId = Number(row.id)
+        const noMatch = row.warnings?.includes('NO_ICBC_MATCH')
+        if (reset) {
+          contentListData[idx].reason = noMatch ? reasons[0] : ''
+          reasonListData.push({
+            id: subId,
+            reason: noMatch ? reasons[0] : ''
+          })
+        } else {
+          reasonListData.push({
+            id: subId,
+            reason: row.reason
+          })
+        }
+      })
+
+      contentListData.forEach((row, idx) => {
+        const reasonIndex = reasonList.findIndex(
+          (x) => Number(x.id) === Number(row.id)
+        )
+
+        // The reasonList stores any changes to reasons
+        // a user has made. If the user filters or sorts, the content
+        // value can be different when it comes back from the server
+        // and their changes would be lost.
+        // To account for this we set the refreshedContent reason value
+        // to the value in the reasonList so we don't lose the user changes.
+        if (reasonIndex >= 0) {
+          contentListData[idx].reason = reasonList[reasonIndex].reason
+        } else if (reasonIndex < 0) {
+          // If the reason with id doesn't exist in the reasonList
+          // then we add it here matching the content reason value
+          reasonList.push({
+            id: Number(row.id),
+            reason: row.reason
+          })
+        }
+      })
+
+      setContent(contentListData)
+      setContentCount(count)
+      setReasonList(reasonListData)
+      setError(errorDict)
+      setTableLoading(false)
+    })
+  }, [id, page, pageSize, filters, sorts])
 
   const handleChangeReason = (submissionId, value = false) => {
     const newContent = content
@@ -175,7 +215,7 @@ const CreditRequestVINListContainer = (props) => {
   }
 
   const handleSubmit = () => {
-    setLoading(true)
+    setInitialLoading(true)
 
     axios
       .patch(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id), {
@@ -194,7 +234,7 @@ const CreditRequestVINListContainer = (props) => {
       })
   }
 
-  if (loading) {
+  if (initialLoading) {
     return <Loading />
   }
 
@@ -208,7 +248,6 @@ const CreditRequestVINListContainer = (props) => {
       invalidatedList={invalidatedList}
       modified={modified}
       query={query}
-      initialPageCount={initialPageCount}
       reasons={reasons}
       routeParams={match.params}
       setContent={setContent}
@@ -216,6 +255,16 @@ const CreditRequestVINListContainer = (props) => {
       submission={submission}
       user={user}
       errors={errors}
+      tableLoading={tableLoading}
+      itemsCount={contentCount}
+      page={page}
+      setPage={setPage}
+      pageSize={pageSize}
+      setPageSize={setPageSize}
+      filters={filters}
+      setFilters={setFilters}
+      sorts={sorts}
+      setSorts={setSorts}
     />
   )
 }

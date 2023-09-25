@@ -3,11 +3,12 @@
  */
 import moment from 'moment-timezone'
 import PropTypes from 'prop-types'
-import React, { useState } from 'react'
+import React from 'react'
 import ReactTable from 'react-table'
 
 import CREDIT_ERROR_CODES from '../../app/constants/errorCodes'
 import CustomPropTypes from '../../app/utilities/props'
+import calculateNumberOfPages from '../../app/utilities/calculateNumberOfPages'
 
 const VINListTable = (props) => {
   const {
@@ -15,21 +16,23 @@ const VINListTable = (props) => {
     items,
     user,
     invalidatedList,
-    filtered,
     handleChangeReason,
     modified,
-    loading,
-    pages,
     query,
     readOnly,
     reasons,
-    refreshContent,
-    setFiltered,
-    setReactTable,
-    preInitialize
+    tableLoading,
+    itemsCount,
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    filters,
+    setFilters,
+    sorts,
+    setSorts,
   } = props
 
-  const [tableInitialized, setTableInitialized] = useState(false)
   const reset = query && query.reset
 
   const getErrorCodes = (item, fields = false) => {
@@ -292,20 +295,32 @@ const VINListTable = (props) => {
 
   return (
     <ReactTable
+      manual
       columns={columns}
       data={items}
-      filtered={filtered}
-      filterable
-      defaultPageSize={100}
-      onFilteredChange={(input) => {
-        setFiltered(input)
+      loading={tableLoading}
+      filterable={true}
+      pageSizeOptions={[5, 10, 20, 25, 50, 100]}
+      page={page - 1}
+      pages={calculateNumberOfPages(itemsCount, pageSize)}
+      pageSize={pageSize}
+      sorted={sorts}
+      filtered={filters}
+      onPageChange={(pageIndex) => {
+        setPage(pageIndex + 1)
       }}
-      defaultSorted={[
-        {
-          id: 'xls_sale_date',
-          desc: true
-        }
-      ]}
+      onPageSizeChange={(pageSize) => {
+        setPage(1)
+        setPageSize(pageSize)
+      }}
+      onSortedChange={(newSorted) => {
+        setPage(1)
+        setSorts(newSorted)
+      }}
+      onFilteredChange={(filtered) => {
+        setPage(1)
+        setFilters(filtered)
+      }}
       getTrProps={(state, rowInfo) => {
         if (rowInfo) {
           const warnings = rowInfo.row.warning.split(', ')
@@ -342,52 +357,11 @@ const VINListTable = (props) => {
         }
         return {}
       }}
-      loading={loading}
-      manual
-      onFetchData={(state) => {
-        // onFetchData is called on component load (and on changes afterword)
-        // which we want to avoid, so this tableInitialized
-        // variable cancels out the first call to this method
-        if (!tableInitialized && preInitialize) {
-          setTableInitialized(true)
-        } else if (!tableInitialized) {
-          setTableInitialized(true)
-          return
-        }
-        const filters = {}
-
-        state.filtered.forEach((each) => {
-          filters[each.id] = each.value
-        })
-        const sorted = []
-
-        state.sorted.forEach((each) => {
-          let value = each.id
-
-          if (each.desc) {
-            value = `-${value}`
-          }
-
-          sorted.push(value)
-        })
-
-        if (Object.keys(filters).length === 0 && sorted.length <= 0) {
-          return
-        }
-
-        refreshContent(state, filters)
-      }}
-      pages={pages}
-      ref={(ref) => {
-        setReactTable(ref)
-      }}
     />
   )
 }
 
 VINListTable.defaultProps = {
-  filtered: undefined,
-  setFiltered: undefined,
   modified: [],
   query: null,
   readOnly: false,
@@ -403,20 +377,23 @@ VINListTable.propTypes = {
   invalidatedList: PropTypes.arrayOf(
     PropTypes.oneOfType([PropTypes.number, PropTypes.string])
   ).isRequired,
-  filtered: PropTypes.arrayOf(PropTypes.shape()),
-  loading: PropTypes.bool.isRequired,
   modified: PropTypes.arrayOf(
     PropTypes.oneOfType([PropTypes.number, PropTypes.string])
   ),
-  pages: PropTypes.number.isRequired,
   query: PropTypes.shape(),
   readOnly: PropTypes.bool,
   reasons: PropTypes.arrayOf(PropTypes.string),
-  refreshContent: PropTypes.func.isRequired,
-  setFiltered: PropTypes.func,
-  setLoading: PropTypes.func.isRequired,
-  setReactTable: PropTypes.func.isRequired,
-  user: CustomPropTypes.user.isRequired
+  user: CustomPropTypes.user.isRequired,
+  tableLoading: PropTypes.bool.isRequired,
+  itemsCount: PropTypes.number.isRequired,
+  page: PropTypes.number.isRequired,
+  setPage: PropTypes.func.isRequired,
+  pageSize: PropTypes.number.isRequired,
+  setPageSize: PropTypes.func.isRequired,
+  filters: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  setFilters: PropTypes.func.isRequired,
+  sorts: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  setSorts: PropTypes.func.isRequired,
 }
 
 export default VINListTable
