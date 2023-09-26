@@ -5,10 +5,10 @@ import moment from 'moment-timezone'
 import PropTypes from 'prop-types'
 import React from 'react'
 import ReactTable from 'react-table'
-
 import CREDIT_ERROR_CODES from '../../app/constants/errorCodes'
 import CustomPropTypes from '../../app/utilities/props'
 import calculateNumberOfPages from '../../app/utilities/calculateNumberOfPages'
+import CustomFilterComponent from '../../app/components/CustomFilterComponent'
 
 const VINListTable = (props) => {
   const {
@@ -31,6 +31,7 @@ const VINListTable = (props) => {
     setFilters,
     sorts,
     setSorts,
+    applyFilters
   } = props
 
   const reset = query && query.reset
@@ -60,6 +61,8 @@ const VINListTable = (props) => {
     return errorCodes
   }
 
+  const filterPlaceholderText = 'Press "Enter" to search'
+
   const columns = [
     {
       Header: 'Supplier Information',
@@ -78,19 +81,25 @@ const VINListTable = (props) => {
           className: 'text-center',
           Header: 'MY',
           id: 'xls_model_year',
-          width: 75
+          width: 75,
+          Placeholder: filterPlaceholderText,
+          applyFilters
         },
         {
           accessor: 'xlsMake',
           Header: 'Make',
           id: 'xls_make',
-          width: 100
+          width: 100,
+          Placeholder: filterPlaceholderText,
+          applyFilters
         },
         {
           accessor: 'xlsModel',
           Header: 'Model',
           id: 'xls_model',
-          width: 200
+          width: 200,
+          Placeholder: filterPlaceholderText,
+          applyFilters
         },
         {
           accessor: (row) =>
@@ -115,7 +124,9 @@ const VINListTable = (props) => {
           Header: 'VIN',
           headerClassName: 'vin',
           id: 'xls_vin',
-          width: 175
+          width: 175,
+          Placeholder: filterPlaceholderText,
+          applyFilters
         }
       ]
     },
@@ -139,7 +150,9 @@ const VINListTable = (props) => {
           Header: 'MY',
           headerClassName: 'icbc-model-year',
           id: 'model_year.description',
-          width: 75
+          width: 75,
+          Placeholder: filterPlaceholderText,
+          applyFilters
         },
         {
           accessor: (item) => {
@@ -156,7 +169,9 @@ const VINListTable = (props) => {
           className: 'icbc-make',
           Header: 'Make',
           id: 'icbc_vehicle.make',
-          width: 100
+          width: 100,
+          Placeholder: filterPlaceholderText,
+          applyFilters
         },
         {
           accessor: (item) => {
@@ -173,7 +188,9 @@ const VINListTable = (props) => {
           className: 'icbc-model',
           Header: 'Model',
           id: 'icbc_vehicle.model_name',
-          width: 200
+          width: 200,
+          Placeholder: filterPlaceholderText,
+          applyFilters
         }
       ]
     },
@@ -188,7 +205,9 @@ const VINListTable = (props) => {
           headerClassName: 'warning',
           id: 'warning',
           sortable: false,
-          width: 150
+          width: 150,
+          Placeholder: filterPlaceholderText,
+          applyFilters
         },
         {
           accessor: (row) => {
@@ -318,9 +337,9 @@ const VINListTable = (props) => {
         setSorts(newSorted)
       }}
       onFilteredChange={(filtered) => {
-        setPage(1)
         setFilters(filtered)
       }}
+      FilterComponent={CustomFilterComponent}
       getTrProps={(state, rowInfo) => {
         if (rowInfo) {
           const warnings = rowInfo.row.warning.split(', ')
@@ -394,6 +413,7 @@ VINListTable.propTypes = {
   setFilters: PropTypes.func.isRequired,
   sorts: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   setSorts: PropTypes.func.isRequired,
+  applyFilters: PropTypes.func.isRequired
 }
 
 export default VINListTable

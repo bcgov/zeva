@@ -46,6 +46,7 @@ from api.paginations import BasicPagination
 from api.services.filter_utilities import get_search_terms, get_search_q_object
 from api.services.sales_submission import get_map_of_sales_submission_ids_to_timestamps
 from api.services.sales_submission import get_warnings_and_maps
+from api.utilities.generic import get_inverse_map
 
 
 class CreditRequestViewset(
@@ -346,6 +347,9 @@ class CreditRequestViewset(
         extra_filter_by = []
         extra_filter_params = []
 
+        warnings_and_maps = get_warnings_and_maps(submission_content)
+        map_of_warnings_to_content_ids = get_inverse_map(warnings_and_maps.get('warnings'))
+
         include_overrides = False
         for filter in filters:
             if filter.get("id") == 'include_overrides' and filter.get("value") is True:
@@ -376,80 +380,51 @@ class CreditRequestViewset(
                     xls_vin__icontains=value
                 )
 
-            elif filter_id == 'warning' or include_overrides is True:
-                duplicate_vins = []
-                awarded_vins = []
-                not_registered = Q(xls_vin__in=[])
-                sale_date = Q(xls_vin__in=[])
-                mismatch_vins = Q(xls_vin__in=[])
-                invalid_date = Q(xls_vin__in=[])
-                overridden_vins = Q(xls_vin__in=[])
+            elif filter_id == 'warning':
+                q_obj = Q(id__in=[])
 
-                if value == '1' or value == '3':
-                    duplicate_vins = Subquery(submission_content.values(
-                        'xls_vin'
-                    ).annotate(
-                        vin_count=Count('xls_vin')
-                    ).values_list(
-                        'xls_vin', flat=True
-                    ).filter(vin_count__gt=1))
+                if value == '1':
+                    warnings_to_search_for = [
+                        "NO_ICBC_MATCH",
+                        "VIN_ALREADY_AWARDED",
+                        "DUPLICATE_VIN",
+                        "INVALID_MODEL",
+                        "MODEL_YEAR_MISMATCHED",
+                        "MAKE_MISMATCHED",
+                        "EXPIRED_REGISTRATION_DATE",
+                        "INVALID_DATE"
+                    ]
+                    warnings_map = warnings_and_maps.get('warnings')
+                    ids_with_warnings = []
+                    for content_id, warnings in warnings_map.items():
+                        for warning in warnings:
+                            if warning in warnings_to_search_for:
+                                ids_with_warnings.append(content_id)
+                                break
+                    q_obj = Q(id__in=ids_with_warnings)
 
-                if value == '1' or value == '3':
-                    awarded_vins = Subquery(RecordOfSale.objects.exclude(
-                        submission_id=pk
-                    ).values_list('vin', flat=True))
+                elif value == '11':
+                    q_obj = Q(id__in=map_of_warnings_to_content_ids.get("NO_ICBC_MATCH", []))
 
-                if value == '1' or value == '11':
-                    not_registered = ~Q(xls_vin__in=Subquery(
-                        IcbcRegistrationData.objects.values('vin')
-                    ))
+                elif value == '21':
+                    q_obj = Q(id__in=map_of_warnings_to_content_ids.get("VIN_ALREADY_AWARDED", []))
 
-                if value == '1' or value == '5':
-                    sale_date = Q(
-                        Q(
-                            Q(xls_sale_date__lte="43102.0") &
-                            Q(xls_date_type="3") &
-                            ~Q(xls_sale_date="")
-                        ) |
-                        Q(
-                            Q(xls_sale_date__lte="2018-01-02") &
-                            Q(xls_date_type="1") &
-                            ~Q(xls_sale_date="")
-                        )
-                    )
+                elif value == '31':
+                    q_obj = Q(id__in=map_of_warnings_to_content_ids.get("DUPLICATE_VIN", []))
 
-                if value == '1' or value == '6':
-                    invalid_date = Q(Q(xls_sale_date__lte="0") | Q(xls_sale_date=""))
+                elif value == '41':
+                    q_obj = Q(id__in=map_of_warnings_to_content_ids.get("INVALID_MODEL", [])) | Q(id__in=map_of_warnings_to_content_ids.get("MODEL_YEAR_MISMATCHED", [])) | Q(id__in=map_of_warnings_to_content_ids.get("MAKE_MISMATCHED", []))
 
-                if value == '1' or value == '4':
-                    mismatch_vins = Q(id__in=RawSQL(" \
-                        SELECT id FROM sales_submission_content a, \
-                            (SELECT vin, make, CAST(description as float) \
-                                as model_year \
-                            FROM icbc_registration_data JOIN icbc_vehicle \
-                                ON icbc_vehicle_id = icbc_vehicle.id JOIN \
-                                    model_year \
-                                ON model_year_id = model_year.id) as b \
-                            WHERE a.xls_vin = b.vin AND \
-                                (xls_make != b.make OR \
-                                    CAST(xls_model_year as float) \
-                                        != b.model_year) \
-                            AND submission_id = %s",
-                        (pk,)
-                    ))
+                elif value == '51':
+                    q_obj = Q(id__in=map_of_warnings_to_content_ids.get("EXPIRED_REGISTRATION_DATE", []))
+
+                elif value == '61':
+                    q_obj = Q(id__in=map_of_warnings_to_content_ids.get("INVALID_DATE", []))
 
                 if include_overrides is True:
-                    overridden_vins = Q(reason__isnull=False)
+                    q_obj = q_obj | Q(reason__isnull=False)
 
-                submission_content = submission_content.filter(
-                    Q(xls_vin__in=duplicate_vins) |
-                    Q(xls_vin__in=awarded_vins) |
-                    not_registered |
-                    sale_date |
-                    invalid_date |
-                    mismatch_vins |
-                    overridden_vins
-                )
+                submission_content = submission_content.filter(q_obj)
 
             elif filter_id == 'model_year.description':
                 extra_filter_by.append('UPPER(model_year.description) LIKE %s')
@@ -513,8 +488,6 @@ class CreditRequestViewset(
                 params=extra_filter_params,
                 order_by=extra_order_by
             )
-
-        warnings_and_maps = get_warnings_and_maps(submission_content)
 
         submission_content_paginator = Paginator(submission_content, page_size)
 

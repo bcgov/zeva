@@ -76,7 +76,6 @@ class SalesSubmissionContentSerializer(ModelSerializer):
 
 class SalesSubmissionContentBulkSerializer(ModelSerializer):
     icbc_verification = SerializerMethodField()
-    record_of_sale = SerializerMethodField()
     vehicle = SerializerMethodField()
     warnings = SerializerMethodField()
 
@@ -92,41 +91,6 @@ class SalesSubmissionContentBulkSerializer(ModelSerializer):
                 icbc_data, context={"submission_id": instance.submission.id}
             )
             return serializer.data
-
-        return None
-
-    def get_record_of_sale(self, instance):
-        request = self.context.get("request")
-        map_of_vins_to_records_of_sales = self.context.get("warnings_and_maps").get(
-            "map_of_vins_to_records_of_sales"
-        )
-        map_of_sales_submission_content_ids_to_vehicles = self.context.get(
-            "warnings_and_maps"
-        ).get("map_of_sales_submission_content_ids_to_vehicles")
-        sale_records = map_of_vins_to_records_of_sales.get(instance.xls_vin)
-
-        if sale_records is not None:
-            record_of_sale = None
-            for sale_record in sale_records:
-                if (
-                    sale_record.submission == instance.submission
-                    and sale_record.vehicle
-                    == map_of_sales_submission_content_ids_to_vehicles.get(instance.id)
-                    and sale_record.create_timestamp < instance.update_timestamp
-                ):
-                    record_of_sale = sale_record
-                    break
-
-            if record_of_sale and (
-                request.user.is_government
-                or instance.submission.validation_status
-                == SalesSubmissionStatuses.VALIDATED
-            ):
-                serializer = RecordOfSaleSerializer(
-                    instance.record_of_sale, read_only=True
-                )
-
-                return serializer.data
 
         return None
 
@@ -162,7 +126,6 @@ class SalesSubmissionContentBulkSerializer(ModelSerializer):
             "xls_model",
             "xls_model_year",
             "xls_vin",
-            "record_of_sale",
             "sales_date",
             "warnings",
             "icbc_verification",

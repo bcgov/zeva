@@ -27,8 +27,9 @@ const CreditRequestValidatedDetailsContainer = (props) => {
   const [contentCount, setContentCount] = useState(0)
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(100)
-  const [filters, setFilters] = useState([])
+  const [filters, setFilters] = useState([{id: 'warning', value: '1'}])
   const [sorts, setSorts] = useState([{ id: 'xls_sale_date', desc: true }])
+  const [applyFiltersCount, setApplyFiltersCount] = useState(0)
 
   const [initialLoading, setInitialLoading] = useState(true)
   const [tableLoading, setTableLoading] = useState(true)
@@ -38,7 +39,7 @@ const CreditRequestValidatedDetailsContainer = (props) => {
   const refreshDetails = () => {
     axios
       .all([
-        axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id)),
+        axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id) + '?skip_content=true'),
         axios.get(ROUTES_CREDIT_REQUESTS.UNSELECTED.replace(':id', id), {
           params: query
         })
@@ -90,9 +91,12 @@ const CreditRequestValidatedDetailsContainer = (props) => {
 
   useEffect(() => {
     setTableLoading(true)
-    let filtersToUse = filters
-    if (filtersToUse.length === 0) {
-      filtersToUse = [{id: 'warning', value: '1'}, {id: 'include_overrides', value: true}]
+    const filtersToUse = [...filters]
+    for (const filter of filters) {
+      if (filter.id === 'warning' && filter.value === '1') {
+        filtersToUse.push({ id: 'include_overrides', value: true })
+        break
+      }
     }
     const data = {
       filters: filtersToUse,
@@ -106,7 +110,7 @@ const CreditRequestValidatedDetailsContainer = (props) => {
       setContentCount(count)
       setTableLoading(false)
     })
-  }, [id, page, pageSize, filters, sorts])
+  }, [id, page, pageSize, applyFiltersCount, sorts])
 
   if (initialLoading) {
     return <Loading />
@@ -130,6 +134,7 @@ const CreditRequestValidatedDetailsContainer = (props) => {
       setFilters={setFilters}
       sorts={sorts}
       setSorts={setSorts}
+      setApplyFiltersCount={setApplyFiltersCount}
     />
   )
 }

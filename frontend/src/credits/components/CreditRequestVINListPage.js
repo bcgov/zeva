@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import Button from '../../app/components/Button'
 import CustomPropTypes from '../../app/utilities/props'
@@ -27,9 +27,8 @@ const CreditRequestVINListPage = (props) => {
     setFilters,
     sorts,
     setSorts,
+    setApplyFiltersCount
   } = props
-
-  const [selectedOption, setSelectedOption] = useState('')
 
   const handleSelect = (event) => {
     const { value } = event.target
@@ -45,14 +44,29 @@ const CreditRequestVINListPage = (props) => {
       filtersCopy.push(filter)
     }
 
-    setSelectedOption(value)
     setFilters(filtersCopy)
   }
 
-  const clearFilters = () => {
-    setSelectedOption('')
-    setFilters([])
+  const applyFilters = () => {
     setPage(1)
+    setApplyFiltersCount((prev) => {
+      return prev + 1
+    })
+  }
+
+  const clearFilters = () => {
+    setFilters([])
+  }
+
+  const getSelectedWarning = () => {
+    let result = ''
+    for (const filter of filters) {
+      if (filter.id === 'warning') {
+        result = filter.value
+        break
+      }
+    }
+    return result
   }
 
   const actionBar = (
@@ -91,7 +105,7 @@ const CreditRequestVINListPage = (props) => {
             <select
               className="form-control h-auto py-2"
               onChange={handleSelect}
-              value={selectedOption}
+              value={getSelectedWarning()}
             >
               <option value="">Filter by Error Type</option>
               <option value="1">1 - Show all warnings ({errors.TOTAL ? errors.TOTAL : 0})</option>
@@ -115,6 +129,15 @@ const CreditRequestVINListPage = (props) => {
             type="button"
           >
             Clear Filters
+          </button>
+          <button
+            className="button d-inline-block align-middle"
+            onClick={() => {
+              applyFilters()
+            }}
+            type="button"
+          >
+            Apply
           </button>
         </div>
       </div>
@@ -140,6 +163,7 @@ const CreditRequestVINListPage = (props) => {
             setFilters={setFilters}
             sorts={sorts}
             setSorts={setSorts}
+            applyFilters={applyFilters}
           />
         </div>
       </div>
@@ -181,6 +205,7 @@ CreditRequestVINListPage.propTypes = {
   setFilters: PropTypes.func.isRequired,
   sorts: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   setSorts: PropTypes.func.isRequired,
+  setApplyFiltersCount: PropTypes.func.isRequired
 }
 
 export default CreditRequestVINListPage

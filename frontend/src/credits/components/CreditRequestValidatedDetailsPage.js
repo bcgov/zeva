@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import ReactQuill from 'react-quill'
 import PropTypes from 'prop-types'
 import Button from '../../app/components/Button'
@@ -25,9 +25,8 @@ const CreditRequestValidatedDetailsPage = (props) => {
     setFilters,
     sorts,
     setSorts,
+    setApplyFiltersCount
   } = props
-
-  const [selectedOption, setSelectedOption] = useState('')
 
   const handleSelect = (event) => {
     const { value } = event.target
@@ -43,14 +42,29 @@ const CreditRequestValidatedDetailsPage = (props) => {
       filtersCopy.push(filter)
     }
 
-    setSelectedOption(value)
     setFilters(filtersCopy)
   }
 
-  const clearFilters = () => {
-    setSelectedOption('')
-    setFilters([])
+  const applyFilters = () => {
     setPage(1)
+    setApplyFiltersCount((prev) => {
+      return prev + 1
+    })
+  }
+
+  const clearFilters = () => {
+    setFilters([])
+  }
+
+  const getSelectedWarning = () => {
+    let result = ''
+    for (const filter of filters) {
+      if (filter.id === 'warning') {
+        result = filter.value
+        break
+      }
+    }
+    return result
   }
 
   const actionBar = (
@@ -100,18 +114,18 @@ const CreditRequestValidatedDetailsPage = (props) => {
             <select
               className="form-control h-auto py-2"
               onChange={handleSelect}
-              value={selectedOption}
+              value={getSelectedWarning()}
             >
-              <option value="">Filter by Error Type</option>
-              <option value="1">1 - Show all warnings</option>
-              <option value="11">11 - VIN not registered in B.C.</option>
-              <option value="21">21 - VIN already issued credits</option>
-              <option value="31">31 - Duplicate VIN</option>
+              <option value="">Filter</option>
+              <option value="1">Error 1 - Show all warnings</option>
+              <option value="11">Error 11 - VIN not registered in B.C.</option>
+              <option value="21">Error 21 - VIN already issued credits</option>
+              <option value="31">Error 31 - Duplicate VIN</option>
               <option value="41">
-                41 - Model year and/or make does not match
+                Error 41 - Model year and/or make does not match
               </option>
-              <option value="51">51 - Sale prior to Jan 2018</option>
-              <option value="61">61 - Invalid date format</option>
+              <option value="51">Error 51 - Sale prior to Jan 2018</option>
+              <option value="61">Error 61 - Invalid date format</option>
             </select>
           </span>
 
@@ -124,6 +138,15 @@ const CreditRequestValidatedDetailsPage = (props) => {
             type="button"
           >
             Clear Filters
+          </button>
+          <button
+            className="button d-inline-block align-middle"
+            onClick={() => {
+              applyFilters()
+            }}
+            type="button"
+          >
+            Apply
           </button>
         </div>
       </div>
@@ -145,6 +168,7 @@ const CreditRequestValidatedDetailsPage = (props) => {
             setFilters={setFilters}
             sorts={sorts}
             setSorts={setSorts}
+            applyFilters={applyFilters}
           />
         </div>
       </div>
@@ -217,7 +241,6 @@ CreditRequestValidatedDetailsPage.propTypes = {
   invalidatedList: PropTypes.arrayOf(
     PropTypes.oneOfType([PropTypes.number, PropTypes.string])
   ).isRequired,
-  setContent: PropTypes.func.isRequired,
   submission: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
   tableLoading: PropTypes.bool.isRequired,

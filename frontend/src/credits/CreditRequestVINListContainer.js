@@ -32,6 +32,7 @@ const CreditRequestVINListContainer = (props) => {
   const [pageSize, setPageSize] = useState(100)
   const [filters, setFilters] = useState([])
   const [sorts, setSorts] = useState([{ id: 'xls_sale_date', desc: true }])
+  const [applyFiltersCount, setApplyFiltersCount] = useState(0)
 
   const [initialLoading, setInitialLoading] = useState(true)
   const [tableLoading, setTableLoading] = useState(true)
@@ -42,7 +43,7 @@ const CreditRequestVINListContainer = (props) => {
   const refreshDetails = () => {
     axios
       .all([
-        axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id)),
+        axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id) + '?skip_content=true'),
         axios.get(ROUTES_CREDIT_REQUESTS.UNSELECTED.replace(':id', id), {
           params: query
         }),
@@ -132,7 +133,7 @@ const CreditRequestVINListContainer = (props) => {
       setError(errorDict)
       setTableLoading(false)
     })
-  }, [id, page, pageSize, filters, sorts])
+  }, [id, page, pageSize, applyFiltersCount, sorts])
 
   const handleChangeReason = (submissionId, value = false) => {
     const newContent = content
@@ -265,6 +266,7 @@ const CreditRequestVINListContainer = (props) => {
       setFilters={setFilters}
       sorts={sorts}
       setSorts={setSorts}
+      setApplyFiltersCount={setApplyFiltersCount}
     />
   )
 }
