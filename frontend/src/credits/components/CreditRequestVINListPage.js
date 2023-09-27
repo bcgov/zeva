@@ -1,128 +1,72 @@
-import axios from 'axios'
-import React, { useState } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
-
 import Button from '../../app/components/Button'
-import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests'
 import CustomPropTypes from '../../app/utilities/props'
 import VINListTable from './VINListTable'
-
-let refreshTimeout
 
 const CreditRequestVINListPage = (props) => {
   const {
     content,
-    reasonList,
     handleCheckboxClick,
     handleChangeReason,
     handleSubmit,
     modified,
     query,
-    initialPageCount,
     reasons,
-    setContent,
-    setReasonList,
     submission,
     user,
     invalidatedList,
-    errors
+    errors,
+    tableLoading,
+    itemsCount,
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    filters,
+    setFilters,
+    sorts,
+    setSorts,
+    setApplyFiltersCount
   } = props
 
-  const [filtered, setFiltered] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [pages, setPages] = useState(initialPageCount)
-  const [reactTable, setReactTable] = useState(null)
-  const [selectedOption, setSelectedOption] = useState('')
-
-  const filterWarnings = (event) => {
+  const handleSelect = (event) => {
     const { value } = event.target
-
-    const index = filtered.findIndex((item) => item.id === 'warning')
     const filter = {
       id: 'warning',
       value
     }
-
+    const filtersCopy = [...filters]
+    const index = filtersCopy.findIndex((item) => item.id === 'warning')
     if (index >= 0) {
-      filtered[index] = filter
+      filtersCopy[index] = filter
     } else {
-      filtered.push(filter)
+      filtersCopy.push(filter)
     }
 
-    setSelectedOption(value)
-    setFiltered([...filtered, { id: 'warning', value }])
-    reactTable.filterColumn(reactTable.state.columns[3].columns[0], value)
+    setFilters(filtersCopy)
   }
 
-  const refreshContent = async (state, filters = []) => {
-    clearTimeout(refreshTimeout)
-    refreshTimeout = await setTimeout(async () => {
-      const sorted = []
-
-      state.sorted.forEach((each) => {
-        let value = each.id
-
-        if (each.desc) {
-          value = `-${value}`
-        }
-        sorted.push(value)
-      })
-
-      setLoading(true)
-
-      const reset = query && query.reset
-
-      await axios
-        .get(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', submission.id), {
-          params: {
-            filters,
-            page: state.page + 1, // page from front-end is zero index, but in the back-end we need the actual page number
-            page_size: state.pageSize,
-            sorted: sorted.join(','),
-            reset
-          }
-        })
-        .then((response) => {
-          const { content: refreshedContent, pages: numPages } = response.data
-
-          refreshedContent.forEach((row, idx) => {
-            const reasonIndex = reasonList.findIndex(
-              (x) => Number(x.id) === Number(row.id)
-            )
-
-            // The reasonList stores any changes to reasons
-            // a user has made. If the user filters or sorts, the content
-            // value can be different when it comes back from the server
-            // and their changes would be lost.
-            // To account for this we set the refreshedContent reason value
-            // to the value in the reasonList so we don't lose the user changes.
-            if (reasonIndex >= 0) {
-              refreshedContent[idx].reason = reasonList[reasonIndex].reason
-            } else if (reasonIndex < 0) {
-              // If the reason with id doesn't exist in the reasonList
-              // then we add it here matching the content reason value
-              reasonList.push({
-                id: Number(row.id),
-                reason: row.reason
-              })
-            }
-          })
-
-          setPages(numPages)
-          setContent(refreshedContent)
-          setReasonList(reasonList)
-          setLoading(false)
-        })
-    }, 750)
+  const applyFilters = () => {
+    setPage(1)
+    setApplyFiltersCount((prev) => {
+      return prev + 1
+    })
   }
 
   const clearFilters = () => {
-    setSelectedOption('')
-    setFiltered([])
+    setFilters([])
+  }
 
-    const state = reactTable.getResolvedState()
-
-    refreshContent(state)
+  const getSelectedWarning = () => {
+    let result = ''
+    for (const filter of filters) {
+      if (filter.id === 'warning') {
+        result = filter.value
+        break
+      }
+    }
+    return result
   }
 
   const actionBar = (
@@ -160,8 +104,8 @@ const CreditRequestVINListPage = (props) => {
           <span className="d-inline-block mr-3 align-middle">
             <select
               className="form-control h-auto py-2"
-              onChange={filterWarnings}
-              value={selectedOption}
+              onChange={handleSelect}
+              value={getSelectedWarning()}
             >
               <option value="">Filter by Error Type</option>
               <option value="1">1 - Show all warnings ({errors.TOTAL ? errors.TOTAL : 0})</option>
@@ -178,7 +122,7 @@ const CreditRequestVINListPage = (props) => {
 
           <button
             className="button d-inline-block align-middle"
-            disabled={filtered.length === 0}
+            disabled={filters.length === 0}
             onClick={() => {
               clearFilters()
             }}
@@ -186,30 +130,40 @@ const CreditRequestVINListPage = (props) => {
           >
             Clear Filters
           </button>
+          <button
+            className="button d-inline-block align-middle"
+            onClick={() => {
+              applyFilters()
+            }}
+            type="button"
+          >
+            Apply
+          </button>
         </div>
       </div>
 
       <div className="row">
         <div className="col-sm-12">
           <VINListTable
-            filtered={filtered}
             handleCheckboxClick={handleCheckboxClick}
             handleChangeReason={handleChangeReason}
             invalidatedList={invalidatedList}
             items={content}
-            loading={loading}
             modified={modified}
-            pages={pages}
             query={query}
             reasons={reasons}
-            refreshContent={refreshContent}
-            setContent={setContent}
-            setFiltered={setFiltered}
-            setLoading={setLoading}
-            setPages={setPages}
-            setReactTable={setReactTable}
-            submission={submission}
             user={user}
+            tableLoading={tableLoading}
+            itemsCount={itemsCount}
+            page={page}
+            setPage={setPage}
+            pageSize={pageSize}
+            setPageSize={setPageSize}
+            filters={filters}
+            setFilters={setFilters}
+            sorts={sorts}
+            setSorts={setSorts}
+            applyFilters={applyFilters}
           />
         </div>
       </div>
@@ -239,10 +193,19 @@ CreditRequestVINListPage.propTypes = {
   ).isRequired,
   query: PropTypes.shape(),
   reasons: PropTypes.arrayOf(PropTypes.string).isRequired,
-  setContent: PropTypes.func.isRequired,
-  setReasonList: PropTypes.func.isRequired,
   submission: PropTypes.shape().isRequired,
-  user: CustomPropTypes.user.isRequired
+  user: CustomPropTypes.user.isRequired,
+  tableLoading: PropTypes.bool.isRequired,
+  itemsCount: PropTypes.number.isRequired,
+  page: PropTypes.number.isRequired,
+  setPage: PropTypes.func.isRequired,
+  pageSize: PropTypes.number.isRequired,
+  setPageSize: PropTypes.func.isRequired,
+  filters: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  setFilters: PropTypes.func.isRequired,
+  sorts: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  setSorts: PropTypes.func.isRequired,
+  setApplyFiltersCount: PropTypes.func.isRequired
 }
 
 export default CreditRequestVINListPage

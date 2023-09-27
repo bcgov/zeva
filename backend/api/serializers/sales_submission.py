@@ -307,6 +307,10 @@ class SalesSubmissionSerializer(
 
     def get_content(self, instance):
         request = self.context.get('request')
+        skip_content = request.GET.get('skip_content', False)
+
+        if skip_content == 'true':
+            return []
 
         content = []
 

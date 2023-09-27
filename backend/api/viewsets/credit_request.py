@@ -29,7 +29,7 @@ from api.serializers.sales_submission import (
     SalesSubmissionListSerializer,
     SalesSubmissionSaveSerializer,
 )
-from api.serializers.sales_submission_content import SalesSubmissionContentSerializer
+from api.serializers.sales_submission_content import SalesSubmissionContentSerializer, SalesSubmissionContentBulkSerializer
 from api.services.credit_transaction import award_credits
 from api.services.sales_submission import check_validation_status_change
 from api.services.minio import minio_put_object
@@ -45,6 +45,8 @@ import numpy as np
 from api.paginations import BasicPagination
 from api.services.filter_utilities import get_search_terms, get_search_q_object
 from api.services.sales_submission import get_map_of_sales_submission_ids_to_timestamps
+from api.services.sales_submission import get_warnings_and_maps
+from api.utilities.generic import get_inverse_map
 
 
 class CreditRequestViewset(
@@ -311,13 +313,13 @@ class CreditRequestViewset(
         )
         return response
 
-    @action(detail=True)
+    @action(detail=True, methods=['post'])
     def content(self, request, pk):
-        filters = request.GET.get('filters')
-        page_size = request.GET.get('page_size', 100)
-        page = request.GET.get('page', 1)
-        sort_by = request.GET.get('sorted')
-        verify_with_icbc_data = request.GET.get('reset', None)
+        filters = request.data.get('filters')
+        page_size = request.data.get('page_size', 100)
+        page = request.data.get('page', 1)
+        sorts = request.data.get('sorts')
+        verify_with_icbc_data = request.data.get('reset', False)
 
         # only government should be able to view the contents for icbc
         # verification
@@ -326,9 +328,9 @@ class CreditRequestViewset(
 
         submission_content = SalesSubmissionContent.objects.filter(
             submission_id=pk
-        )
+        ).select_related("submission")
 
-        if verify_with_icbc_data == 'Y':
+        if verify_with_icbc_data is True:
             # updates update_timestamp fields on submission content
             # which will update warning flags to match current data
             for sub in submission_content.all():
@@ -345,134 +347,109 @@ class CreditRequestViewset(
         extra_filter_by = []
         extra_filter_params = []
 
-        if filters:
-            submission_filters = json.loads(filters)
+        warnings_and_maps = get_warnings_and_maps(submission_content)
+        map_of_warnings_to_content_ids = get_inverse_map(warnings_and_maps.get('warnings'))
 
-            if 'xls_make' in submission_filters:
+        include_overrides = False
+        for filter in filters:
+            if filter.get("id") == 'include_overrides' and filter.get("value") is True:
+                include_overrides = True
+                break
+
+        for filter in filters:
+            filter_id = filter.get("id")
+            value = filter.get("value")
+
+            if filter_id == 'xls_make':
                 submission_content = submission_content.filter(
-                    xls_make__icontains=submission_filters['xls_make']
+                    xls_make__icontains=value
                 )
 
-            if 'xls_model' in submission_filters:
+            elif filter_id == 'xls_model':
                 submission_content = submission_content.filter(
-                    xls_model__icontains=submission_filters['xls_model']
+                    xls_model__icontains=value
                 )
 
-            if 'xls_model_year' in submission_filters:
+            elif filter_id == 'xls_model_year':
                 submission_content = submission_content.filter(
-                    xls_model_year__icontains=submission_filters['xls_model_year']
+                    xls_model_year__icontains=value
                 )
 
-            if 'xls_vin' in submission_filters:
+            elif filter_id == 'xls_vin':
                 submission_content = submission_content.filter(
-                    xls_vin__icontains=submission_filters['xls_vin']
+                    xls_vin__icontains=value
                 )
 
-            if 'warning' in submission_filters or \
-                    'include_overrides' in submission_filters:
-                duplicate_vins = []
-                awarded_vins = []
-                not_registered = Q(xls_vin__in=[])
-                sale_date = Q(xls_vin__in=[])
-                mismatch_vins = Q(xls_vin__in=[])
-                invalid_date = Q(xls_vin__in=[])
-                overridden_vins = Q(xls_vin__in=[])
+            elif filter_id == 'warning':
+                q_obj = Q(id__in=[])
 
-                if submission_filters['warning'] == '1' or \
-                        '3' in submission_filters['warning']:
-                    duplicate_vins = Subquery(submission_content.values(
-                        'xls_vin'
-                    ).annotate(
-                        vin_count=Count('xls_vin')
-                    ).values_list(
-                        'xls_vin', flat=True
-                    ).filter(vin_count__gt=1))
+                if value == '1':
+                    warnings_to_search_for = [
+                        "NO_ICBC_MATCH",
+                        "VIN_ALREADY_AWARDED",
+                        "DUPLICATE_VIN",
+                        "INVALID_MODEL",
+                        "MODEL_YEAR_MISMATCHED",
+                        "MAKE_MISMATCHED",
+                        "EXPIRED_REGISTRATION_DATE",
+                        "INVALID_DATE"
+                    ]
+                    warnings_map = warnings_and_maps.get('warnings')
+                    ids_with_warnings = []
+                    for content_id, warnings in warnings_map.items():
+                        for warning in warnings:
+                            if warning in warnings_to_search_for:
+                                ids_with_warnings.append(content_id)
+                                break
+                    q_obj = Q(id__in=ids_with_warnings)
 
-                if submission_filters['warning'] == '1' or \
-                        '2' in submission_filters['warning']:
-                    awarded_vins = Subquery(RecordOfSale.objects.exclude(
-                        submission_id=pk
-                    ).values_list('vin', flat=True))
+                elif value == '11':
+                    q_obj = Q(id__in=map_of_warnings_to_content_ids.get("NO_ICBC_MATCH", []))
 
-                if submission_filters['warning'] == '1' or \
-                        '11' in submission_filters['warning']:
-                    not_registered = ~Q(xls_vin__in=Subquery(
-                        IcbcRegistrationData.objects.values('vin')
-                    ))
+                elif value == '21':
+                    q_obj = Q(id__in=map_of_warnings_to_content_ids.get("VIN_ALREADY_AWARDED", []))
 
-                if submission_filters['warning'] == '1' or \
-                        '5' in submission_filters['warning']:
-                    sale_date = Q(
-                        Q(
-                            Q(xls_sale_date__lte="43102.0") &
-                            Q(xls_date_type="3") &
-                            ~Q(xls_sale_date="")
-                        ) |
-                        Q(
-                            Q(xls_sale_date__lte="2018-01-02") &
-                            Q(xls_date_type="1") &
-                            ~Q(xls_sale_date="")
-                        )
-                    )
+                elif value == '31':
+                    q_obj = Q(id__in=map_of_warnings_to_content_ids.get("DUPLICATE_VIN", []))
 
-                if submission_filters['warning'] == '1' or \
-                        '6' in submission_filters['warning']:
-                    invalid_date = Q(Q(xls_sale_date__lte="0") | Q(xls_sale_date=""))
+                elif value == '41':
+                    q_obj = Q(id__in=map_of_warnings_to_content_ids.get("INVALID_MODEL", [])) | Q(id__in=map_of_warnings_to_content_ids.get("MODEL_YEAR_MISMATCHED", [])) | Q(id__in=map_of_warnings_to_content_ids.get("MAKE_MISMATCHED", []))
 
-                if submission_filters['warning'] == '1' or \
-                        '4' in submission_filters['warning']:
-                    mismatch_vins = Q(id__in=RawSQL(" \
-                        SELECT id FROM sales_submission_content a, \
-                            (SELECT vin, make, CAST(description as float) \
-                                as model_year \
-                            FROM icbc_registration_data JOIN icbc_vehicle \
-                                ON icbc_vehicle_id = icbc_vehicle.id JOIN \
-                                    model_year \
-                                ON model_year_id = model_year.id) as b \
-                            WHERE a.xls_vin = b.vin AND \
-                                (xls_make != b.make OR \
-                                    CAST(xls_model_year as float) \
-                                        != b.model_year) \
-                            AND submission_id = %s",
-                        (pk,)
-                    ))
+                elif value == '51':
+                    q_obj = Q(id__in=map_of_warnings_to_content_ids.get("EXPIRED_REGISTRATION_DATE", []))
 
-                if 'include_overrides' in submission_filters and \
-                        submission_filters['include_overrides']:
-                    overridden_vins = Q(reason__isnull=False)
+                elif value == '61':
+                    q_obj = Q(id__in=map_of_warnings_to_content_ids.get("INVALID_DATE", []))
 
-                submission_content = submission_content.filter(
-                    Q(xls_vin__in=duplicate_vins) |
-                    Q(xls_vin__in=awarded_vins) |
-                    not_registered |
-                    sale_date |
-                    invalid_date |
-                    mismatch_vins |
-                    overridden_vins
-                )
+                if include_overrides is True:
+                    q_obj = q_obj | Q(reason__isnull=False)
 
-            if 'model_year.description' in submission_filters:
+                submission_content = submission_content.filter(q_obj)
+
+            elif filter_id == 'model_year.description':
                 extra_filter_by.append('UPPER(model_year.description) LIKE %s')
-                string = submission_filters['model_year.description'].replace('%', '')
+                string = value.replace('%', '')
                 extra_filter_params.append('%' + string.upper() + '%')
 
-            if 'icbc_vehicle.make' in submission_filters:
+            elif filter_id == 'icbc_vehicle.make':
                 extra_filter_by.append('UPPER(icbc_vehicle.make) LIKE %s')
-                string = submission_filters['icbc_vehicle.make'].replace('%', '')
+                string = value.replace('%', '')
                 extra_filter_params.append('%' + string.upper() + '%')
 
-            if 'icbc_vehicle.model_name' in submission_filters:
+            elif filter_id == 'icbc_vehicle.model_name':
                 extra_filter_by.append('UPPER(icbc_vehicle.model_name) LIKE %s')
-                string = submission_filters['icbc_vehicle.model_name'].replace('%', '')
+                string = value.replace('%', '')
                 extra_filter_params.append('%' + string.upper() + '%')
 
         extra_order_by = []
 
-        if sort_by:
+        if sorts:
             order_by = []
-            sort_by_list = sort_by.split(',')
-            for sort in sort_by_list:
-                if sort in [
+            for sort in sorts:
+                sort_id = sort.get("id")
+                desc = sort.get("desc")
+                sort_string = "-" + sort_id if desc is True else sort_id
+                if sort_string in [
                     'model_year.description',
                     '-model_year.description',
                     'icbc_vehicle.make',
@@ -480,14 +457,14 @@ class CreditRequestViewset(
                     'icbc_vehicle.model_name',
                     '-icbc_vehicle.model_name'
                 ]:
-                    extra_order_by.append(sort)
-                if sort in [
+                    extra_order_by.append(sort_string)
+                if sort_string in [
                     'xls_make', 'xls_model', 'xls_model_year',
                     'xls_sale_date', 'xls_vin',
                     '-xls_make', '-xls_model', '-xls_model_year',
                     '-xls_sale_date', '-xls_vin'
                 ]:
-                    order_by.append(sort)
+                    order_by.append(sort_string)
 
             if order_by:
                 submission_content = submission_content.order_by(*order_by)
@@ -516,11 +493,11 @@ class CreditRequestViewset(
 
         paginated = submission_content_paginator.page(page)
 
-        serializer = SalesSubmissionContentSerializer(
-            paginated, many=True, read_only=True, context={'request': request}
+        serializer = SalesSubmissionContentBulkSerializer(
+            paginated, many=True, read_only=True, context={'request': request, 'warnings_and_maps': warnings_and_maps}
         )
         errorList = []
-        list_of_warnings = [sc.warnings for sc in submission_content]
+        list_of_warnings = list(warnings_and_maps.get('warnings').values())
         if list_of_warnings:
             errorList = list(np.concatenate(list_of_warnings))
         newErrorList = []
@@ -544,7 +521,7 @@ class CreditRequestViewset(
         errorDict.update({"TOTAL": sum(list(errorCounts))})
         return Response({
             'content': serializer.data,
-            'pages': submission_content_paginator.num_pages,
+            'count': submission_content_paginator.count,
             'errors': errorDict
         })
 
