@@ -12,6 +12,7 @@ from .model_year_report_statuses import ModelYearReportStatuses
 from .user_profile import UserProfile
 from ..managers.organization import OrganizationManager
 from ..services.credit_transaction import aggregate_credit_balance_details
+from api.models.model_year import ModelYear
 
 class Organization(Auditable):
     name = models.CharField(
@@ -38,6 +39,14 @@ class Organization(Auditable):
     is_government = models.BooleanField(
         default=False,
         db_comment="Flag to check whether this is the Government organization"
+    )
+
+    first_model_year = models.ForeignKey(
+        'ModelYear',
+        related_name='+',
+        on_delete=models.PROTECT,
+        null=False,
+        default=ModelYear.get_default_first_model_year_id_for_organization
     )
 
     @property
