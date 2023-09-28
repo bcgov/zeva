@@ -420,7 +420,7 @@ const SupplementaryContainer = (props) => {
     })
   }
 
-  const handleSubmit = (status, paramNewReport) => {
+  const handleSubmit = (status, paramNewReport, returnToSupplier) => {
     if (
       (status === 'ASSESSED' && paramNewReport) ||
       (status === 'SUBMITTED' && analystAction)
@@ -491,11 +491,14 @@ const SupplementaryContainer = (props) => {
           if (status === 'ASSESSED') {
             data.reassessmentReductions = reassessmentReductions
           }
+          if (returnToSupplier) {
+            data.returnToSupplier = true
+          }
           axios
             .patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data)
             .then((response) => {
               const { id: supplementalId } = response.data
-              if (status === 'DELETED' || (status === 'RETURNED' && isDirector)) {
+              if (status === 'DELETED' || (status === 'RETURNED' && isDirector) || (status === 'DRAFT' && returnToSupplier)) {
                 history.push(ROUTES_COMPLIANCE.REPORTS)
               } else {
                 const commentData = {

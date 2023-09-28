@@ -12,6 +12,7 @@ import CustomPropTypes from '../app/utilities/props'
 import ComplianceReportTabs from './components/ComplianceReportTabs'
 import SupplierInformationDetailsPage from './components/SupplierInformationDetailsPage'
 import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions'
+import deleteModelYearReport from '../app/utilities/deleteModelYearReport'
 
 const qs = require('qs')
 
@@ -145,6 +146,10 @@ const SupplierInformationContainer = (props) => {
       })
   }
 
+  const handleDelete = () => {
+    deleteModelYearReport(id, setLoading)
+  }
+
   const refreshDetails = () => {
     if (id && id !== 'new') {
       axios
@@ -264,6 +269,7 @@ const SupplierInformationContainer = (props) => {
         handleCancelConfirmation={handleCancelConfirmation}
         handleChangeMake={handleChangeMake}
         handleCheckboxClick={handleCheckboxClick}
+        handleDelete={handleDelete}
         handleDeleteMake={handleDeleteMake}
         handleSubmit={handleSubmit}
         handleSubmitMake={handleSubmitMake}

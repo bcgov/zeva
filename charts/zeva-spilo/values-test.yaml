@@ -15,8 +15,8 @@ spilo:
 
   continuousArchive:
     enabled: true
-    scheduleCronJob: "0 */3 * * *"
-    retainBackups: 3
+    scheduleCronJob: "0 */12 * * *"
+    retainBackups: 12
     storage: s3
     s3:
       bucket: zevats/postgresbackup

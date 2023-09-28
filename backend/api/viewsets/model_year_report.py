@@ -40,7 +40,8 @@ from api.permissions.model_year_report import ModelYearReportPermissions
 from api.services.minio import minio_put_object, minio_remove_object
 from api.services.model_year_report import (
     get_model_year_report_statuses,
-    adjust_credits, adjust_credits_reassessment
+    adjust_credits, adjust_credits_reassessment,
+    delete_model_year_report
 )
 from api.services.model_year_report import check_validation_status_change, get_model_year_report
 from api.serializers.organization_ldv_sales import OrganizationLDVSalesSerializer
@@ -79,6 +80,7 @@ class ModelYearReportViewset(
     mixins.RetrieveModelMixin,
     mixins.CreateModelMixin,
     mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin
 ):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
@@ -86,7 +88,7 @@ class ModelYearReportViewset(
     """
 
     permission_classes = (ModelYearReportPermissions,)
-    http_method_names = ["get", "post", "put", "patch"]
+    http_method_names = ["get", "post", "put", "patch", "delete"]
 
     serializer_classes = {
         "default": ModelYearReportSerializer,
@@ -219,6 +221,11 @@ class ModelYearReportViewset(
         serializer = ModelYearReportSerializer(report, context={"request": request})
 
         return Response(serializer.data)
+    
+    def perform_destroy(self, instance):
+        user_org = self.request.user.organization
+        if user_org == instance.organization and instance.validation_status == ModelYearReportStatuses.DRAFT:
+            delete_model_year_report(instance)
 
     @action(detail=True)
     def noa_history(self, request, pk=None):
@@ -777,6 +784,7 @@ class ModelYearReportViewset(
         description = request.data.get("description")
         analyst_action = request.data.get("analyst_action", None)
         new_report = request.data.get("new_report", None)
+        return_to_supplier = request.data.get("return_to_supplier", False)
 
         create_user = None
         supplemental_id = None
@@ -809,6 +817,23 @@ class ModelYearReportViewset(
                 )
 
                 return Response(serializer.data)
+            
+        if (
+            return_to_supplier and
+            supplemental_report and
+            supplemental_report.status == ModelYearReportStatuses.SUBMITTED and
+            validation_status == "DRAFT"
+        ):
+            SupplementalReportHistory.objects.create(
+                supplemental_report_id=supplemental_id,
+                validation_status="DRAFT",
+                update_user=request.user.username,
+                create_user=request.user.username,
+            )
+            supplemental_report.status = ModelYearReportStatuses.DRAFT
+            supplemental_report.save()
+            return HttpResponse(status=200)
+
         if (
             create_user
             and create_user.is_government == request.user.is_government

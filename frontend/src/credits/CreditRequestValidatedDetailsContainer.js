@@ -22,15 +22,24 @@ const CreditRequestValidatedDetailsContainer = (props) => {
   const [comment, setComment] = useState('')
   const [content, setContent] = useState([])
   const [submission, setSubmission] = useState([])
-  const [loading, setLoading] = useState(true)
   const [invalidatedList, setInvalidatedList] = useState([])
+
+  const [contentCount, setContentCount] = useState(0)
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(100)
+  const [filters, setFilters] = useState([{id: 'warning', value: '1'}])
+  const [sorts, setSorts] = useState([{ id: 'xls_sale_date', desc: true }])
+  const [applyFiltersCount, setApplyFiltersCount] = useState(0)
+
+  const [initialLoading, setInitialLoading] = useState(true)
+  const [tableLoading, setTableLoading] = useState(true)
 
   const query = qs.parse(location.search, { ignoreQueryPrefix: true })
 
   const refreshDetails = () => {
     axios
       .all([
-        axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id)),
+        axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id) + '?skip_content=true'),
         axios.get(ROUTES_CREDIT_REQUESTS.UNSELECTED.replace(':id', id), {
           params: query
         })
@@ -42,7 +51,7 @@ const CreditRequestValidatedDetailsContainer = (props) => {
 
           const { data: unselected } = unselectedResponse
           setInvalidatedList(unselected)
-          setLoading(false)
+          setInitialLoading(false)
           if (submissionData.validationStatus !== 'VALIDATED') {
             throw new Error("Credit Request hasn't been validated yet.")
           }
@@ -80,7 +89,30 @@ const CreditRequestValidatedDetailsContainer = (props) => {
     refreshDetails()
   }, [id])
 
-  if (loading) {
+  useEffect(() => {
+    setTableLoading(true)
+    const filtersToUse = [...filters]
+    for (const filter of filters) {
+      if (filter.id === 'warning' && filter.value === '1') {
+        filtersToUse.push({ id: 'include_overrides', value: true })
+        break
+      }
+    }
+    const data = {
+      filters: filtersToUse,
+      sorts,
+      pageSize,
+      page
+    }
+    axios.post(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', id), data).then((response) => {
+      const { content: contentData, count } = response.data
+      setContent(contentData)
+      setContentCount(count)
+      setTableLoading(false)
+    })
+  }, [id, page, pageSize, applyFiltersCount, sorts])
+
+  if (initialLoading) {
     return <Loading />
   }
 
@@ -90,10 +122,19 @@ const CreditRequestValidatedDetailsContainer = (props) => {
       handleAddComment={handleAddComment}
       handleCommentChange={handleCommentChange}
       invalidatedList={invalidatedList}
-      routeParams={match.params}
-      setContent={setContent}
       submission={submission}
       user={user}
+      tableLoading={tableLoading}
+      itemsCount={contentCount}
+      page={page}
+      setPage={setPage}
+      pageSize={pageSize}
+      setPageSize={setPageSize}
+      filters={filters}
+      setFilters={setFilters}
+      sorts={sorts}
+      setSorts={setSorts}
+      setApplyFiltersCount={setApplyFiltersCount}
     />
   )
 }

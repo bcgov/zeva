@@ -9,6 +9,7 @@ import history from '../../app/History'
 import ComplianceReportSignOff from './ComplianceReportSignOff'
 import ConsumerSalesLDVModalTable from './ConsumerSalesLDVModelTable'
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
+import ComplianceReportDeleteModal from './ComplianceReportDeleteModal'
 
 const ConsumerSalesDetailsPage = (props) => {
   const {
@@ -25,10 +26,12 @@ const ConsumerSalesDetailsPage = (props) => {
     modelYear,
     statuses,
     id,
-    checked
+    checked,
+    handleDelete
   } = props
 
   const [showModal, setShowModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [buttonClicked, setButtonClicked] = useState(false)
   let disabledCheckboxes = propsDisabledCheckboxes
 
@@ -196,6 +199,15 @@ const ConsumerSalesDetailsPage = (props) => {
                     buttonType="back"
                     locationRoute="/compliance/reports"
                   />
+                  {!user.isGovernment && 
+                    details.consumerSales.validationStatus === 'DRAFT' &&
+                    <Button
+                      buttonType="delete"
+                      action={() => {
+                        setShowDeleteModal(true)
+                      }}
+                    />
+                  }
                 </span>
                 <span className="right-content">
                   <Button
@@ -232,6 +244,11 @@ const ConsumerSalesDetailsPage = (props) => {
         </>
       )}
       {modal}
+      {<ComplianceReportDeleteModal
+        show={showDeleteModal}
+        setShow={setShowDeleteModal}
+        handleDelete={handleDelete}
+      />}
     </div>
   )
 }
@@ -258,6 +275,7 @@ ConsumerSalesDetailsPage.propTypes = {
   id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   disabledCheckboxes: PropTypes.string.isRequired,
   modelYear: PropTypes.number.isRequired,
-  statuses: PropTypes.shape().isRequired
+  statuses: PropTypes.shape().isRequired,
+  handleDelete: PropTypes.func.isRequired,
 }
 export default ConsumerSalesDetailsPage

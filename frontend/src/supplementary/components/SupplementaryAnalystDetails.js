@@ -574,6 +574,7 @@ const SupplementaryAnalystDetails = (props) => {
               )}
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
                 selectedTab === tabNames[1] &&
+                !isReassessment &&
                 ['DRAFT'].indexOf(details.status) < 0 &&
                 supplementaryReportId !== null &&
                 (isEditable ||
@@ -581,7 +582,7 @@ const SupplementaryAnalystDetails = (props) => {
                     <button
                       className="button text-danger"
                       onClick={() => {
-                        handleSubmit('DRAFT')
+                        handleSubmit('DRAFT', false, true)
                       }}
                       type="button"
                       data-testid="return-button"
