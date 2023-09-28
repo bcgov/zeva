@@ -339,13 +339,13 @@ class CreditRequestViewset(
             # duplicate vins
             duplicate_vins = submission_content.values('xls_vin').annotate(vin_count=Count('xls_vin')).filter(vin_count__gt=1).values_list('xls_vin', flat=True)
             submission_content.filter(xls_vin__in=duplicate_vins).update(warning_code=Case(
-                When(Q(warning_code='') | Q(warning_code=None), then=Value('3')),
+                When(Q(warning_code='') | Q(warning_code=None), then=Value('31')),
                 When(
-                    ~Q(warning_code__startswith='3,') &
-                    ~Q(warning_code__endswith=',3') &
-                    ~Q(warning_code__icontains=',3,') &
-                    ~Q(warning_code__exact='3'),
-                    then=Concat(F("warning_code"), Value(','), Value('3'))
+                    ~Q(warning_code__startswith='31,') &
+                    ~Q(warning_code__endswith=',31') &
+                    ~Q(warning_code__icontains=',31,') &
+                    ~Q(warning_code__exact='31'),
+                    then=Concat(F("warning_code"), Value(','), Value('31'))
                 ),
                 default=F('warning_code')
             ))
@@ -354,13 +354,13 @@ class CreditRequestViewset(
             # awarded vins
             awarded_vins = RecordOfSale.objects.exclude(submission_id=pk).values_list('vin', flat=True)
             submission_content.filter(xls_vin__in=awarded_vins).update(warning_code=Case(
-                When(Q(warning_code='') | Q(warning_code=None), then=Value('2')),
+                When(Q(warning_code='') | Q(warning_code=None), then=Value('21')),
                 When(
-                    ~Q(warning_code__startswith='2,') &
-                    ~Q(warning_code__endswith=',2') &
-                    ~Q(warning_code__icontains=',2,') &
-                    ~Q(warning_code__exact='2'),
-                    then=Concat(F("warning_code"), Value(','), Value('2'))
+                    ~Q(warning_code__startswith='21,') &
+                    ~Q(warning_code__endswith=',21') &
+                    ~Q(warning_code__icontains=',21,') &
+                    ~Q(warning_code__exact='21'),
+                    then=Concat(F("warning_code"), Value(','), Value('21'))
                 ),
                 default=F('warning_code')
             ))
@@ -412,23 +412,29 @@ class CreditRequestViewset(
                             ~Q(xls_sale_date='')
                         )
                     )).update(warning_code=Case(
-                    When(Q(warning_code='') | Q(warning_code=None), then=Value('5')),
+                    When(Q(warning_code='') | Q(warning_code=None), then=Value('51')),
                     When(
-                    ~Q(warning_code__startswith='5,') &
-                    ~Q(warning_code__endswith=',5') &
-                    ~Q(warning_code__icontains=',5,') &
-                    ~Q(warning_code__exact='5'),
-                    then=Concat(F('warning_code'), Value(','), Value('5'))
+                    ~Q(warning_code__startswith='51,') &
+                    ~Q(warning_code__endswith=',51') &
+                    ~Q(warning_code__icontains=',51,') &
+                    ~Q(warning_code__exact='51'),
+                    then=Concat(F('warning_code'), Value(','), Value('51'))
                 ),
                 default=F('warning_code')
             ))
 
             # invalid date
             submission_content.filter(Q(Q(xls_sale_date__lte='0') | Q(xls_sale_date=''))).update(warning_code=Case(
-                    When(warning_code='', then=Value('6')),  # If warning_code is empty, just set the new code
-                    When(warning_code=None, then=Value('6')),  # If warning_code is None, just set the new code
-                    default=Concat(F('warning_code'), Value(','), Value('6'))
-                    ))
+                    When(Q(warning_code='') | Q(warning_code=None), then=Value('61')),
+                    When(
+                    ~Q(warning_code__startswith='61,') &
+                    ~Q(warning_code__endswith=',61') &
+                    ~Q(warning_code__icontains=',61,') &
+                    ~Q(warning_code__exact='61'),
+                    then=Concat(F('warning_code'), Value(','), Value('61'))
+                ),
+                default=F('warning_code')
+            ))
 
             # mismatch vins
             submission_content.filter(Q(id__in=RawSQL(" \
@@ -446,13 +452,13 @@ class CreditRequestViewset(
                             AND submission_id = %s",
                         (pk,)
                     ))).update(warning_code=Case(
-                    When(Q(warning_code='') | Q(warning_code=None), then=Value('4')),
+                    When(Q(warning_code='') | Q(warning_code=None), then=Value('41')),
                     When(
-                    ~Q(warning_code__startswith='4,') &
-                    ~Q(warning_code__endswith=',4') &
-                    ~Q(warning_code__icontains=',4,') &
-                    ~Q(warning_code__exact='4'),
-                    then=Concat(F('warning_code'), Value(','), Value('4'))
+                    ~Q(warning_code__startswith='41,') &
+                    ~Q(warning_code__endswith=',41') &
+                    ~Q(warning_code__icontains=',41,') &
+                    ~Q(warning_code__exact='41'),
+                    then=Concat(F('warning_code'), Value(','), Value('41'))
                 ),
                 default=F('warning_code')
             ))
@@ -542,7 +548,8 @@ class CreditRequestViewset(
                         "MODEL_YEAR_MISMATCHED",
                         "MAKE_MISMATCHED",
                         "EXPIRED_REGISTRATION_DATE",
-                        "INVALID_DATE"
+                        "INVALID_DATE",
+                        "WRONG_MODEL_YEAR"
                     ]
                     warnings_map = warnings_and_maps.get('warnings')
                     ids_with_warnings = []
@@ -570,6 +577,9 @@ class CreditRequestViewset(
 
                 elif value == '61':
                     q_obj = Q(id__in=map_of_warnings_to_content_ids.get("INVALID_DATE", []))
+
+                elif value == '71':
+                    q_obj = Q(id__in=map_of_warnings_to_content_ids.get("WRONG_MODEL_YEAR", []))
 
                 if include_overrides is True:
                     q_obj = q_obj | Q(reason__isnull=False)
