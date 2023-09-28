@@ -197,7 +197,7 @@ const ActionsBceid = (props) => {
               icon="list"
               boldText="Credit Agreements"
               regularText={`${activityCount.creditAgreementsIssued} recorded by the Government of B.C.`}
-              linkTo={`${ROUTES_CREDIT_AGREEMENTS.LIST}?col-status=Issued`}
+              linkTo={`${ROUTES_CREDIT_AGREEMENTS.LIST}`}
             />
         )}
         {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED &&
