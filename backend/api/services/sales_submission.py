@@ -334,22 +334,17 @@ def populate_already_awarded_warnings(
 
 def populate_is_duplicate_warnings(warnings, sales_submission_contents):
     warning = "DUPLICATE_VIN"
-    potential_duplicates = []
-    vins = []
+    map_of_vins_to_contents = {}
     for content in sales_submission_contents:
         vin = content.xls_vin
-        if vin in vins:
-            potential_duplicates.append(content)
-        vins.append(vin)
+        if vin not in map_of_vins_to_contents:
+            map_of_vins_to_contents[vin] = []
+        map_of_vins_to_contents[vin].append(content)
 
-    for x in potential_duplicates:
-        content_id = x.id
-        for y in potential_duplicates:
-            if x == y:
-                continue
-            if y.create_timestamp < x.update_timestamp:
-                add_warning(warnings, content_id, warning)
-                break
+    for contents in map_of_vins_to_contents.values():
+        if len(contents) > 1:
+            for duplicate in contents:
+                add_warning(warnings, duplicate.id, warning)
 
 
 def populate_icbc_warnings(
