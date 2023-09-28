@@ -8,6 +8,7 @@ from api.models.supplemental_report_history import SupplementalReportHistory
 from api.models.supplemental_report import SupplementalReport
 from api.models.user_profile import UserProfile
 from api.serializers.user import MemberSerializer, UserSerializer
+from django.db.models import Q
 
 
 class ModelYearReportNoaSerializer(ModelSerializer):
@@ -117,79 +118,49 @@ class SupplementalReportSerializer(ModelSerializer):
     def get_status(self, obj):
         request = self.context.get('request')
 
-        filter_statuses = [
-            ModelYearReportStatuses.ASSESSED,
-            ModelYearReportStatuses.REASSESSED
-        ]
-
-        if request.user.is_government:
-            filter_statuses.append(ModelYearReportStatuses.RECOMMENDED)
-
-        reassessment_report = SupplementalReport.objects.filter(
-            supplemental_id=obj.id,
-            status__in=filter_statuses
-        ).first()
-
-        if reassessment_report:
-            return reassessment_report.status.value
+        if not request.user.is_government and \
+            obj.status in [ModelYearReportStatuses.RECOMMENDED, ModelYearReportStatuses.RETURNED]:
+            return ModelYearReportStatuses.SUBMITTED.value
 
         return obj.status.value
 
     def get_history(self, obj):
         request = self.context.get('request')
 
+        q_obj = Q(supplemental_report_id=obj.id)
+        if obj.supplemental_id:
+            previous_supplemental = SupplementalReport.objects.filter(id=obj.supplemental_id).first()
+            if previous_supplemental and previous_supplemental.status == ModelYearReportStatuses.SUBMITTED and not previous_supplemental.is_reassessment:
+                q_obj = q_obj | Q(supplemental_report_id=obj.supplemental_id)
+
         history = SupplementalReportHistory.objects.filter(
-            supplemental_report_id=obj.id
+            q_obj
         ).order_by('-update_timestamp')
 
-        # is this a supplemental report? (created by bceid user)
-        create_user = UserProfile.objects.filter(username=obj.create_user).first()
-        if create_user and not create_user.is_government:
-            filter_statuses = [
-                ModelYearReportStatuses.ASSESSED,
-                ModelYearReportStatuses.REASSESSED
-            ]
-
-            if request.user.is_government:
-                filter_statuses.append(ModelYearReportStatuses.RECOMMENDED)
-                history = history.filter(
-                    validation_status__in=[
-                        ModelYearReportStatuses.SUBMITTED
-                    ]
-                )
-
-            reassessment_report = SupplementalReport.objects.filter(
-                supplemental_id=obj.id,
-                status__in=filter_statuses
-            ).first()
-
-            if reassessment_report:
-                reassessment_history = SupplementalReportHistory.objects.filter(
-                    supplemental_report_id=reassessment_report.id,
-                    validation_status__in=filter_statuses
-                ).order_by('-update_timestamp')
-                history = reassessment_history | history
-        elif not request.user.is_government:
-            filter_statuses = [
-                ModelYearReportStatuses.ASSESSED,
-                ModelYearReportStatuses.REASSESSED
-            ]
-
-            history = history.filter(
-                validation_status__in=filter_statuses
+        if request.user.is_government:
+            history = history.exclude(
+                validation_status__in=[
+                    ModelYearReportStatuses.DELETED,
+                ]
+            )
+        else:
+            history = history.exclude(
+                validation_status__in=[
+                    ModelYearReportStatuses.RECOMMENDED,
+                    ModelYearReportStatuses.DELETED,
+                    ModelYearReportStatuses.RETURNED,
+                ]
+            )
+            # Remove submitted by government user (only happens when the IDIR user saves first)
+            users = UserProfile.objects.filter(organization__is_government=True).values_list('username')
+            history = history.exclude(
+                validation_status__in=[
+                    ModelYearReportStatuses.SUBMITTED,
+                ],
+                create_user__in=users
             )
 
-        # Remove submitted by government user (only happens when the IDIR user saves first)
-        users = UserProfile.objects.filter(organization__is_government=True).values_list('username')
-        history = history.exclude(
-            validation_status__in=[
-                ModelYearReportStatuses.SUBMITTED,
-            ],
-            create_user__in=users
-        )
-
         serializer = SupplementalReportHistorySerializer(history, many=True)
-
         return serializer.data
 
     class Meta:

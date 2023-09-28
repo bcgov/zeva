@@ -1,10 +1,7 @@
-import axios from 'axios'
-import React, { useState } from 'react'
+import React from 'react'
 import ReactQuill from 'react-quill'
 import PropTypes from 'prop-types'
-
 import Button from '../../app/components/Button'
-import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests'
 import CustomPropTypes from '../../app/utilities/props'
 import VINListTable from './VINListTable'
 import DisplayComment from '../../app/components/DisplayComment'
@@ -16,83 +13,58 @@ const CreditRequestValidatedDetailsPage = (props) => {
     handleAddComment,
     handleCommentChange,
     invalidatedList,
-    setContent,
     submission,
-    user
+    user,
+    tableLoading,
+    itemsCount,
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    filters,
+    setFilters,
+    sorts,
+    setSorts,
+    setApplyFiltersCount
   } = props
 
-  const [filtered, setFiltered] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [pages, setPages] = useState(-1)
-  const [reactTable, setReactTable] = useState(null)
-  const [selectedOption, setSelectedOption] = useState('')
-
-  const filterWarnings = (event) => {
+  const handleSelect = (event) => {
     const { value } = event.target
-
-    const index = filtered.findIndex((item) => item.id === 'warning')
     const filter = {
       id: 'warning',
       value
     }
-
+    const filtersCopy = [...filters]
+    const index = filtersCopy.findIndex((item) => item.id === 'warning')
     if (index >= 0) {
-      filtered[index] = filter
+      filtersCopy[index] = filter
     } else {
-      filtered.push(filter)
+      filtersCopy.push(filter)
     }
 
-    setSelectedOption(value)
-    setFiltered([...filtered, { id: 'warning', value }])
-    reactTable.filterColumn(reactTable.state.columns[3].columns[0], value)
+    setFilters(filtersCopy)
   }
 
-  const refreshContent = (state, paramFilters = {}) => {
-    const filters = paramFilters
-    const sorted = []
-
-    state.sorted.forEach((each) => {
-      let value = each.id
-
-      if (each.desc) {
-        value = `-${value}`
-      }
-
-      sorted.push(value)
+  const applyFilters = () => {
+    setPage(1)
+    setApplyFiltersCount((prev) => {
+      return prev + 1
     })
-
-    setLoading(true)
-
-    if (!filters.warning) {
-      filters.warning = '1'
-      filters.include_overrides = true
-    }
-
-    axios
-      .get(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', submission.id), {
-        params: {
-          filters,
-          page: state.page + 1, // page from front-end is zero index, but in the back-end we need the actual page number
-          page_size: state.pageSize,
-          sorted: sorted.join(',')
-        }
-      })
-      .then((response) => {
-        const { content: refreshedContent, pages: numPages } = response.data
-
-        setContent(refreshedContent)
-        setLoading(false)
-        setPages(numPages)
-      })
   }
 
   const clearFilters = () => {
-    setSelectedOption('')
-    setFiltered([])
+    setFilters([])
+  }
 
-    const state = reactTable.getResolvedState()
-
-    refreshContent(state)
+  const getSelectedWarning = () => {
+    let result = ''
+    for (const filter of filters) {
+      if (filter.id === 'warning') {
+        result = filter.value
+        break
+      }
+    }
+    return result
   }
 
   const actionBar = (
@@ -141,25 +113,25 @@ const CreditRequestValidatedDetailsPage = (props) => {
           <span className="d-inline-block mr-3 align-middle">
             <select
               className="form-control h-auto py-2"
-              onChange={filterWarnings}
-              value={selectedOption}
+              onChange={handleSelect}
+              value={getSelectedWarning()}
             >
-              <option value="">Filter by Error Type</option>
-              <option value="1">1 - Show all warnings</option>
-              <option value="11">11 - VIN not registered in B.C.</option>
-              <option value="21">21 - VIN already issued credits</option>
-              <option value="31">31 - Duplicate VIN</option>
+              <option value="">Filter</option>
+              <option value="1">Error 1 - Show all warnings</option>
+              <option value="11">Error 11 - VIN not registered in B.C.</option>
+              <option value="21">Error 21 - VIN already issued credits</option>
+              <option value="31">Error 31 - Duplicate VIN</option>
               <option value="41">
-                41 - Model year and/or make does not match
+                Error 41 - Model year and/or make does not match
               </option>
-              <option value="51">51 - Sale prior to Jan 2018</option>
-              <option value="61">61 - Invalid date format</option>
+              <option value="51">Error 51 - Sale prior to Jan 2018</option>
+              <option value="61">Error 61 - Invalid date format</option>
             </select>
           </span>
 
           <button
             className="button d-inline-block align-middle"
-            disabled={filtered.length === 0}
+            disabled={filters.length === 0}
             onClick={() => {
               clearFilters()
             }}
@@ -167,26 +139,36 @@ const CreditRequestValidatedDetailsPage = (props) => {
           >
             Clear Filters
           </button>
+          <button
+            className="button d-inline-block align-middle"
+            onClick={() => {
+              applyFilters()
+            }}
+            type="button"
+          >
+            Apply
+          </button>
         </div>
       </div>
 
       <div className="row">
         <div className="col-sm-12">
           <VINListTable
-            filtered={filtered}
             invalidatedList={invalidatedList}
             items={content}
-            loading={loading}
-            pages={pages}
             readOnly
-            refreshContent={refreshContent}
-            setContent={setContent}
-            setFiltered={setFiltered}
-            setLoading={setLoading}
-            setPages={setPages}
-            setReactTable={setReactTable}
             user={user}
-            preInitialize={true}
+            tableLoading={tableLoading}
+            itemsCount={itemsCount}
+            page={page}
+            setPage={setPage}
+            pageSize={pageSize}
+            setPageSize={setPageSize}
+            filters={filters}
+            setFilters={setFilters}
+            sorts={sorts}
+            setSorts={setSorts}
+            applyFilters={applyFilters}
           />
         </div>
       </div>
@@ -259,9 +241,18 @@ CreditRequestValidatedDetailsPage.propTypes = {
   invalidatedList: PropTypes.arrayOf(
     PropTypes.oneOfType([PropTypes.number, PropTypes.string])
   ).isRequired,
-  setContent: PropTypes.func.isRequired,
   submission: PropTypes.shape().isRequired,
-  user: CustomPropTypes.user.isRequired
+  user: CustomPropTypes.user.isRequired,
+  tableLoading: PropTypes.bool.isRequired,
+  itemsCount: PropTypes.number.isRequired,
+  page: PropTypes.number.isRequired,
+  setPage: PropTypes.func.isRequired,
+  pageSize: PropTypes.number.isRequired,
+  setPageSize: PropTypes.func.isRequired,
+  filters: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  setFilters: PropTypes.func.isRequired,
+  sorts: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  setSorts: PropTypes.func.isRequired,
 }
 
 export default CreditRequestValidatedDetailsPage

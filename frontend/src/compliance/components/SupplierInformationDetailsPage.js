@@ -11,12 +11,14 @@ import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
 import FormatNumeric from '../../app/utilities/formatNumeric'
 import ComplianceReportAlert from './ComplianceReportAlert'
 import ComplianceReportSignOff from './ComplianceReportSignOff'
+import ComplianceReportDeleteModal from './ComplianceReportDeleteModal'
 
 const SupplierInformationDetailsPage = (props) => {
   const {
     details,
     handleCancelConfirmation,
     handleChangeMake,
+    handleDelete,
     handleDeleteMake,
     handleSubmit,
     handleSubmitMake,
@@ -33,6 +35,7 @@ const SupplierInformationDetailsPage = (props) => {
     id
   } = props
   const [showModal, setShowModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [buttonClicked, setButtonClicked] = useState(false)
   let disabledCheckboxes = propsDisabledCheckboxes
   let disabledInputs = false
@@ -328,6 +331,15 @@ const SupplierInformationDetailsPage = (props) => {
                     buttonType="back"
                     locationRoute="/compliance/reports"
                   />
+                  {!user.isGovernment &&
+                    details.supplierInformation.validationStatus === 'DRAFT' &&
+                    <Button
+                      buttonType="delete"
+                      action={() => {
+                        setShowDeleteModal(true)
+                      }}
+                    />
+                  }
                 </span>
                 <span className="right-content">
                   <Button
@@ -370,6 +382,11 @@ const SupplierInformationDetailsPage = (props) => {
       )}
 
       {modal}
+      {<ComplianceReportDeleteModal
+        show={showDeleteModal}
+        setShow={setShowDeleteModal}
+        handleDelete={handleDelete}
+      />}
     </div>
   )
 }
@@ -384,6 +401,7 @@ SupplierInformationDetailsPage.propTypes = {
   }).isRequired,
   handleCancelConfirmation: PropTypes.func.isRequired,
   handleChangeMake: PropTypes.func.isRequired,
+  handleDelete: PropTypes.func.isRequired,
   handleDeleteMake: PropTypes.func.isRequired,
   handleSubmitMake: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,

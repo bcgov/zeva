@@ -79,7 +79,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                     </tr>
                   </>
                 )}
-                {supplierClass !== 'L' ||  supplierClass !== 'S' && (
+                {supplierClass === 'M' && (
                   <tr className="subclass">
                     <th className="large-column">
                       Compliance Ratio Credit Reduction
@@ -184,14 +184,6 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                   ))}
               </tbody>
             </table>
-          )}
-          {updatedBalances && updatedBalances.deficits.length > 0 && (
-            <div className="mt-2">
-              By selecting the ZEV Class {creditReductionSelection} credit
-              preference your unspecified credit deficit will be offset
-              automatically using ZEV Class {creditReductionSelection} credits
-              in the next adjustment period if the grace year applies.
-            </div>
           )}
         </div>
       </div>

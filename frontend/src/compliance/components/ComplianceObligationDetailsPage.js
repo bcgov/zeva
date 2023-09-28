@@ -9,6 +9,7 @@ import ComplianceObligationAmountsTable from './ComplianceObligationAmountsTable
 import ComplianceObligationReductionOffsetTable from './ComplianceObligationReductionOffsetTable'
 import ComplianceObligationTableCreditsIssued from './ComplianceObligationTableCreditsIssued'
 import ComplianceReportSignoff from './ComplianceReportSignOff'
+import ComplianceReportDeleteModal from './ComplianceReportDeleteModal'
 
 import Modal from '../../app/components/Modal'
 import history from '../../app/History'
@@ -25,6 +26,7 @@ const ComplianceObligationDetailsPage = (props) => {
     handleCancelConfirmation,
     handleChangeSales,
     handleCheckboxClick,
+    handleDelete,
     handleSave,
     handleUnspecifiedCreditReduction,
     id,
@@ -43,6 +45,7 @@ const ComplianceObligationDetailsPage = (props) => {
   } = props
 
   const [showModal, setShowModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [buttonClicked, setButtonClicked] = useState(false)
 
   const handleButtonClick = () => {
@@ -204,6 +207,15 @@ const ComplianceObligationDetailsPage = (props) => {
                     buttonType="back"
                     locationRoute="/compliance/reports"
                   />
+                  {!user.isGovernment && 
+                    details.complianceObligation.validationStatus === 'DRAFT' &&
+                    <Button
+                      buttonType="delete"
+                      action={() => {
+                        setShowDeleteModal(true)
+                      }}
+                    />
+                  }
                 </span>
                 <span className="right-content">
                   <Button
@@ -237,6 +249,11 @@ const ComplianceObligationDetailsPage = (props) => {
         </>
       )}
       {modal}
+      {<ComplianceReportDeleteModal
+        show={showDeleteModal}
+        setShow={setShowDeleteModal}
+        handleDelete={handleDelete}
+      />}
     </div>
   )
 }
@@ -266,6 +283,7 @@ ComplianceObligationDetailsPage.propTypes = {
   handleCancelConfirmation: PropTypes.func.isRequired,
   handleChangeSales: PropTypes.func.isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
+  handleDelete: PropTypes.func.isRequired,
   handleSave: PropTypes.func.isRequired,
   handleUnspecifiedCreditReduction: PropTypes.func.isRequired,
   id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,

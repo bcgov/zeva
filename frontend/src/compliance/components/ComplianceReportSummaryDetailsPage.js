@@ -13,9 +13,11 @@ import SummaryCreditActivityTable from './SummaryCreditActivityTable'
 import SummarySupplierInfo from './SummarySupplierInfo'
 import SummaryConsumerSalesTable from './SummaryConsumerSalesTable'
 import Modal from '../../app/components/Modal'
+import ComplianceReportDeleteModal from './ComplianceReportDeleteModal'
 
 const ComplianceReportSummaryDetailsPage = (props) => {
   const [showModal, setShowModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
   const {
     assertions,
     checkboxes,
@@ -24,6 +26,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
     consumerSalesDetails,
     creditActivityDetails,
     handleCheckboxClick,
+    handleDelete,
     handleSubmit,
     loading,
     makes,
@@ -253,6 +256,15 @@ const ComplianceReportSummaryDetailsPage = (props) => {
                     buttonType="back"
                     locationRoute="/compliance/reports"
                   />
+                  {!user.isGovernment && 
+                    supplierDetails.supplierInformation.validationStatus === 'DRAFT' &&
+                    <Button
+                      buttonType="delete"
+                      action={() => {
+                        setShowDeleteModal(true)
+                      }}
+                    />
+                  }
                 </span>
                 <span className="right-content">
                   {!user.isGovernment &&
@@ -278,6 +290,11 @@ const ComplianceReportSummaryDetailsPage = (props) => {
         </>
       )}
       {modal}
+      {<ComplianceReportDeleteModal
+        show={showDeleteModal}
+        setShow={setShowDeleteModal}
+        handleDelete={handleDelete}
+      />}
     </div>
   )
 }
@@ -296,6 +313,7 @@ ComplianceReportSummaryDetailsPage.propTypes = {
   consumerSalesDetails: PropTypes.shape().isRequired,
   creditActivityDetails: PropTypes.shape().isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
+  handleDelete: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   makes: PropTypes.arrayOf(PropTypes.string).isRequired,

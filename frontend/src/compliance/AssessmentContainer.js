@@ -359,14 +359,20 @@ const AssessmentContainer = (props) => {
                 tempUnspecifiedReductions,
                 creditReductionSelection
               )
-
-              setDeductions(creditReduction.deductions)
-
-              setUpdatedBalances({
-                balances: creditReduction.balances,
-                deficits: creditReduction.deficits
-              })
-
+              
+              if (tempSupplierClass === 'S') {
+                setUpdatedBalances({
+                  balances: tempBalances,
+                  deficits: []
+                })
+              } else {
+                setDeductions(creditReduction.deductions)
+                setUpdatedBalances({
+                  balances: creditReduction.balances,
+                  deficits: creditReduction.deficits
+                })
+              }
+      
               setLoading(false)
             }
           )

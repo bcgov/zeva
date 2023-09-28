@@ -34,6 +34,11 @@ from api.utilities.credit_transaction import (
     get_reduction_transaction_type,
     get_reduction_weight_class
 )
+from api.models.model_year_report_address import ModelYearReportAddress
+from api.models.model_year_report_history import ModelYearReportHistory
+from api.models.model_year_report_make import ModelYearReportMake
+from api.models.model_year_report_assessment import ModelYearReportAssessment
+from api.models.model_year_report_assessment_comment import ModelYearReportAssessmentComment
 
 def get_model_year_report_statuses(report, request_user=None):
     supplier_information_status = 'UNSAVED'
@@ -438,3 +443,33 @@ def get_most_recent_myr_id(organization, *statuses):
         .first()
     )
     return model_year_report
+
+def delete_model_year_report(model_year_report):
+    ModelYearReportAddress.objects.filter(
+        model_year_report=model_year_report
+    ).delete()
+    ModelYearReportHistory.objects.filter(
+        model_year_report=model_year_report
+    ).delete()
+    ModelYearReportLDVSales.objects.filter(
+        model_year_report=model_year_report
+    ).delete()
+    ModelYearReportMake.objects.filter(
+        model_year_report=model_year_report
+    ).delete()
+    ModelYearReportComplianceObligation.objects.filter(
+        model_year_report=model_year_report
+    ).delete()
+    ModelYearReportConfirmation.objects.filter(
+        model_year_report=model_year_report
+    ).delete()
+    ModelYearReportVehicle.objects.filter(
+        model_year_report=model_year_report
+    ).delete()
+    ModelYearReportAssessmentComment.objects.filter(
+        model_year_report=model_year_report
+    ).delete()
+    ModelYearReportAssessment.objects.filter(
+        model_year_report=model_year_report
+    ).delete()
+    model_year_report.delete()
