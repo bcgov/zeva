@@ -225,13 +225,12 @@ const VINListTable = (props) => {
             ) {
               return false
             }
-
             return (
               <input
                 checked={
                   invalidatedList.findIndex(
                     (item) => Number(item) === Number(row.id)
-                  ) < 0
+                  ) > 0
                 }
                 onChange={(event) => {
                   handleCheckboxClick(event)
