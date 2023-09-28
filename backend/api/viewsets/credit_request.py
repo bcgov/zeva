@@ -5,8 +5,8 @@ from datetime import datetime
 from django.core.paginator import Paginator
 from django.core.exceptions import ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db.models.functions import Upper
-from django.db.models import F
+from django.db.models.functions import Upper, Concat, Replace
+from django.db.models import F, Value, Case, When
 from django.db.models import Subquery, Count, Q
 from django.db.models.expressions import RawSQL
 from django.http import HttpResponse, HttpResponseForbidden
@@ -107,7 +107,6 @@ class CreditRequestViewset(
 
         if submission.validation_status == SalesSubmissionStatuses.VALIDATED:
             award_credits(submission)
-
 
     @action(detail=False, methods=['post'])
     def paginated(self, request):
@@ -334,6 +333,154 @@ class CreditRequestViewset(
         if verify_with_icbc_data == 'Y':
             # updates update_timestamp fields on submission content
             # which will update warning flags to match current data
+
+            # duplicate vins
+            duplicate_vins = submission_content.values('xls_vin').annotate(vin_count=Count('xls_vin')).filter(vin_count__gt=1).values_list('xls_vin', flat=True)
+            submission_content.filter(xls_vin__in=duplicate_vins).update(warning_code=Case(
+                When(Q(warning_code='') | Q(warning_code=None), then=Value('3')),
+                When(
+                    ~Q(warning_code__startswith='3,') &
+                    ~Q(warning_code__endswith=',3') &
+                    ~Q(warning_code__icontains=',3,') &
+                    ~Q(warning_code__exact='3'),
+                    then=Concat(F("warning_code"), Value(','), Value('3'))
+                ),
+                default=F('warning_code')
+            ))
+
+            
+            # awarded vins
+            awarded_vins = RecordOfSale.objects.exclude(submission_id=pk).values_list('vin', flat=True)
+            submission_content.filter(xls_vin__in=awarded_vins).update(warning_code=Case(
+                When(Q(warning_code='') | Q(warning_code=None), then=Value('2')),
+                When(
+                    ~Q(warning_code__startswith='2,') &
+                    ~Q(warning_code__endswith=',2') &
+                    ~Q(warning_code__icontains=',2,') &
+                    ~Q(warning_code__exact='2'),
+                    then=Concat(F("warning_code"), Value(','), Value('2'))
+                ),
+                default=F('warning_code')
+            ))
+            
+            # not registered
+            submission_content.filter(~Q(xls_vin__in=Subquery(
+                        IcbcRegistrationData.objects.values('vin')
+                    ))).update(warning_code=Case(
+                    When(Q(warning_code='') | Q(warning_code=None), then=Value('11')),
+                    When(
+                    ~Q(warning_code__startswith='11,') &
+                    ~Q(warning_code__endswith=',11') &
+                    ~Q(warning_code__icontains=',11,') &
+                    ~Q(warning_code__exact='11'),
+                    then=Concat(F("warning_code"), Value(','), Value('11'))
+                ),
+                default=F('warning_code')
+            ))
+
+            # checking if flagged vins are no longer supposed to be flagged
+            submission_content.filter(
+                Q(warning_code__icontains='11,') | 
+                Q(warning_code__icontains=', 11') | 
+                Q(warning_code__exact='11')
+            ).exclude(pk__in=duplicate_vins.values('pk')).annotate(
+                    new_warning_code=Replace(
+                        F('warning_code'), Value(', 11'), Value('')
+                    )
+                    ).annotate(
+                        new_warning_code=Replace(
+                            F('new_warning_code'), Value('11,'), Value('')
+                        )
+                    ).annotate(
+                        new_warning_code=Replace(
+                            F('new_warning_code'), Value('11'), Value('')
+                        )
+                    ).update(warning_code=F('new_warning_code'))
+            
+            # sales date
+            submission_content.filter(Q(
+                        Q(
+                            Q(xls_sale_date__lte='43102.0') &
+                            Q(xls_date_type='3') &
+                            ~Q(xls_sale_date='')
+                        ) |
+                        Q(
+                            Q(xls_sale_date__lte='2018-01-02') &
+                            Q(xls_date_type='1') &
+                            ~Q(xls_sale_date='')
+                        )
+                    )).update(warning_code=Case(
+                    When(Q(warning_code='') | Q(warning_code=None), then=Value('5')),
+                    When(
+                    ~Q(warning_code__startswith='5,') &
+                    ~Q(warning_code__endswith=',5') &
+                    ~Q(warning_code__icontains=',5,') &
+                    ~Q(warning_code__exact='5'),
+                    then=Concat(F('warning_code'), Value(','), Value('5'))
+                ),
+                default=F('warning_code')
+            ))
+
+            # invalid date
+            submission_content.filter(Q(Q(xls_sale_date__lte='0') | Q(xls_sale_date=''))).update(warning_code=Case(
+                    When(warning_code='', then=Value('6')),  # If warning_code is empty, just set the new code
+                    When(warning_code=None, then=Value('6')),  # If warning_code is None, just set the new code
+                    default=Concat(F('warning_code'), Value(','), Value('6'))
+                    ))
+
+            # mismatch vins
+            submission_content.filter(Q(id__in=RawSQL(" \
+                        SELECT id FROM sales_submission_content a, \
+                            (SELECT vin, make, CAST(description as float) \
+                                as model_year \
+                            FROM icbc_registration_data JOIN icbc_vehicle \
+                                ON icbc_vehicle_id = icbc_vehicle.id JOIN \
+                                    model_year \
+                                ON model_year_id = model_year.id) as b \
+                            WHERE a.xls_vin = b.vin AND \
+                                (xls_make != b.make OR \
+                                    CAST(xls_model_year as float) \
+                                        != b.model_year) \
+                            AND submission_id = %s",
+                        (pk,)
+                    ))).update(warning_code=Case(
+                    When(Q(warning_code='') | Q(warning_code=None), then=Value('4')),
+                    When(
+                    ~Q(warning_code__startswith='4,') &
+                    ~Q(warning_code__endswith=',4') &
+                    ~Q(warning_code__icontains=',4,') &
+                    ~Q(warning_code__exact='4'),
+                    then=Concat(F('warning_code'), Value(','), Value('4'))
+                ),
+                default=F('warning_code')
+            ))
+                
+             
+            # conflicting model year report
+            makes = list(submission_content.values_list('xls_make', flat=True).distinct())
+            makes_upper = [make.upper() for make in makes]
+
+            reports = ModelYearReport.objects.annotate(
+                upper_short_name=Upper(F('organization__short_name'))
+                    ).filter(
+                        validation_status__in=['SUBMITTED', 'RECOMMENDED', 'RETURNED'],
+                            upper_short_name__in=makes_upper
+                        )
+                    
+            if reports:
+                subquery = reports.values('model_year__name')
+                submission_content.filter(~Q(xls_model_year__in=Subquery(subquery))).update(warning_code=Case(
+                When(Q(warning_code='') | Q(warning_code=None), then=Value('71')),
+                When(
+                    ~Q(warning_code__startswith='71,') &
+                    ~Q(warning_code__endswith=',71') &
+                    ~Q(warning_code__icontains=',71,') &
+                    ~Q(warning_code__exact='71'),
+                    then=Concat(F("warning_code"), Value(','), Value('71'))
+                ),
+                default=F("warning_code")
+            ))
+            
             for sub in submission_content.all():
                 sub.save()
 
@@ -384,97 +531,47 @@ class CreditRequestViewset(
 
                 if submission_filters['warning'] == '1' or \
                         '3' in submission_filters['warning']:
-                    duplicate_vins = Subquery(submission_content.values(
-                        'xls_vin'
-                    ).annotate(
-                        vin_count=Count('xls_vin')
-                    ).values_list(
-                        'xls_vin', flat=True
-                    ).filter(vin_count__gt=1))
+                    duplicate_vins = Subquery(submission_content.filter(warning_code='3').values('xls_vin'))
 
                 if submission_filters['warning'] == '1' or \
                         '2' in submission_filters['warning']:
-                    awarded_vins = Subquery(RecordOfSale.objects.exclude(
-                        submission_id=pk
-                    ).values_list('vin', flat=True))
+                    awarded_vins = Subquery(submission_content.filter(warning_code='2').values('xls_vin'))
 
                 if submission_filters['warning'] == '1' or \
                         '11' in submission_filters['warning']:
-                    not_registered = ~Q(xls_vin__in=Subquery(
-                        IcbcRegistrationData.objects.values('vin')
-                    ))
+                    not_registered = Subquery(submission_content.filter(warning_code='11').values('xls_vin'))
 
                 if submission_filters['warning'] == '1' or \
                         '5' in submission_filters['warning']:
-                    sale_date = Q(
-                        Q(
-                            Q(xls_sale_date__lte="43102.0") &
-                            Q(xls_date_type="3") &
-                            ~Q(xls_sale_date="")
-                        ) |
-                        Q(
-                            Q(xls_sale_date__lte="2018-01-02") &
-                            Q(xls_date_type="1") &
-                            ~Q(xls_sale_date="")
-                        )
-                    )
+                    sale_date = Subquery(submission_content.filter(warning_code='5').values('xls_vin'))
 
                 if submission_filters['warning'] == '1' or \
                         '6' in submission_filters['warning']:
-                    invalid_date = Q(Q(xls_sale_date__lte="0") | Q(xls_sale_date=""))
+                    invalid_date = Subquery(submission_content.filter(warning_code='6').values('xls_vin'))
 
                 if submission_filters['warning'] == '1' or \
                         '4' in submission_filters['warning']:
-                    mismatch_vins = Q(id__in=RawSQL(" \
-                        SELECT id FROM sales_submission_content a, \
-                            (SELECT vin, make, CAST(description as float) \
-                                as model_year \
-                            FROM icbc_registration_data JOIN icbc_vehicle \
-                                ON icbc_vehicle_id = icbc_vehicle.id JOIN \
-                                    model_year \
-                                ON model_year_id = model_year.id) as b \
-                            WHERE a.xls_vin = b.vin AND \
-                                (xls_make != b.make OR \
-                                    CAST(xls_model_year as float) \
-                                        != b.model_year) \
-                            AND submission_id = %s",
-                        (pk,)
-                    ))
+                    mismatch_vins = Subquery(submission_content.filter(warning_code='4').values('xls_vin'))
                 
                 if submission_filters['warning'] == '1' or \
                     '71' in submission_filters['warning']:
-
-                    makes = list(submission_content.values_list('xls_make', flat=True).distinct())
-                    makes_upper = [make.upper() for make in makes]
-
-                    reports = ModelYearReport.objects.annotate(
-                        upper_short_name=Upper(F('organization__short_name'))
-                    ).filter(
-                        validation_status__in=['SUBMITTED', 'RECOMMENDED', 'RETURNED'],
-                            upper_short_name__in=makes_upper
-                        )
-                    
-                    if reports:
-                        subquery = reports.values('model_year__name')
-                        wrong_model_year = ~Q(xls_model_year__in=Subquery(subquery))
-
-
+                    wrong_model_year = Subquery(submission_content.filter(warning_code='71').values('xls_vin'))
 
                 if 'include_overrides' in submission_filters and \
                         submission_filters['include_overrides']:
-                    overridden_vins = Q(reason__isnull=False)
+                    overridden_condition = Q(reason__isnull=False)
 
-
-                submission_content = submission_content.filter(
-                    Q(xls_vin__in=duplicate_vins) |
+                combined_conditions = (
+                    Q(xls_vin__in=duplicate_vins) | 
                     Q(xls_vin__in=awarded_vins) |
-                    not_registered |
-                    sale_date |
-                    invalid_date |
-                    mismatch_vins |
-                    overridden_vins |
-                    wrong_model_year
+                    Q(xls_vin__in=not_registered) |
+                    Q(xls_vin__in=sale_date) |
+                    Q(xls_vin__in=invalid_date) |
+                    Q(xls_vin__in=mismatch_vins) |
+                    Q(xls_vin__in=wrong_model_year) |
+                    overridden_condition
                 )
+                submission_content = submission_content.filter(combined_conditions)
 
             if 'model_year.description' in submission_filters:
                 extra_filter_by.append('UPPER(model_year.description) LIKE %s')
@@ -544,29 +641,38 @@ class CreditRequestViewset(
         serializer = SalesSubmissionContentSerializer(
             paginated, many=True, read_only=True, context={'request': request}
         )
+
+        list_of_warnings = []
+        for sc in submission_content:
+            i = 0
+            while i < len(sc.warning_code):
+                if i < len(sc.warning_code) - 1 and sc.warning_code[i:i+2] in ['11', '71']:  # Add any other two-digit error codes to this list
+                    list_of_warnings.append(sc.warning_code[i:i+2])
+                    i += 2
+                else:
+                    list_of_warnings.append(sc.warning_code[i])
+                    i += 1
+
         errorList = []
-        list_of_warnings = [sc.warnings for sc in submission_content]
-        if list_of_warnings:
-            errorList = list(np.concatenate(list_of_warnings))
-        newErrorList = []
-        for error in errorList:
-            if error == 'NO_ICBC_MATCH':
-                newErrorList.append('NO_ICBC_MATCH')
-            if error == 'VIN_ALREADY_AWARDED':
-                newErrorList.append('VIN_ALREADY_AWARDED')
-            if error == 'DUPLICATE_VIN':
-                newErrorList.append('DUPLICATE_VIN')
-            if error in ['INVALID_MODEL', 'MODEL_YEAR_MISMATCHED', 'MAKE_MISMATCHED']:
-                newErrorList.append('ERROR_41')
-            if error == 'EXPIRED_REGISTRATION_DATE':
-                newErrorList.append('EXPIRED_REGISTRATION_DATE')
-            if error == 'INVALID_DATE':
-                newErrorList.append('INVALID_DATE')
-            if error == "WRONG_MODEL_YEAR":
-                newErrorList.append('WRONG_MODEL_YEAR')
+        for error in list_of_warnings:
+            if error == '11':
+                errorList.append('NO_ICBC_MATCH')
+            if error == '2':
+                errorList.append('VIN_ALREADY_AWARDED')
+            if error == '3':
+                errorList.append('DUPLICATE_VIN')
+            if error in ['4']:
+                errorList.append('ERROR_41')
+            if error == '5':
+                errorList.append('EXPIRED_REGISTRATION_DATE')
+            if error == '6':
+                errorList.append('INVALID_DATE')
+            if error == "71":
+                errorList.append('WRONG_MODEL_YEAR')
             else:
                 pass
-        errorKey, errorCounts = np.unique(newErrorList, return_counts=True)
+
+        errorKey, errorCounts = np.unique(errorList, return_counts=True)
         errorDict = dict(zip(errorKey, errorCounts))
         errorDict.update({"TOTAL": sum(list(errorCounts))})
         return Response({
@@ -580,54 +686,10 @@ class CreditRequestViewset(
         if not request.user.is_government:
             return HttpResponseForbidden()
 
-        verify_with_icbc_data = request.GET.get('reset', None)
-
-        if verify_with_icbc_data == 'Y':
-            submission_content = SalesSubmissionContent.objects.filter(
-                submission_id=pk
-            )
-
-            duplicate_vins = Subquery(submission_content.values(
-                'xls_vin'
-            ).annotate(
-                vin_count=Count('xls_vin')
-            ).values_list(
-                'xls_vin', flat=True
-            ).filter(vin_count__gt=1))
-
-            pre_existing_vins = Subquery(RecordOfSale.objects.exclude(
-                submission_id=pk
-            ).exclude(
-                submission__validation_status='REJECTED'
-            ).values_list('vin', flat=True))
-
-            unselected_vins = submission_content.filter(
-                Q(xls_vin__in=duplicate_vins) |
-                Q(xls_vin__in=pre_existing_vins) |
-                ~Q(xls_vin__in=Subquery(
-                    IcbcRegistrationData.objects.values('vin')
-                )) |
-                Q(
-                    Q(
-                        Q(xls_sale_date__lte="43102.0") &
-                        Q(xls_date_type="3")
-                    ) |
-                    Q(
-                        Q(xls_sale_date__lte="2018-01-02") &
-                        Q(xls_date_type="1")
-                    )
-                )
-            ).values_list('id', flat=True)
-        else:
-            selected_vins = Subquery(RecordOfSale.objects.filter(
-                submission_id=pk
-            ).values_list('vin', flat=True))
-
-            unselected_vins = SalesSubmissionContent.objects.filter(
-                submission_id=pk
-            ).exclude(
-                xls_vin__in=selected_vins
-            ).values_list('id', flat=True)
+        unselected_vins = SalesSubmissionContent.objects.filter(
+            submission_id=pk,
+            verified=False
+        ).values()
 
         return Response(list(unselected_vins))
 

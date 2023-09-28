@@ -647,11 +647,15 @@ class SalesSubmissionSaveSerializer(
                 submission_id=instance.id
             ).values_list('vin', flat=True)
 
+            print(awarded_vins, duplicate_vins)
+            invalid_ids = []
+            for invalid in invalidated:
+                invalid_ids.append(invalid['id'])
             # Get submission content that is validated
             content = SalesSubmissionContent.objects.filter(
                 submission_id=instance.id
             ).exclude(
-                id__in=invalidated
+                id__in=invalid_ids
             ).exclude(
                 xls_vin__in=awarded_vins
             ).exclude(
