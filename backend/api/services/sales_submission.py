@@ -288,6 +288,7 @@ def populate_date_warnings(warnings, sales_submission_contents):
     expired_date_warning = "EXPIRED_REGISTRATION_DATE"
     for content in sales_submission_contents:
         content_id = content.id
+        sale_date = None
         if content.xls_date_type == XL_CELL_DATE:
             try:
                 date_float = float(content.xls_sale_date)
@@ -296,17 +297,18 @@ def populate_date_warnings(warnings, sales_submission_contents):
                 continue
 
             try:
-                return xldate.xldate_as_datetime(date_float, content.xls_date_mode)
+                sale_date = xldate.xldate_as_datetime(date_float, content.xls_date_mode)
             except XLDateError:
                 add_warning(warnings, content_id, invalid_date_warning)
 
         elif content.xls_date_type == XL_CELL_TEXT:
             try:
                 sale_date = parse(str(content.xls_sale_date), fuzzy=True)
-                if sale_date < datetime.datetime(2018, 1, 2):
-                    add_warning(warnings, content_id, expired_date_warning)
             except ValueError:
                 add_warning(warnings, content_id, invalid_date_warning)
+        
+        if sale_date is not None and sale_date < datetime.datetime(2018, 1, 2):
+            add_warning(warnings, content_id, expired_date_warning)
 
 
 def populate_already_awarded_warnings(
