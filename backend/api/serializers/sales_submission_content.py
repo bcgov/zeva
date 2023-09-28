@@ -10,7 +10,6 @@ class SalesSubmissionContentSerializer(ModelSerializer):
     icbc_verification = SerializerMethodField()
     record_of_sale = SerializerMethodField()
     vehicle = SerializerMethodField()
-    warnings = SerializerMethodField()
 
     def get_icbc_verification(self, instance):
         request = self.context.get("request")
@@ -57,19 +56,10 @@ class SalesSubmissionContentSerializer(ModelSerializer):
     class Meta:
         model = SalesSubmissionContent
         fields = (
-            "id",
-            "sales_date",
-            "vehicle",
-            "xls_make",
-            "xls_model",
-            "xls_model_year",
-            "xls_vin",
-            "record_of_sale",
-            "sales_date",
-            "warnings",
-            "icbc_verification",
-            "reason",
-            "update_timestamp",
+            'id', 'sales_date', 'vehicle', 'xls_make', 'xls_model',
+            'xls_model_year', 'xls_vin', 'record_of_sale', 'warnings', 
+            'icbc_verification', 'reason', 'update_timestamp','warning_code', 
+            'verified'
         )
         read_only_fields = ("id",)
 
