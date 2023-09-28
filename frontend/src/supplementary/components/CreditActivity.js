@@ -310,7 +310,7 @@ const CreditActivity = (props) => {
                     {reportYear} Model Year LDV Sales:
                   </td>
                   <td className="text-right" width="10%">
-                    {ldvSales}
+                    {formatNumeric(ldvSales, 0)}
                   </td>
                   <td width="10%">
                     <input
