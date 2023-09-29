@@ -306,7 +306,7 @@ def populate_date_warnings(warnings, sales_submission_contents):
                 sale_date = parse(str(content.xls_sale_date), fuzzy=True)
             except ValueError:
                 add_warning(warnings, content_id, invalid_date_warning)
-        
+
         if sale_date is not None and sale_date < datetime.datetime(2018, 1, 2):
             add_warning(warnings, content_id, expired_date_warning)
 
@@ -326,7 +326,9 @@ def populate_already_awarded_warnings(
         matching_records = []
         for sale_record in sale_records:
             if (
-                sale_record.submission != content.submission
+                sale_record.submission.validation_status
+                != SalesSubmissionStatuses.REJECTED
+                and sale_record.submission != content.submission
                 and sale_record.create_timestamp < content.update_timestamp
             ):
                 matching_records.append(sale_record)
