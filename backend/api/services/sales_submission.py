@@ -388,16 +388,17 @@ def populate_wrong_model_year_warnings(
             .filter(validation_status__in=["SUBMITTED", "RECOMMENDED", "RETURNED"])
             .select_related("model_year")
         )
-        model_years_of_reports = set()
-        for report in reports:
-            model_years_of_reports.add(report.model_year.name)
+        if reports:
+            model_years_of_reports = set()
+            for report in reports:
+                model_years_of_reports.add(report.model_year.name)
 
-        for content in sales_submission_contents:
-            content_id = content.id
-            if content.submission == sales_submission:
-                model_year = content.xls_model_year
-                if model_year not in model_years_of_reports:
-                    add_warning(warnings, content_id, warning)
+            for content in sales_submission_contents:
+                content_id = content.id
+                if content.submission == sales_submission:
+                    model_year = content.xls_model_year
+                    if model_year not in model_years_of_reports:
+                        add_warning(warnings, content_id, warning)
 
 
 def get_helping_objects(sales_submission_contents):
