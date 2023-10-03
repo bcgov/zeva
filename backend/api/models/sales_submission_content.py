@@ -68,17 +68,11 @@ class SalesSubmissionContent(Auditable):
         max_length=255,
         db_comment="Reason for overriding the initial assessment"
     )
-    warning_code = models.CharField(
+    warnings_list = models.CharField(
         blank=True,
         null=True,
-        max_length=20,
-        db_comment="ID of the warning code(s) a VIN was flagged with if applicable."
-    )
-    verified = models.BooleanField(
-        blank=False,
-        null=False,
-        default=False,
-        db_comment="Determines if a VIN has been verified and therefore issued credits or not"
+        max_length=255,
+        db_comment="comma-separated list of warnings a VIN was flagged with"
     )
 
     @property

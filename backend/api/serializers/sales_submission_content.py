@@ -59,7 +59,6 @@ class SalesSubmissionContentSerializer(ModelSerializer):
             'id', 'sales_date', 'vehicle', 'xls_make', 'xls_model',
             'xls_model_year', 'xls_vin', 'record_of_sale', 'warnings', 
             'icbc_verification', 'reason', 'update_timestamp','warning_code', 
-            'verified'
         )
         read_only_fields = ("id",)
 
