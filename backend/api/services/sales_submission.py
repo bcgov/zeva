@@ -12,6 +12,7 @@ from dateutil.parser import parse
 import datetime
 from api.models.vehicle_statuses import VehicleDefinitionStatuses
 from django.core.exceptions import ValidationError
+from api.models.model_year_report import ModelYearReport
 
 
 def get_map_of_sales_submission_ids_to_timestamps(user_is_government):
@@ -365,18 +366,7 @@ def populate_icbc_warnings(
         content_id = content.id
         vin = content.xls_vin
         icbc_record = map_of_vins_to_icbc_data.get(vin)
-        if (
-            icbc_record is None
-            or timezone.make_aware(
-                (
-                    datetime.datetime.combine(
-                        icbc_record.icbc_upload_date.upload_date,
-                        datetime.datetime.min.time(),
-                    )
-                )
-            )
-            >= content.update_timestamp
-        ):
+        if icbc_record is None:
             add_warning(warnings, content_id, no_match_warning)
             continue
 
@@ -388,14 +378,29 @@ def populate_icbc_warnings(
                 add_warning(warnings, content_id, make_mismatch_warning)
 
 
-def get_warnings_and_maps(sales_submission_contents):
-    if not sales_submission_contents:
-        return {
-            "warnings": {},
-            "map_of_vins_to_records_of_sales": {},
-            "map_of_vins_to_icbc_data": {},
-            "map_of_sales_submission_content_ids_to_vehicles": {},
-        }
+def populate_wrong_model_year_warnings(
+    warnings, sales_submission, sales_submission_contents
+):
+    warning = "WRONG_MODEL_YEAR"
+    if sales_submission.part_of_model_year_report is True:
+        reports = (
+            ModelYearReport.objects.filter(organization=sales_submission.organization)
+            .filter(validation_status__in=["SUBMITTED", "RECOMMENDED", "RETURNED"])
+            .select_related("model_year")
+        )
+        model_years_of_reports = set()
+        for report in reports:
+            model_years_of_reports.add(report.model_year.name)
+
+        for content in sales_submission_contents:
+            content_id = content.id
+            if content.submission == sales_submission:
+                model_year = content.xls_model_year
+                if model_year not in model_years_of_reports:
+                    add_warning(warnings, content_id, warning)
+
+
+def get_helping_objects(sales_submission_contents):
     sales_submission = None
     for index, content in enumerate(sales_submission_contents):
         if index != 0 and content.submission != sales_submission:
@@ -404,7 +409,6 @@ def get_warnings_and_maps(sales_submission_contents):
             )
         sales_submission = content.submission
 
-    warnings = {}
     vehicle_structures = get_vehicle_structures(
         sales_submission, VehicleDefinitionStatuses.VALIDATED
     )
@@ -417,16 +421,33 @@ def get_warnings_and_maps(sales_submission_contents):
             sales_submission_contents, vehicle_structures
         )
     )
+    return {
+        "sales_submission": sales_submission,
+        "map_of_vins_to_records_of_sales": map_of_vins_to_records_of_sales,
+        "map_of_vins_to_icbc_data": map_of_vins_to_icbc_data,
+        "map_of_sales_submission_content_ids_to_vehicles": map_of_sales_submission_content_ids_to_vehicles,
+    }
 
+
+def get_warnings_and_maps(sales_submission_contents):
+    if not sales_submission_contents:
+        return {
+            "warnings": {},
+            "map_of_vins_to_records_of_sales": {},
+            "map_of_vins_to_icbc_data": {},
+            "map_of_sales_submission_content_ids_to_vehicles": {},
+        }
+    
+    helping_objects = get_helping_objects(sales_submission_contents)
+    sales_submission = helping_objects["sales_submission"]
+    map_of_vins_to_records_of_sales = helping_objects["map_of_vins_to_records_of_sales"]
+    map_of_vins_to_icbc_data = helping_objects["map_of_vins_to_icbc_data"]
+    map_of_sales_submission_content_ids_to_vehicles = helping_objects["map_of_sales_submission_content_ids_to_vehicles"]
+
+    warnings = {}
     populate_invalid_model_warnings(
         warnings,
         sales_submission_contents,
-        map_of_sales_submission_content_ids_to_vehicles,
-    )
-    populate_row_not_selected_warnings(
-        warnings,
-        sales_submission_contents,
-        map_of_vins_to_records_of_sales,
         map_of_sales_submission_content_ids_to_vehicles,
     )
     populate_date_warnings(warnings, sales_submission_contents)
@@ -439,6 +460,9 @@ def get_warnings_and_maps(sales_submission_contents):
         sales_submission_contents,
         map_of_sales_submission_content_ids_to_vehicles,
         map_of_vins_to_icbc_data,
+    )
+    populate_wrong_model_year_warnings(
+        warnings, sales_submission, sales_submission_contents
     )
 
     return {

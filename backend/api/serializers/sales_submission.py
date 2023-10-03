@@ -636,40 +636,11 @@ class SalesSubmissionSaveSerializer(
                 validation_status=VehicleDefinitionStatuses.VALIDATED
             ).values_list('model_year__name', Upper('make'), 'model_name')
 
-            # Gets already existing vins in this submission
-            duplicate_vins = SalesSubmissionContent.objects.annotate(
-                vin_count=Count('xls_vin')
-            ).filter(
-                submission_id=instance.id,
-                vin_count__gt=1
-            ).values_list('xls_vin', flat=True)
-
-            # Vins that already have rewarded credits from other submissions TODO (n sized query, refactor)
-            awarded_vins = RecordOfSale.objects.exclude(
-                submission__validation_status='REJECTED'
-            ).exclude(
-                submission_id=instance.id
-            ).values_list('vin', flat=True)
-
-            print(awarded_vins, duplicate_vins)
-            invalid_ids = []
-            for invalid in invalidated:
-                invalid_ids.append(invalid['id'])
             # Get submission content that is validated
             content = SalesSubmissionContent.objects.filter(
                 submission_id=instance.id
             ).exclude(
-                id__in=invalid_ids
-            ).exclude(
-                xls_vin__in=awarded_vins
-            ).exclude(
-                xls_vin__in=duplicate_vins
-            ).exclude(
-                xls_sale_date__lte="43102.0",
-                xls_date_type="3"
-            ).exclude(
-                xls_sale_date__lte="2018-01-02",
-                xls_date_type="1"
+                id__in=invalidated
             )
 
             # Create records for new validated content

@@ -5,10 +5,7 @@ from datetime import datetime
 from django.core.paginator import Paginator
 from django.core.exceptions import ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db.models.functions import Upper, Concat, Replace
-from django.db.models import F, Value, Case, When
-from django.db.models import Subquery, Count, Q
-from django.db.models.expressions import RawSQL
+from django.db.models import Subquery, Q
 from django.http import HttpResponse, HttpResponseForbidden
 from api.models.sales_submission_comment import SalesSubmissionComment
 from api.serializers.sales_submission_comment import SalesSubmissionCommentSerializer
@@ -18,7 +15,6 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
 
-from api.models.icbc_registration_data import IcbcRegistrationData
 from api.models.record_of_sale import RecordOfSale
 from api.models.sales_submission import SalesSubmission
 from api.models.sales_submission_content import SalesSubmissionContent
@@ -32,7 +28,6 @@ from api.serializers.sales_submission import (
     SalesSubmissionSaveSerializer,
 )
 from api.serializers.sales_submission_content import SalesSubmissionContentSerializer, SalesSubmissionContentBulkSerializer
-from api.models.model_year_report import ModelYearReport
 from api.services.credit_transaction import award_credits
 from api.services.sales_submission import check_validation_status_change
 from api.services.minio import minio_put_object
@@ -48,7 +43,7 @@ import numpy as np
 from api.paginations import BasicPagination
 from api.services.filter_utilities import get_search_terms, get_search_q_object
 from api.services.sales_submission import get_map_of_sales_submission_ids_to_timestamps
-from api.services.sales_submission import get_warnings_and_maps
+from api.services.sales_submission import get_warnings_and_maps, get_helping_objects
 from api.utilities.generic import get_inverse_map
 
 
@@ -332,165 +327,32 @@ class CreditRequestViewset(
             submission_id=pk
         ).select_related("submission")
 
-        if verify_with_icbc_data is True:
-            # updates update_timestamp fields on submission content
-            # which will update warning flags to match current data
+        if verify_with_icbc_data == "Y":
+            warnings_and_maps = get_warnings_and_maps(submission_content)
+            contents_to_save = []
 
-            # duplicate vins
-            duplicate_vins = submission_content.values('xls_vin').annotate(vin_count=Count('xls_vin')).filter(vin_count__gt=1).values_list('xls_vin', flat=True)
-            submission_content.filter(xls_vin__in=duplicate_vins).update(warning_code=Case(
-                When(Q(warning_code='') | Q(warning_code=None), then=Value('31')),
-                When(
-                    ~Q(warning_code__startswith='31,') &
-                    ~Q(warning_code__endswith=',31') &
-                    ~Q(warning_code__icontains=',31,') &
-                    ~Q(warning_code__exact='31'),
-                    then=Concat(F("warning_code"), Value(','), Value('31'))
-                ),
-                default=F('warning_code')
-            ))
-
+            for content in submission_content:
+                content_id = content.id
+                warnings = warnings_and_maps["warnings"].get(content_id)
+                if warnings:
+                    content.warnings_list = ",".join(warnings)
+                else:
+                    content.warnings_list = None
+                contents_to_save.append(content)
             
-            # awarded vins
-            awarded_vins = RecordOfSale.objects.exclude(submission_id=pk).values_list('vin', flat=True)
-            submission_content.filter(xls_vin__in=awarded_vins).update(warning_code=Case(
-                When(Q(warning_code='') | Q(warning_code=None), then=Value('21')),
-                When(
-                    ~Q(warning_code__startswith='21,') &
-                    ~Q(warning_code__endswith=',21') &
-                    ~Q(warning_code__icontains=',21,') &
-                    ~Q(warning_code__exact='21'),
-                    then=Concat(F("warning_code"), Value(','), Value('21'))
-                ),
-                default=F('warning_code')
-            ))
-            
-            # not registered
-            submission_content.filter(~Q(xls_vin__in=Subquery(
-                        IcbcRegistrationData.objects.values('vin')
-                    ))).update(warning_code=Case(
-                    When(Q(warning_code='') | Q(warning_code=None), then=Value('11')),
-                    When(
-                    ~Q(warning_code__startswith='11,') &
-                    ~Q(warning_code__endswith=',11') &
-                    ~Q(warning_code__icontains=',11,') &
-                    ~Q(warning_code__exact='11'),
-                    then=Concat(F("warning_code"), Value(','), Value('11'))
-                ),
-                default=F('warning_code')
-            ))
-
-            # checking if flagged vins are no longer supposed to be flagged
-            submission_content.filter(
-                Q(warning_code__icontains='11,') | 
-                Q(warning_code__icontains=', 11') | 
-                Q(warning_code__exact='11')
-            ).exclude(pk__in=duplicate_vins.values('pk')).annotate(
-                    new_warning_code=Replace(
-                        F('warning_code'), Value(', 11'), Value('')
-                    )
-                    ).annotate(
-                        new_warning_code=Replace(
-                            F('new_warning_code'), Value('11,'), Value('')
-                        )
-                    ).annotate(
-                        new_warning_code=Replace(
-                            F('new_warning_code'), Value('11'), Value('')
-                        )
-                    ).update(warning_code=F('new_warning_code'))
-            
-            # sales date
-            submission_content.filter(Q(
-                        Q(
-                            Q(xls_sale_date__lte='43102.0') &
-                            Q(xls_date_type='3') &
-                            ~Q(xls_sale_date='')
-                        ) |
-                        Q(
-                            Q(xls_sale_date__lte='2018-01-02') &
-                            Q(xls_date_type='1') &
-                            ~Q(xls_sale_date='')
-                        )
-                    )).update(warning_code=Case(
-                    When(Q(warning_code='') | Q(warning_code=None), then=Value('51')),
-                    When(
-                    ~Q(warning_code__startswith='51,') &
-                    ~Q(warning_code__endswith=',51') &
-                    ~Q(warning_code__icontains=',51,') &
-                    ~Q(warning_code__exact='51'),
-                    then=Concat(F('warning_code'), Value(','), Value('51'))
-                ),
-                default=F('warning_code')
-            ))
-
-            # invalid date
-            submission_content.filter(Q(Q(xls_sale_date__lte='0') | Q(xls_sale_date=''))).update(warning_code=Case(
-                    When(Q(warning_code='') | Q(warning_code=None), then=Value('61')),
-                    When(
-                    ~Q(warning_code__startswith='61,') &
-                    ~Q(warning_code__endswith=',61') &
-                    ~Q(warning_code__icontains=',61,') &
-                    ~Q(warning_code__exact='61'),
-                    then=Concat(F('warning_code'), Value(','), Value('61'))
-                ),
-                default=F('warning_code')
-            ))
-
-            # mismatch vins
-            submission_content.filter(Q(id__in=RawSQL(" \
-                        SELECT id FROM sales_submission_content a, \
-                            (SELECT vin, make, CAST(description as float) \
-                                as model_year \
-                            FROM icbc_registration_data JOIN icbc_vehicle \
-                                ON icbc_vehicle_id = icbc_vehicle.id JOIN \
-                                    model_year \
-                                ON model_year_id = model_year.id) as b \
-                            WHERE a.xls_vin = b.vin AND \
-                                (xls_make != b.make OR \
-                                    CAST(xls_model_year as float) \
-                                        != b.model_year) \
-                            AND submission_id = %s",
-                        (pk,)
-                    ))).update(warning_code=Case(
-                    When(Q(warning_code='') | Q(warning_code=None), then=Value('41')),
-                    When(
-                    ~Q(warning_code__startswith='41,') &
-                    ~Q(warning_code__endswith=',41') &
-                    ~Q(warning_code__icontains=',41,') &
-                    ~Q(warning_code__exact='41'),
-                    then=Concat(F('warning_code'), Value(','), Value('41'))
-                ),
-                default=F('warning_code')
-            ))
-                
-             
-            # conflicting model year report
-            makes = list(submission_content.values_list('xls_make', flat=True).distinct())
-            makes_upper = [make.upper() for make in makes]
-
-            reports = ModelYearReport.objects.annotate(
-                upper_short_name=Upper(F('organization__short_name'))
-                    ).filter(
-                        validation_status__in=['SUBMITTED', 'RECOMMENDED', 'RETURNED'],
-                            upper_short_name__in=makes_upper
-                        )
-                    
-            if reports:
-                subquery = reports.values('model_year__name')
-                submission_content.filter(~Q(xls_model_year__in=Subquery(subquery))).update(warning_code=Case(
-                When(Q(warning_code='') | Q(warning_code=None), then=Value('71')),
-                When(
-                    ~Q(warning_code__startswith='71,') &
-                    ~Q(warning_code__endswith=',71') &
-                    ~Q(warning_code__icontains=',71,') &
-                    ~Q(warning_code__exact='71'),
-                    then=Concat(F("warning_code"), Value(','), Value('71'))
-                ),
-                default=F("warning_code")
-            ))
-            
-            for sub in submission_content.all():
-                sub.save()
+            SalesSubmissionContent.objects.bulk_update(contents_to_save, ["warnings_list"])
+        else:
+            warnings_and_maps = {}
+            warnings_map = {}
+            for content in submission_content:
+                content_id = content.id
+                warnings = content.warnings_list
+                if warnings is not None:
+                    warnings_map[content_id] = warnings.split(",")
+            helping_objects = get_helping_objects(submission_content)
+            warnings_and_maps["warnings"] = warnings_map
+            warnings_and_maps["map_of_vins_to_icbc_data"] = helping_objects["map_of_vins_to_icbc_data"]
+            warnings_and_maps["map_of_sales_submission_content_ids_to_vehicles"] = helping_objects["map_of_sales_submission_content_ids_to_vehicles"]
 
         try:
             page = int(page)
@@ -503,14 +365,13 @@ class CreditRequestViewset(
         extra_filter_by = []
         extra_filter_params = []
 
-        warnings_and_maps = get_warnings_and_maps(submission_content)
-        map_of_warnings_to_content_ids = get_inverse_map(warnings_and_maps.get('warnings'))
-
         include_overrides = False
         for filter in filters:
             if filter.get("id") == 'include_overrides' and filter.get("value") is True:
                 include_overrides = True
                 break
+
+        map_of_warnings_to_content_ids = get_inverse_map(warnings_and_maps.get('warnings'))
 
         for filter in filters:
             filter_id = filter.get("id")
@@ -540,25 +401,7 @@ class CreditRequestViewset(
                 q_obj = Q(id__in=[])
 
                 if value == '1':
-                    warnings_to_search_for = [
-                        "NO_ICBC_MATCH",
-                        "VIN_ALREADY_AWARDED",
-                        "DUPLICATE_VIN",
-                        "INVALID_MODEL",
-                        "MODEL_YEAR_MISMATCHED",
-                        "MAKE_MISMATCHED",
-                        "EXPIRED_REGISTRATION_DATE",
-                        "INVALID_DATE",
-                        "WRONG_MODEL_YEAR"
-                    ]
-                    warnings_map = warnings_and_maps.get('warnings')
-                    ids_with_warnings = []
-                    for content_id, warnings in warnings_map.items():
-                        for warning in warnings:
-                            if warning in warnings_to_search_for:
-                                ids_with_warnings.append(content_id)
-                                break
-                    q_obj = Q(id__in=ids_with_warnings)
+                    q_obj = Q(id__in=warnings_and_maps.get('warnings').keys())
 
                 elif value == '11':
                     q_obj = Q(id__in=map_of_warnings_to_content_ids.get("NO_ICBC_MATCH", []))
@@ -657,37 +500,29 @@ class CreditRequestViewset(
             paginated, many=True, read_only=True, context={'request': request, 'warnings_and_maps': warnings_and_maps}
         )
 
-        list_of_warnings = []
-        for sc in submission_content:
-            i = 0
-            while i < len(sc.warning_code):
-                if i < len(sc.warning_code) - 1 and sc.warning_code[i:i+2] in ['11', '71']:  # Add any other two-digit error codes to this list
-                    list_of_warnings.append(sc.warning_code[i:i+2])
-                    i += 2
-                else:
-                    list_of_warnings.append(sc.warning_code[i])
-                    i += 1
-
         errorList = []
-        for error in list_of_warnings:
-            if error == '11':
-                errorList.append('NO_ICBC_MATCH')
-            if error == '2':
-                errorList.append('VIN_ALREADY_AWARDED')
-            if error == '3':
-                errorList.append('DUPLICATE_VIN')
-            if error in ['4']:
-                errorList.append('ERROR_41')
-            if error == '5':
-                errorList.append('EXPIRED_REGISTRATION_DATE')
-            if error == '6':
-                errorList.append('INVALID_DATE')
-            if error == "71":
-                errorList.append('WRONG_MODEL_YEAR')
+        list_of_warnings = list(warnings_and_maps.get('warnings').values())
+        if list_of_warnings:
+            errorList = list(np.concatenate(list_of_warnings))
+        newErrorList = []
+        for error in errorList:
+            if error == 'NO_ICBC_MATCH':
+                newErrorList.append('NO_ICBC_MATCH')
+            if error == 'VIN_ALREADY_AWARDED':
+                newErrorList.append('VIN_ALREADY_AWARDED')
+            if error == 'DUPLICATE_VIN':
+                newErrorList.append('DUPLICATE_VIN')
+            if error in ['INVALID_MODEL', 'MODEL_YEAR_MISMATCHED', 'MAKE_MISMATCHED']:
+                newErrorList.append('ERROR_41')
+            if error == 'EXPIRED_REGISTRATION_DATE':
+                newErrorList.append('EXPIRED_REGISTRATION_DATE')
+            if error == 'INVALID_DATE':
+                newErrorList.append('INVALID_DATE')
+            if error == 'WRONG_MODEL_YEAR':
+                newErrorList.append('WRONG_MODEL_YEAR')
             else:
                 pass
-
-        errorKey, errorCounts = np.unique(errorList, return_counts=True)
+        errorKey, errorCounts = np.unique(newErrorList, return_counts=True)
         errorDict = dict(zip(errorKey, errorCounts))
         errorDict.update({"TOTAL": sum(list(errorCounts))})
         return Response({
@@ -700,11 +535,34 @@ class CreditRequestViewset(
     def unselected(self, request, pk):
         if not request.user.is_government:
             return HttpResponseForbidden()
+        
+        verify_with_icbc_data = request.GET.get('reset', None)
+        
+        if verify_with_icbc_data == 'Y':
+            submission_content = SalesSubmissionContent.objects.filter(
+                submission_id=pk
+            ).select_related("submission")
 
-        unselected_vins = SalesSubmissionContent.objects.filter(
-            submission_id=pk,
-            verified=False
-        ).values()
+            warnings_map = get_warnings_and_maps(submission_content)["warnings"]
+            content_ids_to_include = []
+            for content_id, warnings in warnings_map.items():
+                if "DUPLICATE_VIN" in warnings or "VIN_ALREADY_AWARDED" in warnings or "EXPIRED_REGISTRATION_DATE" in warnings or "NO_ICBC_MATCH" in warnings or "WRONG_MODEL_YEAR" in warnings:
+                    content_ids_to_include.append(content_id)
+            
+            unselected_vins = SalesSubmissionContent.objects.filter(
+                submission_id=pk
+            ).filter(id__in=content_ids_to_include).values_list('id', flat=True)
+
+        else:
+            selected_vins = Subquery(RecordOfSale.objects.filter(
+                submission_id=pk
+            ).values_list('vin', flat=True))
+
+            unselected_vins = SalesSubmissionContent.objects.filter(
+                submission_id=pk
+            ).exclude(
+                xls_vin__in=selected_vins
+            ).values_list('id', flat=True)
 
         return Response(list(unselected_vins))
 

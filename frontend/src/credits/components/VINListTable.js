@@ -47,9 +47,7 @@ const VINListTable = (props) => {
       if (CREDIT_ERROR_CODES[warning]) {
         if (fields) {
           errorCodes += ` ${CREDIT_ERROR_CODES[warning].errorField} `
-        } else if (
-          !errorCodes.includes(CREDIT_ERROR_CODES[warning].errorCode)
-        ) {
+        } else {
           if (errorCodes !== '' && CREDIT_ERROR_CODES[warning].errorCode) {
             errorCodes += ', '
           }
@@ -57,7 +55,6 @@ const VINListTable = (props) => {
         }
       }
     })
-
     return errorCodes
   }
 
@@ -219,7 +216,8 @@ const VINListTable = (props) => {
                     'DUPLICATE_VIN',
                     'INVALID_MODEL',
                     'VIN_ALREADY_AWARDED',
-                    'EXPIRED_REGISTRATION_DATE'
+                    'EXPIRED_REGISTRATION_DATE',
+                    'WRONG_MODEL_YEAR'
                   ].indexOf(warning) >= 0
               )
             ) {
@@ -230,12 +228,12 @@ const VINListTable = (props) => {
                 checked={
                   invalidatedList.findIndex(
                     (item) => Number(item) === Number(row.id)
-                  ) > 0
+                  ) < 0
                 }
                 onChange={(event) => {
                   handleCheckboxClick(event)
                 }}
-                disabled={readOnly || row.warnings.includes('WRONG_MODEL_YEAR')}
+                disabled={readOnly}
                 type="checkbox"
                 value={row.id}
               />
