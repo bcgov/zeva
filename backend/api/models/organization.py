@@ -45,7 +45,7 @@ class Organization(Auditable):
         'ModelYear',
         related_name='+',
         on_delete=models.PROTECT,
-        null=False,
+        null=True,
         default=ModelYear.get_default_first_model_year_id_for_organization
     )
 

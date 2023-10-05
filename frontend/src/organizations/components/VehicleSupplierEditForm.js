@@ -219,6 +219,7 @@ VehicleSupplierEditForm.propTypes = {
   handleInputChange: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
+  modelYears: PropTypes.arrayOf(PropTypes.string),
   newSupplier: PropTypes.bool.isRequired,
   serviceSame: PropTypes.bool.isRequired,
   setDetails: PropTypes.func.isRequired,

@@ -20,7 +20,7 @@ const ComplianceReportListPage = (props) => {
     user
   } = props
 
-  let modelYearOfNewReport = undefined
+  let modelYearOfNewReport
   if (!user.organization.hasSubmittedReport) {
     modelYearOfNewReport = user.organization.firstModelYear
   } else if (availableYears.length > 0) {

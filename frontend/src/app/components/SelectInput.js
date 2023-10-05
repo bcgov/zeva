@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 const SelectInput = ({
   className = 'form-control',
@@ -35,6 +36,19 @@ const SelectInput = ({
       </div>
     </div>
   )
+}
+
+TextInput.propTypes = {
+  value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  handleChange: PropTypes.func.isRequired,
+  id: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  labelSize: PropTypes.string,
+  inputSize: PropTypes.string,
+  rowSize: PropTypes.string,
+  disabled: PropTypes.bool,
+  options: PropTypes.array.isRequired
 }
 
 export default SelectInput

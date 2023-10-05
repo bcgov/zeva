@@ -7,7 +7,10 @@ class ModelYear(Auditable, EffectiveDates, UniquelyNamed):
 
     @classmethod
     def get_default_first_model_year_id_for_organization(cls):
-        return cls.objects.get_by_natural_key("2020").id
+        try:
+            return cls.objects.get_by_natural_key("2020").id
+        except cls.DoesNotExist:
+            return None
 
     class Meta:
         db_table = "model_year"

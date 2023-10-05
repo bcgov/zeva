@@ -16,6 +16,7 @@ class Migration(migrations.Migration):
             name="first_model_year",
             field=models.ForeignKey(
                 default=api.models.model_year.ModelYear.get_default_first_model_year_id_for_organization,
+                null=True,
                 on_delete=django.db.models.deletion.PROTECT,
                 related_name="+",
                 to="api.modelyear",
