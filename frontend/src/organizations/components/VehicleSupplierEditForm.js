@@ -6,6 +6,7 @@ import Loading from '../../app/components/Loading'
 import Modal from '../../app/components/Modal'
 import CustomPropTypes from '../../app/utilities/props'
 import AddressForm from './AddressForm'
+import SelectInput from '../../app/components/SelectInput'
 
 const VehicleSupplierEditForm = (props) => {
   const {
@@ -16,6 +17,7 @@ const VehicleSupplierEditForm = (props) => {
     handleInputChange,
     handleSubmit,
     loading,
+    modelYears,
     newSupplier,
     setDetails,
     setServiceSame,
@@ -141,6 +143,17 @@ const VehicleSupplierEditForm = (props) => {
                     id="CommonName"
                     label="Common Name"
                     name="shortName"
+                  />
+                  <SelectInput
+                    disabled={details.hasSubmittedReport}
+                    labelSize="col-sm-3 col-form-label"
+                    inputSize="col-sm-7"
+                    value={details.firstModelYear}
+                    handleChange={handleInputChange}
+                    id="FirstModelYear"
+                    label="First Model Year Report"
+                    name="firstModelYear"
+                    options={modelYears}
                   />
                   <div className="row">
                     <div className="col-lg-7 col-md-6 pr-0">

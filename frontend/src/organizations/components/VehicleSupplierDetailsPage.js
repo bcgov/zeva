@@ -99,6 +99,14 @@ const VehicleSupplierDetailsPage = (props) => {
           </div>
 
           <div className="mt-3">
+            <h4 className="d-inline">First Model Year Report: </h4>
+            <span>
+              {' '}{details.firstModelYear}{' '}
+            </span>
+          </div>
+
+
+          <div className="mt-3">
             <h4 className="d-inline">3 Year Average LDV Sales: </h4>
             <span> {formatNumeric(Math.round(details.avgLdvSales), 0)} </span>
           </div>

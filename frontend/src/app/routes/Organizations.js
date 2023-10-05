@@ -19,7 +19,8 @@ const ORGANIZATIONS = {
   ASSESSED_SUPPLEMENTALS_MAP: `${API_BASE_PATH}/:id/assessed_supplementals_map`,
   MOST_RECENT_MYR_ID: `${API_BASE_PATH}/:id/most_recent_myr_id`,
   COMPLIANCE_YEARS: `${API_BASE_PATH}/:id/compliance_years`,
-  LIST_BY_YEAR: `${API_BASE_PATH}/:id/list_by_year?year=:year`
+  LIST_BY_YEAR: `${API_BASE_PATH}/:id/list_by_year?year=:year`,
+  MODEL_YEARS: `${API_BASE_PATH}/:id/model_years`
 }
 
 export default ORGANIZATIONS

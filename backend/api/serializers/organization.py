@@ -7,6 +7,7 @@ from api.serializers.organization_address import \
     OrganizationAddressSerializer, OrganizationAddressSaveSerializer
 from api.serializers.organization_ldv_sales import \
     OrganizationLDVSalesSerializer
+from api.models.model_year import ModelYear
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
@@ -17,6 +18,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
     organization_address = serializers.SerializerMethodField()
     avg_ldv_sales = serializers.SerializerMethodField()
     ldv_sales = OrganizationLDVSalesSerializer(many=True)
+    first_model_year = serializers.SerializerMethodField()
 
     def get_organization_address(self, obj):
         """
@@ -33,6 +35,9 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
     def get_avg_ldv_sales(self, obj):
         return obj.get_avg_ldv_sales()
+    
+    def get_first_model_year(self, obj):
+        return obj.first_model_year.name
 
     class Meta:
         model = Organization
@@ -40,7 +45,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
             'id', 'name', 'create_timestamp', 'organization_address',
             'balance', 'is_active', 'short_name', 'is_government',
             'supplier_class', 'avg_ldv_sales', 'ldv_sales',
-            'has_submitted_report',
+            'has_submitted_report', 'first_model_year',
         )
 
 
@@ -71,6 +76,7 @@ class OrganizationSaveSerializer(serializers.ModelSerializer):
     Loads most of the fields and the balance for the Supplier
     """
     organization_address = OrganizationAddressSaveSerializer(allow_null=True, many=True)
+    first_model_year = serializers.SlugRelatedField(slug_field="name", queryset=ModelYear.objects.all())
 
     def create(self, validated_data):
         request = self.context.get('request')
@@ -95,6 +101,7 @@ class OrganizationSaveSerializer(serializers.ModelSerializer):
         short_name = validated_data.get('short_name')
         is_active = validated_data.get('is_active')
         name = validated_data.get('name')
+        first_model_year = validated_data.get('first_model_year')
 
         # disable all supplier users when we
         # deactivate the organization
@@ -108,6 +115,7 @@ class OrganizationSaveSerializer(serializers.ModelSerializer):
         obj.is_active = is_active
         obj.name = name
         obj.update_user = request.user.username
+        obj.first_model_year = first_model_year
         obj.save()
 
         if addr:
@@ -143,7 +151,7 @@ class OrganizationSaveSerializer(serializers.ModelSerializer):
             'id', 'name', 'organization_address', 'create_timestamp',
             'balance', 'is_active', 'short_name', 'create_user', 'update_user',
             'is_government', 'supplier_class', 'ldv_sales',
-            'has_submitted_report',
+            'has_submitted_report', 'first_model_year',
         )
         extra_kwargs = {
             'name': {
