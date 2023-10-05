@@ -38,7 +38,7 @@ const SelectInput = ({
   )
 }
 
-TextInput.propTypes = {
+SelectInput.propTypes = {
   value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   handleChange: PropTypes.func.isRequired,
   id: PropTypes.string.isRequired,
