@@ -20,6 +20,13 @@ const ComplianceReportListPage = (props) => {
     user
   } = props
 
+  let modelYearOfNewReport
+  if (!user.organization.hasSubmittedReport) {
+    modelYearOfNewReport = user.organization.firstModelYear
+  } else if (availableYears.length > 0) {
+    modelYearOfNewReport = availableYears[0]
+  }
+
   if (loading) {
     return <Loading />
   }
@@ -30,13 +37,13 @@ const ComplianceReportListPage = (props) => {
         <div className="col-md-8 d-flex align-items-end">
           <h2>Model Year Reports</h2>
         </div>
-        {availableYears.length > 0 && !user.isGovernment && (
+        {!user.isGovernment && modelYearOfNewReport && (
           <div className="col-md-4 text-right">
             <button
               className="btn button primary ml-3"
               onClick={() => {
                 history.push(
-                  `${ROUTES_COMPLIANCE.NEW}?year=${availableYears[0]}`
+                  `${ROUTES_COMPLIANCE.NEW}?year=${modelYearOfNewReport}`
                 )
               }}
               type="button"

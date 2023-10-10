@@ -30,8 +30,9 @@ from api.services.credit_transaction import (
 from api.services.model_year_report import (
     get_most_recent_myr_id
 )
-from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_statuses import ModelYearReportStatuses
+from api.services.model_year import get_model_years
+from api.serializers.vehicle import ModelYearSerializer
 
 
 class OrganizationViewSet(
@@ -229,3 +230,9 @@ class OrganizationViewSet(
             serializer = CreditTransactionListSerializer(transactions, many=True)
             return Response(serializer.data)
         return Response([])
+    
+    @action(detail=True, methods=['get'])
+    def model_years(self, request, pk=None):
+        model_years = get_model_years()
+        serializer = ModelYearSerializer(model_years, many=True)
+        return Response(serializer.data)
