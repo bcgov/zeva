@@ -74,8 +74,8 @@ const CreditAgreementsDetailsPage = (props) => {
             isGovernment={user.isGovernment}
             date={moment(details.updateTimestamp).format('MMM D, YYYY')}
             status={details.status}
-            user={user.username}
             transactionType={details.transactionType}
+            updateUser={details.updateUser}
           />
         </div>
       </div>
