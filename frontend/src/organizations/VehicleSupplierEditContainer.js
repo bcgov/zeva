@@ -18,19 +18,20 @@ const VehicleSupplierEditContainer = (props) => {
   const [details, setDetails] = useState({})
   const [display, setDisplay] = useState({})
   const [errorFields, setErrorFields] = useState({})
-  const [loading, setLoading] = useState(true)
+  const [initialLoading, setInitialLoading] = useState(true)
+  const [modelYearsLoading, setModelYearsLoading] = useState(true)
   const { keycloak, newSupplier } = props
   const [serviceSame, setServiceSame] = useState(false)
+  const [modelYears, setModelYears] = useState([])
   const refreshDetails = () => {
     if (newSupplier) {
-      setLoading(false)
+      setInitialLoading(false)
       setDetails({
+        firstModelYear: '2020',
         organizationAddress: {}
       })
     }
-
-    if (!newSupplier) {
-      setLoading(true)
+    else {
       axios
         .get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id))
         .then((response) => {
@@ -61,13 +62,30 @@ const VehicleSupplierEditContainer = (props) => {
             organizationAddress: addresses
           })
           setDisplay({ ...response.data, organizationAddress: addresses })
-          setLoading(false)
+          setInitialLoading(false)
         })
     }
   }
 
+  const getModelYears = () => {
+    let orgId = id
+    if (newSupplier) {
+      orgId = -1
+    }
+    axios.get(ROUTES_ORGANIZATIONS.MODEL_YEARS.replace(/:id/gi, orgId)).then((response) => {
+      const modelYearObjects = response.data
+      const modelYearNames = []
+      modelYearObjects.forEach((modelYearObject) => {
+        modelYearNames.push(modelYearObject.name)
+      })
+      setModelYears(modelYearNames)
+      setModelYearsLoading(false)
+    })
+  }
+
   useEffect(() => {
     refreshDetails()
+    getModelYears()
   }, [keycloak.authenticated])
 
   const handleInputChange = (event) => {
@@ -170,7 +188,8 @@ const VehicleSupplierEditContainer = (props) => {
       handleAddressChange={handleAddressChange}
       handleInputChange={handleInputChange}
       handleSubmit={handleSubmit}
-      loading={loading}
+      loading={initialLoading || modelYearsLoading}
+      modelYears={modelYears}
       newSupplier={newSupplier}
       setDetails={setDetails}
       serviceSame={serviceSame}
