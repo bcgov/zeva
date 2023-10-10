@@ -2,6 +2,7 @@ replicaCount: 2
 
 envName: test
 suffix: -test
+openshiftLicensePlate: e52f12
 
 image:
   repository: nginx
