@@ -29,3 +29,4 @@ jobs:
       zeva-dev-password: ${{ secrets.ZEVA_DEV_PASSWORD }}
       openshift-server: ${{ secrets.OPENSHIFT_SERVER }}
       openshift-token: ${{ secrets.OPENSHIFT_TOKEN }}
+      openshiftLicensePlate: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}

@@ -2,7 +2,6 @@ replicaCount: 1
 
 envName: dev
 suffix: -dev
-openshiftLicensePlate: e52f12
 
 image:
   repository: nginx
