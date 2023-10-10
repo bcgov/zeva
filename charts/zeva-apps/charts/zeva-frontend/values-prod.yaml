@@ -2,6 +2,7 @@ replicaCount: 3
 
 envName: prod
 suffix: -prod
+openshiftLicensePlate: e52f12
 
 image:
   repository: nginx
