@@ -686,7 +686,8 @@ class SalesSubmissionSaveSerializer(
             )
             instance.validation_status = validation_status
             instance.update_user = request.user.username
-            instance.part_of_model_year_report=issue_as_model_year_report
+            if issue_as_model_year_report is not None:
+                instance.part_of_model_year_report=issue_as_model_year_report
             instance.save()
 
         return instance
