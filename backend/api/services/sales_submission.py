@@ -396,8 +396,12 @@ def populate_wrong_model_year_warnings(
             for content in sales_submission_contents:
                 content_id = content.id
                 if content.submission == sales_submission:
-                    model_year = content.xls_model_year
-                    if model_year not in model_years_of_reports:
+                    try:
+                        model_year = float(content.xls_model_year)
+                    except ValueError:
+                        continue
+                    refined_model_year = str(int(model_year))
+                    if refined_model_year not in model_years_of_reports:
                         add_warning(warnings, content_id, warning)
 
 
@@ -438,12 +442,14 @@ def get_warnings_and_maps(sales_submission_contents):
             "map_of_vins_to_icbc_data": {},
             "map_of_sales_submission_content_ids_to_vehicles": {},
         }
-    
+
     helping_objects = get_helping_objects(sales_submission_contents)
     sales_submission = helping_objects["sales_submission"]
     map_of_vins_to_records_of_sales = helping_objects["map_of_vins_to_records_of_sales"]
     map_of_vins_to_icbc_data = helping_objects["map_of_vins_to_icbc_data"]
-    map_of_sales_submission_content_ids_to_vehicles = helping_objects["map_of_sales_submission_content_ids_to_vehicles"]
+    map_of_sales_submission_content_ids_to_vehicles = helping_objects[
+        "map_of_sales_submission_content_ids_to_vehicles"
+    ]
 
     warnings = {}
     populate_invalid_model_warnings(
