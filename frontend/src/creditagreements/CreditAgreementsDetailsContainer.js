@@ -67,7 +67,8 @@ const CreditAgreementsDetailsContainer = (props) => {
           status,
           updateTimestamp,
           attachments,
-          creditAgreementContent
+          creditAgreementContent,
+          updateUser
         } = response.data
         let filteredIdirComments
         let filteredBceidComments
@@ -90,7 +91,8 @@ const CreditAgreementsDetailsContainer = (props) => {
           status,
           updateTimestamp,
           attachments,
-          creditAgreementContent
+          creditAgreementContent,
+          updateUser
         })
         setLoading(false)
       })

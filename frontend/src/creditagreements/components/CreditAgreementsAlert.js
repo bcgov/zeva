@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import Alert from '../../app/components/Alert'
 
 const CreditAgreementsAlert = (props) => {
-  const { status, date, user, isGovernment, id, transactionType } = props
+  const { status, date, isGovernment, id, transactionType, updateUser} = props
 
   let message = ''
   let title
@@ -30,13 +30,13 @@ const CreditAgreementsAlert = (props) => {
   switch (status) {
     case 'DRAFT':
       title = 'Draft'
-      message = `saved, ${date} by ${user}.`
+      message = `saved, ${date} by ${typeof updateUser === 'string' ? updateUser : updateUser.firstName + " " + updateUser.lastName}.`
       classname = 'alert-warning'
       break
 
     case 'RECOMMENDED':
       title = 'Recommended'
-      message = `recommended for issuance, ${date} by ${user}.`
+      message = `recommended for issuance, ${date} by ${typeof updateUser === 'string' ? updateUser : updateUser.firstName + " " + updateUser.lastName}.`
       classname = 'alert-primary'
       break
 

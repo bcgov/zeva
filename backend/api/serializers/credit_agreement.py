@@ -40,6 +40,16 @@ class CreditAgreementSerializer(ModelSerializer, CreditAgreementBaseSerializer):
     status = EnumField(CreditAgreementStatuses)
     comments = SerializerMethodField()
     attachments = SerializerMethodField()
+    update_user = SerializerMethodField()
+
+    def get_update_user(self, obj):
+        user_profile = UserProfile.objects.filter(username=obj.update_user)
+
+        if user_profile.exists():
+            serializer = MemberSerializer(user_profile.first(), read_only=True)
+            return serializer.data
+
+        return obj.update_user
 
     def get_comments(self, obj):
         agreement_comment = CreditAgreementComment.objects.filter(
@@ -66,7 +76,7 @@ class CreditAgreementSerializer(ModelSerializer, CreditAgreementBaseSerializer):
     class Meta:
         model = CreditAgreement
         fields = (
-            'id', 'organization', 'effective_date', 'status',
+            'id', 'update_user', 'organization', 'effective_date', 'status',
             'transaction_type', 'comments', 'optional_agreement_id', 
             'update_timestamp', 'attachments','credit_agreement_content', 'model_year_report_id'
         )
