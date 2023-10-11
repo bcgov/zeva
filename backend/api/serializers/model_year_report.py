@@ -248,7 +248,7 @@ class ModelYearReportListSerializer(ModelSerializer, EnumSupportSerializerMixin)
         SubQuery = UserProfile.objects.filter(organization__is_government=True).values_list('username', flat=True)
         if not request.user.is_government:
             supplementals = supplementals.exclude(Q(status__in=[
-                ModelYearReportStatuses.DRAFT, ModelYearReportStatuses.RECOMMENDED
+                ModelYearReportStatuses.DRAFT, ModelYearReportStatuses.RECOMMENDED, ModelYearReportStatuses.RETURNED
             ] ) & Q(create_user__in=SubQuery) )
         supplementals_length = len(supplementals)
         if supplementals_length > 0:
