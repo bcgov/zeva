@@ -317,6 +317,7 @@ class CreditRequestViewset(
         page = request.data.get('page', 1)
         sorts = request.data.get('sorts')
         verify_with_icbc_data = request.data.get('reset', False)
+        include_71_errors = True if request.data.get('include_71_errors') == 'Y' else False
 
         # only government should be able to view the contents for icbc
         # verification
@@ -328,7 +329,7 @@ class CreditRequestViewset(
         ).select_related("submission")
 
         if verify_with_icbc_data == "Y":
-            warnings_and_maps = get_warnings_and_maps(submission_content)
+            warnings_and_maps = get_warnings_and_maps(submission_content, include_71_errors)
             contents_to_save = []
 
             for content in submission_content:
@@ -537,13 +538,14 @@ class CreditRequestViewset(
             return HttpResponseForbidden()
         
         verify_with_icbc_data = request.GET.get('reset', None)
+        include_71_errors = True if request.data.get('include_71_errors') == 'Y' else False
         
         if verify_with_icbc_data == 'Y':
             submission_content = SalesSubmissionContent.objects.filter(
                 submission_id=pk
             ).select_related("submission")
 
-            warnings_map = get_warnings_and_maps(submission_content)["warnings"]
+            warnings_map = get_warnings_and_maps(submission_content, include_71_errors)["warnings"]
             content_ids_to_include = []
             for content_id, warnings in warnings_map.items():
                 if "DUPLICATE_VIN" in warnings or "VIN_ALREADY_AWARDED" in warnings or "EXPIRED_REGISTRATION_DATE" in warnings or "NO_ICBC_MATCH" in warnings or "WRONG_MODEL_YEAR" in warnings:

@@ -39,6 +39,7 @@ const CreditRequestVINListContainer = (props) => {
 
   const query = qs.parse(location.search, { ignoreQueryPrefix: true })
   const reset = query && query.reset
+  const include71Errors = query && query.include71Errors
 
   const refreshDetails = () => {
     axios
@@ -79,7 +80,8 @@ const CreditRequestVINListContainer = (props) => {
       sorts,
       pageSize,
       page,
-      reset
+      reset,
+      include71Errors
     }
     axios.post(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', id), data).then((response) => {
       // Initialize content and reason values
