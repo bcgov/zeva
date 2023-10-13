@@ -382,27 +382,26 @@ def populate_wrong_model_year_warnings(
     warnings, sales_submission, sales_submission_contents
 ):
     warning = "WRONG_MODEL_YEAR"
-    if sales_submission.part_of_model_year_report is True:
-        reports = (
-            ModelYearReport.objects.filter(organization=sales_submission.organization)
-            .filter(validation_status__in=["SUBMITTED", "RECOMMENDED", "RETURNED"])
-            .select_related("model_year")
-        )
-        if reports:
-            model_years_of_reports = set()
-            for report in reports:
-                model_years_of_reports.add(report.model_year.name)
+    reports = (
+        ModelYearReport.objects.filter(organization=sales_submission.organization)
+        .filter(validation_status__in=["SUBMITTED", "RECOMMENDED", "RETURNED"])
+        .select_related("model_year")
+    )
+    if reports:
+        model_years_of_reports = set()
+        for report in reports:
+            model_years_of_reports.add(report.model_year.name)
 
-            for content in sales_submission_contents:
-                content_id = content.id
-                if content.submission == sales_submission:
-                    try:
-                        model_year = float(content.xls_model_year)
-                    except ValueError:
-                        continue
-                    refined_model_year = str(int(model_year))
-                    if refined_model_year not in model_years_of_reports:
-                        add_warning(warnings, content_id, warning)
+        for content in sales_submission_contents:
+            content_id = content.id
+            if content.submission == sales_submission:
+                try:
+                    model_year = float(content.xls_model_year)
+                except ValueError:
+                    continue
+                refined_model_year = str(int(model_year))
+                if refined_model_year not in model_years_of_reports:
+                    add_warning(warnings, content_id, warning)
 
 
 def get_helping_objects(sales_submission_contents):
@@ -434,7 +433,9 @@ def get_helping_objects(sales_submission_contents):
     }
 
 
-def get_warnings_and_maps(sales_submission_contents):
+def get_warnings_and_maps(
+    sales_submission_contents, include_wrong_model_year_warnings=False
+):
     if not sales_submission_contents:
         return {
             "warnings": {},
@@ -468,9 +469,10 @@ def get_warnings_and_maps(sales_submission_contents):
         map_of_sales_submission_content_ids_to_vehicles,
         map_of_vins_to_icbc_data,
     )
-    populate_wrong_model_year_warnings(
-        warnings, sales_submission, sales_submission_contents
-    )
+    if include_wrong_model_year_warnings is True:
+        populate_wrong_model_year_warnings(
+            warnings, sales_submission, sales_submission_contents
+        )
 
     return {
         "warnings": warnings,

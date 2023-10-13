@@ -34,7 +34,9 @@ const CreditRequestDetailsPage = (props) => {
     issueAsMY,
     handleCheckboxClick,
     handleInternalCommentEdit,
-    handleInternalCommentDelete
+    handleInternalCommentDelete,
+    showWarning,
+    setShowWarning
   } = props
 
   const { id } = useParams()
@@ -46,14 +48,13 @@ const CreditRequestDetailsPage = (props) => {
   const [modalType, setModalType] = useState('')
   const [comment, setComment] = useState('')
   const [reports, setReports] = useState([])
-  const [showWarning, setShowWarning] = useState(false)
 
   const fetchReports = () => {
     axios.get(`${ROUTES_COMPLIANCE.REPORTS}?organization_id=${submission.organization.id}`)
     .then(response => {
       setReports(response.data)
 
-      if(response.data.some(report => ['SUBMITTED', 'RETURNED', 'RECOMMENDED'].includes(report.validationStatus)) || submission.partOfModelYearReport && !showWarning){
+      if(response.data.some(report => ['SUBMITTED', 'RETURNED', 'RECOMMENDED'].includes(report.validationStatus))){
         setShowWarning(true)
       }
     })
@@ -151,7 +152,7 @@ const CreditRequestDetailsPage = (props) => {
 
   const verifyWithICBCData = () => {
     let url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(/:id/g, submission.id)
-    url += '?reset=Y'
+    url = url + '?reset=Y' + (issueAsMY ? "&include71Errors=Y" : "")
     history.push(url)
   }
 
@@ -503,13 +504,13 @@ const CreditRequestDetailsPage = (props) => {
           </div>
         </div>
       )}
-      {showWarning && (
+      {user.isGovernment && showWarning && (
         <ModelYearReportWarning
-        conflictingReport={conflictingReport()}
-        submission={submission}
-        user={user}
-        handleCheckboxClick={handleCheckboxClick}
-        issueAsMY={issueAsMY}
+          conflictingReport={conflictingReport()}
+          submission={submission}
+          user={user}
+          handleCheckboxClick={handleCheckboxClick}
+          issueAsMY={issueAsMY}
         />
       )}
                               
@@ -730,7 +731,9 @@ CreditRequestDetailsPage.propTypes = {
   }).isRequired,
   user: CustomPropTypes.user.isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
-  issueAsMY: PropTypes.bool.isRequired
+  issueAsMY: PropTypes.bool.isRequired,
+  showWarning: PropTypes.bool.isRequired,
+  setShowWarning: PropTypes.func.isRequired
 }
 
 export default CreditRequestDetailsPage
