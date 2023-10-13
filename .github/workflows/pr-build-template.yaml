@@ -22,6 +22,9 @@ on:
          required: true 
       openshift-token:   
          required: true       
+      openshiftLicensePlate:
+          required: true
+
         
 env:
   GIT_URL: https://github.com/bcgov/zeva.git 
