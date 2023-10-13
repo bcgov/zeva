@@ -45,7 +45,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
             'id', 'name', 'create_timestamp', 'organization_address',
             'balance', 'is_active', 'short_name', 'is_government',
             'supplier_class', 'avg_ldv_sales', 'ldv_sales',
-            'has_submitted_report', 'first_model_year',
+            'has_submitted_report', 'first_model_year', 'has_report',
         )
 
 
