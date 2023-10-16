@@ -108,6 +108,10 @@ class Organization(Auditable):
             return True
 
         return False
+    
+    @property
+    def has_report(self):
+        return ModelYearReport.objects.filter(organization_id=self.id).exists()
 
     @property
     def ldv_sales(self):

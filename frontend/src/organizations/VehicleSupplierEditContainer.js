@@ -76,7 +76,11 @@ const VehicleSupplierEditContainer = (props) => {
       const modelYearObjects = response.data
       const modelYearNames = []
       modelYearObjects.forEach((modelYearObject) => {
-        modelYearNames.push(modelYearObject.name)
+        const modelYearName = modelYearObject.name
+        const modelYearInt = parseInt(modelYearName, 10)
+        if (modelYearInt >= 2020) {
+          modelYearNames.push(modelYearName)
+        }
       })
       setModelYears(modelYearNames)
       setModelYearsLoading(false)
