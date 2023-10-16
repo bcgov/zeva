@@ -145,7 +145,7 @@ const VehicleSupplierEditForm = (props) => {
                     name="shortName"
                   />
                   <SelectInput
-                    disabled={details.hasSubmittedReport}
+                    disabled={details.hasReport}
                     labelSize="col-sm-3 col-form-label"
                     inputSize="col-sm-7"
                     value={details.firstModelYear}
