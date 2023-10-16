@@ -30,7 +30,8 @@ const AssessmentEditPage = (props) => {
     ratios,
     sales,
     supplierMakes,
-    enableSave
+    enableSave,
+    supplierClass
   } = props
 
   if (loading) {
@@ -39,16 +40,18 @@ const AssessmentEditPage = (props) => {
 
   const totalReduction = getTotalReduction(
     details.ldvSales,
-    ratios.complianceRatio
+    ratios.complianceRatio,
+    supplierClass
   )
   const classAReduction = getClassACredits(
     details.ldvSales,
     ratios.zevClassA,
-    details.supplierClass
+    supplierClass
   )
   const leftoverReduction = getUnspecifiedClassReduction(
     totalReduction,
-    classAReduction
+    classAReduction,
+    supplierClass
   )
 
   const actionbar = (
