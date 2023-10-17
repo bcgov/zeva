@@ -1,8 +1,8 @@
-const getUnspecifiedClassReduction = (_totalReduction, _classAReduction, supplierClass) => {
+const getUnspecifiedClassReduction = (_totalReduction, _classAReduction, _supplierClass) => {
   const totalReduction = String(_totalReduction).replace(/,/g, '')
   const classAReduction = String(_classAReduction).replace(/,/g, '')
 
-  if (isNaN(totalReduction) || isNaN(classAReduction) || supplierClass === 'S') {
+  if (isNaN(totalReduction) || isNaN(classAReduction) || _supplierClass === 'S') {
     return 0
   }
 

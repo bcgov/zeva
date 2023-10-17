@@ -55,7 +55,7 @@ const ConsumerLDVSales = (props) => {
         </div>
         <div className="col-3 text-right">
           {formatNumeric(
-            getTotalReduction(updatedSales, ratios.complianceRatio),
+            getTotalReduction(updatedSales, ratios.complianceRatio, supplierClass),
             2
           )}
         </div>
@@ -82,8 +82,9 @@ const ConsumerLDVSales = (props) => {
         <div className="col-3 text-right">
           {formatNumeric(
             getUnspecifiedClassReduction(
-              getTotalReduction(updatedSales, ratios.complianceRatio),
-              getClassAReduction(updatedSales, ratios.zevClassA, supplierClass)
+              getTotalReduction(updatedSales, ratios.complianceRatio, supplierClass),
+              getClassAReduction(updatedSales, ratios.zevClassA, supplierClass),
+              supplierClass
             ),
             2
           )}
