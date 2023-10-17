@@ -38,8 +38,6 @@ const AssessmentEditPage = (props) => {
     return <Loading />
   }
 
-  console.log(supplierClass)
-
   const totalReduction = getTotalReduction(
     details.ldvSales,
     ratios.complianceRatio,
