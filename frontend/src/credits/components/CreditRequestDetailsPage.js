@@ -152,7 +152,7 @@ const CreditRequestDetailsPage = (props) => {
 
   const verifyWithICBCData = () => {
     let url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(/:id/g, submission.id)
-    url = url + '?reset=Y' + (issueAsMY ? "&include71Errors=Y" : "")
+    url = url + '?reset=Y' + ((showWarning && issueAsMY) ? "&include71Errors=Y" : "")
     history.push(url)
   }
 
@@ -373,9 +373,7 @@ const CreditRequestDetailsPage = (props) => {
                 submissionCommentsIdirOnly.length > 0) ||
                 (submissionCommentsToSupplier &&
                   submissionCommentsToSupplier.length > 0) ||
-                (user.isGovernment && 
-                submissionCommentsIdirOnly &&
-                submissionCommentsIdirOnly.length > 0)) && (
+                user.isGovernment) && (
                 <div className="comment-box mt-2">
                   {submissionCommentsIdirOnly &&
                     submissionCommentsIdirOnly.length > 0 &&
