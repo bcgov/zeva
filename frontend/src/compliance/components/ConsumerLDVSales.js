@@ -51,11 +51,11 @@ const ConsumerLDVSales = (props) => {
           Compliance Ratio Credit Reduction:
         </div>
         <div className="col-3 text-right">
-          {formatNumeric(totalReduction, 2)}
+          {supplierClass == "S" ? 0 : formatNumeric(totalReduction, 2)}
         </div>
         <div className="col-3 text-right">
           {formatNumeric(
-            getTotalReduction(updatedSales, ratios.complianceRatio),
+            getTotalReduction(updatedSales, ratios.complianceRatio, supplierClass),
             2
           )}
         </div>
@@ -63,7 +63,7 @@ const ConsumerLDVSales = (props) => {
       <div className="row">
         <div className="col-5 text-blue">ZEV Class A Credit Reduction:</div>
         <div className="col-3 text-right">
-          {formatNumeric(classAReduction, 2)}
+          {supplierClass == "S" ? 0 : formatNumeric(classAReduction, 2)}
         </div>
         <div className="col-3 text-right">
           {formatNumeric(
@@ -77,13 +77,14 @@ const ConsumerLDVSales = (props) => {
           Unspecified ZEV Class Credit Reduction:
         </div>
         <div className="col-3 text-right">
-          {formatNumeric(leftoverReduction, 2)}
+          {supplierClass == "S" ? 0 : formatNumeric(leftoverReduction, 2)}
         </div>
         <div className="col-3 text-right">
           {formatNumeric(
             getUnspecifiedClassReduction(
-              getTotalReduction(updatedSales, ratios.complianceRatio),
-              getClassAReduction(updatedSales, ratios.zevClassA, supplierClass)
+              getTotalReduction(updatedSales, ratios.complianceRatio, supplierClass),
+              getClassAReduction(updatedSales, ratios.zevClassA, supplierClass),
+              supplierClass
             ),
             2
           )}
