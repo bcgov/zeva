@@ -6,6 +6,7 @@ import ROUTES_VEHICLES from '../../app/routes/Vehicles'
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
 import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests'
 import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers'
+import CREDITS from '../../app/routes/Credits'
 import ROUTES_CREDIT_AGREEMENTS from '../../app/routes/CreditAgreements'
 import CONFIG from '../../app/config'
 import CustomPropTypes from '../../app/utilities/props'
@@ -197,7 +198,7 @@ const ActionsBceid = (props) => {
               icon="list"
               boldText="Credit Agreements"
               regularText={`${activityCount.creditAgreementsIssued} recorded by the Government of B.C.`}
-              linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}`}
+              linkTo={`${CREDITS.LIST}`}
             />
         )}
         {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED &&
