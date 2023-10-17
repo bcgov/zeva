@@ -84,7 +84,7 @@ const ConsumerLDVSales = (props) => {
             getUnspecifiedClassReduction(
               getTotalReduction(updatedSales, ratios.complianceRatio, supplierClass),
               getClassAReduction(updatedSales, ratios.zevClassA, supplierClass),
-              supplierClassa
+              supplierClass
             ),
             2
           )}

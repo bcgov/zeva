@@ -1,5 +1,5 @@
-const getClassAReduction = (ldvSales, zevClassARatio, supplierClass) => {
-  if (supplierClass === 'L' || !ldvSales) {
+const getClassAReduction = (ldvSales, zevClassARatio, supplierClass = "L") => {
+  if (supplierClass !== 'L' || !ldvSales) {
     return 0
   }
 
