@@ -323,7 +323,7 @@ const CreditActivity = (props) => {
                       name="supplierInfo"
                       type="text"
                       onChange={handleInputChange}
-                      defaultValue={newLdvSales}
+                      defaultValue={formatNumeric(newLdvSales, 0)}
                       readOnly={!isEditable}
                     />
                   </td>

@@ -48,7 +48,7 @@ const ComplianceObligationAmountsTable = (props) => {
                           }
                           onChange={handleChangeSales}
                           type="number"
-                          value={sales}
+                          value={formatNumeric(sales, 0)}
                         />
                     )}
                     {(page === 'assessment' ||
