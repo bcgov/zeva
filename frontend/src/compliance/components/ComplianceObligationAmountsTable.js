@@ -54,7 +54,7 @@ const ComplianceObligationAmountsTable = (props) => {
                     {(page === 'assessment' ||
                       (page === 'obligation' &&
                         statuses.assessment.status === 'ASSESSED')) &&
-                      (sales || 0)}
+                      (formatNumeric(sales, 0) || 0)}
                   </td>
                 </tr>
                 <tr>
