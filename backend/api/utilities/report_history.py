@@ -33,7 +33,7 @@ def exclude_from_history(history, user):
         ).values_list("username")
         result = result.exclude(
             validation_status__in=[
-                ModelYearReportStatuses.SUBMITTED,
+                ModelYearReportStatuses.DRAFT, ModelYearReportStatuses.SUBMITTED,
             ],
             create_user__in=users,
         )
