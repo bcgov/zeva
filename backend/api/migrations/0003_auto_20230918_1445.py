@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("api", "0001_squashed_0138_alter_accountbalance_options"),
+        ("api", "0002_auto_20230928_1225"),
     ]
 
     operations = [
