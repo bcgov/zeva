@@ -34,6 +34,10 @@ const CREDIT_ERROR_CODES = {
   VIN_ALREADY_AWARDED: {
     errorCode: 21,
     errorField: 'vin'
+  },
+  WRONG_MODEL_YEAR: {
+    errorCode: 71,
+    errorField: 'model-year'
   }
 }
 

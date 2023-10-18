@@ -5,8 +5,7 @@ from datetime import datetime
 from django.core.paginator import Paginator
 from django.core.exceptions import ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db.models import Subquery, Count, Q
-from django.db.models.expressions import RawSQL
+from django.db.models import Subquery, Q
 from django.http import HttpResponse, HttpResponseForbidden
 from api.models.sales_submission_comment import SalesSubmissionComment
 from api.serializers.sales_submission_comment import SalesSubmissionCommentSerializer
@@ -16,7 +15,6 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
 
-from api.models.icbc_registration_data import IcbcRegistrationData
 from api.models.record_of_sale import RecordOfSale
 from api.models.sales_submission import SalesSubmission
 from api.models.sales_submission_content import SalesSubmissionContent
@@ -45,7 +43,7 @@ import numpy as np
 from api.paginations import BasicPagination
 from api.services.filter_utilities import get_search_terms, get_search_q_object
 from api.services.sales_submission import get_map_of_sales_submission_ids_to_timestamps
-from api.services.sales_submission import get_warnings_and_maps
+from api.services.sales_submission import get_warnings_and_maps, get_helping_objects
 from api.utilities.generic import get_inverse_map
 
 
@@ -106,7 +104,6 @@ class CreditRequestViewset(
 
         if submission.validation_status == SalesSubmissionStatuses.VALIDATED:
             award_credits(submission)
-
 
     @action(detail=False, methods=['post'])
     def paginated(self, request):
@@ -320,6 +317,7 @@ class CreditRequestViewset(
         page = request.data.get('page', 1)
         sorts = request.data.get('sorts')
         verify_with_icbc_data = request.data.get('reset', False)
+        include_71_errors = True if request.data.get('include_71_errors') == 'Y' else False
 
         # only government should be able to view the contents for icbc
         # verification
@@ -330,11 +328,32 @@ class CreditRequestViewset(
             submission_id=pk
         ).select_related("submission")
 
-        if verify_with_icbc_data is True:
-            # updates update_timestamp fields on submission content
-            # which will update warning flags to match current data
-            for sub in submission_content.all():
-                sub.save()
+        if verify_with_icbc_data == "Y":
+            warnings_and_maps = get_warnings_and_maps(submission_content, include_71_errors)
+            contents_to_save = []
+
+            for content in submission_content:
+                content_id = content.id
+                warnings = warnings_and_maps["warnings"].get(content_id)
+                if warnings:
+                    content.warnings_list = ",".join(warnings)
+                else:
+                    content.warnings_list = None
+                contents_to_save.append(content)
+            
+            SalesSubmissionContent.objects.bulk_update(contents_to_save, ["warnings_list"])
+        else:
+            warnings_and_maps = {}
+            warnings_map = {}
+            for content in submission_content:
+                content_id = content.id
+                warnings = content.warnings_list
+                if warnings is not None:
+                    warnings_map[content_id] = warnings.split(",")
+            helping_objects = get_helping_objects(submission_content)
+            warnings_and_maps["warnings"] = warnings_map
+            warnings_and_maps["map_of_vins_to_icbc_data"] = helping_objects["map_of_vins_to_icbc_data"]
+            warnings_and_maps["map_of_sales_submission_content_ids_to_vehicles"] = helping_objects["map_of_sales_submission_content_ids_to_vehicles"]
 
         try:
             page = int(page)
@@ -347,14 +366,13 @@ class CreditRequestViewset(
         extra_filter_by = []
         extra_filter_params = []
 
-        warnings_and_maps = get_warnings_and_maps(submission_content)
-        map_of_warnings_to_content_ids = get_inverse_map(warnings_and_maps.get('warnings'))
-
         include_overrides = False
         for filter in filters:
             if filter.get("id") == 'include_overrides' and filter.get("value") is True:
                 include_overrides = True
                 break
+
+        map_of_warnings_to_content_ids = get_inverse_map(warnings_and_maps.get('warnings'))
 
         for filter in filters:
             filter_id = filter.get("id")
@@ -384,24 +402,7 @@ class CreditRequestViewset(
                 q_obj = Q(id__in=[])
 
                 if value == '1':
-                    warnings_to_search_for = [
-                        "NO_ICBC_MATCH",
-                        "VIN_ALREADY_AWARDED",
-                        "DUPLICATE_VIN",
-                        "INVALID_MODEL",
-                        "MODEL_YEAR_MISMATCHED",
-                        "MAKE_MISMATCHED",
-                        "EXPIRED_REGISTRATION_DATE",
-                        "INVALID_DATE"
-                    ]
-                    warnings_map = warnings_and_maps.get('warnings')
-                    ids_with_warnings = []
-                    for content_id, warnings in warnings_map.items():
-                        for warning in warnings:
-                            if warning in warnings_to_search_for:
-                                ids_with_warnings.append(content_id)
-                                break
-                    q_obj = Q(id__in=ids_with_warnings)
+                    q_obj = Q(id__in=warnings_and_maps.get('warnings').keys())
 
                 elif value == '11':
                     q_obj = Q(id__in=map_of_warnings_to_content_ids.get("NO_ICBC_MATCH", []))
@@ -420,6 +421,9 @@ class CreditRequestViewset(
 
                 elif value == '61':
                     q_obj = Q(id__in=map_of_warnings_to_content_ids.get("INVALID_DATE", []))
+
+                elif value == '71':
+                    q_obj = Q(id__in=map_of_warnings_to_content_ids.get("WRONG_MODEL_YEAR", []))
 
                 if include_overrides is True:
                     q_obj = q_obj | Q(reason__isnull=False)
@@ -496,6 +500,7 @@ class CreditRequestViewset(
         serializer = SalesSubmissionContentBulkSerializer(
             paginated, many=True, read_only=True, context={'request': request, 'warnings_and_maps': warnings_and_maps}
         )
+
         errorList = []
         list_of_warnings = list(warnings_and_maps.get('warnings').values())
         if list_of_warnings:
@@ -514,6 +519,8 @@ class CreditRequestViewset(
                 newErrorList.append('EXPIRED_REGISTRATION_DATE')
             if error == 'INVALID_DATE':
                 newErrorList.append('INVALID_DATE')
+            if error == 'WRONG_MODEL_YEAR':
+                newErrorList.append('WRONG_MODEL_YEAR')
             else:
                 pass
         errorKey, errorCounts = np.unique(newErrorList, return_counts=True)
@@ -529,45 +536,25 @@ class CreditRequestViewset(
     def unselected(self, request, pk):
         if not request.user.is_government:
             return HttpResponseForbidden()
-
+        
         verify_with_icbc_data = request.GET.get('reset', None)
-
+        include_71_errors = True if request.data.get('include_71_errors') == 'Y' else False
+        
         if verify_with_icbc_data == 'Y':
             submission_content = SalesSubmissionContent.objects.filter(
                 submission_id=pk
-            )
+            ).select_related("submission")
 
-            duplicate_vins = Subquery(submission_content.values(
-                'xls_vin'
-            ).annotate(
-                vin_count=Count('xls_vin')
-            ).values_list(
-                'xls_vin', flat=True
-            ).filter(vin_count__gt=1))
-
-            pre_existing_vins = Subquery(RecordOfSale.objects.exclude(
+            warnings_map = get_warnings_and_maps(submission_content, include_71_errors)["warnings"]
+            content_ids_to_include = []
+            for content_id, warnings in warnings_map.items():
+                if "DUPLICATE_VIN" in warnings or "VIN_ALREADY_AWARDED" in warnings or "EXPIRED_REGISTRATION_DATE" in warnings or "NO_ICBC_MATCH" in warnings or "WRONG_MODEL_YEAR" in warnings:
+                    content_ids_to_include.append(content_id)
+            
+            unselected_vins = SalesSubmissionContent.objects.filter(
                 submission_id=pk
-            ).exclude(
-                submission__validation_status='REJECTED'
-            ).values_list('vin', flat=True))
+            ).filter(id__in=content_ids_to_include).values_list('id', flat=True)
 
-            unselected_vins = submission_content.filter(
-                Q(xls_vin__in=duplicate_vins) |
-                Q(xls_vin__in=pre_existing_vins) |
-                ~Q(xls_vin__in=Subquery(
-                    IcbcRegistrationData.objects.values('vin')
-                )) |
-                Q(
-                    Q(
-                        Q(xls_sale_date__lte="43102.0") &
-                        Q(xls_date_type="3")
-                    ) |
-                    Q(
-                        Q(xls_sale_date__lte="2018-01-02") &
-                        Q(xls_date_type="1")
-                    )
-                )
-            ).values_list('id', flat=True)
         else:
             selected_vins = Subquery(RecordOfSale.objects.filter(
                 submission_id=pk

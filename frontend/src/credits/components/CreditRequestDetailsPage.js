@@ -4,7 +4,7 @@ import parse from 'html-react-parser'
 import ReactQuill from 'react-quill'
 import axios from 'axios'
 import PropTypes from 'prop-types'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import moment from 'moment-timezone'
 import 'react-quill/dist/quill.snow.css'
 
@@ -22,6 +22,8 @@ import DisplayComment from '../../app/components/DisplayComment'
 import formatNumeric from '../../app/utilities/formatNumeric'
 import DownloadAllSubmissionContentButton from './DownloadAllSubmissionContentButton'
 import EditableCommentList from '../../app/components/EditableCommentList'
+import ModelYearReportWarning from './ModelYearReportWarning'
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
 
 const CreditRequestDetailsPage = (props) => {
   const {
@@ -32,7 +34,9 @@ const CreditRequestDetailsPage = (props) => {
     issueAsMY,
     handleCheckboxClick,
     handleInternalCommentEdit,
-    handleInternalCommentDelete
+    handleInternalCommentDelete,
+    showWarning,
+    setShowWarning
   } = props
 
   const { id } = useParams()
@@ -43,6 +47,29 @@ const CreditRequestDetailsPage = (props) => {
   const [showModal, setShowModal] = useState(false)
   const [modalType, setModalType] = useState('')
   const [comment, setComment] = useState('')
+  const [reports, setReports] = useState([])
+
+  const fetchReports = () => {
+    axios.get(`${ROUTES_COMPLIANCE.REPORTS}?organization_id=${submission.organization.id}`)
+    .then(response => {
+      setReports(response.data)
+
+      if(response.data.some(report => ['SUBMITTED', 'RETURNED', 'RECOMMENDED'].includes(report.validationStatus))){
+        setShowWarning(true)
+      }
+    })
+  }
+
+  useEffect(() => {
+    fetchReports()
+  }, [])
+
+  const conflictingReport = () => {
+    return reports.find(report => 
+      ['SUBMITTED', 'RETURNED', 'RECOMMENDED'].includes(report.validationStatus)
+    );
+  }
+  
 
   const serviceAddress = submission.organization.organizationAddress.find(
     (address) => address.addressType.addressType === 'Service'
@@ -125,7 +152,7 @@ const CreditRequestDetailsPage = (props) => {
 
   const verifyWithICBCData = () => {
     let url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(/:id/g, submission.id)
-    url += '?reset=Y'
+    url = url + '?reset=Y' + ((showWarning && issueAsMY) ? "&include71Errors=Y" : "")
     history.push(url)
   }
 
@@ -159,7 +186,7 @@ const CreditRequestDetailsPage = (props) => {
           handleSubmit('RECOMMEND_APPROVAL')
         },
         buttonClass: 'button primary',
-        modalText: 'Recommend issuance of credits?'
+        modalText: 'Recommend issuance of credits?',
       }
       break
     case 'return':
@@ -475,7 +502,16 @@ const CreditRequestDetailsPage = (props) => {
           </div>
         </div>
       )}
-
+      {user.isGovernment && showWarning && (
+        <ModelYearReportWarning
+          conflictingReport={conflictingReport()}
+          submission={submission}
+          user={user}
+          handleCheckboxClick={handleCheckboxClick}
+          issueAsMY={issueAsMY}
+        />
+      )}
+                              
       <div className="row mb-2">
         <div className="col-sm-12">
           <ModelListTable
@@ -598,6 +634,7 @@ const CreditRequestDetailsPage = (props) => {
                         setShowModal(true)
                       }}
                       type="button"
+                      disabled={!issueAsMY}
                     >
                       Recommend Issuance
                     </button>
@@ -692,7 +729,9 @@ CreditRequestDetailsPage.propTypes = {
   }).isRequired,
   user: CustomPropTypes.user.isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
-  issueAsMY: PropTypes.bool.isRequired
+  issueAsMY: PropTypes.bool.isRequired,
+  showWarning: PropTypes.bool.isRequired,
+  setShowWarning: PropTypes.func.isRequired
 }
 
 export default CreditRequestDetailsPage

@@ -124,8 +124,9 @@ const CreditRequestValidatedDetailsPage = (props) => {
               <option value="41">
                 Error 41 - Model year and/or make does not match
               </option>
-              <option value="51">Error 51 - Sale prior to Jan 2018</option>
-              <option value="61">Error 61 - Invalid date format</option>
+              <option value="51">51 - Sale prior to Jan 2018</option>
+              <option value="61">61 - Invalid date format</option>
+              <option value="71">71 - Wrong model year</option>
             </select>
           </span>
 

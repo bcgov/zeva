@@ -25,7 +25,8 @@ const CreditRequestDetailsContainer = (props) => {
   const [loading, setLoading] = useState(true)
   const [nonValidated, setNonValidated] = useState([])
   const [ICBCUploadDate, setICBCUploadDate] = useState(null)
-  const [issueAsMY, setIssueAsMY] = useState(false)
+  const [issueAsMY, setIssueAsMY] = useState(true)
+  const [showWarning, setShowWarning] = useState(false)
 
   const refreshDetails = () => {
     axios
@@ -35,12 +36,6 @@ const CreditRequestDetailsContainer = (props) => {
       ])
       .then(
         axios.spread((dateResponse, submissionResponse) => {
-          if (
-            submissionResponse.data &&
-            submissionResponse.data.partOfModelYearReport
-          ) {
-            setIssueAsMY(submissionResponse.data.partOfModelYearReport)
-          }
           if (dateResponse.data) {
             setICBCUploadDate(dateResponse.data)
           }
@@ -63,7 +58,9 @@ const CreditRequestDetailsContainer = (props) => {
 
   const handleSubmit = (validationStatus, comment = '') => {
     const submissionContent = { validationStatus }
-    submissionContent.issueAsModelYearReport = issueAsMY
+    if (showWarning && validationStatus === 'RECOMMEND_APPROVAL') {
+      submissionContent.issueAsModelYearReport = issueAsMY
+    }
     if (comment.length > 0) {
       submissionContent.salesSubmissionComment = { comment }
       submissionContent.commentType = { govt: false }
@@ -153,6 +150,8 @@ const CreditRequestDetailsContainer = (props) => {
       issueAsMY={issueAsMY}
       handleInternalCommentEdit={handleInternalCommentEdit}
       handleInternalCommentDelete={handleInternalCommentDelete}
+      showWarning={showWarning}
+      setShowWarning={setShowWarning}
     />
   ]
 }

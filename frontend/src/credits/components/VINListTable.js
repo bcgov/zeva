@@ -47,9 +47,7 @@ const VINListTable = (props) => {
       if (CREDIT_ERROR_CODES[warning]) {
         if (fields) {
           errorCodes += ` ${CREDIT_ERROR_CODES[warning].errorField} `
-        } else if (
-          !errorCodes.includes(CREDIT_ERROR_CODES[warning].errorCode)
-        ) {
+        } else {
           if (errorCodes !== '' && CREDIT_ERROR_CODES[warning].errorCode) {
             errorCodes += ', '
           }
@@ -57,7 +55,6 @@ const VINListTable = (props) => {
         }
       }
     })
-
     return errorCodes
   }
 
@@ -219,13 +216,13 @@ const VINListTable = (props) => {
                     'DUPLICATE_VIN',
                     'INVALID_MODEL',
                     'VIN_ALREADY_AWARDED',
-                    'EXPIRED_REGISTRATION_DATE'
+                    'EXPIRED_REGISTRATION_DATE',
+                    'WRONG_MODEL_YEAR'
                   ].indexOf(warning) >= 0
               )
             ) {
               return false
             }
-
             return (
               <input
                 checked={
@@ -344,7 +341,7 @@ const VINListTable = (props) => {
         if (rowInfo) {
           const warnings = rowInfo.row.warning.split(', ')
 
-          if (warnings.some((each) => ['21', '31', '51'].includes(each))) {
+          if (warnings.some((each) => ['21', '31', '51', '71'].includes(each))) {
             return {
               className: 'icbc-danger'
             }
@@ -353,7 +350,7 @@ const VINListTable = (props) => {
           if (warnings.some((each) => ['11', '41', '61'].includes(each))) {
             let className = 'icbc-warning'
 
-            if (rowInfo.original.warnings.includes('INVALID_DATE')) {
+            if (rowInfo.original.warnings.includes('INVALID_DATE', 'WRONG_MODEL_YEAR')) {
               className += ' warning-sales-date'
             }
 
