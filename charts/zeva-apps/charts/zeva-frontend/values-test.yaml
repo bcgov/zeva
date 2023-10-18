@@ -40,7 +40,7 @@ resources:
 
 appConfigMap:
   backendHostName: zeva-backend-test.apps.silver.devops.gov.bc.ca
-  databaseServiceName: zeva-spilo-test
+  databaseServiceName: zeva-crunchy-test-pgbouncer
   djangoDebug: true
   ssoName: test.loginproxy.gov.bc.ca
   keycloakRealm: standard
