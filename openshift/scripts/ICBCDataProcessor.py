@@ -3,6 +3,7 @@ from tkinter import filedialog
 import os
 import time
 import csv
+import threading
 
 
 class DataProcessingApp(tk.Tk):
@@ -22,7 +23,7 @@ class DataProcessingApp(tk.Tk):
 
         self.loading_label = tk.Label(self, text='', foreground='black', background="white", font=('Helvetica', 20))
 
-        process_button = tk.Button(self, text='Upload ICBC File', command=self.UploadAction, height=3, width=20)
+        process_button = tk.Button(self, text='Upload ICBC File', command=self.uploadAction, height=3, width=20)
 
         self.footer = tk.Frame(self, background='#003366', height=80)
 
@@ -31,18 +32,30 @@ class DataProcessingApp(tk.Tk):
         process_button.pack(in_=self.frame)
         self.footer.pack(in_=self.frame, side='bottom', fill='x')
 
-    def UploadAction(self):
+    def uploadAction(self):
         originalfilename = filedialog.askopenfilename()
+
+        if originalfilename and not isinstance(originalfilename, tuple):
+            self.loading_label.config(text='Processing...', height=5)
+            self.loading_label.update_idletasks()
+
+            threading.Thread(target=self.processFile, args=(originalfilename,)).start()
+        
+        else:
+            self.loading_label.config(text='Could not read file please try again', height=5)
+            self.loading_label.update_idletasks()
+
+    def processFile(self, originalfilename):
+        
         filename, file_extension = os.path.splitext(originalfilename)
 
-        self.loading_label.config(text='Processing...', height=5)
-        self.loading_label.update_idletasks()
-        time.sleep(2)
-        self.loading_label.config(text='ICBC Data File Processed!')
+        with open(originalfilename, 'r') as read_csvfile, \
+        open(filename + '_processed' + file_extension, 'w', newline='') as write_csvfile:
 
-        processed_data = []
-        with open(originalfilename, 'r') as csvfile:
-            reader = csv.DictReader(csvfile, delimiter='|')
+            reader = csv.DictReader(read_csvfile, delimiter='|')
+            writer = csv.DictWriter(write_csvfile, fieldnames=['MODEL_YEAR', 'MAKE', 'MODEL', 'VIN'])
+            writer.writeheader()
+
             for row in reader:
                 row = {k.upper(): v for k, v in row.items()}
                 vin = row.get('VIN', '').strip()
@@ -52,15 +65,15 @@ class DataProcessingApp(tk.Tk):
                 fuel_type = row.get('FUEL_TYPE', '').strip().upper()
 
                 if vin and model_year.isdigit() and int(model_year) > 2018 and \
-                        (hybrid_flag != 'N' or electric_flag != 'N' or fuel_type in ['ELECTRIC', 'HYDROGEN', 'GASOLINEELECTRIC']):
-                    processed_data.append({'MODEL_YEAR': model_year,
-                                           'MAKE': row.get('MAKE', '').strip(),
-                                           'MODEL': row.get('MODEL', '').strip(),
-                                           'VIN': vin})
-        with open(filename + '_processed' + file_extension, 'w', newline='') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=['MODEL_YEAR', 'MAKE', 'MODEL', 'VIN'])
-            writer.writeheader()
-            writer.writerows(processed_data)
+                    (hybrid_flag != 'N' or electric_flag != 'N' or fuel_type in ['ELECTRIC', 'HYDROGEN', 'GASOLINEELECTRIC']):
+                    writer.writerow({
+                        'MODEL_YEAR': model_year,
+                        'MAKE': row.get('MAKE', '').strip(),
+                        'MODEL': row.get('MODEL', '').strip(),
+                        'VIN': vin
+                    })
+
+        self.loading_label.config(text='ICBC Data File Processed!')
 
 
 def main():
