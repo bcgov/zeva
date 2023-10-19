@@ -356,12 +356,15 @@ class ModelYearReportViewset(
                     report.status.value not in ["ASSESSED", "REASSESSED"]
                     and not request.user.is_government
                 ):
-                        exclude_supplemental_reports.append(report.id)
+                    exclude_supplemental_reports.append(report.id)
             else:
-                if request.user.is_government and report.status.value == 'SUBMITTED':
+                if report.status.value == 'SUBMITTED':
                     next_report = SupplementalReport.objects.filter(supplemental_id=report.id).exclude(status=ModelYearReportStatuses.DELETED).first()
                     if next_report and next_report.is_reassessment:
-                        exclude_supplemental_reports.append(report.id)
+                        if request.user.is_government:
+                            exclude_supplemental_reports.append(report.id)
+                        elif next_report.status.value in ["ASSESSED", "REASSESSED"]:
+                            exclude_supplemental_reports.append(report.id)
 
         supplemental_reports = supplemental_reports.exclude(
             id__in=exclude_supplemental_reports
