@@ -68,7 +68,7 @@ const ComplianceHistory = (props) => {
         if (['DRAFT'].indexOf(obj.status) >= 0) {
           // Check to see if a report has been returned to a draft status from submitted and if it has
           // Then we need to modify the recorded object to correctly display the returned status instead of draft
-          if (itemHistory[i + 1]?.status === 'SUBMITTED' && (itemHistory[i + 1]?.isReassessment === true || obj.reassessment === false)) {
+          if (itemHistory[i + 1]?.status === 'SUBMITTED' && (itemHistory[i + 1]?.isReassessment === true || obj.isReassessment === false)) {
             const actuallyReturned = { ...obj }
             actuallyReturned.status = 'RETURNED'
             tempHistory.push(actuallyReturned)
