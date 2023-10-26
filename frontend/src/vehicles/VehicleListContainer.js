@@ -13,7 +13,7 @@ import VehicleList from './components/VehicleList'
 const qs = require('qs')
 
 const VehicleListContainer = (props) => {
-  const [filtered, setFiltered] = useState([])
+  const [filtered, setFiltered] = useState([{id: 'is-active', value: 'Yes'}])
   const [vehicles, setVehicles] = useState([])
   const [loading, setLoading] = useState(true)
   const isMountedRef = useRef(null)
@@ -22,27 +22,45 @@ const VehicleListContainer = (props) => {
 
   const query = qs.parse(location.search, { ignoreQueryPrefix: true })
   const handleClear = () => {
-    setFiltered([])
+    setFiltered([{id: 'is-active', value: 'Yes'}])
+
+    props.history.push({
+      pathname: location.pathname,
+      search: '', 
+      state: {}
+    });
+  
+    refreshList(true);
   }
   const refreshList = (showLoading) => {
-    setLoading(showLoading)
-    const queryFilter = []
+    setLoading(showLoading);
+    
+    const queryFilter = [];
     Object.entries(query).forEach(([key, value]) => {
-      queryFilter.push({ id: key, value })
-    })
-    setFiltered([...filtered, ...queryFilter])
-    if (location.state) {
-      setFiltered([...filtered, ...location.state])
+      queryFilter.push({ id: key, value });
+    });
+    
+    let newFilters = [{id: 'is-active', value: 'Yes'}];
+    
+    newFilters = [...newFilters, ...queryFilter];
+    
+    if (location.state && Array.isArray(location.state)) {
+      newFilters = [...newFilters, ...location.state];
     }
+  
+    setFiltered(newFilters);
+    
     axios.get(ROUTES_VEHICLES.LIST).then((response) => {
       if (!isMountedRef.current) {
-        return false
+        return false;
       }
-
-      setVehicles(response.data)
-      setLoading(false)
-    })
+  
+      setVehicles(response.data);
+      setLoading(false);
+    });
   }
+  
+  
 
   useEffect(() => {
     isMountedRef.current = true
