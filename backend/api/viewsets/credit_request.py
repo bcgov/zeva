@@ -316,7 +316,7 @@ class CreditRequestViewset(
         page_size = request.data.get('page_size', 100)
         page = request.data.get('page', 1)
         sorts = request.data.get('sorts')
-        verify_with_icbc_data = request.data.get('reset', False)
+        verify_with_icbc_data = True if request.data.get('reset') == 'Y' else False
         include_71_errors = True if request.data.get('include_71_errors') == 'Y' else False
 
         # only government should be able to view the contents for icbc
@@ -328,7 +328,7 @@ class CreditRequestViewset(
             submission_id=pk
         ).select_related("submission")
 
-        if verify_with_icbc_data == "Y":
+        if verify_with_icbc_data is True:
             warnings_and_maps = get_warnings_and_maps(submission_content, include_71_errors)
             contents_to_save = []
 
@@ -537,10 +537,10 @@ class CreditRequestViewset(
         if not request.user.is_government:
             return HttpResponseForbidden()
         
-        verify_with_icbc_data = request.GET.get('reset', None)
-        include_71_errors = True if request.data.get('include_71_errors') == 'Y' else False
+        verify_with_icbc_data = True if request.GET.get('reset') == 'Y' else False
+        include_71_errors = True if request.GET.get('include71Errors') == 'Y' else False
         
-        if verify_with_icbc_data == 'Y':
+        if verify_with_icbc_data is True:
             submission_content = SalesSubmissionContent.objects.filter(
                 submission_id=pk
             ).select_related("submission")

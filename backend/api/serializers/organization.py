@@ -37,7 +37,9 @@ class OrganizationSerializer(serializers.ModelSerializer):
         return obj.get_avg_ldv_sales()
     
     def get_first_model_year(self, obj):
-        return obj.first_model_year.name
+        if obj.first_model_year is not None:
+            return obj.first_model_year.name
+        return None
 
     class Meta:
         model = Organization
