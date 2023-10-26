@@ -29,6 +29,10 @@ class ModelYearReportAssessment(Auditable):
         decimal_places=2,
         db_comment='amount of administrative penalty'
     )
+    display = models.BooleanField(
+        default=True,
+        db_comment="field to determine if we should display this info"
+    )
 
     class Meta:
         db_table = 'model_year_report_assessment'
