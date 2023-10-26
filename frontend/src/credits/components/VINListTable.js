@@ -258,7 +258,8 @@ const VINListTable = (props) => {
                     'DUPLICATE_VIN',
                     'INVALID_MODEL',
                     'VIN_ALREADY_AWARDED',
-                    'EXPIRED_REGISTRATION_DATE'
+                    'EXPIRED_REGISTRATION_DATE',
+                    'WRONG_MODEL_YEAR'
                   ].indexOf(warning) >= 0
               )
             ) {
