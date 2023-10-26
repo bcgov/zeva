@@ -374,7 +374,7 @@ def populate_icbc_warnings(
         if vehicle is not None:
             if icbc_record.icbc_vehicle.model_year != vehicle.model_year:
                 add_warning(warnings, content_id, model_year_mismatch_warning)
-            if icbc_record.icbc_vehicle.make != vehicle.make:
+            if icbc_record.icbc_vehicle.make.lower() != vehicle.make.lower():
                 add_warning(warnings, content_id, make_mismatch_warning)
 
 
