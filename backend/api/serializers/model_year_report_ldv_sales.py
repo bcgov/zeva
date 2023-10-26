@@ -16,5 +16,5 @@ class ModelYearReportLDVSalesSerializer(ModelSerializer):
     class Meta:
         model = ModelYearReportLDVSales
         fields = (
-            'id', 'ldv_sales', 'model_year',
+            'id', 'ldv_sales', 'model_year'
         )
