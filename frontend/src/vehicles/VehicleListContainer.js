@@ -23,12 +23,6 @@ const VehicleListContainer = (props) => {
   const query = qs.parse(location.search, { ignoreQueryPrefix: true })
   const handleClear = () => {
     setFiltered([{id: 'is-active', value: 'Yes'}])
-
-    props.history.push({
-      pathname: location.pathname,
-      search: '', 
-      state: {}
-    });
   
     refreshList(true);
   }
