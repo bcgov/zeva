@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import PropTypes from 'prop-types'
 import FileDropArea from '../../app/components/FileDropArea'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
@@ -47,6 +48,11 @@ const CreditApplicationUploadDocuments = (props) => {
       </div>
     </div>
   )
+}
+
+CreditApplicationUploadDocuments.propTypes = {
+  handleCancel: PropTypes.func.isRequired,
+  handleUpload: PropTypes.func.isRequired
 }
 
 export default CreditApplicationUploadDocuments
