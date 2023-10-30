@@ -93,4 +93,41 @@ const chunkUpload = (url, files) => {
   })
 }
 
-export { upload, chunkUpload }
+const getFileUploadPromises = (urlToGetPresignedUrl, files, updateProgressBars) => {
+  const result = []
+  files.forEach((file, index) => {
+    const uploadPromise = new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => {
+        const blob = reader.result
+        axios.get(urlToGetPresignedUrl).then((response) => {
+          const { url: uploadUrl, minioObjectName } = response.data
+          axios.put(uploadUrl, blob, {
+            headers: {
+              Authorization: null
+            },
+            onUploadProgress: (progressEvent) => {
+              if (updateProgressBars) {
+                updateProgressBars(progressEvent, index)
+              }
+              resolve({
+                filename: file.name,
+                mimeType: file.type,
+                minioObjectName,
+                size: file.size
+              })
+            }
+          })
+            .catch((error) => {
+              reject(error)
+            })
+        })
+      }
+      reader.readAsArrayBuffer(file)
+    })
+    result.push(uploadPromise)
+  })
+  return result
+}
+
+export { upload, chunkUpload, getFileUploadPromises }

@@ -11,7 +11,7 @@ import getAnalystRecommendationColumns from './getAnalystRecommendationColumns'
 import CreditApplicationHeader from './CreditApplicationHeader'
 
 const ModelListTable = (props) => {
-  const { submission, user, handleCheckboxClick, issueAsMY } = props
+  const { submission, user, handleCheckboxClick, issueAsMY, setDisplayUploadPage } = props
 
   const columns = [
     {
@@ -27,7 +27,7 @@ const ModelListTable = (props) => {
       columns: getAnalystRecommendationColumns(props)
     },
     {
-      Header: <CreditApplicationHeader submission={submission} />,
+      Header: <CreditApplicationHeader submission={submission} user={user} setDisplayUploadPage={setDisplayUploadPage} />,
       headerClassName: `header-group text-left gap-left ${
         !user.isGovernment ? 'd-none' : ''
       }`,

@@ -36,7 +36,8 @@ const CreditRequestDetailsPage = (props) => {
     handleInternalCommentEdit,
     handleInternalCommentDelete,
     showWarning,
-    setShowWarning
+    setShowWarning,
+    setDisplayUploadPage
   } = props
 
   const { id } = useParams()
@@ -502,7 +503,7 @@ const CreditRequestDetailsPage = (props) => {
           </div>
         </div>
       )}
-      {user.isGovernment && showWarning && (
+      {user.isGovernment && showWarning && reports.length > 0  && (
         <ModelYearReportWarning
           conflictingReport={conflictingReport()}
           submission={submission}
@@ -519,6 +520,7 @@ const CreditRequestDetailsPage = (props) => {
             user={user}
             handleCheckboxClick={handleCheckboxClick}
             issueAsMY={issueAsMY}
+            setDisplayUploadPage={setDisplayUploadPage}
           />
         </div>
       </div>

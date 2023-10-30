@@ -14,6 +14,8 @@ import ROUTES_CREDIT_REQUESTS from '../app/routes/CreditRequests'
 import CustomPropTypes from '../app/utilities/props'
 import CreditRequestDetailsPage from './components/CreditRequestDetailsPage'
 import ROUTES_ICBCVERIFICATION from '../app/routes/ICBCVerification'
+import CreditApplicationUploadDocuments from './components/CreditApplicationUploadDocuments'
+import { getFileUploadPromises } from '../app/utilities/upload'
 
 const CreditRequestDetailsContainer = (props) => {
   const { location, match, user, validatedOnly } = props
@@ -27,8 +29,11 @@ const CreditRequestDetailsContainer = (props) => {
   const [ICBCUploadDate, setICBCUploadDate] = useState(null)
   const [issueAsMY, setIssueAsMY] = useState(true)
   const [showWarning, setShowWarning] = useState(false)
+  const [displayUploadPage, setDisplayUploadPage] = useState(false)
+  const [refreshCounter, setRefreshCounter] = useState(0)
 
   const refreshDetails = () => {
+    setLoading(true)
     axios
       .all([
         axios.get(ROUTES_ICBCVERIFICATION.DATE),
@@ -44,6 +49,7 @@ const CreditRequestDetailsContainer = (props) => {
             submissionResponse.data.content.filter((row) => row.recordOfSale)
           )
           setLoading(false)
+          setDisplayUploadPage(false)
         })
       )
   }
@@ -54,7 +60,7 @@ const CreditRequestDetailsContainer = (props) => {
 
   useEffect(() => {
     refreshDetails()
-  }, [id])
+  }, [id, refreshCounter])
 
   const handleSubmit = (validationStatus, comment = '') => {
     const submissionContent = { validationStatus }
@@ -131,8 +137,34 @@ const CreditRequestDetailsContainer = (props) => {
       })
   }
 
+  const handleUploadDocumentsCancel = () => {
+    setDisplayUploadPage(false)
+  }
+
+  const handleUploadDocuments = (documents) => {
+    const uploadPromises = getFileUploadPromises(ROUTES_CREDIT_REQUESTS.MINIO_URL.replace(/:id/gi, id), documents)
+    Promise.all(uploadPromises).then((uploadedDocuments) => {
+      if (uploadedDocuments.length > 0) {
+        axios.patch(ROUTES_CREDIT_REQUESTS.DETAILS.replace(/:id/gi, id), {
+          salesEvidences: uploadedDocuments
+        }).then(() => {
+          setRefreshCounter((prev) => {
+            return prev + 1
+          })
+        })
+      }
+    })
+  }
+
   if (loading) {
     return <Loading />
+  }
+
+  if (displayUploadPage) {
+    return [
+      <CreditTransactionTabs active="credit-requests" key="tabs" user={user} />,
+      <CreditApplicationUploadDocuments key="page" handleCancel={handleUploadDocumentsCancel} handleUpload={handleUploadDocuments} />
+    ]
   }
 
   return [
@@ -152,6 +184,7 @@ const CreditRequestDetailsContainer = (props) => {
       handleInternalCommentDelete={handleInternalCommentDelete}
       showWarning={showWarning}
       setShowWarning={setShowWarning}
+      setDisplayUploadPage={setDisplayUploadPage}
     />
   ]
 }
