@@ -333,7 +333,8 @@ const VehicleDetailsPage = (props) => {
               />
               {details.validationStatus &&
                 (details.validationStatus === 'CHANGES_REQUESTED' ||
-                  details.validationStatus === 'DRAFT') && (
+                  details.validationStatus === 'DRAFT' ||
+                    details.validationStatus === 'REJECTED') && (
                   <Button
                     buttonType="delete"
                     action={() => {
