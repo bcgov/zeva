@@ -22,8 +22,6 @@ const VehicleListContainer = (props) => {
 
   const query = qs.parse(location.search, { ignoreQueryPrefix: true })
   const handleClear = () => {
-    setFiltered([{id: 'is-active', value: 'Yes'}])
-  
     refreshList(true);
   }
   const refreshList = (showLoading) => {
