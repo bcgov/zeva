@@ -12,7 +12,8 @@ const baseSubmission = {
 }
 
 const baseProps = {
-  submission: baseSubmission
+  submission: baseSubmission,
+  user: {}
 }
 
 describe('CreditApplicationHeader', () => {
@@ -37,7 +38,7 @@ describe('CreditApplicationHeader', () => {
       }]
     }
     const submission = { ...baseSubmission, organization }
-    const props = { submission }
+    const props = { ...baseProps, submission }
     const { queryAllByText } = render(
       <Router>
         <CreditApplicationHeader
@@ -59,7 +60,7 @@ describe('CreditApplicationHeader', () => {
       }]
     }
     const submission = { ...baseSubmission, organization }
-    const props = { submission }
+    const props = { ...baseProps, submission }
     const { queryAllByText } = render(
       <Router>
         <CreditApplicationHeader
@@ -77,7 +78,7 @@ describe('CreditApplicationHeader', () => {
       filename: testFilename
     }]
     const submission = { ...baseSubmission, evidence }
-    const props = { submission }
+    const props = { ...baseProps, submission }
     const { queryAllByText } = render(
       <Router>
         <CreditApplicationHeader
