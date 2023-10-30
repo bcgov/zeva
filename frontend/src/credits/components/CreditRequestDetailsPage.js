@@ -733,7 +733,8 @@ CreditRequestDetailsPage.propTypes = {
   handleCheckboxClick: PropTypes.func.isRequired,
   issueAsMY: PropTypes.bool.isRequired,
   showWarning: PropTypes.bool.isRequired,
-  setShowWarning: PropTypes.func.isRequired
+  setShowWarning: PropTypes.func.isRequired,
+  setDisplayUploadPage: PropTypes.func.isRequired
 }
 
 export default CreditRequestDetailsPage

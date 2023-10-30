@@ -243,7 +243,8 @@ ModelListTable.propTypes = {
   }).isRequired,
   user: CustomPropTypes.user.isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
-  issueAsMY: PropTypes.bool.isRequired
+  issueAsMY: PropTypes.bool.isRequired,
+  setDisplayUploadPage: PropTypes.func.isRequired
 }
 
 export default ModelListTable
