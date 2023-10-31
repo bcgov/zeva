@@ -12,7 +12,7 @@ import history from '../app/History'
 import Loading from '../app/components/Loading'
 import ROUTES_CREDIT_REQUESTS from '../app/routes/CreditRequests'
 import CustomPropTypes from '../app/utilities/props'
-import { upload } from '../app/utilities/upload'
+import { upload, getFileUploadPromises } from '../app/utilities/upload'
 import CreditRequestsUploadPage from './components/CreditRequestsUploadPage'
 import ROUTES_ICBCVERIFICATION from '../app/routes/ICBCVerification'
 
@@ -67,50 +67,8 @@ const UploadCreditRequestsContainer = (props) => {
   }
 
   const handleEvidenceUpload = (paramId) => {
-    const promises = []
     setShowProgressBars(true)
-
-    evidenceFiles.forEach((file, index) => {
-      promises.push(
-        new Promise((resolve, reject) => {
-          const reader = new FileReader()
-          reader.onload = () => {
-            const blob = reader.result
-
-            axios
-              .get(ROUTES_CREDIT_REQUESTS.MINIO_URL.replace(/:id/gi, paramId))
-              .then((response) => {
-                const { url: uploadUrl, minioObjectName } = response.data
-
-                axios
-                  .put(uploadUrl, blob, {
-                    headers: {
-                      Authorization: null
-                    },
-                    onUploadProgress: (progressEvent) => {
-                      updateProgressBars(progressEvent, index)
-
-                      if (progressEvent.loaded >= progressEvent.total) {
-                        resolve({
-                          filename: file.name,
-                          mimeType: file.type,
-                          minioObjectName,
-                          size: file.size
-                        })
-                      }
-                    }
-                  })
-                  .catch((error) => {
-                    reject(error)
-                  })
-              })
-          }
-
-          reader.readAsArrayBuffer(file)
-        })
-      )
-    })
-
+    const promises = getFileUploadPromises(ROUTES_CREDIT_REQUESTS.MINIO_URL.replace(/:id/gi, paramId), evidenceFiles, updateProgressBars)
     return promises
   }
 
