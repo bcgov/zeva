@@ -19,10 +19,11 @@ jobs:
           find: 'release-'
           replace: 'v'
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v1.1.0
         with:
           name: ${{ steps.newereleasename.outputs.value }}
           tag_name: ${{ steps.newereleasename.outputs.value }}
+          target_commitish: master
           body: |
             ${{ github.event.pull_request.body }}
           token: ${{ secrets.GITHUB_TOKEN }}
