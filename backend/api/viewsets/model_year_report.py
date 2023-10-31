@@ -502,31 +502,6 @@ class ModelYearReportViewset(
             ).update(
                 display=False
             )
-        
-        elif validation_status == "SUBMITTED":
-            ModelYearReportLDVSales.objects.filter(
-                model_year_report_id=model_year_report_id,
-                from_gov=True
-            ).update(
-                display=True
-            )
-            ModelYearReportMake.objects.filter(
-                model_year_report_id=model_year_report_id,
-                from_gov=True
-            ).update(
-                display=True
-            )
-            ModelYearReportAssessment.objects.filter(
-                model_year_report_id=model_year_report_id
-            ).update(
-                display=True
-            )
-            ModelYearReportAssessmentComment.objects.filter(
-                model_year_report_id=model_year_report_id,
-                to_director=True
-            ).update(
-                display=True
-            )
 
         if confirmations:
             for confirmation in confirmations:
