@@ -119,7 +119,7 @@ const ConsumerSalesDetailsPage = (props) => {
       <div className="row mt-1">
         <div className="col-12">
           <div className="p-3 consumer-sales">
-            <span className="float-right d-print-none print-none">
+            <span className="float-right d-print-none no-print">
               {(!user.isGovernment ||
                 (user.hasPermission('RECOMMEND_COMPLIANCE_REPORT') &&
                   enableEditBtnForAnalyst)) &&
