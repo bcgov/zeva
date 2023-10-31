@@ -12,6 +12,7 @@ from .model_year_report_statuses import ModelYearReportStatuses
 from .user_profile import UserProfile
 from ..managers.organization import OrganizationManager
 from ..services.credit_transaction import aggregate_credit_balance_details
+from api.models.model_year import ModelYear
 
 class Organization(Auditable):
     name = models.CharField(
@@ -38,6 +39,14 @@ class Organization(Auditable):
     is_government = models.BooleanField(
         default=False,
         db_comment="Flag to check whether this is the Government organization"
+    )
+
+    first_model_year = models.ForeignKey(
+        'ModelYear',
+        related_name='+',
+        on_delete=models.PROTECT,
+        null=True,
+        default=ModelYear.get_default_first_model_year_id_for_organization
     )
 
     @property
@@ -99,6 +108,10 @@ class Organization(Auditable):
             return True
 
         return False
+    
+    @property
+    def has_report(self):
+        return ModelYearReport.objects.filter(organization_id=self.id).exists()
 
     @property
     def ldv_sales(self):

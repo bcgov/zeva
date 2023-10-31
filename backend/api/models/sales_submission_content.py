@@ -8,6 +8,8 @@ from api.models.icbc_registration_data import IcbcRegistrationData
 from api.models.vehicle import Vehicle
 from api.models.record_of_sale import RecordOfSale
 from api.models.vehicle_statuses import VehicleDefinitionStatuses
+from api.models.model_year_report import ModelYearReport
+from api.models.model_year_report_statuses import ModelYearReportStatuses
 
 
 class SalesSubmissionContent(Auditable):
@@ -65,6 +67,12 @@ class SalesSubmissionContent(Auditable):
         null=True,
         max_length=255,
         db_comment="Reason for overriding the initial assessment"
+    )
+    warnings_list = models.CharField(
+        blank=True,
+        null=True,
+        max_length=255,
+        db_comment="comma-separated list of warnings a VIN was flagged with"
     )
 
     @property
@@ -164,6 +172,18 @@ class SalesSubmissionContent(Auditable):
         ).first()
 
     @property
+    def is_wrong_model_year(self):
+        myr_reports = ModelYearReport.objects.filter(
+            organization_id = self.submission.organization
+        )
+
+        for report in myr_reports:
+            if report.validation_status not in [ModelYearReportStatuses.ASSESSED, ModelYearReportStatuses.DRAFT] and str(report.model_year.name) != str(self.xls_model_year).split('.')[0]:
+                return True
+        
+        return False
+
+    @property
     def warnings(self):
         warnings = []
 
@@ -195,6 +215,9 @@ class SalesSubmissionContent(Auditable):
             if icbc_verification.icbc_vehicle.make != \
                     self.vehicle.make:
                 warnings.append('MAKE_MISMATCHED')
+
+        if self.is_wrong_model_year:
+            warnings.append('WRONG_MODEL_YEAR')
 
         return warnings
 

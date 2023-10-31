@@ -1,14 +1,14 @@
 from rest_framework.serializers import ModelSerializer, \
-    SerializerMethodField, SlugRelatedField
-from enumfields.drf import EnumField
+    SerializerMethodField
 from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_history import ModelYearReportHistory
 from api.models.model_year_report_statuses import ModelYearReportStatuses
 from api.models.supplemental_report_history import SupplementalReportHistory
 from api.models.supplemental_report import SupplementalReport
 from api.models.user_profile import UserProfile
-from api.serializers.user import MemberSerializer, UserSerializer
+from api.serializers.user import MemberSerializer
 from django.db.models import Q
+from api.utilities.report_history import exclude_from_history
 
 
 class ModelYearReportNoaSerializer(ModelSerializer):
@@ -137,30 +137,9 @@ class SupplementalReportSerializer(ModelSerializer):
             q_obj
         ).order_by('-update_timestamp')
 
-        if request.user.is_government:
-            history = history.exclude(
-                validation_status__in=[
-                    ModelYearReportStatuses.DELETED,
-                ]
-            )
-        else:
-            history = history.exclude(
-                validation_status__in=[
-                    ModelYearReportStatuses.RECOMMENDED,
-                    ModelYearReportStatuses.DELETED,
-                    ModelYearReportStatuses.RETURNED,
-                ]
-            )
-            # Remove submitted by government user (only happens when the IDIR user saves first)
-            users = UserProfile.objects.filter(organization__is_government=True).values_list('username')
-            history = history.exclude(
-                validation_status__in=[
-                    ModelYearReportStatuses.SUBMITTED,
-                ],
-                create_user__in=users
-            )
+        refined_history = exclude_from_history(history, request.user)
 
-        serializer = SupplementalReportHistorySerializer(history, many=True)
+        serializer = SupplementalReportHistorySerializer(refined_history, many=True)
         return serializer.data
 
     class Meta:
@@ -199,31 +178,9 @@ class SupplementalModelYearReportSerializer(ModelSerializer):
             model_year_report_id=obj.id
         ).order_by('-update_timestamp')
 
-        if request.user.is_government:
-            history = history.exclude(
-                validation_status__in=[
-                    ModelYearReportStatuses.DELETED,
-                ]
-            )
-        else:
-            history = history.exclude(
-                validation_status__in=[
-                    ModelYearReportStatuses.RECOMMENDED,
-                    ModelYearReportStatuses.DELETED,
-                    ModelYearReportStatuses.RETURNED,
-                ]
-            )
+        refined_history = exclude_from_history(history, request.user)
 
-        # Remove submitted by government user (only happens when the IDIR user saves first)
-        users = UserProfile.objects.filter(organization__is_government=True).values_list('username')
-        history = history.exclude(
-            validation_status__in=[
-                ModelYearReportStatuses.SUBMITTED,
-            ],
-            create_user__in=users
-        )
-
-        serializer = SupplementalReportHistorySerializer(history, many=True)
+        serializer = SupplementalReportHistorySerializer(refined_history, many=True)
 
         return serializer.data
 

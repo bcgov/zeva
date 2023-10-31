@@ -22,6 +22,9 @@ on:
          required: true 
       openshift-token:   
          required: true       
+      openshiftLicensePlate:
+          required: true
+
         
 env:
   GIT_URL: https://github.com/bcgov/zeva.git 
@@ -169,7 +172,7 @@ jobs:
           if [ $? -eq 0 ]; then
             echo "zeva-frontend-dev-${{ inputs.pr-number }} release exists already"
             helm upgrade --set frontendImageTagname=dev-${{ inputs.version }}-${{ inputs.pr-number }} \
-              --set openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }} \
+              --set openshiftLicensePlate=${{ secrets.openshiftLicensePlate }} \
               --set suffix=-dev-${{ inputs.pr-number }} \
               --set frontendConfigMap.apiBase=https://zeva-backend-dev-${{ inputs.pr-number }}.apps.silver.devops.gov.bc.ca/api \
               --set frontendConfigMap.keycloakCallbackUrl=https://zeva-dev-${{ inputs.pr-number }}.apps.silver.devops.gov.bc.ca\
@@ -181,7 +184,7 @@ jobs:
           else
             echo "zeva-frontend-dev-${{ inputs.pr-number }} release does not exist"
             helm install --set frontendImageTagname=dev-${{ inputs.version }}-${{ inputs.pr-number }} \
-              --set openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }} \
+              --set openshiftLicensePlate=${{ secrets.openshiftLicensePlate }} \
               --set suffix=-dev-${{ inputs.pr-number }} \
               --set frontendConfigMap.apiBase=https://zeva-backend-dev-${{ inputs.pr-number }}.apps.silver.devops.gov.bc.ca/api \
               --set frontendConfigMap.keycloakCallbackUrl=https://zeva-dev-${{ inputs.pr-number }}.apps.silver.devops.gov.bc.ca \

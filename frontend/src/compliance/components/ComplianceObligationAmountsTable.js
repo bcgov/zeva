@@ -24,7 +24,11 @@ const ComplianceObligationAmountsTable = (props) => {
   const filteredUnspecifiedReductions = unspecifiedReductions.find(
     (reduction) => Number(reduction.modelYear) === Number(reportYear)
   )
-
+  let disabledInput = false
+  if (page === 'obligation'){
+    disabledInput = (['SAVED', 'UNSAVED'].indexOf(statuses.complianceObligation.status) < 0)
+  }
+  
   return (
     <div>
       <div className="compliance-reduction-table">
@@ -41,20 +45,16 @@ const ComplianceObligationAmountsTable = (props) => {
                       statuses.assessment.status !== 'ASSESSED' && (
                         <input
                           className="form-control"
-                          disabled={
-                            ['SAVED', 'UNSAVED'].indexOf(
-                              statuses.complianceObligation.status
-                            ) < 0
-                          }
+                          disabled={disabledInput}
                           onChange={handleChangeSales}
-                          type="number"
-                          value={sales}
+                          type={disabledInput ? "string" : "number"}
+                          value={disabledInput ? formatNumeric(sales, 0) : sales}
                         />
                     )}
                     {(page === 'assessment' ||
                       (page === 'obligation' &&
                         statuses.assessment.status === 'ASSESSED')) &&
-                      (sales || 0)}
+                      (formatNumeric(sales, 0) || 0)}
                   </td>
                 </tr>
                 <tr>

@@ -117,6 +117,7 @@ const CreditRequestVINListPage = (props) => {
               </option>
               <option value="51">51 - Sale prior to Jan 2018 ({errors.EXPIRED_REGISTRATION_DATE ? errors.EXPIRED_REGISTRATION_DATE : 0})</option>
               <option value="61">61 - Invalid date format ({errors.INVALID_DATE ? errors.INVALID_DATE : 0})</option>
+              <option value="71">71 - Wrong model year for compliance report ({errors.WRONG_MODEL_YEAR ? errors.WRONG_MODEL_YEAR : 0})</option>
             </select>
           </span>
 
