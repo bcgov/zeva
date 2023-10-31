@@ -124,7 +124,7 @@ const SupplierInformationDetailsPage = (props) => {
               )}
               <Button
                 buttonType="button"
-                optionalClassname="ml-2 mr-2 button btn"
+                optionalClassname="ml-2 mr-2 button btn no-print"
                 optionalText="Print Page"
                 action={() => {
                   window.print()

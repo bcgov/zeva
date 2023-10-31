@@ -49,7 +49,7 @@ const CreateReassessmentHeader = (props) => {
           {`Create ${supplementaryText} Report`}
         </button>}
         <button
-          className='button ml-2'
+          className='button ml-2 no-print'
           onClick={() => {
             window.print()
           }}

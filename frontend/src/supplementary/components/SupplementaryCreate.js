@@ -116,7 +116,7 @@ const SupplementaryCreate = (props) => {
       <div className="supplementary-form mt-2">
         <Button
           buttonType="button"
-          optionalClassname="ml-2 mr-2 button btn float-right d-print-none"
+          optionalClassname="ml-2 mr-2 button btn float-right d-print-none no-print"
           optionalText="Print Page"
           action={() => {
             window.print()

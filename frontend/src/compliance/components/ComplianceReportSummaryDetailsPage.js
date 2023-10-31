@@ -163,7 +163,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
             <span className="float-right d-print-none">
               <Button
                 buttonType="button"
-                optionalClassname="ml-2 mr-2 mb-2 button btn"
+                optionalClassname="ml-2 mr-2 mb-2 button btn no-print"
                 optionalText="Print Page"
                 action={() => {
                   window.print()
