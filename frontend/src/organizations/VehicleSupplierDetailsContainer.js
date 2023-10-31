@@ -111,7 +111,7 @@ const VehicleSupplierDetailsContainer = (props) => {
       <h1 className="mb-2">{display.name}</h1>
       <VehicleSupplierTabs
         locationState={locationState}
-        supplierId={details.id}
+        supplierId={id}
         active="supplier-info"
         user={user}
       />
