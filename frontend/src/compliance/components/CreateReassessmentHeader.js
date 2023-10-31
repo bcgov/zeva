@@ -32,7 +32,7 @@ const CreateReassessmentHeader = (props) => {
   }
 
   return (
-    <div className='action-bar right-content'>
+    <div className='action-bar right-content no-print'>
       <div></div>
       <div>
         {canCreateSupplementalOrReassessment && <button
@@ -49,7 +49,7 @@ const CreateReassessmentHeader = (props) => {
           {`Create ${supplementaryText} Report`}
         </button>}
         <button
-          className='button ml-2 no-print'
+          className='button ml-2'
           onClick={() => {
             window.print()
           }}

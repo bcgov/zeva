@@ -121,7 +121,7 @@ const ComplianceObligationDetailsPage = (props) => {
       </div>
       <div id="compliance-obligation-page">
         <div>
-          <span className="float-right d-print-none">
+          <span className="float-right d-print-none no-print">
             {!user.isGovernment &&
               statuses.complianceObligation.status === 'CONFIRMED' && (
                 <button
@@ -136,7 +136,7 @@ const ComplianceObligationDetailsPage = (props) => {
             )}
             <Button
               buttonType="button"
-              optionalClassname="ml-2 mr-2 mb-2 button btn no-print"
+              optionalClassname="ml-2 mr-2 mb-2 button btn"
               optionalText="Print Page"
               action={() => {
                 window.print()

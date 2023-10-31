@@ -119,7 +119,7 @@ const ConsumerSalesDetailsPage = (props) => {
       <div className="row mt-1">
         <div className="col-12">
           <div className="p-3 consumer-sales">
-            <span className="float-right d-print-none">
+            <span className="float-right d-print-none print-none">
               {(!user.isGovernment ||
                 (user.hasPermission('RECOMMEND_COMPLIANCE_REPORT') &&
                   enableEditBtnForAnalyst)) &&
@@ -136,7 +136,7 @@ const ConsumerSalesDetailsPage = (props) => {
               )}
               <Button
                 buttonType="button"
-                optionalClassname="ml-2 mr-2 button btn no-print"
+                optionalClassname="ml-2 mr-2 button btn"
                 optionalText="Print Page"
                 action={() => {
                   window.print()
