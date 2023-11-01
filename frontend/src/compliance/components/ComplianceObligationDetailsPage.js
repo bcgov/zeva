@@ -121,7 +121,7 @@ const ComplianceObligationDetailsPage = (props) => {
       </div>
       <div id="compliance-obligation-page">
         <div>
-          <span className="float-right d-print-none">
+          <span className="float-right d-print-none no-print">
             {!user.isGovernment &&
               statuses.complianceObligation.status === 'CONFIRMED' && (
                 <button

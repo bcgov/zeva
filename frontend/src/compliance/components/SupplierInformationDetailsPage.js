@@ -109,7 +109,7 @@ const SupplierInformationDetailsPage = (props) => {
       <div className="row mt-1">
         <div className="col-12">
           <div className="p-3 supplier-information">
-            <span className="float-right d-print-none">
+            <span className="float-right d-print-none no-print">
               {!user.isGovernment &&
                 statuses.supplierInformation.status === 'CONFIRMED' && (
                   <button
