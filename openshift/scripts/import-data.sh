@@ -9,19 +9,19 @@ set -e
 # $1 = 'test' or 'prod'
 # #2 = 'local container name or id'
 # example command
-# . import-data.sh test 398cd4661173
+# . ./import-data.sh dev 398cd4661173
 
 if [ "$#" -ne 2 ]; then
     echo "Passed $# parameters. Expected 2."
     exit 1
 fi
 
-# defaults set to test
-project_name='e52f12-test'
-pod_name='zeva-spilo-test-0'
-env='test'
+# defaults set to dev
+project_name='e52f12-dev'
+pod_name='zeva-crunchy-dev-zeva-spxf-0'
+env='dev'
 
-local_container=$2
+local_container=$2 
 
 # checks if you are logged in to openshift
 echo "** Checking Openshift creds"
@@ -35,7 +35,7 @@ if [ $1 = "prod" ]; then
   pod_name='zeva-spilo-prod-0'
   env='prod'
 else
-  echo '** Using test variables'
+  echo '** Using dev variables'
   echo
 fi
 
