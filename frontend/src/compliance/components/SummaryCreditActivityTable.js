@@ -1,6 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import formatNumeric from '../../app/utilities/formatNumeric'
+import getTotalReduction from '../../app/utilities/getTotalReduction'
+import getClassAReduction from '../../app/utilities/getClassAReduction'
+import getUnspecifiedClassReduction from '../../app/utilities/getUnspecifiedClassReduction'
 
 const SummaryCreditActivityTable = (props) => {
   const {
@@ -123,7 +126,7 @@ const SummaryCreditActivityTable = (props) => {
             {supplierClass === 'Small' ? formatNumeric(0, 2) :
               complianceRatios.length > 0 &&
               formatNumeric(
-                ldvSales * (complianceRatios[0].complianceRatio / 100),
+                getTotalReduction(ldvSales, complianceRatios[0].complianceRatio),
                 2
               )
             }
@@ -139,7 +142,7 @@ const SummaryCreditActivityTable = (props) => {
               {complianceRatios.length > 0 &&
                 supplierClass === 'Large' &&
                 formatNumeric(
-                  ldvSales * (complianceRatios[0].zevClassA / 100),
+                  getClassAReduction(ldvSales, complianceRatios[0].zevClassA),
                   2
                 )}
             </td>
@@ -154,15 +157,14 @@ const SummaryCreditActivityTable = (props) => {
             {complianceRatios.length > 0 &&
               supplierClass === 'Large' &&
               formatNumeric(
-                ldvSales * (complianceRatios[0].complianceRatio / 100) -
-                  ldvSales * (complianceRatios[0].zevClassA / 100),
+                getUnspecifiedClassReduction(getTotalReduction(ldvSales, complianceRatios[0].complianceRatio), getClassAReduction(ldvSales, complianceRatios[0].zevClassA)),
                 2
               )}
             {supplierClass === 'Small' ? formatNumeric(0, 2) :
               complianceRatios.length > 0 &&
               supplierClass !== 'Large' &&
               formatNumeric(
-                ldvSales * (complianceRatios[0].complianceRatio / 100),
+                getTotalReduction(ldvSales, complianceRatios[0].complianceRatio),
                 2
               )
             }
