@@ -25,7 +25,7 @@ class CreditTransferCommentSerializer(ModelSerializer):
     class Meta:
         model = CreditTransferComment
         fields = (
-            'id', 'comment', 'create_timestamp', 'create_user',
+            'id', 'comment', 'create_timestamp', 'update_timestamp', 'create_user',
         )
         read_only_fields = (
             'id',

@@ -96,6 +96,63 @@ const CreditTransfersDetailsContainer = (props) => {
       })
   }
 
+  const handleInternalCommentEdit = (commentId, commentText) => {
+    axios
+    .patch(ROUTES_CREDIT_TRANSFERS.UPDATE_COMMENT.replace(':id', id), {
+      commentId,
+      commentText
+    })
+    .then((response) => {
+      const updatedComment = response.data
+      setSubmission((prev) => {
+        const historyItemIndex = prev.history.findIndex(
+          (item) => {
+            if (item.comment) {
+              return item.comment.id === updatedComment.id
+            }
+            return false
+          }
+        )
+        const commentCopy = {...prev.history[historyItemIndex].comment}
+        commentCopy.comment = updatedComment.comment
+        commentCopy.updateTimestamp = updatedComment.updateTimestamp
+        const historyItemCopy = {...prev.history[historyItemIndex]}
+        historyItemCopy.comment = commentCopy
+        const historyCopy = [...prev.history]
+        historyCopy[historyItemIndex] = historyItemCopy
+        const submissionCopy = {...prev}
+        submissionCopy.history = historyCopy
+        return submissionCopy
+      })
+    })
+  }
+
+  const handleInternalCommentDelete = (commentId) => {
+    axios
+    .patch(ROUTES_CREDIT_TRANSFERS.DELETE_COMMENT.replace(':id', id), {
+      commentId
+    })
+    .then(() => {
+      setSubmission((prev) => {
+        const historyItemIndex = prev.history.findIndex(
+          (item) => {
+            if (item.comment) {
+              return item.comment.id === commentId
+            }
+            return false
+          }
+        )
+        const historyItemCopy = {...prev.history[historyItemIndex]}
+        delete historyItemCopy.comment
+        const historyCopy = [...prev.history]
+        historyCopy[historyItemIndex] = historyItemCopy
+        const submissionCopy = {...prev}
+        submissionCopy.history = historyCopy
+        return submissionCopy
+      })
+    })
+  }
+
   if (loading) {
     return <Loading />
   }
@@ -106,6 +163,8 @@ const CreditTransfersDetailsContainer = (props) => {
       checkboxes={checkboxes}
       handleCheckboxClick={handleCheckboxClick}
       handleSubmit={handleSubmit}
+      handleInternalCommentEdit={handleInternalCommentEdit}
+      handleInternalCommentDelete={handleInternalCommentDelete}
       key="page"
       sufficientCredit={sufficientCredit}
       submission={submission}
