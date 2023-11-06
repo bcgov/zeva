@@ -49,13 +49,13 @@ def vehicles_sales(model_year, organization):
     ).filter(
         Q(Q(
             Q(xls_sale_date__lte=sales_to_date) &
-            Q(xls_model_year=str(report_year) + ".0") &
+            (Q(xls_model_year=str(report_year) + ".0") | Q(xls_model_year=str(report_year))) &
             Q(xls_date_type="3") &
             ~Q(xls_sale_date="")
         ) |
          Q(
             Q(xls_sale_date__lte=to_date_str) &
-            Q(xls_model_year=str(report_year) + ".0") &
+            (Q(xls_model_year=str(report_year) + ".0") | Q(xls_model_year=str(report_year))) &
             Q(xls_date_type="1") &
             ~Q(xls_sale_date="")
             )
