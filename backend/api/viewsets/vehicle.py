@@ -47,7 +47,7 @@ class VehicleViewSet(
 
     def get_queryset(self):
         request = self.request
-
+        
         queryset = Vehicle.objects.filter(
             organization_id=request.user.organization.id
         ).exclude(validation_status=VehicleDefinitionStatuses.DELETED)
@@ -58,7 +58,8 @@ class VehicleViewSet(
                     VehicleDefinitionStatuses.SUBMITTED,
                     VehicleDefinitionStatuses.VALIDATED,
                     VehicleDefinitionStatuses.REJECTED,
-                    VehicleDefinitionStatuses.CHANGES_REQUESTED
+                    VehicleDefinitionStatuses.CHANGES_REQUESTED,
+                    VehicleDefinitionStatuses.DELETED
                 ]
             )
 
