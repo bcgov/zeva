@@ -31,6 +31,10 @@ class ModelYearReportLDVSales(Auditable):
         default=False,
         db_comment="Flag. True if this edit came from a government user."
     )
+    display = models.BooleanField(
+        default=True,
+        db_comment="field to determine if we should display this info"
+    )
 
     class Meta:
         db_table = "model_year_report_ldv_sales"
