@@ -49,7 +49,13 @@ const CreditRequestAlert = (props) => {
       statusFilter('DRAFT').createUser.displayName
     }`
   }
-
+  let submissionMessage
+  if (history.find((each) => each.validationStatus === 'SUBMITTED')) {submissionMessage = `Application submitted to Government of B.C. ${moment(
+        statusFilter('SUBMITTED').createTimestamp
+      ).format('MMM D, YYYY')} by ${
+        statusFilter('SUBMITTED').createUser.displayName
+      }`
+    }
   switch (validationStatus) {
     case 'DRAFT':
       if (invalidSubmission) {
@@ -93,13 +99,10 @@ const CreditRequestAlert = (props) => {
           statusFilter('VALIDATED').createTimestamp
         ).format('MMM D, YYYY')} by Government of B.C.`
       }
-      historyMessage = `Application submitted to Government of B.C. ${moment(
-        statusFilter('SUBMITTED').createTimestamp
-      ).format('MMM D, YYYY')} by ${
-        statusFilter('SUBMITTED').createUser.displayName
-      }`
       if (excelUploadMessage) {
-        historyMessage = `${excelUploadMessage}. ` + historyMessage
+        historyMessage = `${excelUploadMessage}. ` + submissionMessage
+      } else {
+        historyMessage = `${submissionMessage}`
       }
       break
     case 'REJECTED':
@@ -131,7 +134,7 @@ const CreditRequestAlert = (props) => {
         classname = 'alert-warning'
       }
       if (excelUploadMessage) {
-        historyMessage = `${excelUploadMessage}. `
+        historyMessage = `${excelUploadMessage}. ${submissionMessage}`
       }
       break
     case 'CHECKED':
@@ -143,7 +146,7 @@ const CreditRequestAlert = (props) => {
       }. ICBC data used was current to: ${icbcDate}`
       classname = 'alert-warning'
       if (excelUploadMessage) {
-        historyMessage = `${excelUploadMessage}. `
+        historyMessage = `${excelUploadMessage}.  ${submissionMessage}`
       }
       break
     default:
