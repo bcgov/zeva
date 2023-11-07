@@ -23,6 +23,8 @@ from api.models.sales_submission_content import SalesSubmissionContent
 from api.models.vehicle import Vehicle
 from api.models.icbc_snapshot_data import IcbcSnapshotData
 from api.models.record_of_sale_statuses import RecordOfSaleStatuses
+from api.models.vehicle_statuses import VehicleDefinitionStatuses
+from api.services.sales_submission import get_vehicle_structures, get_map_of_sales_submission_content_ids_to_vehicles, get_map_of_vins_to_records_of_sales
 
 logger = logging.getLogger('zeva.sales_spreadsheet')
 
@@ -596,11 +598,17 @@ def create_details_spreadsheet(submission_id, stream):
 
     current_vehicle_col_width = 13
     icbc_match = False
+    vehicle_structures = get_vehicle_structures(sales_submission, VehicleDefinitionStatuses.VALIDATED)
+    map_of_sales_submission_content_ids_to_vehicles = get_map_of_sales_submission_content_ids_to_vehicles(submission_content, vehicle_structures)
+    map_of_vins_to_records_of_sales = get_map_of_vins_to_records_of_sales(submission_content)
     for content in submission_content:
         validated = 'No'
-        if content.record_of_sale:
-            if content.record_of_sale.validation_status == RecordOfSaleStatuses.VALIDATED:
-                validated = 'Yes'
+        records_of_sales = map_of_vins_to_records_of_sales.get(content.xls_vin)
+        if records_of_sales is not None:
+            for record_of_sale in records_of_sales:
+                if record_of_sale.validation_status == RecordOfSaleStatuses.VALIDATED and record_of_sale.submission == sales_submission and record_of_sale.vehicle == map_of_sales_submission_content_ids_to_vehicles.get(content.id):
+                    validated = 'Yes'
+                    break
         try:
             icbc_record = icbc_data.get(vin=content.xls_vin)
             icbc_match = True
