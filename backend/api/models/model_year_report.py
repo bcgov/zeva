@@ -213,7 +213,8 @@ class ModelYearReport(Auditable):
             model_year_report_id=self.id,
             category__in=[
                 'ClassAReduction', 'UnspecifiedClassCreditReduction',
-                'CreditDeficit', 'ProvisionalBalanceAfterCreditReduction'
+                'CreditDeficit', 'ProvisionalBalanceAfterCreditReduction',
+                'ReductionsToOffsetDeficit'
             ]
         )
 

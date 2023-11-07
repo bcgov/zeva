@@ -189,8 +189,12 @@ const ComplianceReportSummaryContainer = (props) => {
                 const bValue = parseFloat(item.creditBValue)
                 creditBalanceStart.A += aValue
                 creditBalanceStart.B += bValue
-                provisionalBalanceAfterCreditReduction.A += aValue
-                provisionalBalanceAfterCreditReduction.B += bValue
+                if (aValue > 0) {
+                  provisionalBalanceAfterCreditReduction.A += aValue
+                }
+                if (bValue > 0) {
+                  provisionalBalanceAfterCreditReduction.B += bValue
+                }
               }
 
               if (item.category === 'creditBalanceEnd') {
@@ -218,6 +222,13 @@ const ComplianceReportSummaryContainer = (props) => {
                 const bValue = parseFloat(item.creditBValue)
                 totalCreditReduction.A += aValue
                 totalCreditReduction.B += bValue
+                provisionalBalanceAfterCreditReduction.A -= aValue
+                provisionalBalanceAfterCreditReduction.B -= bValue
+              }
+
+              if (item.category === 'ReductionsToOffsetDeficit') {
+                const aValue = parseFloat(item.creditAValue)
+                const bValue = parseFloat(item.creditBValue)
                 provisionalBalanceAfterCreditReduction.A -= aValue
                 provisionalBalanceAfterCreditReduction.B -= bValue
               }

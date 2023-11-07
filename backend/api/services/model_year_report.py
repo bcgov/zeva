@@ -326,7 +326,7 @@ def adjust_credits(id, request):
     # overrides
     reductions = ModelYearReportComplianceObligation.objects.filter(
         model_year_report_id=id,
-        category__in=['ClassAReduction', 'UnspecifiedClassCreditReduction'],
+        category__in=['ClassAReduction', 'UnspecifiedClassCreditReduction', 'ReductionsToOffsetDeficit'],
         from_gov=from_gov,
     ).order_by('model_year__name', 'update_timestamp')
 

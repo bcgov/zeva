@@ -138,7 +138,7 @@ describe('calculateCreditReduction', () => {
 
     const radioId = 'A'
 
-    const result = calculateCreditReduction(balances, classAReductions, unspecifiedReductions, radioId)
+    const result = calculateCreditReduction(balances, classAReductions, unspecifiedReductions, radioId, {})
 
     result.balances.forEach((balance) => {
       expect(balance.creditA).toBeCloseTo(balance.creditA, 2)
