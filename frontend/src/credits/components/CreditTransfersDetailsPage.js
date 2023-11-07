@@ -489,7 +489,7 @@ const CreditTransfersDetailsPage = (props) => {
               user={user}
               handleCommentEdit={handleInternalCommentEdit}
               handleCommentDelete={handleInternalCommentDelete}
-              enableEditing={submission.status !== 'VALIDATED'}
+              enableEditing={submission.status !== 'VALIDATED' && submission.status !== 'REJECTED'}
             />
           )}
           {transferCommentsSupplier.length > 0 && !user.isGovernment && (
