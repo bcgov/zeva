@@ -374,7 +374,7 @@ def validate_spreadsheet(data, user_organization=None, skip_authorization=False)
 
 
 def get_error(content):
-    warnings = content.warnings
+    warnings = content.warnings_list.split(",") if content.warnings_list is not None else []
     error = ''
     if 'ROW_NOT_SELECTED' in warnings and content.reason:
         error += content.reason
@@ -407,6 +407,9 @@ def get_error(content):
 
     if 'ROW_NOT_SELECTED' in warnings and error == '':
         error += 'VIN not registered in BC; '
+
+    if 'WRONG_MODEL_YEAR' in warnings:
+        error += 'Wrong model year to be issued with compliance report; '
     return error
 
 
@@ -503,7 +506,7 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
     current_vehicle_col_width = 13
 
     for content in submission_content:
-        if len(content.warnings) == 0:
+        if content.warnings_list is None:
             next()
 
         row += 1
