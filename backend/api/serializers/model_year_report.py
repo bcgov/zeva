@@ -296,7 +296,8 @@ class ModelYearReportListSerializer(ModelSerializer, EnumSupportSerializerMixin)
                     return "-"
 
                 assessment = ModelYearReportAssessment.objects.filter(
-                    model_year_report_id=obj.id
+                    model_year_report_id=obj.id,
+                    display=True
                 ).first()
 
                 if assessment:

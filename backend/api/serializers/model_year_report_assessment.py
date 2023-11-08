@@ -67,7 +67,8 @@ class ModelYearReportAssessmentSerializer(
 
     def get_assessment(self, obj):
         assessment = ModelYearReportAssessment.objects.filter(
-            model_year_report=obj
+            model_year_report=obj,
+            display=True
         ).first()            
         in_compliance = {'report': True, 'prior': True}
         ##get the report
@@ -151,7 +152,8 @@ class ModelYearReportAssessmentSerializer(
         if not request.user.is_government:
             assessment_comment = ModelYearReportAssessmentComment.objects.filter(
                 model_year_report=obj,
-                to_director=False
+                to_director=False,
+                display=True
             ).order_by('-create_timestamp')
         if not assessment_comment:
             return []
