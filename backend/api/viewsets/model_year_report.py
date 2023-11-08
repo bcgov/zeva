@@ -497,8 +497,7 @@ class ModelYearReportViewset(
                 display=False
             )
             ModelYearReportAssessmentComment.objects.filter(
-                model_year_report_id=model_year_report_id,
-                to_director=True
+                model_year_report_id=model_year_report_id
             ).update(
                 display=False
             )
@@ -611,7 +610,7 @@ class ModelYearReportViewset(
         elif comment and not director:
             assessment_comment = (
                 ModelYearReportAssessmentComment.objects.filter(
-                    model_year_report_id=pk, to_director=False
+                    model_year_report_id=pk, to_director=False, display=True
                 )
                 .order_by("-update_timestamp")
                 .first()
