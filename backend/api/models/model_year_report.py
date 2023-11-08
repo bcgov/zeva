@@ -73,7 +73,7 @@ class ModelYearReport(Auditable):
 
     @property
     def ldv_sales(self):
-        return self.get_ldv_sales(from_gov=False)
+        return self.get_ldv_sales(from_gov=False, display=True)
 
     @property
     def adjustments(self):
@@ -180,7 +180,8 @@ class ModelYearReport(Auditable):
         if not avg_sales:
             report_ldv_sales = ModelYearReportLDVSales.objects.filter(
                 model_year_report_id=self.id,
-                model_year_id=self.model_year_id
+                model_year_id=self.model_year_id,
+                display=True
             ).order_by('-update_timestamp').first()
 
             if report_ldv_sales:
@@ -188,21 +189,23 @@ class ModelYearReport(Auditable):
 
         return avg_sales
 
-    def get_ldv_sales(self, from_gov=False):
+    def get_ldv_sales(self, from_gov=False, display=True):
         row = ModelYearReportLDVSales.objects.filter(
             model_year_id=self.model_year_id,
             model_year_report_id=self.id,
-            from_gov=from_gov
+            from_gov=from_gov,
+            display=display
         ).first()
         if row:
             return row.ldv_sales
         return None
 
-    def get_ldv_sales_with_year(self, from_gov=False):
+    def get_ldv_sales_with_year(self, from_gov=False, display=True):
         row = ModelYearReportLDVSales.objects.filter(
             model_year_id=self.model_year_id,
             model_year_report_id=self.id,
-            from_gov=from_gov
+            from_gov=from_gov,
+            display=display
         ).first()
         if row:
             return {'sales': row.ldv_sales, 'year': row.model_year.name}
