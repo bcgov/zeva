@@ -74,12 +74,13 @@ class ModelYearReportSerializer(ModelSerializer):
             model_year_report_id=obj.id,
             from_gov=False,
             model_year__name__lt=obj.model_year.name,
+            display=True
         ).values_list("ldv_sales", flat=True)[:3]
 
         avg_sales = 0
         if rows.count() < 3:
             row = ModelYearReportLDVSales.objects.filter(
-                model_year_report_id=obj.id, model_year_id=obj.model_year_id
+                model_year_report_id=obj.id, model_year_id=obj.model_year_id, display=True
             ).first()
             if row:
                 return row.ldv_sales
@@ -108,21 +109,20 @@ class ModelYearReportSerializer(ModelSerializer):
 
     def get_ldv_sales(self, obj):
         request = self.context.get("request")
-
         is_assessed = (
             request.user.organization_id == obj.organization_id
             and obj.validation_status == ModelYearReportStatuses.ASSESSED
         ) or request.user.is_government
 
         if is_assessed:
-            return obj.get_ldv_sales(from_gov=True) or obj.ldv_sales
+            return obj.get_ldv_sales() or obj.ldv_sales()
 
         return obj.ldv_sales
 
     def get_changelog(self, obj):
         request = self.context.get("request")
         if request.user.is_government:
-            from_gov_sales = obj.get_ldv_sales_with_year(from_gov=True)
+            from_gov_sales = obj.get_ldv_sales_with_year(from_gov=True, display=True)
             sales_changes = ""
             if from_gov_sales:
                 not_gov_sales = obj.get_ldv_sales_with_year(from_gov=False)
