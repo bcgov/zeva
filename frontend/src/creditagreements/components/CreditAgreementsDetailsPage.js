@@ -7,7 +7,7 @@ import parse from 'html-react-parser'
 import Button from '../../app/components/Button'
 import CreditAgreementsAlert from './CreditAgreementsAlert'
 import CreditAgreementsDetailsTable from './CreditAgreementsDetailsTable'
-import DisplayComment from '../../app/components/DisplayComment'
+import EditableCommentList from '../../app/components/EditableCommentList'
 import CommentInput from '../../app/components/CommentInput'
 import history from '../../app/History'
 import ROUTES_CREDIT_AGREEMENTS from '../../app/routes/CreditAgreements'
@@ -23,6 +23,8 @@ const CreditAgreementsDetailsPage = (props) => {
     handleAddComment,
     handleCommentChangeBceid,
     handleCommentChangeIdir,
+    handleInternalCommentEdit,
+    handleInternalCommentDelete,
     handleSubmit,
     id,
     user
@@ -89,7 +91,12 @@ const CreditAgreementsDetailsPage = (props) => {
               {details &&
                 details.filteredIdirComments &&
                 details.filteredIdirComments.length > 0 && (
-                  <DisplayComment commentArray={details.filteredIdirComments} />
+                  <EditableCommentList 
+                    comments={details.filteredIdirComments} 
+                    user={user}
+                    handleCommentEdit={handleInternalCommentEdit}
+                    handleCommentDelete={handleInternalCommentDelete}
+                  />
               )}
               <div>
                 <CommentInput
@@ -335,6 +342,8 @@ CreditAgreementsDetailsPage.propTypes = {
   handleAddComment: PropTypes.func.isRequired,
   handleCommentChangeBceid: PropTypes.func.isRequired,
   handleCommentChangeIdir: PropTypes.func.isRequired,
+  handleInternalCommentEdit: PropTypes.func.isRequired,
+  handleInternalCommentDelete: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   id: PropTypes.string.isRequired,
   user: CustomPropTypes.user.isRequired

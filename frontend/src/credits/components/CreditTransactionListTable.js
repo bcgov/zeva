@@ -21,6 +21,7 @@ import getComplianceYear from '../../app/utilities/getComplianceYear'
 const CreditTransactionListTable = (props) => {
   const { assessedSupplementalsMap, items, reports, availableComplianceYears, handleGetCreditTransactions } = props
   const [expandedComplianceYears, setExpandedComplianceYears] = useState(availableComplianceYears.length > 0 ? [availableComplianceYears[0]] : [])
+  const [touchedComplianceYears, setTouchedComplianceYears] = useState(availableComplianceYears.length > 0 ? [availableComplianceYears[0]] : [])
 
   const translateTransactionType = (item) => {
     if (!item.transactionType) {
@@ -385,8 +386,11 @@ const CreditTransactionListTable = (props) => {
   }
 
   const handleTransactionsGroupClick = (complianceYear) => {
-    if (!expandedComplianceYears.includes(complianceYear) && handleGetCreditTransactions) {
+    if (!expandedComplianceYears.includes(complianceYear) && !touchedComplianceYears.includes(complianceYear) && handleGetCreditTransactions) {
       handleGetCreditTransactions(complianceYear)
+      setTouchedComplianceYears((prev) => {
+        return [...prev, complianceYear]
+      })
     }
     accordionItemClickHandler(expandedComplianceYears, setExpandedComplianceYears, complianceYear)
   }

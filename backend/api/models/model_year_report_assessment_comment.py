@@ -27,6 +27,10 @@ class ModelYearReportAssessmentComment(Auditable):
         db_column='assessment_comment',
         db_comment="Comment left by idir about model year report"
     )
+    display = models.BooleanField(
+        default=True,
+        db_comment="field to determine if we should display this info"
+    )
 
     class Meta:
         db_table = 'model_year_report_assessment_comment'

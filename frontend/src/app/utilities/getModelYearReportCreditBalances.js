@@ -31,8 +31,9 @@ const getModelYearReportCreditBalances = (modelYearReportId) => {
     const complianceResponseDetails = creditActivityResponse.data.complianceObligation
 
     const {
-      provisionalBalance
-    } = getComplianceObligationDetails(complianceResponseDetails)
+      provisionalBalance,
+      carryOverDeficits
+    } = getComplianceObligationDetails(complianceResponseDetails, creditReductionSelection)
 
     const {
       modelYear,
@@ -98,7 +99,8 @@ const getModelYearReportCreditBalances = (modelYearReportId) => {
       tempBalances,
       tempClassAReductions,
       tempUnspecifiedReductions,
-      creditReductionSelection
+      creditReductionSelection,
+      carryOverDeficits
     )
 
     return {

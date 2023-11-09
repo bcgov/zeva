@@ -14,6 +14,7 @@ import getComplianceObligationDetails from '../app/utilities/getComplianceObliga
 import getTotalReduction from '../app/utilities/getTotalReduction'
 import getUnspecifiedClassReduction from '../app/utilities/getUnspecifiedClassReduction'
 import ROUTES_SUPPLEMENTARY from '../app/routes/SupplementaryReport'
+import { getNewBalancesStructure, getNewDeficitsStructure } from '../app/utilities/getNewStructures'
 
 const AssessmentContainer = (props) => {
   const { keycloak, user } = props
@@ -286,8 +287,11 @@ const AssessmentContainer = (props) => {
                 purchaseAgreement,
                 administrativeAllocation,
                 administrativeReduction,
-                automaticAdministrativePenalty
-              } = getComplianceObligationDetails(complianceResponseDetails)
+                automaticAdministrativePenalty,
+                deficitCollection,
+                reductionsToOffsetDeficit,
+                carryOverDeficits
+              } = getComplianceObligationDetails(complianceResponseDetails, creditReductionSelection)
 
               setPendingBalanceExist(tempPendingBalanceExist)
 
@@ -296,6 +300,8 @@ const AssessmentContainer = (props) => {
                 creditBalanceEnd,
                 pendingBalance,
                 provisionalBalance,
+                deficitCollection,
+                reductionsToOffsetDeficit,
                 transactions: {
                   creditsIssuedSales,
                   transfersIn,
@@ -323,16 +329,7 @@ const AssessmentContainer = (props) => {
               )
               setTotalReduction(tempTotalReduction)
 
-              const tempBalances = []
-
-              Object.keys(provisionalBalance).forEach((year) => {
-                const { A: creditA, B: creditB } = provisionalBalance[year]
-                tempBalances.push({
-                  modelYear: Number(year),
-                  creditA,
-                  creditB
-                })
-              })
+              const tempBalances = getNewBalancesStructure(provisionalBalance)
 
               setBalances(tempBalances)
 
@@ -357,13 +354,14 @@ const AssessmentContainer = (props) => {
                 tempBalances,
                 tempClassAReductions,
                 tempUnspecifiedReductions,
-                creditReductionSelection
+                creditReductionSelection,
+                carryOverDeficits
               )
               
               if (tempSupplierClass === 'S') {
                 setUpdatedBalances({
                   balances: tempBalances,
-                  deficits: []
+                  deficits: getNewDeficitsStructure(carryOverDeficits)
                 })
               } else {
                 setDeductions(creditReduction.deductions)
@@ -414,8 +412,27 @@ const AssessmentContainer = (props) => {
         if (status === 'RECOMMENDED') {
           const reportDetailsArray = []
           Object.keys(creditDetails).forEach((each) => {
+            if (each === 'provisionalProvisionalBalance' || each === 'carryOverDeficits') {
+              return
+            }
             Object.keys(creditDetails[each]).forEach((year) => {
-              if (each !== 'transactions' && each !== 'pendingBalance') {
+              if (each === 'deficitCollection') {
+                const a = creditDetails[each][year].A
+                const b = creditDetails[each][year].unspecified
+                reportDetailsArray.push({
+                  category: 'deficit',
+                  year,
+                  a,
+                  b
+                })
+              } else if (each === 'reductionsToOffsetDeficit') {
+                reportDetailsArray.push({
+                  category: 'ReductionsToOffsetDeficit',
+                  year,
+                  a: creditDetails[each][year].A,
+                  b: creditDetails[each][year].B
+                })
+              } else if (each !== 'transactions' && each !== 'pendingBalance') {
                 const a = creditDetails[each][year].A
                 const b = creditDetails[each][year].B
                 reportDetailsArray.push({

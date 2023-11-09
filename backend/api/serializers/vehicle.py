@@ -1,4 +1,5 @@
 from django.core.exceptions import PermissionDenied
+from django.db.models import Q
 from enumfields.drf import EnumField, EnumSupportSerializerMixin
 from rest_framework.serializers import ModelSerializer, \
     SerializerMethodField, SlugRelatedField, ValidationError
@@ -475,11 +476,10 @@ class VehicleSalesSerializer(
         return SalesSubmissionContent.objects.filter(
             xls_make__iexact=instance.make,
             xls_model__iexact=instance.model_name,
-            xls_model_year=str(instance.model_year.name) + '.0',
             submission__validation_status__in=[
                 "SUBMITTED", "RECOMMEND_APPROVAL", "RECOMMEND_REJECTION", "CHECKED",
             ]
-        ).count()
+        ).filter(Q(xls_model_year=str(instance.model_year.name) + '.0') | Q(xls_model_year=str(instance.model_year.name))).count()
 
     def get_sales_issued(self, instance):
         return RecordOfSale.objects.filter(

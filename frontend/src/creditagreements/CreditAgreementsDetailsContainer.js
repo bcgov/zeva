@@ -54,6 +54,53 @@ const CreditAgreementsDetailsContainer = (props) => {
       })
   }
 
+  const handleInternalCommentEdit = (commentId, commentText) => {
+    axios
+    .patch(ROUTES_CREDIT_AGREEMENTS.UPDATE_COMMENT.replace(':id', id), {
+      commentId,
+      commentText
+    })
+    .then((response) => {
+      const updatedComment = response.data
+      setDetails((prev) => {
+        const commentIndex = prev.filteredIdirComments.findIndex(
+          (comment) => {
+            return comment.id === updatedComment.id
+          }
+        )
+        const commentCopy = {...prev.filteredIdirComments[commentIndex]}
+        commentCopy.comment = updatedComment.comment
+        commentCopy.updateTimestamp = updatedComment.updateTimestamp
+        const commentsCopy = [...prev.filteredIdirComments]
+        commentsCopy[commentIndex] = commentCopy
+        const detailsCopy = {...prev}
+        detailsCopy.filteredIdirComments = commentsCopy
+        return detailsCopy
+      })
+    })
+  }
+
+  const handleInternalCommentDelete = (commentId) => {
+    axios
+    .patch(ROUTES_CREDIT_AGREEMENTS.DELETE_COMMENT.replace(':id', id), {
+      commentId
+    })
+    .then(() => {
+      setDetails((prev) => {
+        const commentIndex = prev.filteredIdirComments.findIndex(
+          (comment) => {
+            return comment.id === commentId
+          }
+        )
+        const commentsCopy = [...prev.filteredIdirComments]
+        commentsCopy.splice(commentIndex, 1)
+        const detailsCopy = {...prev}
+        detailsCopy.filteredIdirComments = commentsCopy
+        return detailsCopy
+      })
+    })
+  }
+
   const refreshDetails = () => {
     axios
       .get(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id))
@@ -116,6 +163,8 @@ const CreditAgreementsDetailsContainer = (props) => {
       handleCommentChangeBceid={handleCommentChangeBceid}
       details={details}
       handleSubmit={handleSubmit}
+      handleInternalCommentEdit={handleInternalCommentEdit}
+      handleInternalCommentDelete={handleInternalCommentDelete}
     />
   )
 }

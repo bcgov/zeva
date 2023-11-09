@@ -1,6 +1,7 @@
 import logging
 from rest_framework import mixins, status, viewsets
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from django.db.models import Q
 
 from api.models.credit_transfer import CreditTransfer
@@ -8,9 +9,12 @@ from api.models.credit_transfer_statuses import CreditTransferStatuses
 from api.permissions.credit_transfer import CreditTransferPermissions
 from api.serializers.credit_transfer import CreditTransferSerializer, \
     CreditTransferSaveSerializer, CreditTransferListSerializer
+from api.serializers.credit_transfer_comment import CreditTransferCommentSerializer
 from auditable.views import AuditableMixin
 from api.services.send_email import notifications_credit_transfers
 from api.services.credit_transaction import validate_transfer
+from api.services.credit_transfer_comment import get_comment, delete_comment
+from api.utilities.comment import update_comment_text
 
 LOGGER = logging.getLogger(__name__)
 
@@ -99,3 +103,25 @@ class CreditTransferViewset(
         elif old_transfer_status == CreditTransferStatuses.APPROVED and new_transfer_status == CreditTransferStatuses.APPROVED:
             transfer_saved_by_analyst = True
         notifications_credit_transfers(transfer, transfer_sent_back_to_analyst, transfer_saved_by_analyst)
+
+    @action(detail=True, methods=["PATCH"])
+    def update_comment(self, request, pk):
+        comment_id = request.data.get("comment_id")
+        comment_text = request.data.get("comment_text")
+        username = request.user.username
+        comment = get_comment(comment_id)
+        if username == comment.create_user:
+            updated_comment = update_comment_text(comment, comment_text)
+            serializer = CreditTransferCommentSerializer(updated_comment)
+            return Response(serializer.data)
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+    @action(detail=True, methods=["PATCH"])
+    def delete_comment(self, request, pk):
+        comment_id = request.data.get("comment_id")
+        username = request.user.username
+        comment = get_comment(comment_id)
+        if username == comment.create_user:
+            delete_comment(comment_id)
+            return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_403_FORBIDDEN)

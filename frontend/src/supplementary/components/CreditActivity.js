@@ -83,8 +83,9 @@ const CreditActivity = (props) => {
     purchaseAgreement,
     administrativeAllocation,
     administrativeReduction,
-    automaticAdministrativePenalty
-  } = getComplianceObligationDetails(obligationDetails)
+    automaticAdministrativePenalty,
+    carryOverDeficits
+  } = getComplianceObligationDetails(obligationDetails, creditReductionSelection)
 
   const reportDetails = {
     creditBalanceStart,
@@ -186,14 +187,16 @@ const CreditActivity = (props) => {
     tempBalances,
     classAReductions,
     unspecifiedReductions,
-    creditReductionSelection
+    creditReductionSelection,
+    carryOverDeficits
   )
 
   const newCreditReduction = calculateCreditReduction(
     newTempBalances,
     newClassAReductions,
     newUnspecifiedReductions,
-    creditReductionSelection
+    creditReductionSelection,
+    carryOverDeficits
   )
 
   const { deductions } = creditReduction

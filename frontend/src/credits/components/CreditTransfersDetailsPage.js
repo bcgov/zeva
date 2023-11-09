@@ -7,6 +7,7 @@ import moment from 'moment-timezone'
 import ReactQuill from 'react-quill'
 import axios from 'axios'
 import DisplayComment from '../../app/components/DisplayComment'
+import EditableCommentList from '../../app/components/EditableCommentList'
 import CreditTransferSignoff from './CreditTransfersSignOff'
 import CreditTransfersDetailsActionBar from './CreditTransfersDetailsActionBar'
 import Modal from '../../app/components/Modal'
@@ -26,6 +27,8 @@ const CreditTransfersDetailsPage = (props) => {
     checkboxes,
     handleCheckboxClick,
     handleSubmit,
+    handleInternalCommentEdit,
+    handleInternalCommentDelete,
     sufficientCredit,
     submission,
     user,
@@ -481,7 +484,13 @@ const CreditTransfersDetailsPage = (props) => {
         user.isGovernment) && (
         <div className="comment-box mt-2">
           {transferCommentsIDIR.length > 0 && user.isGovernment && (
-            <DisplayComment commentArray={transferCommentsIDIR} />
+            <EditableCommentList 
+              comments={transferCommentsIDIR} 
+              user={user}
+              handleCommentEdit={handleInternalCommentEdit}
+              handleCommentDelete={handleInternalCommentDelete}
+              enableEditing={submission.status !== 'VALIDATED' && submission.status !== 'REJECTED'}
+            />
           )}
           {transferCommentsSupplier.length > 0 && !user.isGovernment && (
             <DisplayComment commentArray={transferCommentsSupplier} />
@@ -542,6 +551,8 @@ CreditTransfersDetailsPage.propTypes = {
   ).isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
+  handleInternalCommentEdit: PropTypes.func.isRequired,
+  handleInternalCommentDelete: PropTypes.func.isRequired,
   sufficientCredit: PropTypes.bool.isRequired,
   user: CustomPropTypes.user.isRequired,
   submission: PropTypes.shape().isRequired,

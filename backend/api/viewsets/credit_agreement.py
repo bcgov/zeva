@@ -6,6 +6,7 @@ from django.db.models import Q
 from rest_framework import mixins, viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework import status
 
 from api.models.credit_agreement import CreditAgreement
 from api.models.credit_agreement_transaction_types import \
@@ -23,6 +24,9 @@ from api.models.credit_agreement_statuses import CreditAgreementStatuses
 from api.services.send_email import notifications_credit_agreement
 from api.models.model_year_report import ModelYearReport
 from api.serializers.model_year_report import ModelYearReportSerializer, ModelYearReportsSerializer
+from api.serializers.credit_agreement_comment import CreditAgreementCommentSerializer
+from api.services.credit_agreement_comment import get_comment, delete_comment
+from api.utilities.comment import update_comment_text
 
 
 class CreditAgreementViewSet(
@@ -134,3 +138,25 @@ class CreditAgreementViewSet(
 
         serializer = self.get_serializer(credit_agreements, many=True)
         return Response(serializer.data)
+    
+    @action(detail=True, methods=["PATCH"])
+    def update_comment(self, request, pk):
+        comment_id = request.data.get("comment_id")
+        comment_text = request.data.get("comment_text")
+        username = request.user.username
+        comment = get_comment(comment_id)
+        if username == comment.create_user:
+            updated_comment = update_comment_text(comment, comment_text)
+            serializer = CreditAgreementCommentSerializer(updated_comment)
+            return Response(serializer.data)
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+    @action(detail=True, methods=["PATCH"])
+    def delete_comment(self, request, pk):
+        comment_id = request.data.get("comment_id")
+        username = request.user.username
+        comment = get_comment(comment_id)
+        if username == comment.create_user:
+            delete_comment(comment_id)
+            return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_403_FORBIDDEN)

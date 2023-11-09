@@ -145,7 +145,7 @@ class ModelYearReportViewset(
 
             makes_list = (
                 ModelYearReportMake.objects.filter(
-                    model_year_report_id=report.id, from_gov=False
+                    model_year_report_id=report.id, from_gov=False, display=True
                 )
                 .values("make")
                 .distinct()
@@ -180,7 +180,7 @@ class ModelYearReportViewset(
             if not avg_sales:
                 report_ldv_sales = (
                     ModelYearReportLDVSales.objects.filter(
-                        model_year_report_id=pk, model_year__name=model_year_int
+                        model_year_report_id=pk, model_year__name=model_year_int, display=True
                     )
                     .order_by("-update_timestamp")
                     .first()
@@ -477,6 +477,31 @@ class ModelYearReportViewset(
 
             if validation_status == "ASSESSED":
                 adjust_credits(model_year_report_id, request)
+        
+        if validation_status == "DRAFT":
+            ModelYearReportLDVSales.objects.filter(
+                model_year_report_id=model_year_report_id,
+                from_gov=True
+            ).update(
+                display=False
+            )
+            ModelYearReportMake.objects.filter(
+                model_year_report_id=model_year_report_id,
+                from_gov=True
+            ).update(
+                display=False
+            )
+            ModelYearReportAssessment.objects.filter(
+                model_year_report_id=model_year_report_id
+            ).update(
+                display=False
+            )
+            ModelYearReportAssessmentComment.objects.filter(
+                model_year_report_id=model_year_report_id,
+                to_director=True
+            ).update(
+                display=False
+            )
 
         if confirmations:
             for confirmation in confirmations:

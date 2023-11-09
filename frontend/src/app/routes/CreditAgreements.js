@@ -8,7 +8,9 @@ const CREDIT_AGREEMENTS = {
   MINIO_URL: `${API_BASE_PATH}/:id/minio_url`,
   TRANSACTION_TYPES: `${API_BASE_PATH}/transaction_types`,
   MODEL_YEAR_REPORTS: `${API_BASE_PATH}/model_year_reports`,
-  COMMENT_SAVE: `${API_BASE_PATH}/:id/comment_save`
+  COMMENT_SAVE: `${API_BASE_PATH}/:id/comment_save`,
+  UPDATE_COMMENT: `${API_BASE_PATH}/:id/update_comment`,
+  DELETE_COMMENT: `${API_BASE_PATH}/:id/delete_comment`,
 }
 
 export default CREDIT_AGREEMENTS

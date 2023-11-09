@@ -3,7 +3,7 @@ import React from 'react'
 import getFileSize from '../../app/utilities/getFileSize'
 
 const creditApplicationHeader = (props) => {
-  const { submission } = props
+  const { submission, user, setDisplayUploadPage } = props
 
   const serviceAddress = submission.organization.organizationAddress.find(
     (address) => address.addressType.addressType === 'Service'
@@ -80,6 +80,18 @@ const creditApplicationHeader = (props) => {
             </div>
           </>
         )}
+        {user.isGovernment &&
+          <div className='py-2'>
+            <button
+              className="link"
+              onClick={() => {
+                setDisplayUploadPage(true)
+              }}
+            >
+              Attach Additional Documents
+            </button>
+          </div>
+        }
       </div>
     </div>
   )

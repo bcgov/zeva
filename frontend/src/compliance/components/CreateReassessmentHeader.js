@@ -32,7 +32,7 @@ const CreateReassessmentHeader = (props) => {
   }
 
   return (
-    <div className='action-bar right-content'>
+    <div className='action-bar right-content no-print'>
       <div></div>
       <div>
         {canCreateSupplementalOrReassessment && <button

@@ -87,10 +87,10 @@ docker-compose exec db psql -U postgres zeva
 ### To insert your first idir user
 
 INSERT INTO user_profile (
-    create_timestamp,    update_timestamp,    username,    first_name,    last_name,    is_active,    keycloak_email,    display_name,    organization_id,    create_user  
+    create_timestamp, update_timestamp, username, first_name, last_name, is_active, keycloak_email, display_name, organization_id, create_user) 
 VALUES (
-    NOW(),    NOW(),    'idirusername',    'Firstname',    'Lastname',    TRUE,    
-    'idir.email@gov.bc.ca',    'displayname',    1,    'SYSTEM'  );
+    NOW(), NOW(), 'idirusername', 'Firstname', 'Lastname', TRUE, 
+    'idir.email@gov.bc.ca', 'displayname', 1, 'SYSTEM');
 
 #### Copy down Test/Prod data from Openshift
 
@@ -105,7 +105,7 @@ There are # 2 Arguments
 
 # example command
 
-- . import-data.sh test 398cd4661173
+- . import-data.sh dev 398cd4661173
 
 You will need to be logged into Openshift using oc
 You will also need your ZEVA postgres docker container running
@@ -113,3 +113,16 @@ You will also need your ZEVA postgres docker container running
 if theres permission issues with lchown while running the script, run the script step by step (comment out after line 57, double check that it copied the tar file into it, then comment out the earlier steps and run it again with just the later lines)
 
 if there's still issues, it might be a corrupted .tar file. See if someone else can export it and put it in the openshift folder. Then comment out the import script up until the tar gets copied into a local container. Then try running it.
+
+Another issue that has come up was fixed by removing a lock in the database. 
+Locks were removed by using this statement:
+SELECT pg_terminate_backend(pid)
+    FROM pg_stat_activity
+    WHERE pid <> pg_backend_pid();
+this may be enough to run the script but also the public schema can be deleted and recreated 
+DROP SCHEMA public cascade;
+
+CREATE SCHEMA public AUTHORIZATION postgres;
+
+then the script can be run. 
+
