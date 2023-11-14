@@ -115,7 +115,7 @@ class ModelYearReportSerializer(ModelSerializer):
         ) or request.user.is_government
 
         if is_assessed:
-            return obj.get_ldv_sales() or obj.ldv_sales()
+            return obj.get_ldv_sales(from_gov=True) or obj.ldv_sales
 
         return obj.ldv_sales
 
