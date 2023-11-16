@@ -32,7 +32,7 @@ const CreditAgreementsDetailsPage = (props) => {
 
   const [showModal, setShowModal] = useState(false)
 
-  
+
   const modal = (
     <Modal
       confirmLabel={(analystAction ? 'Submit' : 'Issue')}
