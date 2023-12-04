@@ -78,8 +78,11 @@ const ComplianceHistory = (props) => {
         }
       })
     }
-    let result = removeSequentialHistoryItems(tempHistory, 'DRAFT')
-    result = removeSequentialHistoryItems(result, 'RECOMMENDED')
+    let result = tempHistory
+    const sequentialStatusesToRemove = ['DRAFT', 'SUBMITTED', 'RECOMMENDED']
+    sequentialStatusesToRemove.forEach((status) => {
+      result = removeSequentialHistoryItems(result, status)
+    })
     return result
   }
   const getTitle = (item) => {
