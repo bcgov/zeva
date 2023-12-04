@@ -466,12 +466,16 @@ class ModelYearReportViewset(
             ):
                 # do "update or create" to create the assessment object
                 penalty = request.data.get("penalty")
+                current_assessment = ModelYearReportAssessment.objects.filter(
+                    model_year_report_id = model_year_report_id
+                ).first()
                 ModelYearReportAssessment.objects.update_or_create(
                     model_year_report_id=model_year_report_id,
                     defaults={
                         "update_user": request.user.username,
                         "model_year_report_assessment_description_id": description,
                         "penalty": None if penalty == "" else penalty,
+                        "display": False if validation_status == "DRAFT" else current_assessment.display
                     },
                 )
 
@@ -497,7 +501,8 @@ class ModelYearReportViewset(
                 display=False
             )
             ModelYearReportAssessmentComment.objects.filter(
-                model_year_report_id=model_year_report_id
+                model_year_report_id=model_year_report_id,
+                to_director=False
             ).update(
                 display=False
             )
@@ -606,6 +611,7 @@ class ModelYearReportViewset(
                 to_director=True,
                 create_user=request.user.username,
                 update_user=request.user.username,
+                display=True
             )
         elif comment and not director:
             assessment_comment = (
