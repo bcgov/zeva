@@ -475,7 +475,7 @@ class ModelYearReportViewset(
                         "update_user": request.user.username,
                         "model_year_report_assessment_description_id": description,
                         "penalty": None if penalty == "" else penalty,
-                        "display": False if validation_status == "DRAFT" else current_assessment.display
+                        "display": current_assessment.display if current_assessment is not None else True
                     },
                 )
 
