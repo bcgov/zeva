@@ -506,6 +506,13 @@ class ModelYearReportViewset(
             ).update(
                 display=False
             )
+        
+        elif validation_status in ["RECOMMENDED", "SUBMITTED", "RETURNED"]:
+            ModelYearReportAssessment.objects.filter(
+                model_year_report_id=model_year_report_id
+            ).update(
+                display=True
+            )
 
         if confirmations:
             for confirmation in confirmations:
