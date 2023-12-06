@@ -81,7 +81,7 @@ const CreditAgreementsDetailsPage = (props) => {
           />
         </div>
       </div>
-      {user && user.isGovernment && details && details.status !== 'ISSUED' && (
+      {user && user.isGovernment && details && (
         <div className="row mt-3 mb-2">
           <div className="col-sm-12">
             <div
@@ -98,7 +98,8 @@ const CreditAgreementsDetailsPage = (props) => {
                     handleCommentDelete={handleInternalCommentDelete}
                   />
               )}
-              <div>
+              {user && user.isGovernment && details && details.status !== 'ISSUED' && (
+                <div>
                 <CommentInput
                   handleAddComment={handleAddComment}
                   handleCommentChange={handleCommentChangeIdir}
@@ -110,6 +111,7 @@ const CreditAgreementsDetailsPage = (props) => {
                   buttonText="Add Comment"
                 />
               </div>
+              )}
             </div>
           </div>
         </div>
