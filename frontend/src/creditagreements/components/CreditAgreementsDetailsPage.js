@@ -97,7 +97,7 @@ const CreditAgreementsDetailsPage = (props) => {
                     handleCommentDelete={handleInternalCommentDelete}
                   />
               )}
-              {user?.isGovernment && details?.status !== 'ISSUED' && (
+              {details?.status !== 'ISSUED' && (
                 <div>
                 <CommentInput
                   handleAddComment={handleAddComment}
