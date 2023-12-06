@@ -88,9 +88,8 @@ const CreditAgreementsDetailsPage = (props) => {
               className="grey-border-area p-3 comment-box mt-2"
               id="comment-input"
             >
-              {details &&
-                details.filteredIdirComments &&
-                details.filteredIdirComments.length > 0 && (
+              { details?.filteredIdirComments &&
+                details?.filteredIdirComments.length > 0 && (
                   <EditableCommentList 
                     comments={details.filteredIdirComments} 
                     user={user}
@@ -98,7 +97,7 @@ const CreditAgreementsDetailsPage = (props) => {
                     handleCommentDelete={handleInternalCommentDelete}
                   />
               )}
-              {user && user.isGovernment && details && details.status !== 'ISSUED' && (
+              {user?.isGovernment && details?.status !== 'ISSUED' && (
                 <div>
                 <CommentInput
                   handleAddComment={handleAddComment}
