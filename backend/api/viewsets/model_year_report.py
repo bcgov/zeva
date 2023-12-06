@@ -507,7 +507,7 @@ class ModelYearReportViewset(
                 display=False
             )
         
-        elif validation_status == "RECOMMENDED":
+        elif validation_status in ["RECOMMENDED", "SUBMITTED", "RETURNED"]:
             ModelYearReportAssessment.objects.filter(
                 model_year_report_id=model_year_report_id
             ).update(
