@@ -506,6 +506,13 @@ class ModelYearReportViewset(
             ).update(
                 display=False
             )
+        
+        elif validation_status == "RECOMMENDED":
+            ModelYearReportAssessment.objects.filter(
+                model_year_report_id=model_year_report_id
+            ).update(
+                display=True
+            )
 
         if confirmations:
             for confirmation in confirmations:
@@ -636,11 +643,6 @@ class ModelYearReportViewset(
                 )
 
         report = get_object_or_404(ModelYearReport, pk=pk)
-
-        if report.validation_status in [ModelYearReportStatuses.ASSESSED, ModelYearReportStatuses.RECOMMENDED, ModelYearReportStatuses.RETURNED, ModelYearReportStatuses.SUBMITTED]:
-            ModelYearReportAssessment.objects.filter(
-                model_year_report_id=pk, display=False
-            ).update(display=True)
 
         serializer = ModelYearReportSerializer(report, context={"request": request})
 
