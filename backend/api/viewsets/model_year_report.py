@@ -466,23 +466,20 @@ class ModelYearReportViewset(
             ):
                 # do "update or create" to create the assessment object
                 penalty = request.data.get("penalty")
-                current_assessment = ModelYearReportAssessment.objects.filter(
-                    model_year_report_id = model_year_report_id
-                ).first()
                 ModelYearReportAssessment.objects.update_or_create(
                     model_year_report_id=model_year_report_id,
                     defaults={
                         "update_user": request.user.username,
                         "model_year_report_assessment_description_id": description,
                         "penalty": None if penalty == "" else penalty,
-                        "display": current_assessment.display if current_assessment is not None else True
+                        "display": True
                     },
                 )
 
             if validation_status == "ASSESSED":
                 adjust_credits(model_year_report_id, request)
         
-        if validation_status == "DRAFT":
+        if validation_status == "DRAFT" and request.user.is_government:
             ModelYearReportLDVSales.objects.filter(
                 model_year_report_id=model_year_report_id,
                 from_gov=True
@@ -505,13 +502,6 @@ class ModelYearReportViewset(
                 to_director=False
             ).update(
                 display=False
-            )
-        
-        elif validation_status in ["RECOMMENDED", "SUBMITTED", "RETURNED"]:
-            ModelYearReportAssessment.objects.filter(
-                model_year_report_id=model_year_report_id
-            ).update(
-                display=True
             )
 
         if confirmations:
