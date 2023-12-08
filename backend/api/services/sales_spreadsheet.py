@@ -509,7 +509,7 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
 
     for content in submission_content:
         if content.warnings_list is None:
-            next()
+            continue
 
         row += 1
 
