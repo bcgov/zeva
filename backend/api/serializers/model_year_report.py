@@ -133,7 +133,7 @@ class ModelYearReportSerializer(ModelSerializer):
                 }
 
             gov_makes = ModelYearReportMake.objects.filter(
-                model_year_report_id=obj.id, from_gov=True
+                model_year_report_id=obj.id, from_gov=True, display=True
             )
             gov_makes_additions_serializer = ModelYearReportMakeSerializer(
                 gov_makes, many=True
@@ -154,6 +154,8 @@ class ModelYearReportSerializer(ModelSerializer):
             and obj.validation_status != ModelYearReportStatuses.ASSESSED
         ):
             makes = makes.filter(from_gov=False)
+        elif request.user.is_government:
+            makes = makes.filter(display=True)
 
         serializer = ModelYearReportMakeSerializer(makes, many=True)
 

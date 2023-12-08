@@ -395,7 +395,7 @@ class ModelYearReportViewset(
         supplier_makes = ModelYearReportMakeSerializer(supplier_makes_list, many=True)
         gov_makes_list = (
             ModelYearReportMake.objects.filter(
-                model_year_report_id=report.id, from_gov=True
+                model_year_report_id=report.id, from_gov=True, display=True
             )
             .values("make")
             .distinct()
