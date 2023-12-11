@@ -66,16 +66,31 @@ const ComplianceHistory = (props) => {
     if (itemHistory) {
       itemHistory.forEach((obj, i) => {
         if (['DRAFT'].indexOf(obj.status) >= 0) {
-          if ((itemHistory[i + 1]?.status === 'SUBMITTED' || itemHistory[i + 1]?.status === 'RETURNED') && (!item.isSupplementary || (itemHistory.supplementalReportId === itemHistory[i + 1].supplementalReportId))) {
+          if ((itemHistory[i + 1]?.status === 'SUBMITTED' || itemHistory[i + 1]?.status === 'RETURNED')
+            && (!item.isSupplementary || (itemHistory.supplementalReportId === itemHistory[i + 1].supplementalReportId))) {
+            // if the status is draft and the previous status was submitted or returned,
+            // it was returned to the supplier by the analyst
             const actuallyReturned = { ...obj }
-            actuallyReturned.status = 'RETURNED'
+            actuallyReturned.status = 'RETURNED TO THE SUPPLIER'
             tempHistory.push(actuallyReturned)
-          } else if ((itemHistory[i + 1]?.status !== 'SUBMITTED' && itemHistory[i + 1]?.status !== 'RETURNED') || user.isGovernment) {
+          } 
+          else if ((itemHistory[i + 1]?.status !== 'SUBMITTED'
+            && itemHistory[i + 1]?.status !== 'RETURNED'))  {
+            // if the current status is draft but the previous status wasn't submitted or returned
+            // it is just a regular draft  so pass the obj
             tempHistory.push(obj)
           }
-        } else {
-          tempHistory.push(obj)
-        }
+        } else if (['RETURNED'].indexOf(obj.status) >= 0 && itemHistory[i + 1]?.status === 'RECOMMENDED' && user.isGovernment){
+            const actuallyReturned = { ...obj }
+              // if the most recent status was recommended, but now it is returned
+              // that means the director has returned it to the analyst
+              actuallyReturned.status = 'RETURNED TO THE ANALYST'
+              tempHistory.push(actuallyReturned)
+          }
+        else {
+            tempHistory.push(obj)
+          }
+        
       })
     }
     let result = tempHistory
