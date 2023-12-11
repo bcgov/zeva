@@ -44,35 +44,33 @@ const ComplianceHistory = (props) => {
   // returns a history that is also from most recent to earliest
   const removeSequentialHistoryItems = (history, status) => {
     const result = []
-    let previousItemStatusIsRecommended = false
+    let previousItemStatusIsStatusInQuestion = false
     const reversedHistory = history.toReversed()
     reversedHistory.forEach((item) => {
       const itemStatus = item.status
       if (itemStatus === status) {
-        if (!previousItemStatusIsRecommended) {
+        if (!previousItemStatusIsStatusInQuestion) {
           result.unshift(item)
         }
-        previousItemStatusIsRecommended = true
+        previousItemStatusIsStatusInQuestion = true
       } else {
         result.unshift(item)
-        previousItemStatusIsRecommended = false
+        previousItemStatusIsStatusInQuestion = false
       }
     })
     return result
   }
 
-  const getHistory = (itemHistory) => {
+  const getHistory = (itemHistory, item) => {
     const tempHistory = []
     if (itemHistory) {
       itemHistory.forEach((obj, i) => {
         if (['DRAFT'].indexOf(obj.status) >= 0) {
-          // Check to see if a report has been returned to a draft status from submitted and if it has
-          // Then we need to modify the recorded object to correctly display the returned status instead of draft
-          if (itemHistory[i + 1]?.status === 'SUBMITTED' && (itemHistory[i + 1]?.isReassessment === true || obj.isReassessment === false)) {
+          if ((itemHistory[i + 1]?.status === 'SUBMITTED' || itemHistory[i + 1]?.status === 'RETURNED') && (!item.isSupplementary || (itemHistory.supplementalReportId === itemHistory[i + 1].supplementalReportId))) {
             const actuallyReturned = { ...obj }
             actuallyReturned.status = 'RETURNED'
             tempHistory.push(actuallyReturned)
-          } else {
+          } else if ((itemHistory[i + 1]?.status !== 'SUBMITTED' && itemHistory[i + 1]?.status !== 'RETURNED') || user.isGovernment) {
             tempHistory.push(obj)
           }
         } else {
@@ -80,8 +78,11 @@ const ComplianceHistory = (props) => {
         }
       })
     }
-    let result = removeSequentialHistoryItems(tempHistory, 'DRAFT')
-    result = removeSequentialHistoryItems(result, 'RECOMMENDED')
+    let result = tempHistory
+    const sequentialStatusesToRemove = ['DRAFT', 'SUBMITTED', 'RECOMMENDED']
+    sequentialStatusesToRemove.forEach((status) => {
+      result = removeSequentialHistoryItems(result, status)
+    })
     return result
   }
   const getTitle = (item) => {
@@ -247,7 +248,7 @@ const ComplianceHistory = (props) => {
                   <div className="card-body p-2">
                     <ul className="py-0 my-0 px-4">
                       {item.history &&
-                        getHistory(item.history).map((each, eachIndex) => (
+                        getHistory(item.history, item).map((each, eachIndex) => (
                           <li
                             id={`each-${eachIndex}`}
                             key={`each-${eachIndex}`}

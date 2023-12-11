@@ -1,6 +1,6 @@
 {
   "name": "zeva-frontend",
-  "version": "1.54.0",
+  "version": "1.55.0",
   "private": true,
   "dependencies": {
     "@babel/eslint-parser": "^7.19.1",

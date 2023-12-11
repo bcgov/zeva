@@ -76,7 +76,7 @@ class SupplementalNOASerializer(ModelSerializer):
         )
 
 
-class SupplementalReportHistorySerializer(ModelSerializer):
+class ModelYearReportHistorySerializer(ModelSerializer):
     status = SerializerMethodField()
     create_user = SerializerMethodField()
     is_reassessment = SerializerMethodField()
@@ -101,10 +101,16 @@ class SupplementalReportHistorySerializer(ModelSerializer):
         return serializer.data
 
     class Meta:
-        model = SupplementalReportHistory
+        model = ModelYearReportHistory
         fields = (
             'update_timestamp', 'status', 'create_user', 'is_reassessment'
         )
+
+
+class SupplementalReportHistorySerializer(ModelYearReportHistorySerializer):
+    class Meta:
+        model = SupplementalReportHistory
+        fields = ModelYearReportHistorySerializer.Meta.fields + ('supplemental_report_id',)
 
 
 class SupplementalReportSerializer(ModelSerializer):
@@ -180,7 +186,7 @@ class SupplementalModelYearReportSerializer(ModelSerializer):
 
         refined_history = exclude_from_history(history, request.user)
 
-        serializer = SupplementalReportHistorySerializer(refined_history, many=True)
+        serializer = ModelYearReportHistorySerializer(refined_history, many=True)
 
         return serializer.data
 

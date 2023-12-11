@@ -496,7 +496,7 @@ const ComplianceObligationContainer = (props) => {
 
   useEffect(() => {
     refreshDetails()
-  }, [reportYear])
+  }, [])
 
   return (
     <>

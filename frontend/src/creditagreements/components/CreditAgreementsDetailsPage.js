@@ -180,19 +180,17 @@ const CreditAgreementsDetailsPage = (props) => {
               : ' - '}
           </div>
         </div>
-
-        <div className="row mt-2">
-          <span className="col-3">
-            <h4 className="d-inline">Message from the Director: </h4>
-          </span>
-          <span className="col-5">
-            {details &&
-            details.filteredBceidComments &&
-            details.filteredBceidComments.length > 0
-              ? parse(details.filteredBceidComments[0].comment)
-              : 'no comment'}
-          </span>
-        </div>
+        {details && details.filteredBceidComments && 
+          details.filteredBceidComments.length > 0 &&
+            <div className="row mt-2">
+              <span className="col-3">
+                <h4 className="d-inline">Message from the Director: </h4>
+              </span>
+              <span className="col-5">
+                {parse(details.filteredBceidComments[0].comment)}
+              </span>
+            </div>
+        }
         <div className="row mt-2">
           <span className="col-3" />
           <span className="col-5">

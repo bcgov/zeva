@@ -395,7 +395,7 @@ class ModelYearReportViewset(
         supplier_makes = ModelYearReportMakeSerializer(supplier_makes_list, many=True)
         gov_makes_list = (
             ModelYearReportMake.objects.filter(
-                model_year_report_id=report.id, from_gov=True
+                model_year_report_id=report.id, from_gov=True, display=True
             )
             .values("make")
             .distinct()
@@ -472,13 +472,14 @@ class ModelYearReportViewset(
                         "update_user": request.user.username,
                         "model_year_report_assessment_description_id": description,
                         "penalty": None if penalty == "" else penalty,
+                        "display": True
                     },
                 )
 
             if validation_status == "ASSESSED":
                 adjust_credits(model_year_report_id, request)
         
-        if validation_status == "DRAFT":
+        if validation_status == "DRAFT" and request.user.is_government:
             ModelYearReportLDVSales.objects.filter(
                 model_year_report_id=model_year_report_id,
                 from_gov=True
@@ -498,7 +499,7 @@ class ModelYearReportViewset(
             )
             ModelYearReportAssessmentComment.objects.filter(
                 model_year_report_id=model_year_report_id,
-                to_director=True
+                to_director=False
             ).update(
                 display=False
             )
@@ -607,11 +608,12 @@ class ModelYearReportViewset(
                 to_director=True,
                 create_user=request.user.username,
                 update_user=request.user.username,
+                display=True
             )
         elif comment and not director:
             assessment_comment = (
                 ModelYearReportAssessmentComment.objects.filter(
-                    model_year_report_id=pk, to_director=False
+                    model_year_report_id=pk, to_director=False, display=True
                 )
                 .order_by("-update_timestamp")
                 .first()
