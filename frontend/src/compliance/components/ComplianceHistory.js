@@ -73,11 +73,10 @@ const ComplianceHistory = (props) => {
             const actuallyReturned = { ...obj }
             actuallyReturned.status = 'RETURNED TO THE SUPPLIER'
             tempHistory.push(actuallyReturned)
-          } 
-          else if ((itemHistory[i + 1]?.status !== 'SUBMITTED'
-            && itemHistory[i + 1]?.status !== 'RETURNED'))  {
+          } else if ((itemHistory[i + 1]?.status !== 'SUBMITTED'
+            && itemHistory[i + 1]?.status !== 'RETURNED') || user.isGovernment)  {
             // if the current status is draft but the previous status wasn't submitted or returned
-            // it is just a regular draft  so pass the obj
+            // or if the user is government, it is just a regular draft so pass the obj
             tempHistory.push(obj)
           }
         } else if (['RETURNED'].indexOf(obj.status) >= 0 && itemHistory[i + 1]?.status === 'RECOMMENDED' && user.isGovernment){
