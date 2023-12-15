@@ -131,7 +131,7 @@ class CreditRequestViewset(
                 if q_obj:
                     queryset = queryset.filter(q_obj)
             elif id == "status":
-                queryset = self.filter_by_status(queryset, search_type, search_terms)
+                queryset = self.filter_by_status(queryset, search_type, search_terms, request.user)
         for sort in sorts:
             id = sort.get("id")
             desc = sort.get("desc")
@@ -174,7 +174,7 @@ class CreditRequestViewset(
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    def filter_by_status(self, queryset, search_type, search_terms):
+    def filter_by_status(self, queryset, search_type, search_terms, user):
         mappings = {
             "validated": SalesSubmissionStatuses.CHECKED.value,
             "issued": SalesSubmissionStatuses.VALIDATED.value,
@@ -214,6 +214,24 @@ class CreditRequestViewset(
         )
 
         if final_q:
+            if not user.is_government:
+             # bceid users should see 'submitted' if their submission
+             # is recommended (rejection or issuance, or checked) so we
+             # need to add it to the Q
+                deconstructed_q = final_q.deconstruct()[1]
+                # starting with false before iterating through all the search terms used
+                submitted_search = False
+                if len(deconstructed_q) > 1:
+                    for each in deconstructed_q:
+                        if each[1] == 'SUBMITTED':
+                            submitted_search = True
+                if submitted_search == True:
+                    # if the user has used anything that matches submitted on the frontend
+                    # ie 'sub' or 'submit' it will return checked or recommended too
+                    connector = final_q.connector
+                    final_q.add(('validation_status__exact', 'CHECKED'), connector)
+                    final_q.add(('validation_status__exact', 'RECOMMEND_REJECTION'), connector)
+                    final_q.add(('validation_status__exact', 'RECOMMEND_APPROVAL'), connector)
             return queryset.filter(final_q)
 
         return queryset
