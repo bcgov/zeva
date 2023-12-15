@@ -228,10 +228,8 @@ class CreditRequestViewset(
                 if submitted_search == True:
                     # if the user has used anything that matches submitted on the frontend
                     # ie 'sub' or 'submit' it will return checked or recommended too
-                    connector = final_q.connector
-                    final_q.add(('validation_status__exact', 'CHECKED'), connector)
-                    final_q.add(('validation_status__exact', 'RECOMMEND_REJECTION'), connector)
-                    final_q.add(('validation_status__exact', 'RECOMMEND_APPROVAL'), connector)
+                    for submitted_status in ['CHECKED', 'RECOMMEND_REJECTION', 'RECOMMEND_APPROVAL']:
+                        final_q.add(('validation_status__exact', submitted_status), final_q.connector)
             return queryset.filter(final_q)
 
         return queryset
