@@ -412,6 +412,10 @@ def get_error(content):
 
     if 'WRONG_MODEL_YEAR' in warnings:
         error += 'Wrong model year to be issued with compliance report; '
+    
+    if content.reason is not None:
+        error += content.reason
+        error += '; '
     return error
 
 
@@ -508,7 +512,7 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
     current_vehicle_col_width = 13
 
     for content in submission_content:
-        if content.warnings_list is None:
+        if content.warnings_list is None and content.reason is None:
             continue
 
         row += 1
