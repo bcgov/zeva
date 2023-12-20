@@ -31,6 +31,7 @@ const VehicleForm = (props) => {
     setDeleteFiles,
     setFields,
     setUploadFiles,
+    setUploadRangeResults,
     showProgressBars,
     status,
     vehicleClasses,
@@ -38,7 +39,8 @@ const VehicleForm = (props) => {
     vehicleTypes,
     vehicleYears,
     newVehicle,
-    requestStateChange
+    requestStateChange,
+    uploadRangeResults
   } = props
   const [showModal, setShowModal] = useState(false)
   const [modalType, setModalType] = useState('')
@@ -217,6 +219,7 @@ const VehicleForm = (props) => {
                 </div>
               </div>
               <TextInput
+                additionalClasses="mb-0"
                 defaultValue={fields.range}
                 errorMessage={'range' in errorFields && errorFields.range}
                 handleInputChange={handleInputChange}
@@ -225,6 +228,21 @@ const VehicleForm = (props) => {
                 mandatory
                 name="range"
               />
+              <div className="form-group row mt-0 pt-0 text-blue">
+                <span className="col-sm-4" htmlFor="uploadRangeResults">
+                  Upload Range Test Results
+                </span>
+                <div className={"col-sm-8"}>
+                  <input
+                    checked={uploadRangeResults}
+                    name="uploadRangeResults"
+                    onChange={(event) => {
+                      setUploadRangeResults(event.target.checked)
+                    }}
+                    type="checkbox"
+                  />
+                </div>
+              </div>
               <VehicleFormDropdown
                 accessor={(classCode) => classCode.vehicleClassCode}
                 dropdownName="Body Type"
@@ -254,7 +272,7 @@ const VehicleForm = (props) => {
             </fieldset>
           </div>
 
-          {(fields.hasPassedUs06Test ||
+          {(fields.hasPassedUs06Test || uploadRangeResults ||
             (status === 'CHANGES_REQUESTED' && setUploadFiles)) && (
             <div className="col-xl-6 col-lg-12 mt-2 mt-xl-0">
               <h3 className="font-weight-bold mb-2">
@@ -468,8 +486,10 @@ VehicleForm.propTypes = {
   setDeleteFiles: PropTypes.func,
   setFields: PropTypes.func.isRequired,
   setUploadFiles: PropTypes.func,
+  setUploadRangeResults: PropTypes.func.isRequired,
   showProgressBars: PropTypes.bool,
   status: PropTypes.string,
+  uploadRangeResults: PropTypes.bool.isRequired,
   vehicleTypes: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   vehicleYears: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   vehicleClasses: PropTypes.arrayOf(PropTypes.shape()).isRequired,

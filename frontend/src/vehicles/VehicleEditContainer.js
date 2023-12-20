@@ -27,6 +27,7 @@ const VehicleEditContainer = (props) => {
   const [vehicles, setVehicles] = useState([])
   const [vehicleComment, setVehicleComment] = useState({})
   const [years, setYears] = useState([])
+  const [uploadRangeResults, setUploadRangeResults] = useState(false)
 
   const { id } = useParams()
   const { keycloak, newVehicle } = props
@@ -274,6 +275,7 @@ const VehicleEditContainer = (props) => {
       setDeleteFiles={setDeleteFiles}
       setFields={setFields}
       setUploadFiles={setFiles}
+      setUploadRangeResults={setUploadRangeResults}
       showProgressBars={showProgressBars}
       status={status}
       vehicleClasses={classes}
@@ -282,6 +284,7 @@ const VehicleEditContainer = (props) => {
       vehicleYears={years}
       newVehicle={newVehicle}
       requestStateChange={requestStateChange}
+      uploadRangeResults={uploadRangeResults}
     />
   )
 }
