@@ -118,6 +118,7 @@ TextInput.defaultProps = {
 }
 
 TextInput.propTypes = {
+  additionalClasses: PropTypes.string,
   defaultValue: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   details: PropTypes.string,
   errorMessage: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
