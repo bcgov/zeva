@@ -143,7 +143,7 @@ spec:
                   key: AWS_SECRET_ACCESS_KEY
             - name: MINIO_ENDPOINT
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   name: zeva-db-backup-s3
                   key: AWS_ENDPOINT
             - name: MINIO_BUCKET_NAME
