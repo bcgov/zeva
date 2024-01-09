@@ -206,6 +206,14 @@ class CreditRequestViewset(
                     else:
                         contains_unmapped_search_term = True
 
+        if not user.is_government and SalesSubmissionStatuses.SUBMITTED.value in mapped_search_terms:
+            statuses_to_add = [
+                SalesSubmissionStatuses.CHECKED.value,
+                SalesSubmissionStatuses.RECOMMEND_APPROVAL.value,
+                SalesSubmissionStatuses.RECOMMEND_REJECTION.value
+            ]
+            mapped_search_terms.extend(statuses_to_add)
+
         final_q = get_search_q_object(
             mapped_search_terms,
             "exact",
@@ -214,22 +222,6 @@ class CreditRequestViewset(
         )
 
         if final_q:
-            if not user.is_government:
-             # bceid users should see 'submitted' if their submission
-             # is recommended (rejection or issuance, or checked) so we
-             # need to add it to the Q
-                deconstructed_q = final_q.deconstruct()[1]
-                # starting with false before iterating through all the search terms used
-                submitted_search = False
-                if len(deconstructed_q) > 1:
-                    for each in deconstructed_q:
-                        if each[1] == 'SUBMITTED':
-                            submitted_search = True
-                if submitted_search == True:
-                    # if the user has used anything that matches submitted on the frontend
-                    # ie 'sub' or 'submit' it will return checked or recommended too
-                    for submitted_status in ['CHECKED', 'RECOMMEND_REJECTION', 'RECOMMEND_APPROVAL']:
-                        final_q.add(('validation_status__exact', submitted_status), final_q.connector)
             return queryset.filter(final_q)
 
         return queryset
