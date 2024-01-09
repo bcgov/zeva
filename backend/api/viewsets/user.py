@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from api.models.user_profile import UserProfile
 from api.permissions.user import UserPermissions
 from api.serializers.user import UserSerializer, UserSaveSerializer
+from api.services.bceid_email_spreadsheet import create_bceid_emails_sheet
 from auditable.views import AuditableMixin
 
 
@@ -42,3 +43,10 @@ class UserViewSet(
         serializer = self.get_serializer(request.user)
 
         return Response(serializer.data)
+    
+    @action(detail=False)
+    def download_active(self, request):
+
+        active_bceid_users_excel = create_bceid_emails_sheet()
+
+        return active_bceid_users_excel
