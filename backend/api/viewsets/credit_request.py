@@ -131,7 +131,7 @@ class CreditRequestViewset(
                 if q_obj:
                     queryset = queryset.filter(q_obj)
             elif id == "status":
-                queryset = self.filter_by_status(queryset, search_type, search_terms)
+                queryset = self.filter_by_status(queryset, search_type, search_terms, request.user)
         for sort in sorts:
             id = sort.get("id")
             desc = sort.get("desc")
@@ -174,7 +174,7 @@ class CreditRequestViewset(
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    def filter_by_status(self, queryset, search_type, search_terms):
+    def filter_by_status(self, queryset, search_type, search_terms, user):
         mappings = {
             "validated": SalesSubmissionStatuses.CHECKED.value,
             "issued": SalesSubmissionStatuses.VALIDATED.value,
@@ -205,6 +205,14 @@ class CreditRequestViewset(
                         mapped_search_terms.append(mappings[mapping_key])
                     else:
                         contains_unmapped_search_term = True
+
+        if not user.is_government and SalesSubmissionStatuses.SUBMITTED.value in mapped_search_terms:
+            statuses_to_add = [
+                SalesSubmissionStatuses.CHECKED.value,
+                SalesSubmissionStatuses.RECOMMEND_APPROVAL.value,
+                SalesSubmissionStatuses.RECOMMEND_REJECTION.value
+            ]
+            mapped_search_terms.extend(statuses_to_add)
 
         final_q = get_search_q_object(
             mapped_search_terms,
