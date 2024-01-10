@@ -5,7 +5,6 @@ from datetime import datetime
 from api.models.user_profile import UserProfile
 
 BOLD = xlwt.easyxf('font: name Times New Roman, bold on;')
-LOCKED = xlwt.easyxf('protection: cell_locked true;')
 
 def create_bceid_emails_sheet():
     sheet_name = 'Active BCeID Emails'
@@ -21,7 +20,6 @@ def create_bceid_emails_sheet():
     }
 
     worksheet = workbook.add_sheet(sheet_name)
-    worksheet.protect = True
     descriptor['sheets'].append({
         'index': 1,
         'name': sheet_name
@@ -39,8 +37,8 @@ def create_bceid_emails_sheet():
     for user in users_list:
         row += 1
         if user['email'] and user['organization__name']:
-            worksheet.write(row, 0, user['organization__name'], style=LOCKED)
-            worksheet.write(row, 1, user['email'], style=LOCKED)
+            worksheet.write(row, 0, user['organization__name'])
+            worksheet.write(row, 1, user['email'])
 
     org_col = worksheet.col(0)
     org_col.width = 256 * 30
