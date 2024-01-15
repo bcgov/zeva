@@ -61,7 +61,14 @@ const ComplianceHistory = (props) => {
     return result
   }
 
-  const getHistory = (itemHistory, item) => {
+  const getHistory = (history, item) => {
+    let itemHistory = history
+    if (itemHistory) {
+      const sequentialStatusesToRemove = ['DRAFT', 'SUBMITTED', 'RECOMMENDED', 'RETURNED']
+      sequentialStatusesToRemove.forEach((status) => {
+        itemHistory = removeSequentialHistoryItems(itemHistory, status)
+      })
+    }
     const tempHistory = []
     if (itemHistory) {
       itemHistory.forEach((obj, i) => {
@@ -92,12 +99,7 @@ const ComplianceHistory = (props) => {
         
       })
     }
-    let result = tempHistory
-    const sequentialStatusesToRemove = ['DRAFT', 'SUBMITTED', 'RECOMMENDED']
-    sequentialStatusesToRemove.forEach((status) => {
-      result = removeSequentialHistoryItems(result, status)
-    })
-    return result
+    return tempHistory
   }
   const getTitle = (item) => {
     const type = item.isSupplementary ? startedAsSupplemental ? 'Supplementary Report' : 'Reassessment' : 'Model Year Report'
