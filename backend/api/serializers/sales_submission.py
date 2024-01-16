@@ -85,6 +85,7 @@ class SalesSubmissionHistorySerializer(
 class SalesSubmissionBaseListSerializer(
     ModelSerializer, EnumSupportSerializerMixin, BaseSerializer
 ):
+    submission_history_timestamp = SerializerMethodField()
     submission_history = SerializerMethodField()
     organization = SerializerMethodField()
     totals = SerializerMethodField()
@@ -92,7 +93,7 @@ class SalesSubmissionBaseListSerializer(
     total_credits = SerializerMethodField()
     validation_status = SerializerMethodField()
 
-    def get_submission_history(self, obj):
+    def get_submission_history_timestamp(self, obj):
         request = self.context.get('request')
 
         if obj.part_of_model_year_report:
@@ -101,7 +102,7 @@ class SalesSubmissionBaseListSerializer(
             ).first()
 
             if credit_transaction:
-                return credit_transaction.transaction_timestamp.date()
+                return credit_transaction.transaction_timestamp
 
         if not request.user.is_government and obj.validation_status in [
             SalesSubmissionStatuses.RECOMMEND_REJECTION,
@@ -117,7 +118,7 @@ class SalesSubmissionBaseListSerializer(
             if history is None:
                 return None
 
-            return history.update_timestamp.date()
+            return history.update_timestamp
 
         # return the last updated date
         history = SalesSubmissionHistory.objects.filter(
@@ -128,7 +129,13 @@ class SalesSubmissionBaseListSerializer(
         if history is None:
             return None
 
-        return history.update_timestamp.date()
+        return history.update_timestamp
+    
+    def get_submission_history(self, obj):
+        timestamp = self.get_submission_history_timestamp(obj)
+        if timestamp:
+            return timestamp.date()
+        return None
 
     def get_organization(self, obj):
         return {
@@ -213,7 +220,7 @@ class SalesSubmissionBaseListSerializer(
     class Meta:
         model = SalesSubmission
         fields = [
-            'id', 'submission_history', 'organization', 'totals', 'unselected',
+            'id', 'submission_history_timestamp', 'submission_history', 'organization', 'totals', 'unselected',
             'total_warnings', 'total_credits', 'validation_status'
         ]
 
