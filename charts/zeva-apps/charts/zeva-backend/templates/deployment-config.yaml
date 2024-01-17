@@ -134,20 +134,18 @@ spec:
             - name: MINIO_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
-                  name: zeva-db-backup-s3
-                  key: AWS_ACCESS_KEY_ID
+                  name: zeva-minio-{{ .Values.envName }}
+                  key: MINIO_ACCESS_KEY
             - name: MINIO_SECRET_KEY
               valueFrom:
                 secretKeyRef:
-                  name: zeva-db-backup-s3
-                  key: AWS_SECRET_ACCESS_KEY
+                  name: zeva-minio-{{ .Values.envName }}
+                  key: MINIO_SECRET_KEY
             - name: MINIO_ENDPOINT
               valueFrom:
-                secretKeyRef:
-                  name: zeva-db-backup-s3
-                  key: AWS_ENDPOINT
-            - name: MINIO_BUCKET_NAME
-              value: zevadv/uploaded-docs
+                configMapKeyRef:
+                  name: zeva-config{{ .Values.suffix }}
+                  key: minio_endpoint
             - name: EMAIL_SERVICE_CLIENT_ID
               valueFrom:
                 secretKeyRef:
