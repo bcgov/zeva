@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 
 const TextInput = (props) => {
   const {
+    additionalClasses,
     defaultValue,
     errorMessage,
     handleInputChange,
@@ -59,8 +60,13 @@ const TextInput = (props) => {
     }
   }
 
+  let className = rowClass
+  if (additionalClasses) {
+    className = `${rowClass} ${additionalClasses}`
+  }
+
   return (
-    <div className={rowClass}>
+    <div className={className}>
       <label className={labelSize} htmlFor={id}>
         {label}
       </label>
@@ -112,6 +118,7 @@ TextInput.defaultProps = {
 }
 
 TextInput.propTypes = {
+  additionalClasses: PropTypes.string,
   defaultValue: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   details: PropTypes.string,
   errorMessage: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),

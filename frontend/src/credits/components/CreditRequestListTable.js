@@ -12,6 +12,7 @@ import history from '../../app/History'
 import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests'
 import calculateNumberOfPages from '../../app/utilities/calculateNumberOfPages'
 import CustomFilterComponent from '../../app/components/CustomFilterComponent'
+import moment from 'moment-timezone'
 
 const CreditRequestListTable = (props) => {
   const {
@@ -55,7 +56,12 @@ const CreditRequestListTable = (props) => {
     },
     {
       id: 'date',
-      accessor: 'submissionHistory',
+      accessor: (item) => {
+        if(item.submissionHistoryTimestamp) {
+          return moment(item.submissionHistoryTimestamp).format('YYYY-MM-DD')
+        }
+        return ''
+      },
       className: 'text-center',
       Header: 'Date',
       maxWidth: 150,
