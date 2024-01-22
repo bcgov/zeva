@@ -11,5 +11,6 @@ def config():
         'ACCESS_KEY': os.getenv('MINIO_ACCESS_KEY', None),
         'SECRET_KEY': os.getenv('MINIO_SECRET_KEY', None),
         'BUCKET_NAME': os.getenv('MINIO_BUCKET_NAME', 'zeva'),
-        'EXPIRY': os.getenv('MINIO_EXPIRY', timedelta(days=1))
+        'EXPIRY': os.getenv('MINIO_EXPIRY', timedelta(days=1)),
+        'PREFIX': os.getenv('MINIO_PREFIX', None)
     }
