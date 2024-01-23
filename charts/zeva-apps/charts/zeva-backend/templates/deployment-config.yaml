@@ -145,7 +145,7 @@ spec:
               value: {{ .Values.objectStorage.bucketName }}
             - name: MINIO_ENDPOINT
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   name: zeva-db-backup-s3
                   key: AWS_ENDPOINT
             - name: MINIO_PREFIX
