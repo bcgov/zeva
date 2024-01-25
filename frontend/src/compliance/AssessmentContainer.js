@@ -53,7 +53,6 @@ const AssessmentContainer = (props) => {
   const [updatedBalances, setUpdatedBalances] = useState({})
   const [reassessmentExists, setReassessmentExists] = useState(false)
   const [reassessmentTooltip, setReassessmentTooltip] = useState('')
-
   const handleCommentChangeBceid = (text) => {
     setBceidComment(text)
   }
