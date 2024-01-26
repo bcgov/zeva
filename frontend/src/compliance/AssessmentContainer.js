@@ -401,6 +401,7 @@ const AssessmentContainer = (props) => {
     user.hasPermission('RECOMMEND_COMPLIANCE_REPORT')
 
   const handleSubmit = (status) => {
+    setLoading(true)
     const comment = { comment: bceidComment, director: false }
 
     axios
