@@ -6,9 +6,12 @@ import Loading from './components/Loading'
 import CONFIG from './config'
 import Login from './Login'
 import Router from './router'
+import moment from 'moment-timezone'
 
 import 'toastr/build/toastr.min.css'
 import 'react-table/react-table.css'
+
+moment.tz.setDefault("America/Los_Angeles")
 
 class App extends Component {
   constructor (props) {
