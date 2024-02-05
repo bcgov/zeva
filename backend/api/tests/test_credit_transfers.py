@@ -46,10 +46,12 @@ class TestTransfers(BaseTestCase):
 
 
     def test_list_transfer(self):
-        response = self.clients['RTAN_BCEID'].get("/api/credit-transfers")
-        self.assertEqual(response.status_code, 200)
-        result = response.data
-        self.assertEqual(len(result), 2)
+        def check_response():
+            response = self.clients['RTAN_BCEID'].get("/api/credit-transfers")
+            self.assertEqual(response.status_code, 200)
+            result = response.data
+            self.assertEqual(len(result), 2)
+        transaction.on_commit(check_response)
 
     def test_list_transfer_as_partner(self):
         response = self.clients['EMHILLIE_BCEID'].get("/api/credit-transfers")
