@@ -1,6 +1,7 @@
 import json
 from rest_framework.serializers import ValidationError
 from django.utils import timezone
+from django.db import transaction
 from .base_test_case import BaseTestCase
 from ..models.credit_transfer import CreditTransfer
 from ..models.credit_transaction import CreditTransaction
@@ -93,7 +94,7 @@ class TestTransfers(BaseTestCase):
     # and organization balances are calculated correctly
 
     def test_transfer_pass(self):
-        transaction = CreditTransaction.objects.create(
+        credit_transaction = CreditTransaction.objects.create(
             credit_to=self.users['EMHILLIE_BCEID'].organization,
             model_year=ModelYear.objects.get(name='2020'),
             credit_class=CreditClass.objects.get(credit_class="A"),
@@ -123,16 +124,19 @@ class TestTransfers(BaseTestCase):
 
         validate_transfer(transfer_enough)
 
-        seller_balance = Organization.objects.filter(
-            id=self.users['EMHILLIE_BCEID'].organization.id
-        ).first().balance['A']
+        def check_balances():
+            seller_balance = Organization.objects.filter(
+                id=self.users['EMHILLIE_BCEID'].organization.id
+            ).first().balance['A']
 
-        buyer_balance = Organization.objects.filter(
-            id=self.users['RTAN_BCEID'].organization.id
-        ).first().balance['A']
+            buyer_balance = Organization.objects.filter(
+                id=self.users['RTAN_BCEID'].organization.id
+            ).first().balance['A']
 
-        self.assertEqual(seller_balance, 390)
-        self.assertEqual(buyer_balance, 10)
+            self.assertEqual(seller_balance, 390)
+            self.assertEqual(buyer_balance, 10)
+
+        transaction.on_commit(check_balances)
 
 
     def test_credit_transfer_create(self):
