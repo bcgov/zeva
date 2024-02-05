@@ -11,8 +11,6 @@ import moment from 'moment-timezone'
 import 'toastr/build/toastr.min.css'
 import 'react-table/react-table.css'
 
-moment.tz.setDefault("America/Los_Angeles")
-
 class App extends Component {
   constructor (props) {
     super(props)
@@ -21,7 +19,8 @@ class App extends Component {
       authenticated: false,
       keycloak: null
     }
-
+    
+    moment.tz.setDefault("America/Vancouver")
     this.logout = this.logout.bind(this)
   }
 
