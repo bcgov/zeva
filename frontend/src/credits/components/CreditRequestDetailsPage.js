@@ -24,6 +24,7 @@ import DownloadAllSubmissionContentButton from './DownloadAllSubmissionContentBu
 import EditableCommentList from '../../app/components/EditableCommentList'
 import ModelYearReportWarning from './ModelYearReportWarning'
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
+import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations'
 
 const CreditRequestDetailsPage = (props) => {
   const {
@@ -551,8 +552,8 @@ const CreditRequestDetailsPage = (props) => {
               <Button
                 buttonType="back"
                 locationRoute={
-                  locationState && locationState.href
-                    ? locationState.href
+                  submission?.organization.id && locationState?.href === '/credit-transactions'
+                    ? ROUTES_ORGANIZATIONS.TRANSACTIONS.replace(/:id/g, submission.organization.id)
                     : ROUTES_CREDIT_REQUESTS.LIST
                 }
                 locationState={locationState}
