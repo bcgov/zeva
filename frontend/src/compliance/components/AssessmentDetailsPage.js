@@ -599,7 +599,7 @@ AssessmentDetailsPage.propTypes = {
   ratios: PropTypes.shape().isRequired,
   pendingBalanceExist: PropTypes.bool,
   supplierClass: PropTypes.string.isRequired,
-  totalReduction: PropTypes.number.isRequired,
+  totalReduction: PropTypes.shape().isRequired,
   unspecifiedReductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   deductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   updatedBalances: PropTypes.shape().isRequired,

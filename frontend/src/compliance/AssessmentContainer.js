@@ -15,6 +15,9 @@ import getTotalReduction from '../app/utilities/getTotalReduction'
 import getUnspecifiedClassReduction from '../app/utilities/getUnspecifiedClassReduction'
 import ROUTES_SUPPLEMENTARY from '../app/routes/SupplementaryReport'
 import { getNewBalancesStructure, getNewDeficitsStructure } from '../app/utilities/getNewStructures'
+import getTotalReductionBig from '../app/utilities/getTotalReductionBig'
+import getClassAReductionBig from '../app/utilities/getClassAReductionBig'
+import getUnspecifiedClassReductionBig from '../app/utilities/getUnspecifiedClassReductionBig'
 
 const AssessmentContainer = (props) => {
   const { keycloak, user } = props
@@ -48,7 +51,7 @@ const AssessmentContainer = (props) => {
     }
   })
   const [supplierClass, setSupplierClass] = useState('S')
-  const [totalReduction, setTotalReduction] = useState(0)
+  const [totalReduction, setTotalReduction] = useState({})
   const [unspecifiedReductions, setUnspecifiedReductions] = useState([])
   const [updatedBalances, setUpdatedBalances] = useState({})
   const [reassessmentExists, setReassessmentExists] = useState(false)
@@ -318,7 +321,17 @@ const AssessmentContainer = (props) => {
                 ldvSales,
                 filteredRatios.complianceRatio
               )
+              const tempTotalReductionBig = getTotalReductionBig(
+                ldvSales,
+                filteredRatios.complianceRatio,
+                tempSupplierClass
+              )
               const classAReduction = getClassAReduction(
+                ldvSales,
+                filteredRatios.zevClassA,
+                tempSupplierClass
+              )
+              const classAReductionBig = getClassAReductionBig(
                 ldvSales,
                 filteredRatios.zevClassA,
                 tempSupplierClass
@@ -327,7 +340,16 @@ const AssessmentContainer = (props) => {
                 tempTotalReduction,
                 classAReduction
               )
-              setTotalReduction(tempTotalReduction)
+              const leftoverReductionBig = getUnspecifiedClassReductionBig(
+                ldvSales,
+                filteredRatios.complianceRatio,
+                filteredRatios.zevClassA,
+                tempSupplierClass
+              )
+              setTotalReduction({
+                value: tempTotalReduction,
+                bigValue: tempTotalReductionBig
+              })
 
               const tempBalances = getNewBalancesStructure(provisionalBalance)
 
@@ -336,14 +358,16 @@ const AssessmentContainer = (props) => {
               const tempClassAReductions = [
                 {
                   modelYear: Number(modelYear.name),
-                  value: Number(classAReduction)
+                  value: Number(classAReduction),
+                  bigValue: classAReductionBig
                 }
               ]
 
               const tempUnspecifiedReductions = [
                 {
                   modelYear: Number(modelYear.name),
-                  value: Number(leftoverReduction)
+                  value: Number(leftoverReduction),
+                  bigValue: leftoverReductionBig
                 }
               ]
 

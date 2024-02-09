@@ -1,4 +1,10 @@
+import Big from "big.js"
+
 const formatNumeric = (value, decimals = 2, roundBracket) => {
+  if (value instanceof Big) {
+    return value.toFixed(decimals)
+  }
+
   let newValue = value
   if (isNaN(newValue)) {
     return newValue
