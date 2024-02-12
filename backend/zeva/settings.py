@@ -41,7 +41,7 @@ DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'true'
 DEVELOPMENT = os.getenv('DEVELOPMENT', 'False') == 'True'
 TESTING = 'test' in sys.argv
 RUNSERVER = 'runserver' in sys.argv
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 ALLOWED_HOSTS = ['*']
 
