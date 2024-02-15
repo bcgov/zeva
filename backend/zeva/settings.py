@@ -146,6 +146,8 @@ EMAIL = email.config()
 
 MINIO = minio.config()
 
+FRONTEND_URL_BASE = os.getenv('FRONTEND_URL_BASE', 'http://localhost:3000')
+
 if TESTING:
     LOGGING = {
         'version': 1,

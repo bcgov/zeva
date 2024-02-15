@@ -119,7 +119,8 @@ class App extends Component {
     }
 
     if (keycloak && !authenticated) {
-      return <Login keycloak={keycloak} />
+      const redirectUri = window.location.href
+      return <Login keycloak={keycloak} redirectUri={redirectUri}/>
     }
 
     return <Router keycloak={keycloak} logout={this.logout} />
