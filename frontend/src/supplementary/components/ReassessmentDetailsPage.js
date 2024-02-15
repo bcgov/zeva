@@ -277,7 +277,7 @@ const ReassessmentDetailsPage = (props) => {
         sales={sales || ldvSales}
         statuses={{ assessment: { status: 'ASSESSED' } }}
         supplierClass={supplierClass}
-        totalReduction={totalReduction}
+        totalReduction={{value: totalReduction}}
         unspecifiedReductions={unspecifiedReductions}
       />
       <div className="mt-4">
