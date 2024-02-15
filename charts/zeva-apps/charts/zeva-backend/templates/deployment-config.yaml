@@ -175,6 +175,8 @@ spec:
                 secretKeyRef:
                   name: email-service
                   key: SENDER_EMAIL  
+            - name: FRONTEND_URL_BASE
+              value: {{ .Values.frontendUrlBase }}
           ports:
             - containerPort: 8080
               protocol: TCP

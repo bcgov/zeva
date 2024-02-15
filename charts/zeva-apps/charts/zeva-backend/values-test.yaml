@@ -21,6 +21,8 @@ backendRoute:
   create: true
   hostName: zeva-backend-test.apps.silver.devops.gov.bc.ca
 
+frontendUrlBase: https://zeva-test.apps.silver.devops.gov.bc.ca
+
 objectStorage:
   bucketName: zevats
   docsFolder: docs
