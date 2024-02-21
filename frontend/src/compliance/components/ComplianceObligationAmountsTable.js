@@ -17,17 +17,13 @@ const ComplianceObligationAmountsTable = (props) => {
     unspecifiedReductions
   } = props
 
-  const totalReductionToUse = totalReduction.bigValue ? totalReduction.bigValue : totalReduction.value
-
   const filteredClassAReductions = classAReductions.find(
     (reduction) => Number(reduction.modelYear) === Number(reportYear)
   )
-  const filteredClassAReductionsToUse = filteredClassAReductions.bigValue ? filteredClassAReductions.bigValue : filteredClassAReductions.value
 
   const filteredUnspecifiedReductions = unspecifiedReductions.find(
     (reduction) => Number(reduction.modelYear) === Number(reportYear)
   )
-  const filteredUnspecifiedReductionsToUse = filteredUnspecifiedReductions.bigValue ? filteredUnspecifiedReductions.bigValue : filteredUnspecifiedReductions.value
 
   let disabledInput = false
   if (page === 'obligation'){
@@ -70,7 +66,7 @@ const ComplianceObligationAmountsTable = (props) => {
                   </td>
                   <td className="font-weight-bold" width="25%">
                     {supplierClass === 'S' ? formatNumeric(0, 2) : 
-                      formatNumeric(totalReductionToUse, 2)
+                      formatNumeric(totalReduction, 2)
                     }
                   </td>
                 </tr>
@@ -83,7 +79,7 @@ const ComplianceObligationAmountsTable = (props) => {
                     <td className="text-blue">
                       &bull; ZEV Class A Credit Reduction:
                     </td>
-                    <td>{formatNumeric(filteredClassAReductionsToUse, 2)}</td>
+                    <td>{formatNumeric(filteredClassAReductions.value, 2)}</td>
                   </tr>
                 )}
                 <tr>
@@ -93,7 +89,7 @@ const ComplianceObligationAmountsTable = (props) => {
                   </td>
                   <td>
                     {supplierClass === 'S' ? formatNumeric(0, 2) : 
-                      formatNumeric(filteredUnspecifiedReductionsToUse, 2)
+                      formatNumeric(filteredUnspecifiedReductions.value, 2)
                     }
                   </td>
                 </tr>
@@ -120,7 +116,7 @@ ComplianceObligationAmountsTable.propTypes = {
   sales: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   statuses: PropTypes.shape().isRequired,
   supplierClass: PropTypes.string.isRequired,
-  totalReduction: PropTypes.shape().isRequired,
+  totalReduction: PropTypes.oneOfType([PropTypes.number, PropTypes.shape()]).isRequired,
   unspecifiedReductions: PropTypes.arrayOf(PropTypes.shape()).isRequired
 }
 
