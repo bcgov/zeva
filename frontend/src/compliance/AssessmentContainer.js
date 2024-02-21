@@ -2,22 +2,21 @@ import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { withRouter } from 'react-router'
+import Big from 'big.js'
 import Loading from '../app/components/Loading'
 import CONFIG from '../app/config'
 import history from '../app/History'
 import ROUTES_COMPLIANCE from '../app/routes/Compliance'
 import CustomPropTypes from '../app/utilities/props'
-import getClassAReduction from '../app/utilities/getClassAReduction'
 import AssessmentDetailsPage from './components/AssessmentDetailsPage'
-import calculateCreditReduction from '../app/utilities/calculateCreditReduction'
+import calculateCreditReductionBig from '../app/utilities/calculateCreditReductionBig'
 import getComplianceObligationDetails from '../app/utilities/getComplianceObligationDetails'
-import getTotalReduction from '../app/utilities/getTotalReduction'
-import getUnspecifiedClassReduction from '../app/utilities/getUnspecifiedClassReduction'
 import ROUTES_SUPPLEMENTARY from '../app/routes/SupplementaryReport'
 import { getNewBalancesStructure, getNewDeficitsStructure } from '../app/utilities/getNewStructures'
 import getTotalReductionBig from '../app/utilities/getTotalReductionBig'
 import getClassAReductionBig from '../app/utilities/getClassAReductionBig'
 import getUnspecifiedClassReductionBig from '../app/utilities/getUnspecifiedClassReductionBig'
+import { convertBalances, convertCarryOverDeficits } from '../app/utilities/convertToBig'
 
 const AssessmentContainer = (props) => {
   const { keycloak, user } = props
@@ -317,64 +316,48 @@ const AssessmentContainer = (props) => {
                 }
               })
 
-              const tempTotalReduction = getTotalReduction(
-                ldvSales,
-                filteredRatios.complianceRatio
-              )
-              const tempTotalReductionBig = getTotalReductionBig(
+              const tempTotalReduction = getTotalReductionBig(
                 ldvSales,
                 filteredRatios.complianceRatio,
                 tempSupplierClass
               )
-              const classAReduction = getClassAReduction(
+              const classAReduction = getClassAReductionBig(
                 ldvSales,
                 filteredRatios.zevClassA,
                 tempSupplierClass
               )
-              const classAReductionBig = getClassAReductionBig(
-                ldvSales,
-                filteredRatios.zevClassA,
-                tempSupplierClass
-              )
-              const leftoverReduction = getUnspecifiedClassReduction(
-                tempTotalReduction,
-                classAReduction
-              )
-              const leftoverReductionBig = getUnspecifiedClassReductionBig(
+              const leftoverReduction = getUnspecifiedClassReductionBig(
                 ldvSales,
                 filteredRatios.complianceRatio,
                 filteredRatios.zevClassA,
                 tempSupplierClass
               )
-              setTotalReduction({
-                value: tempTotalReduction,
-                bigValue: tempTotalReductionBig
-              })
+              setTotalReduction(new Big(tempTotalReduction.toFixed(2)))
 
               const tempBalances = getNewBalancesStructure(provisionalBalance)
 
+              convertBalances(tempBalances)
               setBalances(tempBalances)
 
               const tempClassAReductions = [
                 {
                   modelYear: Number(modelYear.name),
-                  value: Number(classAReduction),
-                  bigValue: classAReductionBig
+                  value: new Big (classAReduction.toFixed(2))
                 }
               ]
 
               const tempUnspecifiedReductions = [
                 {
                   modelYear: Number(modelYear.name),
-                  value: Number(leftoverReduction),
-                  bigValue: leftoverReductionBig
+                  value: new Big(leftoverReduction.toFixed(2))
                 }
               ]
 
               setClassAReductions(tempClassAReductions)
               setUnspecifiedReductions(tempUnspecifiedReductions)
 
-              const creditReduction = calculateCreditReduction(
+              convertCarryOverDeficits(carryOverDeficits)
+              const creditReduction = calculateCreditReductionBig(
                 tempBalances,
                 tempClassAReductions,
                 tempUnspecifiedReductions,
@@ -497,8 +480,8 @@ const AssessmentContainer = (props) => {
                 reportDetailsArray.push({
                   category: 'ClassAReduction',
                   year: deduction.modelYear,
-                  a: deduction.creditA,
-                  b: deduction.creditB
+                  a: (deduction.creditA instanceof Big) ? (deduction.creditA).toString() : deduction.creditA,
+                  b: (deduction.creditB instanceof Big) ? (deduction.creditB).toString() : deduction.creditB,
                 })
               })
 
@@ -509,8 +492,8 @@ const AssessmentContainer = (props) => {
                 reportDetailsArray.push({
                   category: 'UnspecifiedClassCreditReduction',
                   year: deduction.modelYear,
-                  a: deduction.creditA,
-                  b: deduction.creditB
+                  a: (deduction.creditA instanceof Big) ? (deduction.creditA).toString() : deduction.creditA,
+                  b: (deduction.creditB instanceof Big) ? (deduction.creditB).toString() : deduction.creditB,
                 })
               })
           }
@@ -522,8 +505,8 @@ const AssessmentContainer = (props) => {
                 reportDetailsArray.push({
                   category: 'ProvisionalBalanceAfterCreditReduction',
                   year: balance.modelYear,
-                  a: balance.creditA || 0,
-                  b: balance.creditB || 0
+                  a: (balance.creditA instanceof Big) ? (balance.creditA).toString() : (balance.creditA || 0),
+                  b: (balance.creditB instanceof Big) ? (balance.creditB).toString() : (balance.creditB || 0)
                 })
               })
             }
@@ -534,8 +517,8 @@ const AssessmentContainer = (props) => {
                 reportDetailsArray.push({
                   category: 'CreditDeficit',
                   year: balance.modelYear,
-                  a: balance.creditA || 0,
-                  b: balance.creditB || 0
+                  a: (balance.creditA instanceof Big) ? (balance.creditA).toString() : (balance.creditA || 0),
+                  b: (balance.creditB instanceof Big) ? (balance.creditB).toString() : (balance.creditB || 0)
                 })
               })
             }

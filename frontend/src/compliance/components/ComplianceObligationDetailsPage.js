@@ -155,7 +155,7 @@ const ComplianceObligationDetailsPage = (props) => {
             sales={sales}
             statuses={statuses}
             supplierClass={supplierClass}
-            totalReduction={{value: totalReduction}}
+            totalReduction={totalReduction}
             unspecifiedReductions={unspecifiedReductions}
           />
         </div>
