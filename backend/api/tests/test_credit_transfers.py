@@ -1,6 +1,7 @@
 import json
 from rest_framework.serializers import ValidationError
 from django.utils import timezone
+from django.db import transaction
 from .base_test_case import BaseTestCase
 from ..models.credit_transfer import CreditTransfer
 from ..models.credit_transaction import CreditTransaction
@@ -45,10 +46,12 @@ class TestTransfers(BaseTestCase):
 
 
     def test_list_transfer(self):
-        response = self.clients['RTAN_BCEID'].get("/api/credit-transfers")
-        self.assertEqual(response.status_code, 200)
-        result = response.data
-        self.assertEqual(len(result), 2)
+        def check_response():
+            response = self.clients['RTAN_BCEID'].get("/api/credit-transfers")
+            self.assertEqual(response.status_code, 200)
+            result = response.data
+            self.assertEqual(len(result), 2)
+        transaction.on_commit(check_response)
 
     def test_list_transfer_as_partner(self):
         response = self.clients['EMHILLIE_BCEID'].get("/api/credit-transfers")
@@ -93,7 +96,7 @@ class TestTransfers(BaseTestCase):
     # and organization balances are calculated correctly
 
     def test_transfer_pass(self):
-        transaction = CreditTransaction.objects.create(
+        credit_transaction = CreditTransaction.objects.create(
             credit_to=self.users['EMHILLIE_BCEID'].organization,
             model_year=ModelYear.objects.get(name='2020'),
             credit_class=CreditClass.objects.get(credit_class="A"),
@@ -123,16 +126,19 @@ class TestTransfers(BaseTestCase):
 
         validate_transfer(transfer_enough)
 
-        seller_balance = Organization.objects.filter(
-            id=self.users['EMHILLIE_BCEID'].organization.id
-        ).first().balance['A']
+        def check_balances():
+            seller_balance = Organization.objects.filter(
+                id=self.users['EMHILLIE_BCEID'].organization.id
+            ).first().balance['A']
 
-        buyer_balance = Organization.objects.filter(
-            id=self.users['RTAN_BCEID'].organization.id
-        ).first().balance['A']
+            buyer_balance = Organization.objects.filter(
+                id=self.users['RTAN_BCEID'].organization.id
+            ).first().balance['A']
 
-        self.assertEqual(seller_balance, 390)
-        self.assertEqual(buyer_balance, 10)
+            self.assertEqual(seller_balance, 390)
+            self.assertEqual(buyer_balance, 10)
+
+        transaction.on_commit(check_balances)
 
 
     def test_credit_transfer_create(self):

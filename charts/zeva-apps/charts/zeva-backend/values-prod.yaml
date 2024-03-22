@@ -1,6 +1,5 @@
 replicaCount: 3
 
-envName: prod
 suffix: -prod
 
 autoscaling:
@@ -21,3 +20,9 @@ resources:
 backendRoute: 
   create: false
   hostName: zeva-backend-prod.apps.silver.devops.gov.bc.ca
+
+frontendUrlBase: https://zeroemissionvehicles.gov.bc.ca
+
+objectStorage:
+  bucketName: zevapr
+  docsFolder: docs

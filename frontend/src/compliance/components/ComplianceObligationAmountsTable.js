@@ -24,6 +24,7 @@ const ComplianceObligationAmountsTable = (props) => {
   const filteredUnspecifiedReductions = unspecifiedReductions.find(
     (reduction) => Number(reduction.modelYear) === Number(reportYear)
   )
+
   let disabledInput = false
   if (page === 'obligation'){
     disabledInput = (['SAVED', 'UNSAVED'].indexOf(statuses.complianceObligation.status) < 0)
@@ -115,7 +116,7 @@ ComplianceObligationAmountsTable.propTypes = {
   sales: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   statuses: PropTypes.shape().isRequired,
   supplierClass: PropTypes.string.isRequired,
-  totalReduction: PropTypes.number.isRequired,
+  totalReduction: PropTypes.oneOfType([PropTypes.number, PropTypes.shape()]).isRequired,
   unspecifiedReductions: PropTypes.arrayOf(PropTypes.shape()).isRequired
 }
 

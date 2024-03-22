@@ -6,6 +6,7 @@ import Loading from './components/Loading'
 import CONFIG from './config'
 import Login from './Login'
 import Router from './router'
+import moment from 'moment-timezone'
 
 import 'toastr/build/toastr.min.css'
 import 'react-table/react-table.css'
@@ -18,7 +19,8 @@ class App extends Component {
       authenticated: false,
       keycloak: null
     }
-
+    
+    moment.tz.setDefault("America/Vancouver")
     this.logout = this.logout.bind(this)
   }
 
@@ -117,7 +119,8 @@ class App extends Component {
     }
 
     if (keycloak && !authenticated) {
-      return <Login keycloak={keycloak} />
+      const redirectUri = window.location.href
+      return <Login keycloak={keycloak} redirectUri={redirectUri}/>
     }
 
     return <Router keycloak={keycloak} logout={this.logout} />

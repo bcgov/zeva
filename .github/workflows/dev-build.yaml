@@ -1,11 +1,11 @@
 ## For each release, please update the value of workflow name, branches and PR_NUMBER
 ## Also update frontend/package.json version
 
-name: Dev Build 1.57.0
+name: Dev Build 1.58.0
 
 on:
   push:
-    branches: [ release-1.57.0 ]
+    branches: [ release-1.58.0 ]
     paths:
       - frontend/**
       - backend/**
@@ -14,8 +14,8 @@ on:
 
 env:
   ## The pull request number of the Tracking pull request to merge the release branch to main
-  PR_NUMBER: 2104
-  VERSION: 1.57.0
+  PR_NUMBER: 2118
+  VERSION: 1.58.0
   GIT_URL: https://github.com/bcgov/zeva.git 
   TOOLS_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
   DEV_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
@@ -32,7 +32,7 @@ jobs:
   call-unit-test:
     uses: ./.github/workflows/unit-test-template.yaml
     with:
-      pr-number: 2104
+      pr-number: 2118
 
   build:
 
@@ -47,7 +47,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Log in to Openshift
-        uses: redhat-actions/oc-login@v1.2
+        uses: redhat-actions/oc-login@v1.3
         with:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
@@ -81,7 +81,7 @@ jobs:
           ref: refs/pull/${{ env.PR_NUMBER }}/head
 
       - name: Log in to Openshift
-        uses: redhat-actions/oc-login@v1.2
+        uses: redhat-actions/oc-login@v1.3
         with:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
