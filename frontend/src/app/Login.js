@@ -4,7 +4,7 @@ import { IDENTITY_PROVIDERS } from './constants/auth'
 import CustomPropTypes from './utilities/props'
 
 const Login = (props) => {
-  const { keycloak } = props
+  const { keycloak, redirectUri } = props
 
   return (
     <div id="login-page">
@@ -21,7 +21,7 @@ const Login = (props) => {
               <button
                 type="button"
                 onClick={() => keycloak.login({
-                  redirectUri: CONFIG.KEYCLOAK.CALLBACK_URL,
+                  redirectUri: redirectUri ? redirectUri : CONFIG.KEYCLOAK.CALLBACK_URL,
                   idpHint: IDENTITY_PROVIDERS.BCEID_BUSINESS
                 })}
                 id="link-bceid"
@@ -39,7 +39,7 @@ const Login = (props) => {
               <button
                 type="button"
                 onClick={() => keycloak.login({
-                  redirectUri: CONFIG.KEYCLOAK.CALLBACK_URL,
+                  redirectUri: redirectUri ? redirectUri : CONFIG.KEYCLOAK.CALLBACK_URL,
                   idpHint: IDENTITY_PROVIDERS.IDIR
                 })}
                 id="link-idir"

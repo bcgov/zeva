@@ -41,7 +41,7 @@ DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'true'
 DEVELOPMENT = os.getenv('DEVELOPMENT', 'False') == 'True'
 TESTING = 'test' in sys.argv
 RUNSERVER = 'runserver' in sys.argv
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 ALLOWED_HOSTS = ['*']
 
@@ -145,6 +145,8 @@ USE_TZ = True
 EMAIL = email.config()
 
 MINIO = minio.config()
+
+FRONTEND_URL_BASE = os.getenv('FRONTEND_URL_BASE', 'http://localhost:3000')
 
 if TESTING:
     LOGGING = {

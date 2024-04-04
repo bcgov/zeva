@@ -1,6 +1,5 @@
 replicaCount: 1
 
-envName: dev
 suffix: -dev
 
 autoscaling:
@@ -21,3 +20,9 @@ resources:
 backendRoute: 
   create: true
   hostName: zeva-backend-dev.apps.silver.devops.gov.bc.ca
+
+frontendUrlBase: https://zeva-dev.apps.silver.devops.gov.bc.ca
+
+objectStorage:
+  bucketName: zevadv
+  docsFolder: docs
