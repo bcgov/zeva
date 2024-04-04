@@ -8,12 +8,11 @@ const getUnspecifiedClassReductionBig = (ldvSales, complianceRatio, zevClassARat
   const ldvSalesBig = new Big(ldvSales)
   const complianceRatioBig = new Big(complianceRatio)
   const zevClassARatioBig = new Big(zevClassARatio)
-  const ratioDifferenceBig = complianceRatioBig.minus(zevClassARatioBig)
-  const productBig = ldvSalesBig.times(ratioDifferenceBig)
-  if (productBig.lt(0)) {
-    return zeroBig
+  let reduction = ldvSalesBig.times(complianceRatioBig)
+  if (supplierClass === 'L') {
+    reduction = reduction.minus(ldvSalesBig.times(zevClassARatioBig))
   }
-  return productBig.div(100)
+  return reduction.div(100)
 }
   
 export default getUnspecifiedClassReductionBig
