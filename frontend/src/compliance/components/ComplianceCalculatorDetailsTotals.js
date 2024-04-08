@@ -43,11 +43,11 @@ const ComplianceCalculatorDetailsTotals = (props) => {
             </tr>
             <tr>
               <td className="text-blue">Class A Credit Total:</td>
-              <td className="pl-3 text-right">{user.organization.balance.A}</td>
+              <td className="pl-3 text-right">{formatNumeric(user.organization.balance.A)}</td>
             </tr>
             <tr>
               <td className="text-blue">Class B Credit Total:</td>
-              <td className="pl-3 text-right">{user.organization.balance.B}</td>
+              <td className="pl-3 text-right">{formatNumeric(user.organization.balance.B)}</td>
             </tr>
             <tr>
               <td className="text-blue pt-4">
