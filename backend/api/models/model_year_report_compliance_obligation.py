@@ -31,6 +31,13 @@ class ModelYearReportComplianceObligation(Auditable):
         decimal_places=2,
         db_comment='Value of credit B'
     )
+    reduction_value = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        db_comment='Reduction value',
+        blank=True,
+        null=True,
+    )
     category = models.CharField(
         blank=True,
         max_length=100,
