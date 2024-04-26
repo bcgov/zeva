@@ -66,6 +66,10 @@ objects:
 
                       oc -n ${LICENSE_PLATE}-tools get builds | grep -E "Complete|Failed|Cancelled" | awk '{print $1}' | xargs oc -n ${LICENSE_PLATE}-tools delete build || true
 
+                      echo "==========> Removing expired frontend and backend image tags"
+
+                      oc -n ${LICENSE_PLATE}-tools get imagetags | grep -E "zeva-frontend|zeva-backend" | awk '{print $1}' | xargs oc -n ${LICENSE_PLATE}-tools delete imagetag || true
+
                       echo "==========> Removing expired pods"
 
                       oc -n ${LICENSE_PLATE}-tools get pods | grep -E "Completed|Error|ContainerStatusUnknown" | grep -v crunchy | grep -v spilo | awk '{print $1}' | xargs oc -n ${LICENSE_PLATE}-tools delete pod || true
@@ -80,27 +84,21 @@ objects:
 
                           echo "==========> Removing expired pods"
 
-                          oc -n $namespace get pods | grep -E "Completed|Error|ContainerStatusUnknown" | grep -v crunchy | grep -v spilo | awk '{print $1}' | xargs oc -n $namespace delete pod || true
+                          oc -n $namespace get pods | grep -E "Completed|Error|ContainerStatusUnknown" | grep -v crunchy | grep -v spilo | grep -v backup | awk '{print $1}' | xargs oc -n $namespace delete pod || true
 
                           env=$(echo $namespace | awk -F '-' '{print $NF}')
 
-                          echo "==========> Removing expired backend images"
+                          runningBackendImageTag=$(oc -n $namespace describe dc/zeva-backend-$env | grep Triggers | grep zeva-backend | awk -F '@' '{print $2}' | awk -F ',' '{print $1}')
 
-                          runningBackendImageTag=$(oc -n $namespace describe dc/zeva-backend-$env | grep Triggers | grep zeva-backend | awk -F '@' '{print $2}' | awk -F ',' '{print $1}') || true
+                          echo "==========> Removing expired backend image tags except  zeva-backend:$runningBackendImageTag"
                           
                           oc -n $namespace get imagetags | grep zeva-backend | grep -v $runningBackendImageTag | awk '{print $1}' | xargs oc -n $namespace delete imagetag || true
 
-                          echo "==========> Removing expired frontend images"
+                          runningFrontendImageTag=$(oc -n $namespace describe dc/zeva-frontend-$env | grep Triggers | grep zeva-frontend | awk -F '@' '{print $2}' | awk -F ',' '{print $1}')
 
-                          runningFrontendImageTag=$(oc -n $namespace describe dc/zeva-frontend-$env | grep Triggers | grep zeva-frontend | awk -F '@' '{print $2}' | awk -F ',' '{print $1}') || true
-                          
+                          echo "==========> Removing expired frontend image tags except zeva-frontend:$runningFrontendImageTag"
+
                           oc -n $namespace get imagetags | grep zeva-frontend | grep -v $runningFrontendImageTag | awk '{print $1}' | xargs oc -n $namespace delete imagetag || true
-
-                          echo "==========> Removing expired task-queue images"
-
-                          runningTaskQueueImageTag=$(oc -n $namespace describe dc/zeva-task-queue-$env | grep Triggers | grep zeva-task-queue | awk -F '@' '{print $2}' | awk -F ',' '{print $1}') || true
-                          
-                          oc -n $namespace get imagetags | grep zeva-task-queue | grep -v $runningTaskQueueImageTag | awk '{print $1}' | xargs oc -n $namespace delete imagetag || true
 
                       done
 
