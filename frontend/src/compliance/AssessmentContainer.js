@@ -17,6 +17,7 @@ import getTotalReductionBig from '../app/utilities/getTotalReductionBig'
 import getClassAReductionBig from '../app/utilities/getClassAReductionBig'
 import getUnspecifiedClassReductionBig from '../app/utilities/getUnspecifiedClassReductionBig'
 import { convertBalances, convertCarryOverDeficits } from '../app/utilities/convertToBig'
+import getSnapshottedComplianceRatioReductions from '../app/utilities/getSnapshottedReductions'
 
 const AssessmentContainer = (props) => {
   const { keycloak, user } = props
@@ -276,6 +277,8 @@ const AssessmentContainer = (props) => {
               const complianceResponseDetails =
                 creditActivityResponse.data.complianceObligation
 
+              const snapshottedComplianceRatioReductions = getSnapshottedComplianceRatioReductions(complianceResponseDetails)
+
               const {
                 creditBalanceEnd,
                 creditBalanceStart,
@@ -332,7 +335,15 @@ const AssessmentContainer = (props) => {
                 filteredRatios.zevClassA,
                 tempSupplierClass
               )
-              setTotalReduction(new Big(tempTotalReduction.toFixed(2)))
+
+              const calculatedComplianceRatioReductions = {
+                complianceRatioTotalReduction: tempTotalReduction,
+                complianceRatioClassAReduction: classAReduction,
+                complianceRatioUnspecifiedReduction: leftoverReduction
+              }
+              const complianceRatioReductions = { ...calculatedComplianceRatioReductions, ...snapshottedComplianceRatioReductions }
+              
+              setTotalReduction(new Big(complianceRatioReductions.complianceRatioTotalReduction.toFixed(2)))
 
               const tempBalances = getNewBalancesStructure(provisionalBalance)
 
@@ -342,14 +353,14 @@ const AssessmentContainer = (props) => {
               const tempClassAReductions = [
                 {
                   modelYear: Number(modelYear.name),
-                  value: new Big (classAReduction.toFixed(2))
+                  value: new Big(complianceRatioReductions.complianceRatioClassAReduction.toFixed(2))
                 }
               ]
 
               const tempUnspecifiedReductions = [
                 {
                   modelYear: Number(modelYear.name),
-                  value: new Big(leftoverReduction.toFixed(2))
+                  value: new Big(complianceRatioReductions.complianceRatioUnspecifiedReduction.toFixed(2))
                 }
               ]
 
@@ -524,6 +535,36 @@ const AssessmentContainer = (props) => {
             }
           }
 
+          for (const reduction of classAReductions) {
+            reportDetailsArray.push({
+              category: 'complianceRatioClassAReduction',
+              year: reduction.modelYear,
+              a: 0,
+              b: 0,
+              reduction_value: reduction.value.toString()
+            })
+          }
+
+          for (const reduction of unspecifiedReductions) {
+            reportDetailsArray.push({
+              category: 'complianceRatioUnspecifiedReduction',
+              year: reduction.modelYear,
+              a: 0,
+              b: 0,
+              reduction_value: reduction.value.toString()
+            })
+          }
+
+          if (totalReduction instanceof Big) {
+            reportDetailsArray.push({
+              category: 'complianceRatioTotalReduction',
+              year: reportYear,
+              a: 0,
+              b: 0,
+              reduction_value: totalReduction.toString()
+            })
+          }
+          
           const ObligationData = {
             reportId: id,
             creditActivity: reportDetailsArray
