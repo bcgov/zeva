@@ -3,7 +3,8 @@ import numpy as np
 import math
 import time
 from django.db import transaction
-
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from api.models.icbc_registration_data import IcbcRegistrationData
 from api.models.icbc_vehicle import IcbcVehicle
 from api.models.model_year import ModelYear
@@ -131,12 +132,17 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo, previous_
             # print("unique_vins", unique_vins.shape[0])
 
             model_years = []
+
             for unique_model_year in unique_model_years:
+                eff_date = datetime.strptime(str(unique_model_year), '%Y')
+                exp_date = eff_date + relativedelta(years=1) - relativedelta(days=1)
                 (model_year, _) = ModelYear.objects.get_or_create(
                             name=unique_model_year,
                             defaults={
                                 'create_user': requesting_user.username,
-                                'update_user': requesting_user.username
+                                'update_user': requesting_user.username,
+                                'effective_date': eff_date,
+                                'expiration_date': exp_date
                             })
                 model_years.append(model_year)
 
