@@ -40,7 +40,7 @@ class ModelYearReportComplianceObligationSnapshotSerializer(serializers.ModelSer
     class Meta:
         model = ModelYearReportComplianceObligation
         fields = (
-            'credit_a_value',  'credit_b_value',
+            'credit_a_value',  'credit_b_value', 'reduction_value',
             'category', 'model_year', 'update_timestamp',
         )
 
