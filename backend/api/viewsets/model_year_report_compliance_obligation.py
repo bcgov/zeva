@@ -198,8 +198,9 @@ class ModelYearReportComplianceObligationViewset(
              report.validation_status == ModelYearReportStatuses.ASSESSED) or
             request.user.is_government
         )
+        use_from_gov_snapshot = request.GET.get('use_from_gov_snapshot') == 'True'
 
-        if is_assessment:
+        if is_assessment or use_from_gov_snapshot:
             organization = report.organization
             snapshot_from_gov = ModelYearReportComplianceObligation.objects.filter(
                 from_gov=True,

@@ -587,7 +587,7 @@ const SupplementaryContainer = (props) => {
           `${ROUTES_SUPPLEMENTARY.ASSESSED_SUPPLEMENTALS.replace(':id', id)}`
         ),
         axios.get(
-          `${ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(':id', id)}?most_recent_ldv_sales=true`
+          `${ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(':id', id)}?most_recent_ldv_sales=true&use_from_gov_snapshot=True`
         ),
         axios.get(ROUTES_COMPLIANCE.RATIOS),
         axios.get(
