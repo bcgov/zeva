@@ -86,7 +86,8 @@ elif [[ -f requirements.txt ]]; then
     pip install -r requirements.txt
   else
     echo "---> Installing dependencies from artifactory ..."
-    pip install -i https://$ARTIFACTORY_USER:$ARTIFACTORY_PASSWORD@artifacts.developer.gov.bc.ca/artifactory/api/pypi/pypi-remote/simple -r requirements.txt
+    # pip install -i https://$ARTIFACTORY_USER:$ARTIFACTORY_PASSWORD@artifacts.developer.gov.bc.ca/artifactory/api/pypi/pypi-remote/simple -r requirements.txt
+    pip install -r requirements.txt
   fi
 fi
 
