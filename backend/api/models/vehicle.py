@@ -1,6 +1,6 @@
 from django.db import models
 from enumfields import EnumField
-
+from django.db.models import Q
 from auditable.models import Auditable
 from .vehicle_statuses import VehicleDefinitionStatuses
 
@@ -133,11 +133,13 @@ class Vehicle(Auditable):
 
         return round(credit, 2)
 
-    class Meta:
-        db_table = 'vehicle'
-        unique_together = [[
-            'make', 'model_name', 'vehicle_zev_type',
-            'model_year'
-        ]]
+    class Meta: 
+        db_table = "vehicle" 
+        constraints = [ 
+            models.UniqueConstraint( 
+                fields=["make", "model_name", "vehicle_zev_type", "model_year"], 
+                condition=~Q(validation_status="DELETED"), 
+                name="unique_non_deleted_vehicles", 
+            )] 
 
     db_table_comment = "List of credit-generating vehicle definitions"
