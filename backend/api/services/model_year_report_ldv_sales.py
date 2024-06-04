@@ -6,7 +6,7 @@ def get_most_recent_ldv_sales(model_year_report):
         ModelYearReportLDVSales.objects.filter(
             model_year=model_year_report.model_year, model_year_report=model_year_report
         )
-        .order_by("-create_timestamp")
+        .order_by("-update_timestamp")
         .only("ldv_sales")
         .first()
     )
