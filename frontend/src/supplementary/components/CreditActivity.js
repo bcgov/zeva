@@ -1,15 +1,17 @@
 import PropTypes from 'prop-types'
 import React, { useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import Big from 'big.js'
 
 import ComplianceObligationTableCreditsIssued from '../../compliance/components/ComplianceObligationTableCreditsIssued'
 import Loading from '../../app/components/Loading'
 import formatNumeric from '../../app/utilities/formatNumeric'
 import getComplianceObligationDetails from '../../app/utilities/getComplianceObligationDetails'
-import calculateCreditReduction from '../../app/utilities/calculateCreditReduction'
-import getClassAReduction from '../../app/utilities/getClassAReduction'
-import getTotalReduction from '../../app/utilities/getTotalReduction'
-import getUnspecifiedClassReduction from '../../app/utilities/getUnspecifiedClassReduction'
+import calculateCreditReductionBig from '../../app/utilities/calculateCreditReductionBig'
+import getClassAReductionBig from '../../app/utilities/getClassAReductionBig'
+import getTotalReductionBig from '../../app/utilities/getTotalReductionBig'
+import getUnspecifiedClassReductionBig from '../../app/utilities/getUnspecifiedClassReductionBig'
+import { convertBalances, convertCarryOverDeficits } from '../../app/utilities/convertToBig'
 
 const CreditActivity = (props) => {
   const {
@@ -104,34 +106,39 @@ const CreditActivity = (props) => {
     }
   }
 
-  const totalReduction = getTotalReduction(ldvSales, ratios.complianceRatio)
-  const classAReduction = getClassAReduction(
+  const totalReduction = getTotalReductionBig(ldvSales, ratios.complianceRatio, supplierClass)
+  const classAReduction = getClassAReductionBig(
     ldvSales,
     ratios.zevClassA,
     supplierClass
   )
-  const leftoverReduction = getUnspecifiedClassReduction(
-    totalReduction,
-    classAReduction
+  const leftoverReduction = getUnspecifiedClassReductionBig(
+    ldvSales,
+    ratios.complianceRatio,
+    ratios.zevClassA,
+    supplierClass
   )
-  const newTotalReduction = getTotalReduction(
+  const newTotalReduction = getTotalReductionBig(
     newLdvSales,
-    ratios.complianceRatio
+    ratios.complianceRatio,
+    supplierClass
   )
-  const newClassAReduction = getClassAReduction(
+  const newClassAReduction = getClassAReductionBig(
     newLdvSales,
     ratios.zevClassA,
     supplierClass
   )
-  const newLeftoverReduction = getUnspecifiedClassReduction(
-    newTotalReduction,
-    newClassAReduction
+  const newLeftoverReduction = getUnspecifiedClassReductionBig(
+    newLdvSales,
+    ratios.complianceRatio,
+    ratios.zevClassA,
+    supplierClass
   )
 
   const classAReductions = [
     {
       modelYear: Number(reportYear),
-      value: Number(classAReduction)
+      value: new Big(classAReduction.toFixed(2))
     }
   ]
 
@@ -139,16 +146,16 @@ const CreditActivity = (props) => {
     {
       modelYear: Number(reportYear),
       value:
-        Number(newClassAReduction) > 0
-          ? Number(newClassAReduction)
-          : Number(classAReduction)
+        (new Big(newClassAReduction.toFixed(2))).gte(new Big(0))
+          ? new Big(newClassAReduction.toFixed(2))
+          : new Big(classAReduction.toFixed(2))
     }
   ]
 
   const unspecifiedReductions = [
     {
       modelYear: Number(reportYear),
-      value: Number(leftoverReduction)
+      value: new Big(leftoverReduction.toFixed(2))
     }
   ]
 
@@ -156,9 +163,9 @@ const CreditActivity = (props) => {
     {
       modelYear: Number(reportYear),
       value:
-        Number(newLeftoverReduction) > 0
-          ? Number(newLeftoverReduction)
-          : Number(leftoverReduction)
+        (new Big(newLeftoverReduction.toFixed(2))).gte(new Big(0))
+          ? new Big(newLeftoverReduction.toFixed(2))
+          : new Big(leftoverReduction.toFixed(2))
     }
   ]
 
@@ -183,7 +190,9 @@ const CreditActivity = (props) => {
     })
   })
 
-  const creditReduction = calculateCreditReduction(
+  convertBalances(tempBalances)
+  convertCarryOverDeficits(carryOverDeficits)
+  const creditReduction = calculateCreditReductionBig(
     tempBalances,
     classAReductions,
     unspecifiedReductions,
@@ -191,7 +200,8 @@ const CreditActivity = (props) => {
     carryOverDeficits
   )
 
-  const newCreditReduction = calculateCreditReduction(
+  convertBalances(newTempBalances)
+  const newCreditReduction = calculateCreditReductionBig(
     newTempBalances,
     newClassAReductions,
     newUnspecifiedReductions,
