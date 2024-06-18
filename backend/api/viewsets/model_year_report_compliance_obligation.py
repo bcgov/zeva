@@ -144,12 +144,14 @@ class ModelYearReportComplianceObligationViewset(
             model_year = ModelYear.objects.get(name=each['year'])
             credit_a_value = each['a']
             credit_b_value = each['b']
+            reduction_value = each.get('reduction_value')
             compliance_obj = ModelYearReportComplianceObligation.objects.create(
                 model_year_report_id=id,
                 model_year=model_year,
                 category=category,
                 credit_a_value=credit_a_value,
                 credit_b_value=credit_b_value,
+                reduction_value=reduction_value,
                 from_gov=True
             )
             compliance_obj.save()
@@ -196,8 +198,9 @@ class ModelYearReportComplianceObligationViewset(
              report.validation_status == ModelYearReportStatuses.ASSESSED) or
             request.user.is_government
         )
+        use_from_gov_snapshot = request.GET.get('use_from_gov_snapshot') == 'True'
 
-        if is_assessment:
+        if is_assessment or use_from_gov_snapshot:
             organization = report.organization
             snapshot_from_gov = ModelYearReportComplianceObligation.objects.filter(
                 from_gov=True,

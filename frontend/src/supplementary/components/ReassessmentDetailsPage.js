@@ -1,17 +1,19 @@
 // intended only for directors to view an assessed reassessment
 
 import React, { useEffect } from 'react'
-import calculateCreditReduction from '../../app/utilities/calculateCreditReduction'
-import getClassAReduction from '../../app/utilities/getClassAReduction'
+import Big from 'big.js'
+import calculateCreditReductionBig from '../../app/utilities/calculateCreditReductionBig'
+import getClassAReductionBig from '../../app/utilities/getClassAReductionBig'
 import getComplianceObligationDetails from '../../app/utilities/getComplianceObligationDetails'
-import getTotalReduction from '../../app/utilities/getTotalReduction'
-import getUnspecifiedClassReduction from '../../app/utilities/getUnspecifiedClassReduction'
+import getTotalReductionBig from '../../app/utilities/getTotalReductionBig'
+import getUnspecifiedClassReductionBig from '../../app/utilities/getUnspecifiedClassReductionBig'
 import ComplianceObligationAmountsTable from '../../compliance/components/ComplianceObligationAmountsTable'
 import ComplianceObligationReductionOffsetTable from '../../compliance/components/ComplianceObligationReductionOffsetTable'
 import ComplianceObligationTableCreditsIssued from '../../compliance/components/ComplianceObligationTableCreditsIssued'
 import NoticeOfAssessmentSection from '../../compliance/components/NoticeOfAssessmentSection'
 import constructReassessmentReductions from '../../app/utilities/constructReassessmentReductions'
 import { getNewBalancesStructure } from '../../app/utilities/getNewStructures'
+import { convertBalances, convertCarryOverDeficits } from '../../app/utilities/convertToBig'
 
 const ReassessmentDetailsPage = (props) => {
   // from props, reconcile existing data with new data, then pass to downstream components
@@ -64,14 +66,14 @@ const ReassessmentDetailsPage = (props) => {
 
   const reportYear = Number(details.assessmentData.modelYear)
 
-  let classAReductionValue = getClassAReduction(
+  let classAReductionValue = getClassAReductionBig(
     ldvSales,
     ratios.zevClassA,
     supplierClass
   )
   const prevClassAReductionValue = classAReductionValue
   if (newData && newData.supplierInfo && newData.supplierInfo.ldvSales) {
-    classAReductionValue = getClassAReduction(
+    classAReductionValue = getClassAReductionBig(
       newData.supplierInfo.ldvSales,
       ratios.zevClassA,
       supplierClass
@@ -81,14 +83,14 @@ const ReassessmentDetailsPage = (props) => {
   const prevClassAReductions = [
     {
       modelYear: reportYear,
-      value: prevClassAReductionValue
+      value: new Big(prevClassAReductionValue.toFixed(2))
     }
   ]
 
   const classAReductions = [
     {
       modelYear: reportYear,
-      value: classAReductionValue
+      value: new Big(classAReductionValue.toFixed(2))
     }
   ]
 
@@ -97,36 +99,43 @@ const ReassessmentDetailsPage = (props) => {
     sales = newData.supplierInfo.ldvSales
   }
 
-  let totalReduction = getTotalReduction(ldvSales, ratios.complianceRatio)
-  const prevTotalReduction = totalReduction
+  let totalReduction = getTotalReductionBig(ldvSales, ratios.complianceRatio, supplierClass)
   if (newData && newData.supplierInfo && newData.supplierInfo.ldvSales) {
-    totalReduction = getTotalReduction(
+    totalReduction = getTotalReductionBig(
       newData.supplierInfo.ldvSales,
-      ratios.complianceRatio
+      ratios.complianceRatio,
+      supplierClass
     )
   }
+  totalReduction = new Big(totalReduction.toFixed(2))
 
-  const prevUnspecifiedReductionValue = getUnspecifiedClassReduction(
-    prevTotalReduction,
-    prevClassAReductionValue
+  let unspecifiedReductionValue = getUnspecifiedClassReductionBig(
+    ldvSales,
+    ratios.complianceRatio,
+    ratios.zevClassA,
+    supplierClass
   )
-
-  const unspecifiedReductionValue = getUnspecifiedClassReduction(
-    totalReduction,
-    classAReductionValue
-  )
+  const prevUnspecifiedReductionValue = unspecifiedReductionValue
+  if (newData && newData.supplierInfo && newData.supplierInfo.ldvSales) {
+    unspecifiedReductionValue = getUnspecifiedClassReductionBig(
+      newData.supplierInfo.ldvSales,
+      ratios.complianceRatio,
+      ratios.zevClassA,
+      supplierClass
+    )
+  }
 
   const prevUnspecifiedReductions = [
     {
       modelYear: reportYear,
-      value: prevUnspecifiedReductionValue
+      value: new Big(prevUnspecifiedReductionValue.toFixed(2))
     }
   ]
 
   const unspecifiedReductions = [
     {
       modelYear: reportYear,
-      value: unspecifiedReductionValue
+      value: new Big(unspecifiedReductionValue.toFixed(2))
     }
   ]
 
@@ -229,17 +238,22 @@ const ReassessmentDetailsPage = (props) => {
     details.assessmentData && details.assessmentData.creditReductionSelection
 
   const transformedBalances = getNewBalancesStructure(prevProvisionalBalance)
+  convertBalances(transformedBalances)
 
   const transformedNewBalances = getNewBalancesStructure(newBalances)
+  convertBalances(transformedNewBalances)
 
-  const prevCreditReduction = calculateCreditReduction(
+  convertCarryOverDeficits(prevCarryOverDeficits)
+  convertCarryOverDeficits(carryOverDeficits)
+
+  const prevCreditReduction = calculateCreditReductionBig(
     transformedBalances,
     prevClassAReductions,
     prevUnspecifiedReductions,
     creditReductionSelection,
     prevCarryOverDeficits
   )
-  const creditReduction = calculateCreditReduction(
+  const creditReduction = calculateCreditReductionBig(
     transformedNewBalances,
     classAReductions,
     unspecifiedReductions,
