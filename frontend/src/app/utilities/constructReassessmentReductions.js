@@ -49,11 +49,11 @@ const constructReassessmentReductions = (reductions, prevReductions) => {
       }
     }
     for (const reduction of potentialReductionsToAdd) {
-      if (reduction.oldValue.eq(bigZero)) {
+      if (!reduction.oldValue) {
         result.reductionsToAdd.push({
           creditClass: reduction.creditClass,
           modelYear: reduction.modelYear,
-          value: reduction.newValue.toNumber()
+          value: reduction.newValue
         })
       } else {
         result.reductionsToUpdate.push(reduction)
