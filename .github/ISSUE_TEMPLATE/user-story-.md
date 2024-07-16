@@ -10,6 +10,7 @@ assignees: ''
 **Title:**
 
 **Description:**
+- [ ] "As a [type of user]", "I want [an action or feature]", "So that [benefit or value]" 
 
 **Wireframe:** <link>
 
