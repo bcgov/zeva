@@ -8,9 +8,9 @@ import formatNumeric from '../../app/utilities/formatNumeric'
 import calculateCreditBalance from '../../app/utilities/calculateCreditBalance'
 
 const CreditBalanceTable = (props) => {
-  const { balances, assessedBalances } = props
+  const { balances, assessedBalances, backdatedTransactions } = props
 
-  const { assessedDeficits, bCreditsInCaseOfDeficit, deficitAExists, deficitBExists, totalCredits } = calculateCreditBalance(balances, assessedBalances)
+  const { assessedDeficits, bCreditsInCaseOfDeficit, deficitAExists, deficitBExists, totalCredits } = calculateCreditBalance(balances, assessedBalances, backdatedTransactions)
 
   const getColumns = (keyColumnHeader, bColumnHeader) => {
     return [

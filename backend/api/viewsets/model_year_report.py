@@ -71,6 +71,11 @@ from api.serializers.model_year_report_noa import (
 )
 from api.models.organization import Organization
 from api.services.supplemental_report import get_ordered_list_of_supplemental_reports
+from api.services.credit_transaction import (
+    account_for_backdated_transactions_in_supplementary,
+    there_exists_outstanding_backdated_transactions_for_myr,
+    account_for_backdated_transactions_in_myr,
+)
 
 
 class ModelYearReportViewset(
@@ -477,6 +482,13 @@ class ModelYearReportViewset(
                 )
 
             if validation_status == "ASSESSED":
+                if there_exists_outstanding_backdated_transactions_for_myr(
+                    model_year_report_check.organization
+                ):
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
+                account_for_backdated_transactions_in_myr(
+                    model_year_report_check.organization
+                )
                 adjust_credits(model_year_report_id, request)
         
         if validation_status == "DRAFT" and request.user.is_government:
@@ -963,6 +975,11 @@ class ModelYearReportViewset(
                     # adjust credits etc the same way as is done with
                     # model year reports excpt pass it the supplemental
                     adjust_credits_reassessment(supplemental_id, request)
+                    account_for_backdated_transactions_in_supplementary(
+                        report.organization,
+                        int(report.model_year.name),
+                        supplemental_report.create_timestamp
+                    )
 
                 SupplementalReportHistory.objects.create(
                     supplemental_report_id=supplemental_id,

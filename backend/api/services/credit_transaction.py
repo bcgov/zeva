@@ -34,6 +34,7 @@ from api.utilities.credit_transaction import (
 )
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
+from api.models.backdated_credit_transaction import BackdatedCreditTransaction
 
 
 def aggregate_credit_balance_details(organization, *credit_transaction_q_objs):
@@ -483,3 +484,71 @@ def get_timestamp_of_most_recent_reduction(organization):
     if credit_transaction:
         return credit_transaction.transaction_timestamp
     return None
+
+
+def _get_backdated_transactions(
+    organization, q_lookup, *select_related_credit_transaction_fields
+):
+    select_related = ["credit_transaction"]
+    for field in select_related_credit_transaction_fields:
+        select_related.append("credit_transaction__{field}".format(field=field))
+    transactions = (
+        BackdatedCreditTransaction.objects.select_related(*select_related)
+        .filter(
+            Q(credit_transaction__credit_to=organization)
+            | Q(credit_transaction__debit_from=organization)
+        )
+        .filter(q_lookup)
+    )
+    return list(transactions)
+
+
+def get_backdated_transactions_for_credit_balance(
+    organization, *select_related_credit_transaction_fields
+):
+    q_lookup = Q(accounted_for_in_model_year_report=False)
+    return _get_backdated_transactions(
+        organization, q_lookup, *select_related_credit_transaction_fields
+    )
+
+
+def get_backdated_transactions_for_supplemental(
+    organization,
+    compliance_year,
+    supp_create_ts,
+    *select_related_credit_transaction_fields,
+):
+    q_lookup = Q(compliance_year=compliance_year) & Q(
+        create_timestamp__lt=supp_create_ts
+    )
+    return _get_backdated_transactions(
+        organization, q_lookup, *select_related_credit_transaction_fields
+    )
+
+
+def there_exists_outstanding_backdated_transactions_for_myr(organization):
+    q_lookup = Q(accounted_for_in_supplemental=False)
+    transactions = _get_backdated_transactions(organization, q_lookup)
+    return len(transactions) > 0
+
+
+def account_for_backdated_transactions_in_supplementary(
+    organization, compliance_year, supp_create_ts
+):
+    BackdatedCreditTransaction.objects.filter(
+        Q(credit_transaction__credit_to=organization)
+        | Q(credit_transaction__debit_from=organization)
+    ).filter(compliance_year=compliance_year).filter(
+        create_timestamp__lt=supp_create_ts
+    ).update(
+        accounted_for_in_supplemental=True
+    )
+
+
+def account_for_backdated_transactions_in_myr(organization):
+    BackdatedCreditTransaction.objects.filter(
+        Q(credit_transaction__credit_to=organization)
+        | Q(credit_transaction__debit_from=organization)
+    ).filter(accounted_for_in_supplemental=True).update(
+        accounted_for_in_model_year_report=True
+    )

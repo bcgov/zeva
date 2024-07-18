@@ -12,6 +12,7 @@ import { withRouter } from 'react-router'
 import CustomPropTypes from '../app/utilities/props'
 import ROUTES_ORGANIZATIONS from '../app/routes/Organizations'
 import ROUTES_COMPLIANCE from '../app/routes/Compliance'
+import ROUTES_BACKDATED_CREDIT_TRANSACTIONS from '../app/routes/BackdatedCreditTransactions'
 import VehicleSupplierTabs from '../app/components/VehicleSupplierTabs'
 import VehicleSupplierSalesListPage from './components/VehicleSupplierSalesListPage'
 import { getMostRecentModelYearReportBalances, getPostRecentModelYearReportBalances } from '../app/utilities/getModelYearReportCreditBalances'
@@ -26,6 +27,7 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
   const [reports, setReports] = useState([])
   const [creditTransactions, setCreditTransactions] = useState([])
   const [assessedSupplementalsMap, setAssessedSupplementalsMap] = useState({})
+  const [backdatedTransactions, setBackdatedTransactions] = useState([])
   const { keycloak, location, user } = props
   const { state: locationState } = location
 
@@ -78,13 +80,22 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
       setAssessedBalances(assessedBalances)
     })
 
+    const backdatedTransactionsPromise = axios.get(`${ROUTES_BACKDATED_CREDIT_TRANSACTIONS.CREDIT_BALANCE_UNACCOUNTED}?organization=${id}`).then((response) => {
+      const transactions = []
+      for (const transaction of response.data) {
+        transactions.push(transaction.creditTransaction)
+      }
+      setBackdatedTransactions(transactions)
+    })
+
     Promise.all([
       balancePromise,
       complianceYearsPromise,
       detailsPromise,
       reportsPromise,
       assessedSupplementalsMapPromise,
-      assessedBalancesPromise
+      assessedBalancesPromise,
+      backdatedTransactionsPromise,
     ]).then(() => {
       setLoading(false)
     })
@@ -113,6 +124,7 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
       <VehicleSupplierSalesListPage
         assessedSupplementalsMap={assessedSupplementalsMap}
         availableComplianceYears={availableComplianceYears}
+        backdatedTransactions={backdatedTransactions}
         loading={loading}
         locationState={locationState}
         balances={balances}

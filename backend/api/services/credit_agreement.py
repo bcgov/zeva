@@ -10,6 +10,10 @@ from api.models.credit_agreement_transaction_types import \
 from api.models.weight_class import WeightClass
 from api.models.credit_agreement_credit_transaction import \
     CreditAgreementCreditTransaction
+from api.utilities.credit_transaction import is_backdated
+from api.utilities.compliance_period import get_compliance_year
+from api.models.backdated_credit_transaction import BackdatedCreditTransaction
+from api.services.organization import get_current_assessed_report
 
 
 def adjust_credits(agreement):
@@ -62,6 +66,26 @@ def adjust_credits(agreement):
             transaction_timestamp=agreement.effective_date,
             update_user=agreement.update_user,
             weight_class=weight_class
+            )
+        
+        if (
+            (
+                transaction_type
+                == CreditAgreementTransactionTypes.ADMINISTRATIVE_CREDIT_REDUCTION
+                or transaction_type
+                == CreditAgreementTransactionTypes.ADMINISTRATIVE_CREDIT_ALLOCATION
+            )
+            and is_backdated(added_transaction)
+            and get_current_assessed_report(credit_to) is None
+            and get_current_assessed_report(debit_from) is None
+        ):
+            BackdatedCreditTransaction.objects.create(
+                credit_transaction=added_transaction,
+                compliance_year=get_compliance_year(
+                    added_transaction.transaction_timestamp
+                ),
+                accounted_for_in_model_year_report=False,
+                accounted_for_in_supplemental=False,
             )
 
         if credit_class.credit_class == 'A':

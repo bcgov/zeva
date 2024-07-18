@@ -1,23 +1,28 @@
-const calculateCreditBalance = (balances, assessedBalances) => {
+const calculateCreditBalance = (balances, assessedBalances, backdatedTransactions) => {
   const currentBalances = {}
+  let balancesToIterate = []
   if (balances) {
-    balances.forEach((balance) => {
-      if (balance.modelYear?.name && balance.creditClass?.creditClass) {
-        const modelYear = balance.modelYear.name
-        const creditClass = balance.creditClass.creditClass
-        const totalValue = isNaN(parseFloat(balance.totalValue)) ? 0 : parseFloat(balance.totalValue)
-        if (creditClass === 'A' || creditClass === 'B') {
-          if (!currentBalances[modelYear]) {
-            currentBalances[modelYear] = {
-              A: 0,
-              B: 0
-            }
-          }
-          currentBalances[modelYear][creditClass] = currentBalances[modelYear][creditClass] + totalValue
-        }
-      }
-    })
+    balancesToIterate = balances
   }
+  if (backdatedTransactions) {
+    balancesToIterate = balancesToIterate.concat(backdatedTransactions)
+  }
+  balancesToIterate.forEach((balance) => {
+    if (balance.modelYear?.name && balance.creditClass?.creditClass) {
+      const modelYear = balance.modelYear.name
+      const creditClass = balance.creditClass.creditClass
+      const totalValue = isNaN(parseFloat(balance.totalValue)) ? 0 : parseFloat(balance.totalValue)
+      if (creditClass === 'A' || creditClass === 'B') {
+        if (!currentBalances[modelYear]) {
+          currentBalances[modelYear] = {
+            A: 0,
+            B: 0
+          }
+        }
+        currentBalances[modelYear][creditClass] = currentBalances[modelYear][creditClass] + totalValue
+      }
+    }
+  })
 
   const assessedDeficits = {}
   let deficitAExists = false

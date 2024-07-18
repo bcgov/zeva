@@ -8,7 +8,7 @@ import CreditTransactions from '../../credits/components/CreditTransactions'
 import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations'
 
 const VehicleSupplierSalesListPage = (props) => {
-  const { assessedSupplementalsMap, availableComplianceYears, loading, locationState, user, items, handleGetCreditTransactions, reports, balances, assessedBalances } = props
+  const { assessedSupplementalsMap, availableComplianceYears, backdatedTransactions, loading, locationState, user, items, handleGetCreditTransactions, reports, balances, assessedBalances } = props
 
   if (loading) {
     return <Loading />
@@ -21,6 +21,7 @@ const VehicleSupplierSalesListPage = (props) => {
           <CreditTransactions
             assessedSupplementalsMap={assessedSupplementalsMap}
             availableComplianceYears={availableComplianceYears}
+            backdatedTransactions={backdatedTransactions}
             balances={balances}
             assessedBalances={assessedBalances}
             reports={reports}

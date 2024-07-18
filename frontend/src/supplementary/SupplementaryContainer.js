@@ -5,6 +5,7 @@ import { useParams, useLocation } from 'react-router-dom'
 
 import ROUTES_SUPPLEMENTARY from '../app/routes/SupplementaryReport'
 import ROUTES_COMPLIANCE from '../app/routes/Compliance'
+import ROUTES_BACKDATED_CREDIT_TRANSACTIONS from '../app/routes/BackdatedCreditTransactions'
 import history from '../app/History'
 import CustomPropTypes from '../app/utilities/props'
 import reconcileSupplementaries from '../app/utilities/reconcileSupplementaries'
@@ -595,7 +596,8 @@ const SupplementaryContainer = (props) => {
             ':id',
             id
           )}?supplemental_id=${supplementaryId || ''}`
-        )
+        ),
+        axios.get(`${ROUTES_BACKDATED_CREDIT_TRANSACTIONS.SUPPLEMENTAL}?model_year_report=${id}&supplemental_id=${supplementaryId || ''}`)
       ])
       .then(
         axios.spread(
@@ -604,7 +606,8 @@ const SupplementaryContainer = (props) => {
             assessedSupplementals,
             complianceResponse,
             ratioResponse,
-            assessmentResponse
+            assessmentResponse,
+            backdatedTransactionsResponse
           ) => {
             if (response.data) {
               let assessedSupplementalsData = assessedSupplementals.data
@@ -801,8 +804,15 @@ const SupplementaryContainer = (props) => {
                 creditActivity
               })
 
+              const transactions = []
+              for (const transaction of backdatedTransactionsResponse.data) {
+                transactions.push(transaction.creditTransaction)
+              }
+
               if (reconciledComplianceObligation) {
-                setObligationDetails(reconciledComplianceObligation)
+                setObligationDetails(reconciledComplianceObligation.concat(transactions))
+              } else {
+                setObligationDetails(transactions)
               }
 
               if (reconciledLdvSales) {

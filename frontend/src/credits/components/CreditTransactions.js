@@ -5,14 +5,14 @@ import CreditBalanceTable from './CreditBalanceTable'
 import CreditTransactionListTable from './CreditTransactionListTable'
 
 const CreditTransactions = (props) => {
-  const { assessedSupplementalsMap, availableComplianceYears, balances, assessedBalances, items, handleGetCreditTransactions, reports, user } = props
+  const { assessedSupplementalsMap, availableComplianceYears, backdatedTransactions, balances, assessedBalances, items, handleGetCreditTransactions, reports, user } = props
 
   return (
     <div id="credit-transaction" className="page">
       <div className="row my-3">
         <div className="col-sm-9">
           <h2 className="mb-2">Detailed Credit Balance</h2>
-          <CreditBalanceTable balances={balances} assessedBalances={assessedBalances}/>
+          <CreditBalanceTable balances={balances} assessedBalances={assessedBalances} backdatedTransactions={backdatedTransactions} />
         </div>
       </div>
 

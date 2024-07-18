@@ -11,6 +11,7 @@ from api.serializers.organization import OrganizationSerializer
 from api.serializers.vehicle import ModelYearSerializer
 from api.serializers.weight_class import WeightClassSerializer
 from api.models.credit_agreement_transaction_types import CreditAgreementTransactionTypes
+from api.utilities.credit_transaction import get_category, get_signed_value
 
 
 class CreditClassSerializer(ModelSerializer):
@@ -198,3 +199,117 @@ class CreditTransactionSaveSerializer(ModelSerializer):
             'credit_class', 'transaction_type', 'id', 'weight_class',
             'model_year', 'create_user', 'update_user', 'number_of_credits',
         )
+
+
+class CreditTransactionBalanceItemSerializer(ModelSerializer):
+    """
+    Serializer for credit transactions
+    """
+
+    total_value = SerializerMethodField()
+    credit_class = SerializerMethodField()
+    weight_class = SerializerMethodField()
+    model_year = SerializerMethodField()
+
+    def get_total_value(self, obj):
+        if self.context.get("contains_related") is True:
+            if (
+                self.context.get("get_signed_value") is True
+                and self.context.get("organization") is not None
+            ):
+                return get_signed_value(obj, self.context.get("organization"))
+            return obj.total_value
+        else:
+            # implement later, if necessary
+            pass
+
+    def get_credit_class(self, obj):
+        if self.context.get("contains_related") is True:
+            serializer = CreditClassSerializer(obj.credit_class, read_only=True)
+            return serializer.data
+        else:
+            # implement later, if necessary
+            pass
+
+    def get_weight_class(self, obj):
+        if self.context.get("contains_related") is True:
+            serializer = WeightClassSerializer(obj.weight_class, read_only=True)
+            return serializer.data
+        else:
+            # implement later, if necessary
+            pass
+
+    def get_model_year(self, obj):
+        if self.context.get("contains_related") is True:
+            serializer = ModelYearSerializer(obj.model_year, read_only=True)
+            return serializer.data
+        else:
+            # implement later, if necessary
+            pass
+
+    class Meta:
+        model = CreditTransaction
+        fields = (
+            "total_value",
+            "credit_class",
+            "model_year",
+            "weight_class",
+        )
+
+
+class CreditTransactionComplianceReportSerializer(ModelSerializer):
+    """
+    Serializer for credit transactions
+    """
+
+    credit_a_value = SerializerMethodField()
+    credit_b_value = SerializerMethodField()
+    category = SerializerMethodField()
+    model_year = SerializerMethodField()
+
+    def get_credit_a_value(self, obj):
+        if self.context.get("contains_related") is True:
+            if obj.credit_class.credit_class == "A":
+                if (
+                    self.context.get("get_signed_value") is True
+                    and self.context.get("organization") is not None
+                ):
+                    return get_signed_value(obj, self.context.get("organization"))
+                return obj.total_value
+            return 0
+        else:
+            # implement later, if necessary
+            pass
+
+    def get_credit_b_value(self, obj):
+        if self.context.get("contains_related") is True:
+            if obj.credit_class.credit_class == "B":
+                if (
+                    self.context.get("get_signed_value") is True
+                    and self.context.get("organization") is not None
+                ):
+                    return get_signed_value(obj, self.context.get("organization"))
+                return obj.total_value
+            return 0
+        else:
+            # implement later, if necessary
+            pass
+
+    def get_category(self, obj):
+        if self.context.get("contains_related") is True:
+            return get_category(obj)
+        else:
+            # implement later, if necessary
+            pass
+
+    def get_model_year(self, obj):
+        if self.context.get("contains_related") is True:
+            serializer = ModelYearSerializer(obj.model_year, read_only=True)
+            return serializer.data
+        else:
+            # implement later, if necessary
+            pass
+
+    class Meta:
+        model = CreditTransaction
+        fields = ("credit_a_value", "credit_b_value", "category", "model_year")

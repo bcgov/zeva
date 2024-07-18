@@ -7,6 +7,7 @@ import CreditTransactionTabs from '../app/components/CreditTransactionTabs'
 import ROUTES_CREDITS from '../app/routes/Credits'
 import ROUTES_COMPLIANCE from '../app/routes/Compliance'
 import ROUTES_ORGANIZATION from '../app/routes/Organizations'
+import ROUTES_BACKDATED_CREDIT_TRANSACTIONS from '../app/routes/BackdatedCreditTransactions'
 import CustomPropTypes from '../app/utilities/props'
 import { getMostRecentModelYearReportBalances, getPostRecentModelYearReportBalances } from '../app/utilities/getModelYearReportCreditBalances'
 
@@ -18,6 +19,7 @@ const CreditsContainer = (props) => {
   const [reports, setReports] = useState([])
   const [assessedSupplementalsMap, setAssessedSupplementalsMap] = useState({})
   const [assessedBalances, setAssessedBalances] = useState({})
+  const [backdatedTransactions, setBackdatedTransactions] = useState([])
   const { user } = props
 
   const getCreditTransactions = (complianceYear) => {
@@ -63,7 +65,15 @@ const CreditsContainer = (props) => {
       setAssessedBalances(assessedBalances)
     })
 
-    Promise.all([complianceYearsPromise, balancePromise, reportsPromise, assessedBalancesPromise, assessedSupplementalsMapPromise]).then(() => {
+    const backdatedTransactionsPromise = axios.get(`${ROUTES_BACKDATED_CREDIT_TRANSACTIONS.CREDIT_BALANCE_UNACCOUNTED}?organization=${user.organization.id}`).then((response) => {
+      const transactions = []
+      for (const transaction of response.data) {
+        transactions.push(transaction.creditTransaction)
+      }
+      setBackdatedTransactions(transactions)
+    })
+
+    Promise.all([complianceYearsPromise, balancePromise, reportsPromise, assessedBalancesPromise, assessedSupplementalsMapPromise, backdatedTransactionsPromise]).then(() => {
       setLoading(false)
     })
   }
@@ -94,6 +104,7 @@ const CreditsContainer = (props) => {
         <CreditTransactions
           assessedSupplementalsMap={assessedSupplementalsMap}
           availableComplianceYears={availableComplianceYears}
+          backdatedTransactions={backdatedTransactions}
           balances={balances}
           assessedBalances={assessedBalances}
           items={creditTransactions}

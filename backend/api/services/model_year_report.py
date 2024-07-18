@@ -473,3 +473,6 @@ def delete_model_year_report(model_year_report):
         model_year_report=model_year_report
     ).delete()
     model_year_report.delete()
+
+def get_report(id, *select_related):
+    return ModelYearReport.objects.select_related(*select_related).get(id=id)

@@ -10,6 +10,7 @@ import * as ReactRouter from 'react-router-dom'
 import axios from 'axios'
 import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport'
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
+import ROUTES_BACKDATED_CREDIT_TRANSACTIONS from '../../app/routes/BackdatedCreditTransactions'
 
 const Router = ReactRouter.BrowserRouter
 
@@ -89,6 +90,8 @@ const getDataByUrl = (url, data, id, supplementaryId) => {
     return data.ratios
   } else if (url === `${ROUTES_SUPPLEMENTARY.ASSESSMENT.replace(':id', id)}?supplemental_id=${supplementaryId || ''}`) {
     return data.assessment
+  } else if (url === `${ROUTES_BACKDATED_CREDIT_TRANSACTIONS.SUPPLEMENTAL}?model_year_report=${id}&supplemental_id=${supplementaryId || ''}`) {
+    return []
   }
 }
 
