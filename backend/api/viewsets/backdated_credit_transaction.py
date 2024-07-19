@@ -7,6 +7,7 @@ from rest_framework import status
 from api.models.backdated_credit_transaction import BackdatedCreditTransaction
 from api.services.credit_transaction import (
     get_backdated_transactions_for_credit_balance,
+    get_backdated_transactions_for_new_supplemental,
     get_backdated_transactions_for_supplemental,
 )
 from api.serializers.backdated_credit_transaction import (
@@ -18,8 +19,7 @@ from api.serializers.credit_transaction import (
 )
 from api.utilities.credit_transaction import access_forbidden
 from api.services.organization import get_organization
-from api.services.model_year_report import get_report
-from django.utils import timezone
+from api.services.model_year_report import get_report, get_supplemental_report
 
 
 class BackdatedCreditTransactionViewSet(
@@ -30,7 +30,7 @@ class BackdatedCreditTransactionViewSet(
     serializer = BaseSerializer()
 
     @action(detail=False, methods=["get"])
-    def credit_balance_unaccounted(self, request):
+    def credit_balance(self, request):
         organization_id = request.query_params.get("organization")
         organization = get_organization(organization_id)
         if access_forbidden(request.user, organization):
@@ -71,15 +71,19 @@ class BackdatedCreditTransactionViewSet(
             "model_year",
             "transaction_type",
         ]
-        model_year = int(report.model_year.name)
         if not supp_id:
-            supp_ts = timezone.now()
+            transactions = get_backdated_transactions_for_new_supplemental(
+                report, *select_related
+            )
         else:
-            supp = report.get_supplemental(supp_id)
-            supp_ts = supp.create_timestamp
-        transactions = get_backdated_transactions_for_supplemental(
-            organization, model_year, supp_ts, *select_related
-        )
+            supp = get_supplemental_report(
+                supp_id,
+                "model_year_report__organization",
+                "model_year_report__model_year",
+            )
+            transactions = get_backdated_transactions_for_supplemental(
+                supp, *select_related
+            )
         serializer_context = {
             "credit_transaction_serializer": CreditTransactionComplianceReportSerializer,
             "organization": organization,

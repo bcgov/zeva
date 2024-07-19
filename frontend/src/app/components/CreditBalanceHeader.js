@@ -2,8 +2,7 @@ import axios from 'axios'
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import ROUTES_CREDITS from '../routes/Credits'
-import ROUTES_BACKDATED_CREDIT_TRANSACTIONS from '../routes/BackdatedCreditTransactions'
-import { getMostRecentModelYearReportBalances, getPostRecentModelYearReportBalances } from '../utilities/getModelYearReportCreditBalances'
+import { getMostRecentModelYearReportBalances, getPostRecentModelYearReportBalances, getBackdatedTransactions } from '../utilities/getModelYearReportCreditBalances'
 import calculateCreditBalance from '../utilities/calculateCreditBalance'
 import formatNumeric from '../utilities/formatNumeric'
 
@@ -20,12 +19,8 @@ const CreditBalanceHeader = (props) => {
       return getPostRecentModelYearReportBalances()
     }).then((balances) => {
       setBalances(balances)
-      return axios.get(`${ROUTES_BACKDATED_CREDIT_TRANSACTIONS.CREDIT_BALANCE_UNACCOUNTED}?organization=${organization.id}`)
-    }).then((response) => {
-      const transactions = []
-      for (const transaction of response.data) {
-        transactions.push(transaction.creditTransaction)
-      }
+      return getBackdatedTransactions(organization.id)
+    }).then((transactions) => {
       setBackdatedTransactions(transactions)
       setLoading(false)
     })

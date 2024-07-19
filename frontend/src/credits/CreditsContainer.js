@@ -7,9 +7,8 @@ import CreditTransactionTabs from '../app/components/CreditTransactionTabs'
 import ROUTES_CREDITS from '../app/routes/Credits'
 import ROUTES_COMPLIANCE from '../app/routes/Compliance'
 import ROUTES_ORGANIZATION from '../app/routes/Organizations'
-import ROUTES_BACKDATED_CREDIT_TRANSACTIONS from '../app/routes/BackdatedCreditTransactions'
 import CustomPropTypes from '../app/utilities/props'
-import { getMostRecentModelYearReportBalances, getPostRecentModelYearReportBalances } from '../app/utilities/getModelYearReportCreditBalances'
+import { getMostRecentModelYearReportBalances, getPostRecentModelYearReportBalances, getBackdatedTransactions } from '../app/utilities/getModelYearReportCreditBalances'
 
 const CreditsContainer = (props) => {
   const [loading, setLoading] = useState(true)
@@ -65,11 +64,7 @@ const CreditsContainer = (props) => {
       setAssessedBalances(assessedBalances)
     })
 
-    const backdatedTransactionsPromise = axios.get(`${ROUTES_BACKDATED_CREDIT_TRANSACTIONS.CREDIT_BALANCE_UNACCOUNTED}?organization=${user.organization.id}`).then((response) => {
-      const transactions = []
-      for (const transaction of response.data) {
-        transactions.push(transaction.creditTransaction)
-      }
+    const backdatedTransactionsPromise = getBackdatedTransactions(user.organization.id).then((transactions) => {
       setBackdatedTransactions(transactions)
     })
 

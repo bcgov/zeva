@@ -476,3 +476,6 @@ def delete_model_year_report(model_year_report):
 
 def get_report(id, *select_related):
     return ModelYearReport.objects.select_related(*select_related).get(id=id)
+
+def get_supplemental_report(id, *select_related):
+    return SupplementalReport.objects.select_related(*select_related).get(id=id)

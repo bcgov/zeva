@@ -436,6 +436,12 @@ class ModelYearReportViewset(
             id=model_year_report_id,
         ).first()
 
+        if validation_status == "ASSESSED":
+            if there_exists_outstanding_backdated_transactions_for_myr(
+                model_year_report_check
+            ):
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+
         if remove_submission_confirmation:
             assertion_id = SigningAuthorityAssertion.objects.filter(
                 module="compliance_summary"
@@ -482,14 +488,10 @@ class ModelYearReportViewset(
                 )
 
             if validation_status == "ASSESSED":
-                if there_exists_outstanding_backdated_transactions_for_myr(
-                    model_year_report_check.organization
-                ):
-                    return Response(status=status.HTTP_400_BAD_REQUEST)
-                account_for_backdated_transactions_in_myr(
-                    model_year_report_check.organization
-                )
                 adjust_credits(model_year_report_id, request)
+                account_for_backdated_transactions_in_myr(
+                    model_year_report_check
+                )
         
         if validation_status == "DRAFT" and request.user.is_government:
             ModelYearReportLDVSales.objects.filter(
@@ -976,9 +978,7 @@ class ModelYearReportViewset(
                     # model year reports excpt pass it the supplemental
                     adjust_credits_reassessment(supplemental_id, request)
                     account_for_backdated_transactions_in_supplementary(
-                        report.organization,
-                        int(report.model_year.name),
-                        supplemental_report.create_timestamp
+                        supplemental_report
                     )
 
                 SupplementalReportHistory.objects.create(

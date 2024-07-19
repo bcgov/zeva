@@ -2,6 +2,7 @@ import axios from 'axios'
 import ROUTES_COMPLIANCE from '../routes/Compliance'
 import ROUTES_ORGANIZATIONS from '../routes/Organizations'
 import ROUTES_CREDITS from '../routes/Credits'
+import ROUTES_BACKDATED_CREDIT_TRANSACTIONS from '../routes/BackdatedCreditTransactions'
 import getComplianceObligationDetails from './getComplianceObligationDetails'
 import getClassAReduction from './getClassAReduction'
 import getTotalReduction from './getTotalReduction'
@@ -129,4 +130,23 @@ const getPostRecentModelYearReportBalances = (organizationId) => {
   })
 }
 
-export { getMostRecentModelYearReportId, getModelYearReportCreditBalances, getMostRecentModelYearReportBalances, getPostRecentModelYearReportBalances }
+const getBackdatedTransactions = (organizationId) => {
+  if (organizationId) {
+    return axios.get(`${ROUTES_BACKDATED_CREDIT_TRANSACTIONS.CREDIT_BALANCE}?organization=${organizationId}`).then((response) => {
+      const transactions = []
+      for (const transaction of response.data) {
+        transactions.push(transaction.creditTransaction)
+      }
+      return transactions
+    })
+  }
+  return []
+}
+
+export { 
+  getMostRecentModelYearReportId, 
+  getModelYearReportCreditBalances, 
+  getMostRecentModelYearReportBalances, 
+  getPostRecentModelYearReportBalances,
+  getBackdatedTransactions
+}

@@ -486,18 +486,22 @@ def get_timestamp_of_most_recent_reduction(organization):
     return None
 
 
+def _get_backdated_transaction_organization_lookup(organization):
+    return Q(credit_transaction__credit_to=organization) | Q(
+        credit_transaction__debit_from=organization
+    )
+
+
 def _get_backdated_transactions(
     organization, q_lookup, *select_related_credit_transaction_fields
 ):
     select_related = ["credit_transaction"]
     for field in select_related_credit_transaction_fields:
         select_related.append("credit_transaction__{field}".format(field=field))
+    organization_lookup = _get_backdated_transaction_organization_lookup(organization)
     transactions = (
         BackdatedCreditTransaction.objects.select_related(*select_related)
-        .filter(
-            Q(credit_transaction__credit_to=organization)
-            | Q(credit_transaction__debit_from=organization)
-        )
+        .filter(organization_lookup)
         .filter(q_lookup)
     )
     return list(transactions)
@@ -512,12 +516,27 @@ def get_backdated_transactions_for_credit_balance(
     )
 
 
-def get_backdated_transactions_for_supplemental(
-    organization,
-    compliance_year,
-    supp_create_ts,
+def get_backdated_transactions_for_new_supplemental(
+    model_year_report,
     *select_related_credit_transaction_fields,
 ):
+    organization = model_year_report.organization
+    compliance_year = model_year_report.model_year.name
+    q_lookup = Q(compliance_year=compliance_year) & Q(
+        create_timestamp__lt=timezone.now()
+    )
+    return _get_backdated_transactions(
+        organization, q_lookup, *select_related_credit_transaction_fields
+    )
+
+
+def get_backdated_transactions_for_supplemental(
+    supplemental_report,
+    *select_related_credit_transaction_fields,
+):
+    organization = supplemental_report.model_year_report.organization
+    compliance_year = supplemental_report.model_year_report.model_year.name
+    supp_create_ts = supplemental_report.create_timestamp
     q_lookup = Q(compliance_year=compliance_year) & Q(
         create_timestamp__lt=supp_create_ts
     )
@@ -526,29 +545,35 @@ def get_backdated_transactions_for_supplemental(
     )
 
 
-def there_exists_outstanding_backdated_transactions_for_myr(organization):
-    q_lookup = Q(accounted_for_in_supplemental=False)
+def there_exists_outstanding_backdated_transactions_for_myr(model_year_report):
+    organization = model_year_report.organization
+    compliance_year = model_year_report.model_year.name
+    q_lookup = Q(accounted_for_in_supplemental=False) & Q(
+        compliance_year__lt=compliance_year
+    )
     transactions = _get_backdated_transactions(organization, q_lookup)
     return len(transactions) > 0
 
 
-def account_for_backdated_transactions_in_supplementary(
-    organization, compliance_year, supp_create_ts
-):
-    BackdatedCreditTransaction.objects.filter(
-        Q(credit_transaction__credit_to=organization)
-        | Q(credit_transaction__debit_from=organization)
-    ).filter(compliance_year=compliance_year).filter(
-        create_timestamp__lt=supp_create_ts
-    ).update(
+def account_for_backdated_transactions_in_supplementary(supplemental_report):
+    organization = supplemental_report.model_year_report.organization
+    compliance_year = supplemental_report.model_year_report.model_year.name
+    supp_create_ts = supplemental_report.create_timestamp
+    org_lookup = _get_backdated_transaction_organization_lookup(organization)
+    BackdatedCreditTransaction.objects.filter(org_lookup).filter(
+        compliance_year=compliance_year
+    ).filter(create_timestamp__lt=supp_create_ts).update(
         accounted_for_in_supplemental=True
     )
 
 
-def account_for_backdated_transactions_in_myr(organization):
-    BackdatedCreditTransaction.objects.filter(
-        Q(credit_transaction__credit_to=organization)
-        | Q(credit_transaction__debit_from=organization)
-    ).filter(accounted_for_in_supplemental=True).update(
+def account_for_backdated_transactions_in_myr(model_year_report):
+    organization = model_year_report.organization
+    compliance_year = model_year_report.model_year.name
+    org_lookup = _get_backdated_transaction_organization_lookup(organization)
+    BackdatedCreditTransaction.objects.filter(org_lookup).filter(
+        accounted_for_in_supplemental=True
+    ).filter(compliance_year__lt=compliance_year).update(
         accounted_for_in_model_year_report=True
     )
+

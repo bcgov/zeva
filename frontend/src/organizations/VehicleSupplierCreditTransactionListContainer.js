@@ -12,10 +12,9 @@ import { withRouter } from 'react-router'
 import CustomPropTypes from '../app/utilities/props'
 import ROUTES_ORGANIZATIONS from '../app/routes/Organizations'
 import ROUTES_COMPLIANCE from '../app/routes/Compliance'
-import ROUTES_BACKDATED_CREDIT_TRANSACTIONS from '../app/routes/BackdatedCreditTransactions'
 import VehicleSupplierTabs from '../app/components/VehicleSupplierTabs'
 import VehicleSupplierSalesListPage from './components/VehicleSupplierSalesListPage'
-import { getMostRecentModelYearReportBalances, getPostRecentModelYearReportBalances } from '../app/utilities/getModelYearReportCreditBalances'
+import { getMostRecentModelYearReportBalances, getPostRecentModelYearReportBalances, getBackdatedTransactions } from '../app/utilities/getModelYearReportCreditBalances'
 
 const VehicleSupplierCreditTransactionListContainer = (props) => {
   const { id } = useParams()
@@ -80,11 +79,7 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
       setAssessedBalances(assessedBalances)
     })
 
-    const backdatedTransactionsPromise = axios.get(`${ROUTES_BACKDATED_CREDIT_TRANSACTIONS.CREDIT_BALANCE_UNACCOUNTED}?organization=${id}`).then((response) => {
-      const transactions = []
-      for (const transaction of response.data) {
-        transactions.push(transaction.creditTransaction)
-      }
+    const backdatedTransactionsPromise = getBackdatedTransactions(id).then((transactions) => {
       setBackdatedTransactions(transactions)
     })
 
