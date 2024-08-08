@@ -59,13 +59,15 @@ const ConsumerSalesForecast = (props) => {
   );
 };
 
-ConsumerSalesForecast.defaultProps = {};
+ConsumerSalesForecast.defaultProps = {
+  errorMessage: "",
+};
 
 ConsumerSalesForecast.propTypes = {
   files: PropTypes.array.isRequired,
   setFiles: PropTypes.func.isRequired,
-  forecastErrorMessage: PropTypes.string,
-  setForecastErrorMessage: PropTypes.func.isRequired,
+  errorMessage: PropTypes.string,
+  setErrorMessage: PropTypes.func.isRequired,
 };
 
 export default ConsumerSalesForecast;
