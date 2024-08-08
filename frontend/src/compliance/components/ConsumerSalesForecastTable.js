@@ -61,6 +61,8 @@ const ConsumerSalesForecastTable = (props) => {
       headerClassName: "font-weight-bold",
       id: "volume",
       maxWidth: 200,
+    },
+    {
       accessor: (item) => item.sales,
       className: "text-center",
       Header: "Total Sales Forecast",
@@ -82,6 +84,8 @@ const ConsumerSalesForecastTable = (props) => {
 
 ConsumerSalesForecastTable.defaultProps = {};
 
-ConsumerSalesForecastTable.propTypes = {};
+ConsumerSalesForecastTable.propTypes = {
+  data: PropTypes.shape().isRequired,
+};
 
 export default ConsumerSalesForecastTable;

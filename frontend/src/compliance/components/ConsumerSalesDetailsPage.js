@@ -184,19 +184,17 @@ const ConsumerSalesDetailsPage = (props) => {
       {["SUBMITTED", "ASSESSED", "REASSESSED"].indexOf(
         statuses.consumerSales.status
       ) === -1 && (
-        <>
-          <div className='row'>
-            <div className='col-12 my-3'>
-              <ComplianceReportSignOff
-                assertions={assertions}
-                checkboxes={checkboxes}
-                handleCheckboxClick={handleCheckboxClick}
-                disabledCheckboxes={disabledCheckboxes}
-                user={user}
-              />
-            </div>
+        <div className='row'>
+          <div className='col-12 my-3'>
+            <ComplianceReportSignOff
+              assertions={assertions}
+              checkboxes={checkboxes}
+              handleCheckboxClick={handleCheckboxClick}
+              disabledCheckboxes={disabledCheckboxes}
+              user={user}
+            />
           </div>
-        </>
+        </div>
       )}
       <ConsumerSalesForecast
         files={files}
@@ -207,60 +205,55 @@ const ConsumerSalesDetailsPage = (props) => {
       {["SUBMITTED", "ASSESSED", "REASSESSED"].indexOf(
         statuses.consumerSales.status
       ) === -1 && (
-        <>
-          <div className='row d-print-none'>
-            <div className='col-sm-12'>
-              <div className='action-bar mt-0'>
-                <span className='left-content'>
-                  <Button
-                    buttonType='back'
-                    locationRoute='/compliance/reports'
-                  />
-                  {!user.isGovernment &&
-                    details.consumerSales.validationStatus === "DRAFT" && (
-                      <Button
-                        buttonType='delete'
-                        action={() => {
-                          setShowDeleteModal(true);
-                        }}
-                      />
-                    )}
-                </span>
-                <span className='right-content'>
-                  <Button
-                    buttonType='next'
-                    optionalClassname='button'
-                    optionalText='Next'
-                    action={() => {
-                      history.push(
-                        ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY.replace(
-                          ":id",
-                          id
-                        )
-                      );
-                    }}
-                  />
-                  {!user.isGovernment && (
+        <div className='row d-print-none'>
+          <div className='col-sm-12'>
+            <div className='action-bar mt-0'>
+              <span className='left-content'>
+                <Button buttonType='back' locationRoute='/compliance/reports' />
+                {!user.isGovernment &&
+                  details.consumerSales.validationStatus === "DRAFT" && (
                     <Button
-                      buttonType='save'
-                      disabled={
-                        buttonClicked ||
-                        ["SAVED", "UNSAVED"].indexOf(
-                          statuses.consumerSales.status
-                        ) < 0 ||
-                        disableSave()
-                      }
-                      optionalClassname='button primary'
-                      action={(event) => {
-                        handleButtonClick(event);
+                      buttonType='delete'
+                      action={() => {
+                        setShowDeleteModal(true);
                       }}
                     />
                   )}
-                </span>
-              </div>
+              </span>
+              <span className='right-content'>
+                <Button
+                  buttonType='next'
+                  optionalClassname='button'
+                  optionalText='Next'
+                  action={() => {
+                    history.push(
+                      ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY.replace(
+                        ":id",
+                        id
+                      )
+                    );
+                  }}
+                />
+                {!user.isGovernment && (
+                  <Button
+                    buttonType='save'
+                    disabled={
+                      buttonClicked ||
+                      ["SAVED", "UNSAVED"].indexOf(
+                        statuses.consumerSales.status
+                      ) < 0 ||
+                      disableSave()
+                    }
+                    optionalClassname='button primary'
+                    action={(event) => {
+                      handleButtonClick(event);
+                    }}
+                  />
+                )}
+              </span>
             </div>
           </div>
-        </>
+        </div>
       )}
 
       {modal}
@@ -299,5 +292,9 @@ ConsumerSalesDetailsPage.propTypes = {
   modelYear: PropTypes.number.isRequired,
   statuses: PropTypes.shape().isRequired,
   handleDelete: PropTypes.func.isRequired,
+  files: PropTypes.array,
+  setFiles: PropTypes.func.isRequired,
+  forecastErrorMessage: PropTypes.string,
+  setForecastErrorMessage: PropTypes.func.isRequired,
 };
 export default ConsumerSalesDetailsPage;
