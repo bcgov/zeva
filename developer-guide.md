@@ -13,10 +13,10 @@ zeva_minio_1
 zeva_rabbitmq_1  
 zeva_mailslurper_1
 
-
 ## Running on an M1 Macbook
+
 M1 macbooks run on a different chip than intel macbooks and pcs, which can cause problems with Docker. Currently it should be fine for either but if there's an issue in the future we may need to specify the source of some images.
- 
+
 ## Code style and Linting
 
 We use [Eslint](https://eslint.org/) to lint the app's code and [Prettier](https://prettier.io/) to format it. The following npm scripts can be used to trigger linting and formatting:
@@ -56,7 +56,14 @@ This will only run tests that match the test name pattern you provide.
 
 The application requires users to be authenticated using IDIR or BCeID.
 
-When developing locally, you may want to assign different users to different profiles, for example, have a 'government' profile as well as a 'supplier' profile. Your IDIR should be used for your government account and your BCeID account should be used for supplier accounts. You can insert your own user_profile objects into the database according to which identity provider you are loggin in with. The user_creation_request table is used to map external users to Zeva users. A user_creation_request entry will have to exist with your keycloak_email and external_username in order to map your IDIR/BCeID account within the system. You can also update the user_role's for your user by adding to the cross table between user_profile and role (user_role). Please reach out to a team member if you have any questions.
+When developing locally, you may want to assign different users to different profiles, for example, have a 'government' profile as well as a 'supplier' profile. Your IDIR should be used for your government account and your BCeID account should be used for supplier accounts. You can insert your own user_profile objects into the database according to which identity provider you are loggin in with. The keycloak_user_id field should contain the string found in your user_token under the key 'preferred_username'. You can print user_token in keycloak_authentication.py on line 95 to get this id and update your user_profile record
+eg.
+
+update user_profile set keycloak_user_id = '54654f9a7d164428ac57652caf33437e@idir' where id = 1;
+
+** DEPRICATED The user_creation_request table is used to map external users to Zeva users. A user_creation_request entry will have to exist with your keycloak_email and external_username in order to map your IDIR/BCeID account within the system. **
+
+You can also update the user_role's for your user by adding to the cross table between user_profile and role (user_role). Please reach out to a team member if you have any questions.
 
 ## Code Changes
 
@@ -87,10 +94,10 @@ docker-compose exec db psql -U postgres zeva
 ### To insert your first idir user
 
 INSERT INTO user_profile (
-    create_timestamp, update_timestamp, username, first_name, last_name, is_active, keycloak_email, display_name, organization_id, create_user) 
+create_timestamp, update_timestamp, username, first_name, last_name, is_active, keycloak_email, display_name, organization_id, create_user)
 VALUES (
-    NOW(), NOW(), 'idirusername', 'Firstname', 'Lastname', TRUE, 
-    'idir.email@gov.bc.ca', 'displayname', 1, 'SYSTEM');
+NOW(), NOW(), 'idirusername', 'Firstname', 'Lastname', TRUE,
+'idir.email@gov.bc.ca', 'displayname', 1, 'SYSTEM');
 
 #### Copy down Test/Prod data from Openshift
 
@@ -114,15 +121,14 @@ if theres permission issues with lchown while running the script, run the script
 
 if there's still issues, it might be a corrupted .tar file. See if someone else can export it and put it in the openshift folder. Then comment out the import script up until the tar gets copied into a local container. Then try running it.
 
-Another issue that has come up was fixed by removing a lock in the database. 
+Another issue that has come up was fixed by removing a lock in the database.
 Locks were removed by using this statement:
 SELECT pg_terminate_backend(pid)
-    FROM pg_stat_activity
-    WHERE pid <> pg_backend_pid();
-this may be enough to run the script but also the public schema can be deleted and recreated 
+FROM pg_stat_activity
+WHERE pid <> pg_backend_pid();
+this may be enough to run the script but also the public schema can be deleted and recreated
 DROP SCHEMA public cascade;
 
 CREATE SCHEMA public AUTHORIZATION postgres;
 
-then the script can be run. 
-
+then the script can be run.
