@@ -6,7 +6,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ConsumerSalesForecastTable from "./ConsumerSalesForecastTable";
 
 const ConsumerSalesForecast = (props) => {
-  const { files, setFiles, errorMessage, setErrorMessage } = props;
+  const {
+    files,
+    setFiles,
+    errorMessage,
+    setErrorMessage,
+    handleUploadForecast,
+  } = props;
 
   return (
     <div className='row my-1'>
@@ -41,7 +47,7 @@ const ConsumerSalesForecast = (props) => {
                 disabled={files.length === 0}
                 className='button primary my-3'
                 onClick={() => {
-                  console.log("click");
+                  handleUploadForecast();
                 }}
                 type='button'
               >

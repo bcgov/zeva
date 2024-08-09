@@ -33,6 +33,7 @@ const ConsumerSalesDetailsPage = (props) => {
     setFiles,
     forecastErrorMessage,
     setForecastErrorMessage,
+    handleUploadForecast,
   } = props;
 
   const [showModal, setShowModal] = useState(false);
@@ -201,6 +202,7 @@ const ConsumerSalesDetailsPage = (props) => {
         setFiles={setFiles}
         errorMessage={forecastErrorMessage}
         setErrorMessage={setForecastErrorMessage}
+        handleUploadForecast={handleUploadForecast}
       />
       {["SUBMITTED", "ASSESSED", "REASSESSED"].indexOf(
         statuses.consumerSales.status

@@ -9,6 +9,7 @@ import ComplianceReportTabs from "./components/ComplianceReportTabs";
 import ConsumerSalesDetailsPage from "./components/ConsumerSalesDetailsPage";
 import ROUTES_COMPLIANCE from "../app/routes/Compliance";
 import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from "../app/routes/SigningAuthorityAssertions";
+import ROUTES_FORECAST from "../app/routes/Forecast";
 import deleteModelYearReport from "../app/utilities/deleteModelYearReport";
 
 const ConsumerSalesContainer = (props) => {
@@ -28,7 +29,11 @@ const ConsumerSalesContainer = (props) => {
   const [files, setFiles] = useState([]);
   const [forecastErrorMessage, setForecastErrorMessage] = useState(null);
   const { id } = useParams();
-
+  const handleUploadForecast = () => {
+    axios.post(ROUTES_FORECAST.UPLOAD.replace(/:id/gi, id), {
+      forecast: uploadedDocuments,
+    });
+  };
   const refreshDetails = (showLoading) => {
     setLoading(showLoading);
 
@@ -179,6 +184,7 @@ const ConsumerSalesContainer = (props) => {
         setForecastErrorMessage={setForecastErrorMessage}
         files={files}
         setFiles={setFiles}
+        handleUploadForecast={handleUploadForecast}
       />
     </>
   );
