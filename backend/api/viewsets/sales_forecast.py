@@ -34,7 +34,7 @@ class SalesForecastViewset(viewsets.GenericViewSet):
         otherwise, returns a response with the following structure:
         {
             "count": an int with total number of sales forecast records
-            "forecast_records": [
+            "results": [
                     Objects with fields in sales_forecast_record.py. (except for sales_forecast)
                     No field will be non-primitive (e.g. the zev_class field will have a string value of A or B)
                 ]
@@ -55,4 +55,11 @@ class SalesForecastViewset(viewsets.GenericViewSet):
             zev_vehicles_2: an int
             zev_vehicles_3: an int
         }
+        """
+
+
+    def download_spreadsheet(self, request):
+        pass
+        """
+        returns a spreadsheet for users to populate with their sales forecasts and upload
         """
