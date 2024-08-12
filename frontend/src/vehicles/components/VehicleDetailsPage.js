@@ -30,7 +30,9 @@ const VehicleDetailsPage = (props) => {
   const [requestChangeCheck, setRequestChangeCheck] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [modalType, setModalType] = useState('')
-  const eligibleWeight = details.weightKg <= 3856
+  const [isChecked, setIsChecked] = useState(false)
+  const weightClass = details.weightKg <= 3856 ? 'LDV (Calculated)' : '2B'
+  const validWeight = details.weightKg <= 4536
   if (loading) {
     return <Loading />
   }
@@ -206,12 +208,8 @@ const VehicleDetailsPage = (props) => {
             <DetailField label="Weight (kg)" value={details.weightKg} />
             <DetailField
               label="Vehicle Class"
-              id={eligibleWeight ? '' : 'danger-text'}
-              value={
-                eligibleWeight
-                  ? 'LDV (calculated)'
-                  : 'Not within LDV range (calculated)'
-              }
+              id={ validWeight ? '' : 'danger-text'}
+              value={weightClass}
             />
             {details.creditClass && (
               <DetailField
