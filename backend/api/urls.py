@@ -17,6 +17,7 @@ from .viewsets.model_year_report_consumer_sales import ModelYearReportConsumerSa
 from .viewsets.model_year_report_compliance_obligation import ModelYearReportComplianceObligationViewset
 from .viewsets.credit_agreement import CreditAgreementViewSet
 from .viewsets.dashboard import DashboardViewset
+from .viewsets.sales_forecast import SalesForecastViewset
 
 
 router = routers.SimpleRouter(trailing_slash=False)
@@ -60,6 +61,9 @@ router.register(
 )
 router.register(
     r'dashboard/list', DashboardViewset, basename='list'
+)
+router.register(
+    r'forecasts', SalesForecastViewset, basename='forecast'
 )
 
 urlpatterns = router.urls

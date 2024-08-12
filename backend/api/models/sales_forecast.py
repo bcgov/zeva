@@ -11,17 +11,17 @@ class SalesForecast(Auditable):
 
     active = models.BooleanField(default=True)
 
-    ice_vehicles_1 = models.IntegerField()
+    ice_vehicles_one = models.IntegerField()
 
-    ice_vehicles_2 = models.IntegerField()
+    ice_vehicles_two = models.IntegerField()
 
-    ice_vehicles_3 = models.IntegerField()
+    ice_vehicles_three = models.IntegerField()
 
-    zev_vehicles_1 = models.IntegerField()
+    zev_vehicles_one = models.IntegerField()
 
-    zev_vehicles_2 = models.IntegerField()
+    zev_vehicles_two = models.IntegerField()
 
-    zev_vehicles_3 = models.IntegerField()
+    zev_vehicles_three = models.IntegerField()
 
     class Meta:
         db_table = "sales_forecast"

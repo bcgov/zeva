@@ -1,65 +1,59 @@
 from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework import status
 from api.paginations import BasicPagination
+from api.permissions.sales_forecast import SalesForecastPermissions
+from api.services.sales_forecast import (
+    deactivate,
+    create,
+    get_forecast_records_qs,
+    get_forecast,
+    get_minio_template_url,
+)
+from api.serializers.sales_forecast import (
+    SalesForecastSerializer,
+    SalesForecastRecordSerializer,
+)
 
 
 class SalesForecastViewset(viewsets.GenericViewSet):
+    permission_classes = [SalesForecastPermissions]
     pagination_class = BasicPagination
 
-    def save(self, request):
-        pass
-        """
-        associated with a POST request with url structure /forecasts/{myr_id};
-        expects a payload with the following structure:
-        {
-            "forecast_records": [
-                    Objects with fields in sales_forecast_record.py. (except for sales_forecast)
-                    No field shall be non-primitive (e.g. the zev_class field will have a string value of A or B)
-                ]
-            ice_vehicles_1: an int
-            ice_vehicles_2: an int
-            ice_vehicles_3: an int
-            zev_vehicles_1: an int
-            zev_vehicles_2: an int
-            zev_vehicles_3: an int
-        }
-        This method will delete (mark as non-active) any active sales_forecast associated with the myr,
-        and create a new active sales_forecast (along with new sales_forecast_record records) using the payload
-        """
+    # pk should be a myr_id
+    @action(detail=True, methods=["post"])
+    def save(self, request, pk=None):
+        user = request.user
+        deactivate(pk, user)
+        data = request.data
+        forecast_records = data.pop("forecast_records")
+        create(pk, forecast_records, user, **data)
+        return Response(status=status.HTTP_201_CREATED)
 
-    def list(self, request, pk=None):
-        pass
-        """
-        associated with a GET request with url structure /forecasts/{myr_id}?page={page number}&size={page size}
-        returns an empty response {} if no active sales_forecast associated with the myr
-        otherwise, returns a response with the following structure:
-        {
-            "count": an int with total number of sales forecast records
-            "results": [
-                    Objects with fields in sales_forecast_record.py. (except for sales_forecast)
-                    No field will be non-primitive (e.g. the zev_class field will have a string value of A or B)
-                ]
-        }
-        """
+    # pk should be a myr id
+    @action(detail=True)
+    def records(self, request, pk=None):
+        qs = get_forecast_records_qs(pk)
+        page = self.paginate_queryset(qs)
+        serializer = SalesForecastRecordSerializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
 
-    def forecast_totals(self, request, pk=None):
-        pass
-        """
-        associated with a GET request with url structure /forecast_totals/{myr_id}
-        returns an empty response {} if no active sales_forecast associated with the myr
-        otherwise, returns a response with the following structure:
-        {
-            ice_vehicles_1: an int
-            ice_vehicles_2: an int
-            ice_vehicles_3: an int
-            zev_vehicles_1: an int
-            zev_vehicles_2: an int
-            zev_vehicles_3: an int
-        }
-        """
+    # pk should be a myr id
+    @action(detail=True)
+    def totals(self, request, pk=None):
+        forecast = get_forecast(pk)
+        if forecast is None:
+            return Response({})
+        serializer = SalesForecastSerializer(forecast)
+        return Response(serializer.data)
 
+    # pk should be a myr id
+    @action(detail=True, methods=["delete"])
+    def delete(self, request, pk=None):
+        deactivate(pk, request.user)
+        return Response(status=status.HTTP_200_OK)
 
-    def download_spreadsheet(self, request):
-        pass
-        """
-        returns a spreadsheet for users to populate with their sales forecasts and upload
-        """
+    @action(detail=False)
+    def template_url(self, request):
+        return Response({"url": get_minio_template_url()})

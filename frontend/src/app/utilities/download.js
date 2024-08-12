@@ -4,7 +4,7 @@ const download = (url, params) =>
   axios
     .get(url, {
       responseType: 'blob',
-      params
+      ...params
     })
     .then((response) => {
       let filename = response.headers['content-disposition'].replace(
