@@ -322,7 +322,7 @@ const CreditActivity = (props) => {
               <tbody>
                 <tr>
                   <td className="text-blue" width="30%">
-                    {reportYear} Model Year LDV Sales:
+                    {reportYear} Vehicles Supplied:
                   </td>
                   <td className="text-right" width="10%">
                     {formatNumeric(ldvSales, 0)}

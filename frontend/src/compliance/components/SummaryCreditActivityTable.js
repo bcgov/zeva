@@ -93,7 +93,7 @@ const SummaryCreditActivityTable = (props) => {
         </tr>
         <tr>
           <td className="font-weight-bold text-blue">
-            {year} Model Year LDV Sales\Leases:
+            {year} Vehicles Supplied:
           </td>
           <td />
           <td className="text-right font-weight-bold">
