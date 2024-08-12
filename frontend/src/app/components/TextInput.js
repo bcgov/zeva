@@ -6,6 +6,7 @@ const TextInput = (props) => {
     additionalClasses,
     defaultValue,
     errorMessage,
+    helperText,
     handleInputChange,
     label,
     name,
@@ -94,6 +95,9 @@ const TextInput = (props) => {
         </div>
         <small className="form-text text-danger">
           {errorMessage || validationErrors}
+        </small>
+        <small className="form-text">
+          {helperText}
         </small>
       </div>
     </div>
