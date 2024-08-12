@@ -32,7 +32,7 @@ const ConsumerLDVSales = (props) => {
       </div>
       <div className="row mb-3">
         <div className="col-5 text-blue">
-          {modelYear} Model Year LDV Sales\Leases:
+          {modelYear} Vehicles Supplied:
         </div>
         <div className="col-3 text-right">{currentSales}</div>
         <div className="col-3 text-right">

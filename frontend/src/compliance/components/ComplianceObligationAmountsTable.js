@@ -39,7 +39,7 @@ const ComplianceObligationAmountsTable = (props) => {
               <tbody>
                 <tr className="ldv-sales ">
                   <td className="text-blue" colSpan="3">
-                    {reportYear} Model Year LDV Sales:
+                    {reportYear} Vehicles Supplied:
                   </td>
                   <td>
                     {page === 'obligation' &&
