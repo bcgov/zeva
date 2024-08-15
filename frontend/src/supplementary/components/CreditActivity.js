@@ -488,7 +488,7 @@ const CreditActivity = (props) => {
                               &bull; &nbsp; &nbsp; {deduction.modelYear} Credits
                             </td>
                             <td className="text-right">
-                              {creditA && AgetAssociatedDeduction(deduction, deductions)
+                              {getAssociatedDeduction(deduction, deductions).creditA && getAssociatedDeduction(deduction, deductions)
                                 .creditA.gt(bigZero) && (
                                 <span className="text-red">
                                   -
@@ -503,7 +503,7 @@ const CreditActivity = (props) => {
                                 .creditA.eq(bigZero) && <span>0.00</span>}
                             </td>
                             <td className="text-right">
-                              {creditB && getAssociatedDeduction(deduction, deductions)
+                              {getAssociatedDeduction(deduction, deductions).creditB && getAssociatedDeduction(deduction, deductions)
                                 .creditB.gt(bigZero) && (
                                 <span className="text-red">
                                   -
@@ -756,7 +756,6 @@ const CreditActivity = (props) => {
                         {deficit.creditB && deficit.creditB.eq(bigZero) && <span>0.00</span>}
                       </td>
                       <td className="text-right background-danger">
-                        {console.log()}
                         {deficit.newCreditA && deficit.newCreditA.gt(bigZero) && (
                           <span>({formatNumeric(deficit.newCreditA)})</span>
                         )}
