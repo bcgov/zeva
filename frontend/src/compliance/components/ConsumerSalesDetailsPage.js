@@ -33,7 +33,8 @@ const ConsumerSalesDetailsPage = (props) => {
     setFiles,
     forecastErrorMessage,
     setForecastErrorMessage,
-    handleUploadForecast,
+    handleUploadForecastRecords,
+    handleDownloadForecastTemplate,
   } = props;
 
   const [showModal, setShowModal] = useState(false);
@@ -202,7 +203,8 @@ const ConsumerSalesDetailsPage = (props) => {
         setFiles={setFiles}
         errorMessage={forecastErrorMessage}
         setErrorMessage={setForecastErrorMessage}
-        handleUploadForecast={handleUploadForecast}
+        handleUploadForecastRecords={handleUploadForecastRecords}
+        handleDownloadForecastTemplate={handleDownloadForecastTemplate}
       />
       {["SUBMITTED", "ASSESSED", "REASSESSED"].indexOf(
         statuses.consumerSales.status

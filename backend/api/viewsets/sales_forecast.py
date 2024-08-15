@@ -15,7 +15,8 @@ from api.serializers.sales_forecast import (
     SalesForecastSerializer,
     SalesForecastRecordSerializer,
 )
-
+from api.services.minio import minio_put_object
+import uuid
 
 class SalesForecastViewset(viewsets.GenericViewSet):
     permission_classes = [SalesForecastPermissions]
@@ -24,12 +25,14 @@ class SalesForecastViewset(viewsets.GenericViewSet):
     # pk should be a myr_id
     @action(detail=True, methods=["post"])
     def save(self, request, pk=None):
+        self.action = 'save'
         user = request.user
         deactivate(pk, user)
         data = request.data
         forecast_records = data.pop("forecast_records")
-        create(pk, forecast_records, user, **data)
-        return Response(status=status.HTTP_201_CREATED)
+        created_records = create(pk, forecast_records, user, **data)
+        serializer = SalesForecastRecordSerializer(created_records, many=True)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     # pk should be a myr id
     @action(detail=True)
@@ -57,3 +60,12 @@ class SalesForecastViewset(viewsets.GenericViewSet):
     @action(detail=False)
     def template_url(self, request):
         return Response({"url": get_minio_template_url()})
+
+    @action(detail=True, methods=['get'])
+    def minio_url(self, request, pk=None):
+        object_name = uuid.uuid4().hex
+        url = minio_put_object(object_name)
+        return Response({
+            'url': url,
+            'minio_object_name': object_name
+        })

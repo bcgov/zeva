@@ -11,6 +11,7 @@ import ROUTES_COMPLIANCE from "../app/routes/Compliance";
 import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from "../app/routes/SigningAuthorityAssertions";
 import ROUTES_FORECAST from "../app/routes/Forecast";
 import deleteModelYearReport from "../app/utilities/deleteModelYearReport";
+import download from "../app/utilities/download";
 
 const ConsumerSalesContainer = (props) => {
   const { keycloak, user } = props;
@@ -29,11 +30,45 @@ const ConsumerSalesContainer = (props) => {
   const [files, setFiles] = useState([]);
   const [forecastErrorMessage, setForecastErrorMessage] = useState(null);
   const { id } = useParams();
-  const handleUploadForecast = () => {
-    axios.post(ROUTES_FORECAST.UPLOAD.replace(/:id/gi, id), {
-      forecast: uploadedDocuments,
+
+  const handleDownloadForecastTemplate = () => {
+    axios.get("/forecasts/template_url").then((response) => {
+      const url = response.data.url;
+      download(url, { headers: { Authorization: null } });
     });
   };
+  const handleUploadForecastRecords = () => {
+    axios
+      .get(ROUTES_FORECAST.MINIO_URL.replace(/:id/gi, id))
+      .then((response) => {
+        const { url: uploadUrl } = response.data;
+        const file = files[0]; // Adjust this if handling multiple files
+        return axios
+          .put(uploadUrl, file, {
+            headers: {
+              Authorization: null,
+            },
+          })
+          .then(() => {
+            return axios.post(ROUTES_FORECAST.SAVE.replace(/:id/gi, id), {
+              forecast_records: response.data.minioObjectName,
+            });
+          })
+          .finally((response) => {
+            console.log(response.data);
+          })
+          .catch((error) => {
+            console.error(
+              "PUT request failed:",
+              error.response || error.message
+            );
+          });
+      })
+      .catch((error) => {
+        console.error("GET request failed:", error.response || error.message);
+      });
+  };
+
   const refreshDetails = (showLoading) => {
     setLoading(showLoading);
 
@@ -184,7 +219,8 @@ const ConsumerSalesContainer = (props) => {
         setForecastErrorMessage={setForecastErrorMessage}
         files={files}
         setFiles={setFiles}
-        handleUploadForecast={handleUploadForecast}
+        handleUploadForecastRecords={handleUploadForecastRecords}
+        handleDownloadForecastTemplate={handleDownloadForecastTemplate}
       />
     </>
   );

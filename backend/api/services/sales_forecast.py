@@ -1,4 +1,6 @@
 from django.db import transaction
+import urllib.request
+import pandas as pd
 from zeva.settings import MINIO
 from api.models.sales_forecast import SalesForecast
 from api.models.sales_forecast_record import SalesForecastRecord
@@ -7,7 +9,8 @@ from api.models.credit_class import CreditClass
 from api.services.generic import get_model_instances_map
 from api.services.minio import minio_get_object
 from api.constants.zev_type import ZEV_TYPE
-
+import xlrd
+from api.services.minio import minio_get_object
 
 def deactivate(model_year_report_id, user):
     try:
@@ -23,42 +26,58 @@ def deactivate(model_year_report_id, user):
 
 @transaction.atomic
 def create(model_year_report_id, forecast_records, user, **totals):
-    forecast = SalesForecast(
-        model_year_report_id=model_year_report_id,
-        create_user=user.id,
-        update_user=user.id,
-        **totals
-    )
-    forecast.save()
-    create_records(forecast, forecast_records, user)
 
+    url = minio_get_object(forecast_records)
+    urllib.request.urlretrieve(url, forecast_records)
+    # forecast = SalesForecast(
+    #     model_year_report_id=model_year_report_id,
+    #     create_user=user.id,
+    #     update_user=user.id,
+    #     **totals
+    # )
+    # forecast.save()
+    create_records(forecast_records, user)
 
-def create_records(sales_forecast, records, user):
+def create_records(records, user):
+
+    df = pd.read_excel(records, 'Sales Forecast', header=0)
     to_create = []
-    model_years = set()
-    zev_classes = set()
-    if records:
-        for record in records:
-            model_years.add(record["model_year"])
-            zev_classes.add(record["zev_class"])
-        model_years_qs = ModelYear.objects.filter(name__in=model_years)
-        zev_classes_qs = CreditClass.objects.filter(credit_class__in=zev_classes)
-        model_years_map = get_model_instances_map(model_years_qs, "name")
-        zev_classes_map = get_model_instances_map(zev_classes_qs, "credit_class")
-        for record in records:
-            zev_type = ZEV_TYPE[record.pop("type")]
+
+    model_years = df['model_year'].unique().tolist()
+    zev_classes = df["zev_class"].unique().tolist()
+    
+    model_years_qs = ModelYear.objects.filter(name__in=model_years)
+    zev_classes_qs = CreditClass.objects.filter(credit_class__in=zev_classes)
+    
+    get_or_create_model_year = get_model_instances_map(model_years_qs, ModelYear, "name")
+    get_or_create_zev_class = get_model_instances_map(zev_classes_qs, CreditClass, "credit_class")
+
+    for index, row in df.iterrows():
+        try:
+            model_year_instance = get_or_create_model_year(row['model_year'])
+            zev_class_instance = get_or_create_zev_class(row['zev_class'])
+
+            zev_type = ZEV_TYPE[row['type']]
+            
             record_to_create = SalesForecastRecord(
-                sales_forecast=sales_forecast,
-                model_year=model_years_map.get(record.pop("model_year")),
+                sales_forecast_id=4,
+                model_year=model_year_instance,
                 type=zev_type,
-                zev_class=zev_classes_map.get(record.pop("zev_class")),
+                zev_class=zev_class_instance,
                 create_user=user.id,
                 update_user=user.id,
-                **record
+                range=row['range'],
+                total_sales=row['total_sales'],
+                interior_volume=row['interior_volume']
             )
             to_create.append(record_to_create)
-    SalesForecastRecord.objects.bulk_create(to_create)
+        except KeyError as e:
+            print(f"Key error: {e} in row {index}")
+        except Exception as e:
+            print(f"Unexpected error: {e} in row {index}")
 
+    created_records = SalesForecastRecord.objects.bulk_create(to_create)
+    return created_records
 
 def get_forecast_records_qs(model_year_report_id):
     qs = (

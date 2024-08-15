@@ -11,7 +11,8 @@ const ConsumerSalesForecast = (props) => {
     setFiles,
     errorMessage,
     setErrorMessage,
-    handleUploadForecast,
+    handleUploadForecastRecords,
+    handleDownloadForecastTemplate,
   } = props;
 
   return (
@@ -30,7 +31,7 @@ const ConsumerSalesForecast = (props) => {
                 optionalText='Download Excel Template'
                 optionalClassname='button'
                 action={(e) => {
-                  console.log("download!");
+                  handleDownloadForecastTemplate();
                 }}
               />
             </div>
@@ -47,7 +48,7 @@ const ConsumerSalesForecast = (props) => {
                 disabled={files.length === 0}
                 className='button primary my-3'
                 onClick={() => {
-                  handleUploadForecast();
+                  handleUploadForecastRecords();
                 }}
                 type='button'
               >

@@ -21,7 +21,7 @@ class SalesForecastPermissions(permissions.BasePermission):
 
         if view.action == "save" and not is_government and organization_matches:
             return True
-        elif view.action == "records" or view.action == "totals":
+        elif view.action == "records" or view.action == "totals" or view.action == "minio_url" or view.action == "save":
             if model_year_report is not None:
                 if is_government and model_year_report.validation_status not in [
                     ModelYearReportStatuses.DRAFT,
