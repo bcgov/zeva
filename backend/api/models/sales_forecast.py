@@ -5,7 +5,7 @@ from auditable.models import Auditable
 
 class SalesForecast(Auditable):
     model_year_report = models.ForeignKey(
-        to=ModelYearReport, unique=True, on_delete=models.DO_NOTHING
+        to=ModelYearReport, unique=True, on_delete=models.CASCADE
     )
 
     ice_vehicles_one = models.IntegerField(blank=True, null=True)
