@@ -30,8 +30,6 @@ class SalesForecastPermissions(permissions.BasePermission):
                     return True
                 elif not is_government and organization_matches is True:
                     return True
-        elif view.action == "delete" and not is_government and organization_matches:
-            return True
         elif view.action == "template_url":
             return True
 
