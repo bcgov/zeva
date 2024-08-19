@@ -514,7 +514,7 @@ const CreditActivity = (props) => {
                                   )}
                                 </span>
                               )}
-                              {creditB && getAssociatedDeduction(deduction, deductions)
+                              {getAssociatedDeduction(deduction, deductions).creditB && getAssociatedDeduction(deduction, deductions)
                                 .creditB.eq(bigZero) && <span>0.00</span>}
                             </td>
                             <td className={`text-right ${
