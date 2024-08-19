@@ -24,7 +24,7 @@ const RecordsUpload = ({ setRecords }) => {
       reader.onload = (event) => {
         try {
           const workbook = read(event.target.result, { type: "array" });
-          const sheet = workbook.Sheets["Sales Forecast"];
+          const sheet = workbook.Sheets["Forecast Report"];
           const records = utils.sheet_to_json(sheet);
           if (!records || records.length === 0) {
             setErrorMessage("No records found");
@@ -56,10 +56,10 @@ const RecordsUpload = ({ setRecords }) => {
     <div className="row my-1">
       <div className="col-12">
         <div className="p-3 consumer-sales">
-          <h3>Sales Forecast</h3>
+          <h3>Forecast Report</h3>
           <div className="ldv-zev-models mt-2">
             <b>
-              Download an excel template for Sales Forecast for proper
+              Download a "Forecast Report" Excel template for proper
               completion and successful uploading.
             </b>
             <div className="my-3">
@@ -71,7 +71,7 @@ const RecordsUpload = ({ setRecords }) => {
               />
             </div>
             <div className="ldv-zev-models mt-2">
-              <b>Upload Sales Forecast here (Maximum 2,000 rows)</b>
+              <b>Upload Forecast Report here (Maximum 2,000 rows)</b>
               <FileDropArea
                 type="excel"
                 files={files}

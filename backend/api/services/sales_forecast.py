@@ -50,8 +50,8 @@ def get_forecast(model_year_report_id):
 
 
 def get_minio_template_url():
-    template_name = MINIO["SALES_FORECAST_TEMPLATE"]
+    template_name = MINIO["FORECAST_REPORT_TEMPLATE"]
     response_headers = {
-        "response-content-disposition": "attachment; filename=sales_forecast_template.xlsx"
+        "response-content-disposition": "attachment; filename=forecast_report_template.xlsx"
     }
     return minio_get_object(template_name, response_headers)

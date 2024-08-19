@@ -24,7 +24,7 @@ class SalesForecastRecord(Auditable):
 
     interior_volume = models.DecimalField(max_digits=20, decimal_places=2)
 
-    total_sales = models.IntegerField()
+    total_supplied = models.IntegerField()
 
     class Meta:
         db_table = "sales_forecast_record"

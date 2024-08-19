@@ -56,9 +56,9 @@ const recordsTableColumns = [
     maxWidth: 200,
   },
   {
-    accessor: (item) => item.totalSales,
+    accessor: (item) => item.totalSupplied,
     className: "text-center",
-    Header: "Total Sales Forecast",
+    Header: "Total ZEVs Supplied",
     headerClassName: "font-weight-bold",
     id: "sales",
     maxWidth: 200,

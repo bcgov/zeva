@@ -31,5 +31,5 @@ class SalesForecastRecordSerializer(ModelSerializer):
             "range",
             "zev_class",
             "interior_volume",
-            "total_sales",
+            "total_supplied",
         ]

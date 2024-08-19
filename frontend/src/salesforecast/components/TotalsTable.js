@@ -93,15 +93,15 @@ const TotalsTable = ({
           {headerCells}
         </tr>
         <tr>
-          <td>ICE Vehicle Sales</td>
+          <td>ICE Vehicles Supplied</td>
           {getTotalCells(rows[0])}
         </tr>
         <tr>
-          <td>ZEV Sales</td>
+          <td>ZEVs Supplied</td>
           {getTotalCells(rows[1])}
         </tr>
         <tr>
-          <td>Total Vehicle Sales</td>
+          <td>Total Vehicles Supplied</td>
           {sumCells}
         </tr>
       </tbody>
