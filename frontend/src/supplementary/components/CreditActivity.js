@@ -488,7 +488,7 @@ const CreditActivity = (props) => {
                               &bull; &nbsp; &nbsp; {deduction.modelYear} Credits
                             </td>
                             <td className="text-right">
-                              {getAssociatedDeduction(deduction, deductions)
+                              {getAssociatedDeduction(deduction, deductions).creditA && getAssociatedDeduction(deduction, deductions)
                                 .creditA.gt(bigZero) && (
                                 <span className="text-red">
                                   -
@@ -503,7 +503,7 @@ const CreditActivity = (props) => {
                                 .creditA.eq(bigZero) && <span>0.00</span>}
                             </td>
                             <td className="text-right">
-                              {getAssociatedDeduction(deduction, deductions)
+                              {getAssociatedDeduction(deduction, deductions).creditB && getAssociatedDeduction(deduction, deductions)
                                 .creditB.gt(bigZero) && (
                                 <span className="text-red">
                                   -
@@ -514,32 +514,32 @@ const CreditActivity = (props) => {
                                   )}
                                 </span>
                               )}
-                              {getAssociatedDeduction(deduction, deductions)
+                              {getAssociatedDeduction(deduction, deductions).creditB && getAssociatedDeduction(deduction, deductions)
                                 .creditB.eq(bigZero) && <span>0.00</span>}
                             </td>
                             <td className={`text-right ${
-                              !(deduction.creditA.eq(getAssociatedDeduction(deduction, deductions).creditA))
+                              !(deduction.creditA && deduction.creditA.eq(getAssociatedDeduction(deduction, deductions).creditA))
                                 ? 'highlight'
                                 : ''
                             }`}>
-                              {deduction.creditA.gt(bigZero) && (
+                              {deduction.creditA && deduction.creditA.gt(bigZero) && (
                                 <span className="text-red">
                                   -{formatNumeric(deduction.creditA, 2)}
                                 </span>
                               )}
-                              {deduction.creditA.eq(bigZero) && <span>0.00</span>}
+                              {deduction.creditA && deduction.creditA.eq(bigZero) && <span>0.00</span>}
                             </td>
                             <td className={`text-right ${
                               !(deduction.creditB.eq(getAssociatedDeduction(deduction, deductions).creditB))
                                 ? 'highlight'
                                 : ''
                             }`}>
-                              {deduction.creditB.gt(bigZero) && (
+                              {deduction.creditB && deduction.creditB.gt(bigZero) && (
                                 <span className="text-red">
                                   -{formatNumeric(deduction.creditB, 2)}
                                 </span>
                               )}
-                              {deduction.creditB.eq(bigZero) && <span>0.00</span>}
+                              {deduction.creditB && deduction.creditB.eq(bigZero) && <span>0.00</span>}
                             </td>
                           </tr>
                         ))}
@@ -600,7 +600,7 @@ const CreditActivity = (props) => {
                           &bull; &nbsp; &nbsp; {deduction.modelYear} Credits
                         </td>
                         <td className="text-right">
-                          {getAssociatedDeduction(deduction, deductions).creditA.gt(bigZero)
+                          {getAssociatedDeduction(deduction, deductions).creditA && getAssociatedDeduction(deduction, deductions).creditA.gt(bigZero)
                              && (
                             <span className="text-red">
                               -
@@ -611,11 +611,11 @@ const CreditActivity = (props) => {
                               )}
                             </span>
                           )}
-                          {getAssociatedDeduction(deduction, deductions)
+                          {getAssociatedDeduction(deduction, deductions).creditA && getAssociatedDeduction(deduction, deductions)
                             .creditA.eq(bigZero) && <span>0.00</span>}
                         </td>
                         <td className="text-right">
-                          {getAssociatedDeduction(deduction, deductions).creditB.gt(bigZero)
+                          {getAssociatedDeduction(deduction, deductions).creditB && getAssociatedDeduction(deduction, deductions).creditB.gt(bigZero)
                             && (
                             <span className="text-red">
                               -
@@ -626,23 +626,23 @@ const CreditActivity = (props) => {
                               )}
                             </span>
                           )}
-                          {getAssociatedDeduction(deduction, deductions)
+                          {getAssociatedDeduction(deduction, deductions).creditB && getAssociatedDeduction(deduction, deductions)
                             .creditB.eq(bigZero) && <span>0.00</span>}
                         </td>
                         <td className={`text-right ${
-                          !(getAssociatedDeduction(deduction, deductions).creditA.eq(deduction.creditA))
+                          !(getAssociatedDeduction(deduction, deductions).creditA && getAssociatedDeduction(deduction, deductions).creditA.eq(deduction.creditA))
                             ? 'highlight'
                             : ''
                         }`}>
-                          {deduction.creditA.gt(0) && (
+                          {deduction.creditA && deduction.creditA.gt(0) && (
                             <span className="text-red">
                               -{formatNumeric(deduction.creditA, 2)}
                             </span>
                           )}
-                          {deduction.creditA.eq(bigZero) && <span>0.00</span>}
+                          {deduction.creditA && deduction.creditA.eq(bigZero) && <span>0.00</span>}
                         </td>
                         <td className={`text-right ${
-                          !(getAssociatedDeduction(deduction, deductions).creditB.eq(deduction.creditB))
+                          !(getAssociatedDeduction(deduction, deductions).creditB && getAssociatedDeduction(deduction, deductions).creditB.eq(deduction.creditB))
                             ? 'highlight'
                             : ''
                         }`}>
@@ -744,24 +744,24 @@ const CreditActivity = (props) => {
                         &bull; &nbsp; &nbsp; Credit Deficit
                       </td>
                       <td className="text-right background-danger">
-                        {deficit.creditA.gt(bigZero) && (
+                        {deficit.creditA && deficit.creditA.gt(bigZero) && (
                           <span>({formatNumeric(deficit.creditA)})</span>
                         )}
-                        {deficit.creditA.eq(bigZero) && <span>0.00</span>}
+                        {deficit.creditA && deficit.creditA.eq(bigZero) && <span>0.00</span>}
                       </td>
                       <td className="text-right background-danger">
-                        {deficit.creditB.gt(bigZero) && (
+                        {deficit.creditB && deficit.creditB.gt(bigZero) && (
                           <span>({formatNumeric(deficit.creditB)})</span>
                         )}
-                        {deficit.creditB.eq(bigZero) && <span>0.00</span>}
+                        {deficit.creditB && deficit.creditB.eq(bigZero) && <span>0.00</span>}
                       </td>
                       <td className="text-right background-danger">
-                        {deficit.newCreditA.gt(bigZero) && (
+                        {deficit.newCreditA && deficit.newCreditA.gt(bigZero) && (
                           <span>({formatNumeric(deficit.newCreditA)})</span>
                         )}
                       </td>
                       <td className="text-right background-danger">
-                        {deficit.newCreditB.gt(bigZero) && (
+                        {deficit.newCreditB && deficit.newCreditB.gt(bigZero) && (
                           <span>({formatNumeric(deficit.newCreditB)})</span>
                         )}
                       </td>
