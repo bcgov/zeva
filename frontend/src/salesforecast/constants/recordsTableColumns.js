@@ -48,9 +48,9 @@ const recordsTableColumns = [
     maxWidth: 200,
   },
   {
-    accessor: (item) => item.interiorVolume,
+    accessor: (item) => item.vehicleClass,
     className: "text-center",
-    Header: "Interior Volume (cu ft)",
+    Header: "Vehicle Class/Interior Volume",
     headerClassName: "font-weight-bold",
     id: "volume",
     maxWidth: 200,

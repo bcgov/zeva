@@ -178,22 +178,26 @@ const ConsumerSalesDetailsPage = (props) => {
               <div className="sales-table mt-2">
                 <ConsumerSalesLDVModalTable vehicles={vehicles} />
               </div>
-              {!user.isGovernment && details.consumerSales.validationStatus === 'DRAFT' && statuses.consumerSales.status !== 'CONFIRMED' &&
-                <RecordsUpload
-                  setRecords={setForecastRecords}
-                />
+              {modelYear >= 2023 &&
+                <>
+                  {!user.isGovernment && details.consumerSales.validationStatus === 'DRAFT' && statuses.consumerSales.status !== 'CONFIRMED' &&
+                  <RecordsUpload
+                    setRecords={setForecastRecords}
+                  />
+                  }
+                  <RecordsTable
+                    modelYearReportId={id}
+                    passedRecords={forecastRecords}
+                  />
+                  <TotalsTable
+                    currentModelYear={modelYear}
+                    modelYearReportId={id}
+                    totals={forecastTotals}
+                    setTotals={setForecastTotals}
+                    readOnly={user.isGovernment || details.consumerSales.validationStatus !== 'DRAFT' || statuses.consumerSales.status === 'CONFIRMED'}
+                  />
+                </>
               }
-              <RecordsTable
-                  modelYearReportId={id}
-                  passedRecords={forecastRecords}
-                />
-              <TotalsTable
-                  currentModelYear={modelYear}
-                  modelYearReportId={id}
-                  totals={forecastTotals}
-                  setTotals={setForecastTotals}
-                  readOnly={user.isGovernment || details.consumerSales.validationStatus !== 'DRAFT' || statuses.consumerSales.status === 'CONFIRMED'}
-                />
             </div>
           </div>
         </div>

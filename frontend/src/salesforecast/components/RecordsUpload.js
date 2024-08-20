@@ -10,9 +10,16 @@ const RecordsUpload = ({ setRecords }) => {
   const [files, setFiles] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const invalidRecordFound = (records) => {
-    //todo: validate records
-    return false;
+  const getInternalRecords = (records) => {
+    //todo: this function should return a new array L of objects such that any object x in L
+    //is a record with "internal keys" instead of "spreadsheet keys" (e.g. "modelYear" instead of "Model Year").
+    //This function should throw an error with a message if it encounters an unexpected key.
+    return records;
+  };
+
+  const validateRecords = (records) => {
+    //todo: validate internal records (see the python SalesForecastRecord model);
+    //should throw an error with a message as soon as validation fails for any record
   };
 
   useEffect(() => {
@@ -30,12 +37,14 @@ const RecordsUpload = ({ setRecords }) => {
             setErrorMessage("No records found");
           } else if (records.length > 2000) {
             setErrorMessage("No more than 2000 records allowed");
-          } else if (invalidRecordFound(records)) {
-            setErrorMessage(
-              "Invalid record found; please check template instructions",
-            );
           } else {
-            setRecords(records);
+            try {
+              const internalRecords = getInternalRecords(records);
+              validateRecords(internalRecords);
+              setRecords(internalRecords);
+            } catch (error) {
+              setErrorMessage(error.message);
+            }
           }
         } catch (error) {
           setErrorMessage("Could not parse uploaded file");
@@ -59,8 +68,8 @@ const RecordsUpload = ({ setRecords }) => {
           <h3>Forecast Report</h3>
           <div className="ldv-zev-models mt-2">
             <b>
-              Download a "Forecast Report" Excel template for proper
-              completion and successful uploading.
+              Download a "Forecast Report" Excel template for proper completion
+              and successful uploading.
             </b>
             <div className="my-3">
               <Button
