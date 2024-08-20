@@ -10,7 +10,7 @@ from auditable.models import Auditable
 class SalesForecastRecord(Auditable):
     sales_forecast = models.ForeignKey(to=SalesForecast, on_delete=models.CASCADE)
 
-    model_year = models.ForeignKey(to=ModelYear, on_delete=models.PROTECT)
+    model_year = models.CharField(max_length=4)
 
     make = models.CharField(max_length=250)
 
@@ -20,11 +20,11 @@ class SalesForecastRecord(Auditable):
 
     range = models.DecimalField(max_digits=20, decimal_places=2)
 
-    zev_class = models.ForeignKey(to=CreditClass, on_delete=models.PROTECT)
+    zev_class = models.CharField(max_length=1)
 
-    interior_volume = models.DecimalField(max_digits=20, decimal_places=2)
+    vehicle_class = models.CharField(max_length=250)
 
-    total_sales = models.IntegerField()
+    total_supplied = models.IntegerField()
 
     class Meta:
         db_table = "sales_forecast_record"
