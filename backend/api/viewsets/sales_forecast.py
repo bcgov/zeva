@@ -5,8 +5,9 @@ from rest_framework import status
 from api.paginations import BasicPagination
 from api.permissions.sales_forecast import SalesForecastPermissions
 from api.services.sales_forecast import (
-    deactivate,
-    create,
+    update_or_create,
+    delete_records,
+    create_records,
     get_forecast_records_qs,
     get_forecast,
     get_minio_template_url,
@@ -25,10 +26,12 @@ class SalesForecastViewset(viewsets.GenericViewSet):
     @action(detail=True, methods=["post"])
     def save(self, request, pk=None):
         user = request.user
-        deactivate(pk, user)
         data = request.data
         forecast_records = data.pop("forecast_records")
-        create(pk, forecast_records, user, **data)
+        forecast = update_or_create(pk, user, data)
+        if forecast_records:
+            delete_records(forecast)
+            create_records(forecast, forecast_records, user)
         return Response(status=status.HTTP_201_CREATED)
 
     # pk should be a myr id
@@ -43,16 +46,8 @@ class SalesForecastViewset(viewsets.GenericViewSet):
     @action(detail=True)
     def totals(self, request, pk=None):
         forecast = get_forecast(pk)
-        if forecast is None:
-            return Response({})
         serializer = SalesForecastSerializer(forecast)
         return Response(serializer.data)
-
-    # pk should be a myr id
-    @action(detail=True, methods=["delete"])
-    def delete(self, request, pk=None):
-        deactivate(pk, request.user)
-        return Response(status=status.HTTP_200_OK)
 
     @action(detail=False)
     def template_url(self, request):

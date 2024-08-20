@@ -11,7 +11,7 @@ def config():
         "BUCKET_NAME": os.getenv("MINIO_BUCKET_NAME", "zeva"),
         "EXPIRY": os.getenv("MINIO_EXPIRY", timedelta(days=1)),
         "PREFIX": os.getenv("MINIO_PREFIX", None),
-        "SALES_FORECAST_TEMPLATE": os.getenv(
-            "MINIO_SALES_FORECAST_TEMPLATE", "templates/sales_forecast_template.xlsx"
+        "FORECAST_REPORT_TEMPLATE": os.getenv(
+            "MINIO_FORECAST_REPORT_TEMPLATE", "templates/forecast_report_template.xlsx"
         ),
     }

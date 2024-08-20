@@ -19,10 +19,6 @@ class SalesForecastSerializer(ModelSerializer):
 
 
 class SalesForecastRecordSerializer(ModelSerializer):
-    model_year = SlugRelatedField(slug_field="name", read_only=True)
-
-    zev_class = SlugRelatedField(slug_field="credit_class", read_only=True)
-
     type = EnumField(ZEV_TYPE)
 
     class Meta:
@@ -34,6 +30,6 @@ class SalesForecastRecordSerializer(ModelSerializer):
             "type",
             "range",
             "zev_class",
-            "interior_volume",
-            "total_sales",
+            "vehicle_class",
+            "total_supplied",
         ]
