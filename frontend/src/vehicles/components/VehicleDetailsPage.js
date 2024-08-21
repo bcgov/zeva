@@ -215,7 +215,7 @@ const VehicleDetailsPage = (props) => {
               <DetailField
                 label="ZEV Class"
                 value={
-                  eligibleWeight ? ` ${details.creditClass} (calculated)` : ''
+                  validWeight ? ` ${details.creditClass} (calculated)` : ''
                 }
               />
             )}
@@ -223,7 +223,7 @@ const VehicleDetailsPage = (props) => {
               <DetailField
                 label="Credit Entitlement"
                 value={
-                  eligibleWeight ? ` ${details.creditValue} (calculated)` : ''
+                  validWeight ? ` ${details.creditValue} (calculated)` : ''
                 }
               />
             )}
@@ -367,7 +367,7 @@ const VehicleDetailsPage = (props) => {
                     </button>
                     <Button
                       buttonType="submit"
-                      disabled={!eligibleWeight}
+                      disabled={!validWeight}
                       action={() => {
                         setModalType('submit')
                         setShowModal(true)
