@@ -13,7 +13,6 @@ const RecordsUpload = ({ setRecords }) => {
   const getInternalRecords = (records) => {
     //todo: this function should return a new array L of objects such that any object x in L
     //is a record with "internal keys" instead of "spreadsheet keys" (e.g. "modelYear" instead of "Model Year").
-    //This function should throw an error with a message if it encounters an unexpected key.
     return records;
   };
 
