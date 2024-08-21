@@ -134,7 +134,7 @@ const ConsumerSalesContainer = (props) => {
     Promise.all([consumerSalesPromise, forecastPromise]).then(() => {
       history.push(ROUTES_COMPLIANCE.REPORTS)
       history.replace(
-        ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', id)
+        ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(/:id/g, id)
       )
     })
   }
