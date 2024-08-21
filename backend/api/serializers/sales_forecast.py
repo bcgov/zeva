@@ -30,6 +30,6 @@ class SalesForecastRecordSerializer(ModelSerializer):
             "type",
             "range",
             "zev_class",
-            "vehicle_class",
+            "vehicle_class_interior_volume",
             "total_supplied",
         ]
