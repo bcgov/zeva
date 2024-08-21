@@ -22,7 +22,7 @@ class SalesForecastRecord(Auditable):
 
     zev_class = models.CharField(max_length=1)
 
-    vehicle_class = models.CharField(max_length=250)
+    vehicle_class_interior_volume = models.CharField(max_length=250)
 
     total_supplied = models.IntegerField()
 
