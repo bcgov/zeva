@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM artifacts.developer.gov.bc.ca/docker-remote/python:3.11-slim
+FROM artifacts.developer.gov.bc.ca/docker-remote/python:3.9-slim
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -17,10 +17,11 @@ RUN apt-get update && apt-get install -y \
 # Install Python dependencies
 COPY . /app/
 
-RUN pwd \
+RUN pwd && \
     ls -l
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip && \ 
+    pip install --no-cache-dir -r requirements.txt
 
 # Expose the port the app runs on
 EXPOSE 8000
