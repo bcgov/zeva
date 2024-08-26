@@ -43,7 +43,7 @@ const TotalsTable = ({
     setTotals(totalsToSet);
   };
 
-  const getTotalCells = (row) => {
+  const getTotalCells = (row, disabled = false) => {
     const result = [];
     for (const totalName of row) {
       const cell = (
@@ -57,7 +57,7 @@ const TotalsTable = ({
               totals[totalName] === null ? undefined : totals[totalName]
             }
             handleInputChange={handleInputChange}
-            readonly={readOnly}
+            readonly={readOnly || disabled}
           />
         </td>
       );
@@ -98,7 +98,7 @@ const TotalsTable = ({
         </tr>
         <tr>
           <td>ZEVs Supplied</td>
-          {getTotalCells(rows[1])}
+          {getTotalCells(rows[1], true)}
         </tr>
         <tr>
           <td>Total Vehicles Supplied</td>

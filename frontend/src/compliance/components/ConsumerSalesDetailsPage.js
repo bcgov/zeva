@@ -182,7 +182,9 @@ const ConsumerSalesDetailsPage = (props) => {
                 <>
                   {!user.isGovernment && details.consumerSales.validationStatus === 'DRAFT' && statuses.consumerSales.status !== 'CONFIRMED' &&
                   <RecordsUpload
+                    currentModelYear={modelYear}
                     setRecords={setForecastRecords}
+                    setTotals={setForecastTotals}
                   />
                   }
                   <RecordsTable

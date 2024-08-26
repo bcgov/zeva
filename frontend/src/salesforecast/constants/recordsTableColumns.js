@@ -34,7 +34,7 @@ const recordsTableColumns = [
   {
     accessor: (item) => item.range,
     className: "text-center",
-    Header: "Range(km)",
+    Header: "Range (km)",
     headerClassName: "font-weight-bold",
     id: "range",
     maxWidth: 200,
@@ -58,7 +58,7 @@ const recordsTableColumns = [
   {
     accessor: (item) => item.totalSupplied,
     className: "text-center",
-    Header: "Total ZEVs Supplied",
+    Header: "ZEVs Supply Forecast",
     headerClassName: "font-weight-bold",
     id: "sales",
     maxWidth: 200,
