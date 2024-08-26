@@ -30,7 +30,7 @@ const RecordsUpload = ({ currentModelYear, setRecords, setTotals }) => {
 
     records.forEach((record) => {
       if (!/^\d{4}$/.test(record.modelYear)) {
-        throw new Error("Model year must be a 4-digit number.");
+        throw new Error("Model year must be a 4-digit integer.");
       }
       if (
         typeof record.make !== "string" ||
@@ -38,7 +38,7 @@ const RecordsUpload = ({ currentModelYear, setRecords, setTotals }) => {
         record.make.length > 250
       ) {
         throw new Error(
-          "Make must be a non-empty string that is less than 250 characters.",
+          "Make must be a non-empty string that is no more than 250 characters.",
         );
       }
       if (
@@ -47,7 +47,7 @@ const RecordsUpload = ({ currentModelYear, setRecords, setTotals }) => {
         record.modelName.length > 250
       ) {
         throw new Error(
-          "Model must be a non-empty string that is less than 250 characters.",
+          "Model must be a non-empty string that is no more than 250 characters.",
         );
       }
       if (!ZEV_TYPE.includes(record.type)) {
@@ -72,7 +72,7 @@ const RecordsUpload = ({ currentModelYear, setRecords, setTotals }) => {
         record.vehicleClassInteriorVolume.length > 250
       ) {
         throw new Error(
-          "Vehicle class interior volume must be a non-empty string that is less than 250 characters.",
+          "Vehicle class and Interior Volume must be a non-empty string that is no more than 250 characters.",
         );
       }
       if (!Number.isInteger(record.totalSupplied)) {
