@@ -8,7 +8,7 @@ import getTotalReduction from './getTotalReduction'
 import getUnspecifiedClassReduction from './getUnspecifiedClassReduction'
 import calculateCreditReduction from './calculateCreditReduction'
 
-const getMostRecentModelYearReportId = (organizationId) => {
+const getMostRecentReportId = (organizationId) => {
   return axios.get(ROUTES_ORGANIZATIONS.MOST_RECENT_MYR_ID.replace(/:id/g, organizationId)).then((response) => {
     return response.data
   })
@@ -110,15 +110,45 @@ const getModelYearReportCreditBalances = (modelYearReportId) => {
   }))
 }
 
-const getMostRecentModelYearReportBalances = (organizationId) => {
-  return getMostRecentModelYearReportId(organizationId).then((modelYearReportId) => {
-    return getModelYearReportCreditBalances(modelYearReportId)
-  }).then((modelYearReportBalances) => {
-    return modelYearReportBalances
+const getSupplementalCreditActivity = (supplementalId) => {
+  if (!supplementalId) {
+    return {}
+  }
+  return axios.get(ROUTES_COMPLIANCE.SUPPLEMENTAL_CREDIT_ACTIVITY.replace(/:supp_id/g, supplementalId)).then((response) => {
+    const balances = []
+    const deficits = []
+    const creditActivities = response.data
+    for (const creditActivity of creditActivities) {
+      const category = creditActivity.category
+      if (category === 'ProvisionalBalanceAfterCreditReduction') {
+        balances.push({
+          modelYear: creditActivity.modelYear.name,
+          creditA: creditActivity.creditAValue,
+          creditB: creditActivity.creditBValue
+        })
+      }
+      // todo: handle deficits (need to find out the category key for deficits...)
+    }
+    return {
+      balances: balances,
+      deficits: deficits
+    }
   })
 }
 
-const getPostRecentModelYearReportBalances = (organizationId) => {
+const getMostRecentReportBalances = (organizationId) => {
+  return getMostRecentReportId(organizationId).then((data) => {
+    const id = data.id
+    if (data.isSupplementary) {
+      return getSupplementalCreditActivity(id)
+    }
+    return getModelYearReportCreditBalances(id)
+  }).then((reportBalances) => {
+    return reportBalances
+  })
+}
+
+const getPostRecentReportBalances = (organizationId) => {
   if (organizationId) {
     return axios.get(ROUTES_ORGANIZATIONS.RECENT_SUPPLIER_BALANCE.replace(/:id/g, organizationId)).then((response) => {
       return response.data
@@ -129,4 +159,4 @@ const getPostRecentModelYearReportBalances = (organizationId) => {
   })
 }
 
-export { getMostRecentModelYearReportId, getModelYearReportCreditBalances, getMostRecentModelYearReportBalances, getPostRecentModelYearReportBalances }
+export { getMostRecentReportBalances, getPostRecentReportBalances }

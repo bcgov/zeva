@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import ROUTES_CREDITS from '../routes/Credits'
-import { getMostRecentModelYearReportBalances, getPostRecentModelYearReportBalances } from '../utilities/getModelYearReportCreditBalances'
+import { getMostRecentReportBalances, getPostRecentReportBalances } from '../utilities/getModelYearReportCreditBalances'
 import calculateCreditBalance from '../utilities/calculateCreditBalance'
 import formatNumeric from '../utilities/formatNumeric'
 
@@ -12,9 +12,9 @@ const CreditBalanceHeader = (props) => {
   const [assessedBalances, setAssessedBalances] = useState({})
 
   useEffect(() => {
-    getMostRecentModelYearReportBalances(organization.id).then((assessedBalances) => {
+    getMostRecentReportBalances(organization.id).then((assessedBalances) => {
       setAssessedBalances(assessedBalances)
-      return getPostRecentModelYearReportBalances()
+      return getPostRecentReportBalances()
     }).then((balances) => {
       setBalances(balances)
       setLoading(false)
