@@ -17,8 +17,35 @@ const RecordsUpload = ({ setRecords }) => {
   };
 
   const validateRecords = (records) => {
-    //todo: validate internal records (see the python SalesForecastRecord model);
-    //should throw an error with a message as soon as validation fails for any record
+
+    const ZEV_TYPE = ["BEV", "PHEV", "FCEV", "EREV"];
+  
+    records.forEach(record => {
+      if (!/^\d{4}$/.test(record.modelYear)) {
+        throw new Error("Model year must be a 4-digit string.");
+      }
+      if (typeof record.make !== 'string' || record.make.length > 250) {
+        throw new Error("Make must be a string that is less than 250 characters.");
+      }
+      if (typeof record.modelName !== 'string' || record.modelName.length > 250) {
+        throw new Error("Model name must be a string.");
+      }
+      if (!ZEV_TYPE.includes(record.type)) {
+        throw new Error(`Type must be one of the following values: ${ZEV_TYPE.join(", ")}.`);
+      }
+      if (typeof record.range !== 'number' || !/^\d+(\.\d{1,2})?$/.test(record.range.toString())) {
+        throw new Error("Range must be a decimal number with up to 2 decimal places.");
+      }
+      if (typeof record.zevClass !== 'string' || record.zevClass.length !== 1) {
+        throw new Error("ZEV class must be a single character.");
+      }
+      if (typeof record.vehicleClassInteriorVolume !== 'string' || record.vehicleClassInteriorVolume.length > 250) {
+        throw new Error("Vehicle class interior volume must be a string.");
+      }
+      if (!Number.isInteger(record.totalSupplied)) {
+        throw new Error("Total supplied must be an integer.");
+      }
+    });
   };
 
   useEffect(() => {
