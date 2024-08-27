@@ -6,6 +6,7 @@ import FORECAST_ROUTES from "../constants/routes";
 const TotalsTable = ({
   currentModelYear,
   modelYearReportId,
+  passedRecords = [],
   totals = {},
   setTotals,
   readOnly = false,
@@ -20,6 +21,7 @@ const TotalsTable = ({
     });
   });
 
+  const [savedZevTotals, setSavedZevTotals] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,10 +29,23 @@ const TotalsTable = ({
       .get(FORECAST_ROUTES.TOTALS.replace(/:id/g, modelYearReportId))
       .then((response) => {
         const retrievedTotals = response.data;
+        setSavedZevTotals({
+          zevVehiclesOne: retrievedTotals.zevVehiclesOne,
+          zevVehiclesTwo: retrievedTotals.zevVehiclesTwo,
+          zevVehiclesThree: retrievedTotals.zevVehiclesThree,
+        });
         setTotals(retrievedTotals);
         setLoading(false);
       });
   }, []);
+
+  useEffect(() => {
+    if (passedRecords.length === 0) {
+      setTotals((prev) => {
+        return { ...prev, ...savedZevTotals };
+      });
+    }
+  }, [passedRecords, savedZevTotals]);
 
   const handleInputChange = (event) => {
     const totalName = event.target.name;
@@ -38,9 +53,9 @@ const TotalsTable = ({
     if (totalValue === "") {
       totalValue = null;
     }
-    const totalsToSet = { ...totals };
-    totalsToSet[totalName] = totalValue;
-    setTotals(totalsToSet);
+    setTotals((prev) => {
+      return { ...prev, [totalName]: totalValue };
+    });
   };
 
   const getTotalCells = (row, disabled = false) => {

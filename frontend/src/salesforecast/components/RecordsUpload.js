@@ -81,7 +81,7 @@ const RecordsUpload = ({ currentModelYear, setRecords, setTotals }) => {
     });
   };
 
-  const calculateZevTotals = (records) => {
+  const getZevTotals = (records) => {
     const modelYear1 = currentModelYear + 1;
     const modelYear2 = currentModelYear + 2;
     const modelYear3 = currentModelYear + 3;
@@ -99,9 +99,7 @@ const RecordsUpload = ({ currentModelYear, setRecords, setTotals }) => {
         zevVehiclesThree = zevVehiclesThree + totalSupplied;
       }
     }
-    setTotals((prev) => {
-      return { ...prev, zevVehiclesOne, zevVehiclesTwo, zevVehiclesThree };
-    });
+    return { zevVehiclesOne, zevVehiclesTwo, zevVehiclesThree };
   };
 
   useEffect(() => {
@@ -124,7 +122,10 @@ const RecordsUpload = ({ currentModelYear, setRecords, setTotals }) => {
               const internalRecords = getInternalRecords(records);
               validateRecords(internalRecords);
               setRecords(internalRecords);
-              calculateZevTotals(internalRecords);
+              const zevTotals = getZevTotals(internalRecords);
+              setTotals((prev) => {
+                return { ...prev, ...zevTotals };
+              });
             } catch (error) {
               setErrorMessage(error.message);
             }
