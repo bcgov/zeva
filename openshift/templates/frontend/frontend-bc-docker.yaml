@@ -69,7 +69,7 @@ objects:
       dockerStrategy:
         dockerfilePath: ./Dockerfile-Openshift
         pullSecret:
-          name: docker-artifactory-secret
+          name: artifacts-pull-default-erhptx
     triggers:
     - type: ConfigChange
     - type: ImageChange
