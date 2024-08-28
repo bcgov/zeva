@@ -1,10 +1,12 @@
 # Stage 1: Use yarn to build the app
 # FROM artifacts.developer.gov.bc.ca/docker-remote/node:16.20.0 as builder
 FROM node:16.20.0 as builder
-ARG CACHE_DIR=/usr/src/app/.npm_cache
+
 WORKDIR /usr/src/app
-# Create the cache directory
-RUN mkdir -p $CACHE_DIR
+
+# Set an environment variable for the npm cache directory
+ARG CACHE_DIR=/usr/src/app/.npm_cache
+
 # Copy package files and install dependencies using the cache directory
 COPY package.json ./
 RUN npm install -g npm@9.1.1 \
