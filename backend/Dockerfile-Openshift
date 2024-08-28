@@ -27,4 +27,4 @@ RUN pip install --upgrade pip==24.0 && \
 EXPOSE 8080
 
 # Start the Django server
-CMD ["gunicorn", "zeva.wsgi:application", "--config", "gunicorn.cfg.py"]
+CMD ["gunicorn", "wsgi", "--config", "gunicorn.cfg.py"]
