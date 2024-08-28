@@ -1,12 +1,13 @@
 import axios from 'axios'
+import Big from 'big.js'
 import ROUTES_COMPLIANCE from '../routes/Compliance'
 import ROUTES_ORGANIZATIONS from '../routes/Organizations'
 import ROUTES_CREDITS from '../routes/Credits'
 import getComplianceObligationDetails from './getComplianceObligationDetails'
-import getClassAReduction from './getClassAReduction'
-import getTotalReduction from './getTotalReduction'
-import getUnspecifiedClassReduction from './getUnspecifiedClassReduction'
-import calculateCreditReduction from './calculateCreditReduction'
+import getClassAReductionBig from './getClassAReductionBig'
+import getUnspecifiedClassReductionBig from './getUnspecifiedClassReductionBig'
+import calculateCreditReductionBig from './calculateCreditReductionBig'
+import { convertBalances, convertCarryOverDeficits } from './convertToBig'
 
 const getMostRecentModelYearReportId = (organizationId) => {
   return axios.get(ROUTES_ORGANIZATIONS.MOST_RECENT_MYR_ID.replace(/:id/g, organizationId)).then((response) => {
@@ -55,7 +56,8 @@ const getModelYearReportCreditBalances = (modelYearReportId) => {
       })
     })
 
-    // tempClassAReductions:
+    convertBalances(tempBalances)
+    convertCarryOverDeficits(carryOverDeficits)
 
     const currentReportYear = Number(modelYear.name)
 
@@ -63,7 +65,7 @@ const getModelYearReportCreditBalances = (modelYearReportId) => {
       (data) => Number(data.modelYear) === Number(currentReportYear)
     )
 
-    const classAReduction = getClassAReduction(
+    const classAReduction = getClassAReductionBig(
       ldvSales,
       filteredRatios.zevClassA,
       tempSupplierClass
@@ -72,30 +74,25 @@ const getModelYearReportCreditBalances = (modelYearReportId) => {
     const tempClassAReductions = [
       {
         modelYear: Number(modelYear.name),
-        value: Number(classAReduction)
+        value: new Big(classAReduction.toFixed(2))
       }
     ]
 
-    // tempUnspecifiedReductions:
-
-    const tempTotalReduction = getTotalReduction(
+    const leftoverReduction = getUnspecifiedClassReductionBig(
       ldvSales,
-      filteredRatios.complianceRatio
-    )
-
-    const leftoverReduction = getUnspecifiedClassReduction(
-      tempTotalReduction,
-      classAReduction
+      filteredRatios.complianceRatio,
+      filteredRatios.zevClassA,
+      tempSupplierClass
     )
 
     const tempUnspecifiedReductions = [
       {
         modelYear: Number(modelYear.name),
-        value: Number(leftoverReduction)
+        value: new Big(leftoverReduction.toFixed(2))
       }
     ]
 
-    const creditReduction = calculateCreditReduction(
+    const creditReduction = calculateCreditReductionBig(
       tempBalances,
       tempClassAReductions,
       tempUnspecifiedReductions,
