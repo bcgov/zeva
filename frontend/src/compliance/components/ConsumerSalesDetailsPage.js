@@ -13,6 +13,7 @@ import ComplianceReportDeleteModal from './ComplianceReportDeleteModal'
 import RecordsUpload from '../../salesforecast/components/RecordsUpload'
 import RecordsTable from '../../salesforecast/components/RecordsTable'
 import TotalsTable from '../../salesforecast/components/TotalsTable'
+import ForecastReportSignOff from '../../salesforecast/components/ForecastReportSignoff'
 
 const ConsumerSalesDetailsPage = (props) => {
   const {
@@ -87,14 +88,8 @@ const ConsumerSalesDetailsPage = (props) => {
     }
   }
 
-  assertions.forEach((assertion) => {
-    if (checkboxes.indexOf(assertion.id) >= 0) {
-      disabledCheckboxes = 'disabled'
-    }
-  })
-
   const disableSave = () => {
-    if (vehicles.length <= 0 && !checked) {
+    if (checkboxes.length >= 2 && vehicles.length <= 0) {
       return true
     }
     return false
@@ -196,6 +191,18 @@ const ConsumerSalesDetailsPage = (props) => {
                     setTotals={setForecastTotals}
                     readOnly={user.isGovernment || details.consumerSales.validationStatus !== 'DRAFT' || statuses.consumerSales.status === 'CONFIRMED'}
                   />
+                  {['SUBMITTED', 'ASSESSED', 'REASSESSED'].indexOf(
+                    statuses.consumerSales.status
+                  ) === -1 && (
+                  <ForecastReportSignOff
+                    assertions={assertions.filter(assertion => assertion.displayOrder === 8)}
+                    checkboxes={checkboxes}
+                    handleCheckboxClick={handleCheckboxClick}
+                    disabledCheckboxes={disabledCheckboxes}
+                    hoverText="Forecast Report Sign Off"
+                    user={user}
+                  />
+                  )}
                 </>
               }
             </div>
@@ -208,13 +215,14 @@ const ConsumerSalesDetailsPage = (props) => {
         <>
           <div className="row">
             <div className="col-12 my-3">
-              <ComplianceReportSignOff
-                assertions={assertions}
-                checkboxes={checkboxes}
-                handleCheckboxClick={handleCheckboxClick}
-                disabledCheckboxes={disabledCheckboxes}
-                user={user}
-              />
+            <ComplianceReportSignOff
+              assertions={assertions.filter(assertion => assertion.displayOrder === 5)}
+              checkboxes={checkboxes}
+              handleCheckboxClick={handleCheckboxClick}
+              disabledCheckboxes={disabledCheckboxes}
+              hoverText="Compliance Report Sign Off"
+              user={user}
+            />
             </div>
           </div>
 
@@ -300,7 +308,7 @@ ConsumerSalesDetailsPage.propTypes = {
   handleCancelConfirmation: PropTypes.func.isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
   id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-  disabledCheckboxes: PropTypes.string.isRequired,
+  disabledCheckboxes: PropTypes.bool.isRequired,
   modelYear: PropTypes.number.isRequired,
   statuses: PropTypes.shape().isRequired,
   handleDelete: PropTypes.func.isRequired,

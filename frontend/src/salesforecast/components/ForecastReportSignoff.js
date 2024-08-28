@@ -3,7 +3,7 @@ import React from 'react'
 import ReactTooltip from 'react-tooltip'
 import CustomPropTypes from '../../app/utilities/props'
 
-const ComplianceReportSignOff = (props) => {
+const ForecastReportSignOff = (props) => {
   const {
     assertions,
     checkboxes,
@@ -17,7 +17,9 @@ const ComplianceReportSignOff = (props) => {
     <div id="compliance-sign-off" className="my-3">
       <ReactTooltip />
       <div data-tip={hoverText}>
-        {assertions.map((assertion) => (
+        {assertions.map((assertion) => {
+
+          return (
             <div key={assertion.id}>
             <div className="d-inline-block align-middle my-2 ml-2 mr-1">
               <input
@@ -49,19 +51,21 @@ const ComplianceReportSignOff = (props) => {
               )}
             </label>
           </div>
-          ))}
+          )
+            }
+        )}
       </div>
     </div>
   )
 }
 
-ComplianceReportSignOff.defaultProps = {
+ForecastReportSignOff.defaultProps = {
   assertions: [],
   checkboxes: [],
   disabledCheckboxes: '',
   hoverText: ''
 }
-ComplianceReportSignOff.propTypes = {
+ForecastReportSignOff.propTypes = {
   assertions: PropTypes.arrayOf(PropTypes.shape()),
   user: CustomPropTypes.user.isRequired,
   checkboxes: PropTypes.arrayOf(
@@ -72,4 +76,4 @@ ComplianceReportSignOff.propTypes = {
   disabledCheckboxes: PropTypes.oneOfType([PropTypes.bool, PropTypes.string])
 }
 
-export default ComplianceReportSignOff
+export default ForecastReportSignOff
