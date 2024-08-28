@@ -25,6 +25,17 @@ parameters:
     description: itvr branch name of the pr
     required: true
 objects:
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: frontend-build-cache
+  spec:
+    accessModes:
+      - ReadWriteMany
+    resources:
+      requests:
+        storage: 100Mi
+    storageClassName: netapp-file-standard
 - apiVersion: image.openshift.io/v1
   kind: ImageStream
   metadata:
@@ -65,18 +76,18 @@ objects:
         ref: ${GIT_REF}
       type: Git
     strategy:
+      type: Docker
       dockerStrategy:
         dockerfilePath: ./Dockerfile-Openshift
         pullSecret:
           name: docker-artifactory-secret
-      type: Docker
       volumes:
         - name: frontend-build-cache
           persistentVolumeClaim:
-            claimName: build-cache-pvc
-      env:
-        - name: CACHE_DIR
-          value: /usr/src/app/.npm_cache
+            claimName: frontend-build-cache
+      volumeMounts:
+        - name: frontend-build-cache
+          mountPath: /usr/src/app/.npm_cache
     triggers:
     - type: ConfigChange
     - type: ImageChange
