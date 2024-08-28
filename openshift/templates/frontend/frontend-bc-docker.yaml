@@ -25,17 +25,6 @@ parameters:
     description: itvr branch name of the pr
     required: true
 objects:
-- apiVersion: v1
-  kind: PersistentVolumeClaim
-  metadata:
-    name: frontend-build-cache
-  spec:
-    accessModes:
-      - ReadWriteMany
-    resources:
-      requests:
-        storage: 100Mi
-    storageClassName: netapp-file-standard
 - apiVersion: image.openshift.io/v1
   kind: ImageStream
   metadata:
