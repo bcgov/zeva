@@ -70,6 +70,13 @@ objects:
         pullSecret:
           name: docker-artifactory-secret
       type: Docker
+      volumes:
+        - name: frontend-build-cache
+          persistentVolumeClaim:
+            claimName: build-cache-pvc
+      env:
+        - name: CACHE_DIR
+          value: /usr/src/app/.npm_cache
     triggers:
     - type: ConfigChange
     - type: ImageChange

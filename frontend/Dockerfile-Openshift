@@ -1,11 +1,18 @@
 # Stage 1: Use yarn to build the app
 # FROM artifacts.developer.gov.bc.ca/docker-remote/node:16.20.0 as builder
 FROM node:16.20.0 as builder
+ARG CACHE_DIR=/usr/src/app/.npm_cache
 WORKDIR /usr/src/app
-COPY ./ ./
+# Create the cache directory
+RUN mkdir -p $CACHE_DIR
+# Copy package files and install dependencies using the cache directory
+COPY package.json package-lock.json ./
 RUN npm install -g npm@9.1.1 \
-    && npm install --omit=dev \
-    && npm install -D webpack webpack-cli
+    && npm install --cache $CACHE_DIR --omit=dev \
+    && npm install -D webpack webpack-cli --cache $CACHE_DIR
+# Copy the rest of the application code
+COPY ./ ./
+# Build the application
 RUN yes | npm run dist
 
 # Stage 2: Copy the JS React SPA into the Nginx HTML directory
