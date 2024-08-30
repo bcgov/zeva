@@ -473,3 +473,17 @@ def delete_model_year_report(model_year_report):
         model_year_report=model_year_report
     ).delete()
     model_year_report.delete()
+
+
+def get_most_recent_supplemental(model_year_report_id, *statuses):
+    return SupplementalReport.objects.filter(
+        model_year_report_id=model_year_report_id,
+        status__in=statuses
+    ).order_by("-update_timestamp").first()
+
+
+def get_supplemental_credit_activity(supplemental_id, *select_related):
+    credit_activity = SupplementalReportCreditActivity.objects.filter(
+        supplemental_report_id=supplemental_id
+    ).select_related(*select_related)
+    return list(credit_activity)

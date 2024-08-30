@@ -29,7 +29,8 @@ const COMPLIANCE = {
   SUPPLEMENTAL_CREATE: `${API_BASE_PATH}/reports/:id/supplemental_save`,
   NOA_HISTORY: `${API_BASE_PATH}/reports/:id/noa_history`,
   SUPPLEMENTAL_HISTORY: `${API_BASE_PATH}/reports/:id/supplemental_history`,
-  STATUSES_ALLOW_REASSESSMENT: `${API_BASE_PATH}/reports/:id/statuses_allow_reassessment`
+  STATUSES_ALLOW_REASSESSMENT: `${API_BASE_PATH}/reports/:id/statuses_allow_reassessment`,
+  SUPPLEMENTAL_CREDIT_ACTIVITY: `${API_BASE_PATH}/reports/:supp_id/supplemental_credit_activity`
 }
 
 export default COMPLIANCE

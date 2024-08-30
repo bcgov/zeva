@@ -14,7 +14,7 @@ import ROUTES_ORGANIZATIONS from '../app/routes/Organizations'
 import ROUTES_COMPLIANCE from '../app/routes/Compliance'
 import VehicleSupplierTabs from '../app/components/VehicleSupplierTabs'
 import VehicleSupplierSalesListPage from './components/VehicleSupplierSalesListPage'
-import { getMostRecentModelYearReportBalances, getPostRecentModelYearReportBalances } from '../app/utilities/getModelYearReportCreditBalances'
+import { getMostRecentReportBalances, getPostRecentReportBalances } from '../app/utilities/getModelYearReportCreditBalances'
 
 const VehicleSupplierCreditTransactionListContainer = (props) => {
   const { id } = useParams()
@@ -35,7 +35,7 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
 
   const refreshDetails = () => {
     setLoading(true)
-    const balancePromise = getPostRecentModelYearReportBalances(id).then((balances) => {
+    const balancePromise = getPostRecentReportBalances(id).then((balances) => {
       setBalances(balances)
     })
 
@@ -74,7 +74,7 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
         setAssessedSupplementalsMap(response.data)
       })
 
-    const assessedBalancesPromise = getMostRecentModelYearReportBalances(id).then((assessedBalances) => {
+    const assessedBalancesPromise = getMostRecentReportBalances(id).then((assessedBalances) => {
       setAssessedBalances(assessedBalances)
     })
 
