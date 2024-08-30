@@ -182,7 +182,9 @@ const ConsumerSalesDetailsPage = (props) => {
                 <>
                   {!user.isGovernment && details.consumerSales.validationStatus === 'DRAFT' && statuses.consumerSales.status !== 'CONFIRMED' &&
                   <RecordsUpload
+                    currentModelYear={modelYear}
                     setRecords={setForecastRecords}
+                    setTotals={setForecastTotals}
                   />
                   }
                   <RecordsTable
@@ -192,6 +194,7 @@ const ConsumerSalesDetailsPage = (props) => {
                   <TotalsTable
                     currentModelYear={modelYear}
                     modelYearReportId={id}
+                    passedRecords={forecastRecords}
                     totals={forecastTotals}
                     setTotals={setForecastTotals}
                     readOnly={user.isGovernment || details.consumerSales.validationStatus !== 'DRAFT' || statuses.consumerSales.status === 'CONFIRMED'}
