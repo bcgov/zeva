@@ -23,6 +23,7 @@ const ConsumerSalesContainer = (props) => {
   const [modelYear, setModelYear] = useState(
     CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR
   )
+  const [disabledCheckboxes, setDisabledCheckboxes] = useState(false);
   const [details, setDetails] = useState({})
   const [statuses, setStatuses] = useState({})
   const [forecastRecords, setForecastRecords] = useState([])
@@ -74,6 +75,12 @@ const ConsumerSalesContainer = (props) => {
           setModelYear(year)
           setStatuses(reportStatuses)
 
+          if (['SAVED', 'UNSAVED'].indexOf(
+            reportStatuses.consumerSales.status
+          ) < 0){
+            setDisabledCheckboxes(true)
+          }
+
           setLoading(false)
         })
       )
@@ -122,21 +129,24 @@ const ConsumerSalesContainer = (props) => {
   }
 
   const handleSave = () => {
-    const consumerSalesPromise = axios.post(ROUTES_COMPLIANCE.CONSUMER_SALES, {
-      data: vehicles,
-      modelYearReportId: id,
-      confirmation: checkboxes
-    })
-    const forecastPromise = axios.post(FORECAST_ROUTES.SAVE.replace(/:id/g, id), {
-      forecastRecords: forecastRecords,
-      ...forecastTotals
-    })
-    Promise.all([consumerSalesPromise, forecastPromise]).then(() => {
-      history.push(ROUTES_COMPLIANCE.REPORTS)
-      history.replace(
-        ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(/:id/g, id)
-      )
-    })
+    if(checkboxes.length === assertions.length){
+      const consumerSalesPromise = axios.post(ROUTES_COMPLIANCE.CONSUMER_SALES, {
+        data: vehicles,
+        modelYearReportId: id,
+        confirmation: checkboxes
+      })
+      const forecastPromise = axios.post(FORECAST_ROUTES.SAVE.replace(/:id/g, id), {
+        forecastRecords: forecastRecords,
+        ...forecastTotals
+      })
+      Promise.all([consumerSalesPromise, forecastPromise]).then(() => {
+        setDisabledCheckboxes(true)
+        history.push(ROUTES_COMPLIANCE.REPORTS)
+        history.replace(
+          ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(/:id/g, id)
+        )
+      })
+    }
   }
 
   const handleDelete = () => {
@@ -162,7 +172,7 @@ const ConsumerSalesContainer = (props) => {
         confirmed={confirmed}
         assertions={assertions}
         checkboxes={checkboxes}
-        disabledCheckboxes={''}
+        disabledCheckboxes={disabledCheckboxes}
         handleCheckboxClick={handleCheckboxClick}
         details={details}
         modelYear={modelYear}

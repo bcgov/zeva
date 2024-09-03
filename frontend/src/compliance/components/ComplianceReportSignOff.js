@@ -18,7 +18,7 @@ const ComplianceReportSignOff = (props) => {
       <ReactTooltip />
       <div data-tip={hoverText}>
         {assertions.map((assertion) => (
-          <div key={assertion.id}>
+            <div key={assertion.id}>
             <div className="d-inline-block align-middle my-2 ml-2 mr-1">
               <input
                 checked={
@@ -49,7 +49,7 @@ const ComplianceReportSignOff = (props) => {
               )}
             </label>
           </div>
-        ))}
+          ))}
       </div>
     </div>
   )

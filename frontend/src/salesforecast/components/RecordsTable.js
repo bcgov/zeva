@@ -35,15 +35,15 @@ const RecordsTable = ({ modelYearReportId, passedRecords = [] }) => {
     return <RecordsTableSimple items={passedRecords} pageSize={pageSize} />;
   }
   return (
-    <RecordsTableRefined
-      items={savedRecords}
-      itemsCount={savedRecordsCount}
-      loading={savedRecordsLoading}
-      page={savedRecordsPage}
-      pageSize={pageSize}
-      setPage={setSavedRecordsPage}
-    />
-  );
+          <RecordsTableRefined
+        items={savedRecords}
+        itemsCount={savedRecordsCount}
+        loading={savedRecordsLoading}
+        page={savedRecordsPage}
+        pageSize={pageSize}
+        setPage={setSavedRecordsPage}
+      />
+        );
 };
 
 export default RecordsTable;

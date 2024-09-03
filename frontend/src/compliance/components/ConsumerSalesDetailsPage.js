@@ -87,14 +87,8 @@ const ConsumerSalesDetailsPage = (props) => {
     }
   }
 
-  assertions.forEach((assertion) => {
-    if (checkboxes.indexOf(assertion.id) >= 0) {
-      disabledCheckboxes = 'disabled'
-    }
-  })
-
   const disableSave = () => {
-    if (vehicles.length <= 0 && !checked) {
+    if (checkboxes.length !== assertions.length) {
       return true
     }
     return false
@@ -214,13 +208,14 @@ const ConsumerSalesDetailsPage = (props) => {
         <>
           <div className="row">
             <div className="col-12 my-3">
-              <ComplianceReportSignOff
-                assertions={assertions}
-                checkboxes={checkboxes}
-                handleCheckboxClick={handleCheckboxClick}
-                disabledCheckboxes={disabledCheckboxes}
-                user={user}
-              />
+            <ComplianceReportSignOff
+              assertions={assertions}
+              checkboxes={checkboxes}
+              handleCheckboxClick={handleCheckboxClick}
+              disabledCheckboxes={disabledCheckboxes}
+              hoverText="Compliance Report Sign Off"
+              user={user}
+            />
             </div>
           </div>
 
@@ -306,7 +301,7 @@ ConsumerSalesDetailsPage.propTypes = {
   handleCancelConfirmation: PropTypes.func.isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
   id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-  disabledCheckboxes: PropTypes.string.isRequired,
+  disabledCheckboxes: PropTypes.bool.isRequired,
   modelYear: PropTypes.number.isRequired,
   statuses: PropTypes.shape().isRequired,
   handleDelete: PropTypes.func.isRequired,
