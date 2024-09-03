@@ -66,6 +66,7 @@ const TotalsTable = ({
           <TextInput
             id={totalName}
             label={""}
+            labelSize={""}
             name={totalName}
             num={true}
             defaultValue={
@@ -73,6 +74,7 @@ const TotalsTable = ({
             }
             handleInputChange={handleInputChange}
             readonly={readOnly || disabled}
+            additionalClasses={"center-horizontal-content"}
           />
         </td>
       );
@@ -85,14 +87,22 @@ const TotalsTable = ({
   const sumCells = [];
   for (const [index, column] of columns.entries()) {
     const header = parseInt(currentModelYear) + index + 1;
-    const headerCell = <td key={header}>{header}</td>;
+    const headerCell = (
+      <td key={header}>
+        <div className="center-horizontal-content">{header}</div>
+      </td>
+    );
     headerCells.push(headerCell);
 
     let sum = 0;
     for (const totalName of column) {
       sum = sum + (totals[totalName] ? parseInt(totals[totalName]) : 0);
     }
-    const sumCell = <td key={header}>{sum}</td>;
+    const sumCell = (
+      <td key={header}>
+        <div className="center-horizontal-content">{sum}</div>
+      </td>
+    );
     sumCells.push(sumCell);
   }
 
@@ -101,26 +111,32 @@ const TotalsTable = ({
   }
 
   return (
-    <table>
-      <tbody>
-        <tr>
-          <td>Total Sales</td>
-          {headerCells}
-        </tr>
-        <tr>
-          <td>ICE Vehicles Supplied</td>
-          {getTotalCells(rows[0])}
-        </tr>
-        <tr>
-          <td>ZEVs Supplied</td>
-          {getTotalCells(rows[1], true)}
-        </tr>
-        <tr>
-          <td>Total Vehicles Supplied</td>
-          {sumCells}
-        </tr>
-      </tbody>
-    </table>
+    <div className="row my-1">
+      <div className="col-12">
+        <div className="p-3 consumer-sales totals-table">
+          <table>
+            <tbody>
+              <tr className="totals-header">
+                <td>Total</td>
+                {headerCells}
+              </tr>
+              <tr>
+                <td>ICE Vehicles Supplied</td>
+                {getTotalCells(rows[0])}
+              </tr>
+              <tr>
+                <td>ZEVs Supplied</td>
+                {getTotalCells(rows[1], true)}
+              </tr>
+              <tr>
+                <td>Total Vehicles Supplied</td>
+                {sumCells}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   );
 };
 

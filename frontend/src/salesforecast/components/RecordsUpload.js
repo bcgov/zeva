@@ -149,7 +149,6 @@ const RecordsUpload = ({ currentModelYear, setRecords, setTotals }) => {
     <div className="row my-1">
       <div className="col-12">
         <div className="p-3 consumer-sales">
-          <h3>Forecast Report</h3>
           <div className="ldv-zev-models mt-2">
             <b>
               Download a "Forecast Report" Excel template for proper completion
