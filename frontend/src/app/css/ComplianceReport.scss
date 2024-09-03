@@ -177,6 +177,28 @@
   .consumer-sales {
     border: 1px solid $border-grey;
   }
+  .forecast-report {
+    border: 1px solid $border-grey;
+    border-top: none;
+    .totals-table {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      table {
+        border-collapse: separate; 
+        border-spacing: 0 0.5em;
+        td {
+          padding: 0 1rem 0 1rem;
+          line-height: 35px;
+        }
+      }
+    }
+    .totals-header {
+      background-color: $default-background-grey;
+      font-weight: bold;
+    }
+  }
+
   .credit-request-link {
     background-color: transparent;
     border: none;

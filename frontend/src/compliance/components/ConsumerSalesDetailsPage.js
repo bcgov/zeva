@@ -178,31 +178,34 @@ const ConsumerSalesDetailsPage = (props) => {
               <div className="sales-table mt-2">
                 <ConsumerSalesLDVModalTable vehicles={vehicles} />
               </div>
-              {modelYear >= 2023 &&
-                <>
-                  {!user.isGovernment && details.consumerSales.validationStatus === 'DRAFT' && statuses.consumerSales.status !== 'CONFIRMED' &&
-                  <RecordsUpload
-                    currentModelYear={modelYear}
-                    setRecords={setForecastRecords}
-                    setTotals={setForecastTotals}
-                  />
-                  }
-                  <RecordsTable
-                    modelYearReportId={id}
-                    passedRecords={forecastRecords}
-                  />
-                  <TotalsTable
-                    currentModelYear={modelYear}
-                    modelYearReportId={id}
-                    passedRecords={forecastRecords}
-                    totals={forecastTotals}
-                    setTotals={setForecastTotals}
-                    readOnly={user.isGovernment || details.consumerSales.validationStatus !== 'DRAFT' || statuses.consumerSales.status === 'CONFIRMED'}
-                  />
-                </>
-              }
             </div>
           </div>
+          {modelYear >= 2023 &&
+            <div className="p-3 forecast-report">
+              <label className="text-blue mr-4 font-weight-bold">
+                Forecast Report
+              </label>
+              {!user.isGovernment && details.consumerSales.validationStatus === 'DRAFT' && statuses.consumerSales.status !== 'CONFIRMED' &&
+              <RecordsUpload
+                currentModelYear={modelYear}
+                setRecords={setForecastRecords}
+                setTotals={setForecastTotals}
+              />
+              }
+              <RecordsTable
+                modelYearReportId={id}
+                passedRecords={forecastRecords}
+              />
+              <TotalsTable
+                currentModelYear={modelYear}
+                modelYearReportId={id}
+                passedRecords={forecastRecords}
+                totals={forecastTotals}
+                setTotals={setForecastTotals}
+                readOnly={user.isGovernment || details.consumerSales.validationStatus !== 'DRAFT' || statuses.consumerSales.status === 'CONFIRMED'}
+              />
+            </div>
+          }
         </div>
       </div>
       {['SUBMITTED', 'ASSESSED', 'REASSESSED'].indexOf(
