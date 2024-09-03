@@ -129,7 +129,7 @@ const ConsumerSalesContainer = (props) => {
   }
 
   const handleSave = () => {
-    if(checkboxes.length >= 2){
+    if(checkboxes.length === assertions.length){
       const consumerSalesPromise = axios.post(ROUTES_COMPLIANCE.CONSUMER_SALES, {
         data: vehicles,
         modelYearReportId: id,
