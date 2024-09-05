@@ -268,11 +268,6 @@ const VehicleForm = (props) => {
                 maxnum={4536}
                 name="weightKg"
                 num
-                helperText={
-                  fields['weightKg'] <= 4856 && fields['weightKg'] >= 3856
-                    ? "Please note that since your vehicle exceeds 3,856kg, it is now classified as a Class 2B vehicle."
-                    : null
-                }
               />
             </fieldset>
           </div>
