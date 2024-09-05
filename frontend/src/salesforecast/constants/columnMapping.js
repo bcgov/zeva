@@ -6,7 +6,7 @@ const spreadsheetColumnsToInternalColumns = {
   "Range (km)": "range",
   "ZEV Class": "zevClass",
   "Vehicle Class and Interior Volume": "vehicleClassInteriorVolume",
-  "ZEVs Supply Forecast": "totalSupplied",
+  "ZEV Supply Forecast": "totalSupplied",
 };
 
 export default spreadsheetColumnsToInternalColumns;

@@ -58,7 +58,7 @@ const recordsTableColumns = [
   {
     accessor: (item) => item.totalSupplied,
     className: "text-center",
-    Header: "ZEVs Supply Forecast",
+    Header: "ZEV Supply Forecast",
     headerClassName: "font-weight-bold",
     id: "sales",
     maxWidth: 200,
