@@ -207,7 +207,9 @@ const SupplierInformationDetailsPage = (props) => {
                   </div>
                   <div className="mt-2 row">
                     <span className="col-4">
-                      <h4 className="d-inline">3 Year Average LDV Sales: </h4>
+                      <h4 className="d-inline">
+                        3 Year Average {modelYear < 2024 ? "LDV Sales" : "Vehicles Supplied"}
+                      </h4>
                     </span>
                     <span className="col-6">
                       {FormatNumeric(details.organization.avgLdvSales, 0)}
@@ -222,8 +224,7 @@ const SupplierInformationDetailsPage = (props) => {
                           {details.organization.ldvSales.map((yearSale) => (
                             <div className="model-year-ldv" key={yearSale.id}>
                               <label className="text-blue mr-4 font-weight-bold">
-                                {yearSale.modelYear} Model Year LDV
-                                Sales\Leases:
+                                {yearSale.modelYear} Model Year {modelYear < 2024 ? "LDV Sales\\Leases" : "Vehicles Supplied"}
                               </label>
                               <label className="sales-numbers">
                                 {FormatNumeric(yearSale.ldvSales, 0)}
@@ -244,11 +245,11 @@ const SupplierInformationDetailsPage = (props) => {
               </div>
             </div>
             <div className="mt-4">
-              <h4>Light Duty Vehicle Makes</h4>
+              <h4>{modelYear < 2024 && "Light Duty "}Vehicle Makes</h4>
               <div className="mt-1 mb-2">
-                Enter all the LDV makes {details.organization.name} supplied in
-                British Columbia in the {modelYear} compliance period ending
-                September 30, {modelYear + 1}.
+                Enter all the {modelYear < 2024 && "LDV "}makes {details.organization.name} supplied in
+                British Columbia in the {modelYear >= 2024 && "model year "}{modelYear} compliance period ending
+                September 30, {modelYear + 1}{modelYear < 2024 ? "." : ", that had a gross vehicle weight rating of 4,536 kg or less."}
               </div>
               <div className="ldv-makes p-3">
                 <form disabled={disabledInputs} onSubmit={handleSubmitMake}>

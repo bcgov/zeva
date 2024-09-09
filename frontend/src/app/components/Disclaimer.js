@@ -4,7 +4,7 @@ const Disclaimer = () => (
   <div id="content">
     This information does not replace or constitute legal advice. Users are
     responsible for ensuring compliance with the{' '}
-    <i>Zero-Emissions Vehicles Act</i> and <i>Regulations.</i>
+    <i>Zero-Emission Vehicles Act</i> and <i>Regulations.</i>
   </div>
 )
 

@@ -260,6 +260,7 @@ const SupplierInformationContainer = (props) => {
         reportStatuses={statuses}
         id={id}
         user={user}
+        modelYear={modelYear}
       />
       <SupplierInformationDetailsPage
         assertions={assertions}

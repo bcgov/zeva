@@ -154,6 +154,7 @@ const ConsumerSalesContainer = (props) => {
         active="consumer-sales"
         reportStatuses={statuses}
         user={user}
+        modelYear={modelYear}
       />
       <ConsumerSalesDetailsPage
         user={user}
