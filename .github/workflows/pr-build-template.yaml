@@ -40,7 +40,7 @@ jobs:
     steps:
 
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.1.1
         with:
           ref: refs/pull/${{ inputs.pr-number }}/head
 
@@ -90,8 +90,7 @@ jobs:
           if [ $? -eq 0 ]; then
             echo "zeva-spilo-dev-${{ inputs.pr-number }} exists already"
           else
-            echo "==> Installing zeva-spilo-dev-${{ inputs.pr-number }}, will load the test data into database as well, it may take few minutes .."
-            helm install -n ${{ secrets.dev-namespace }} -f ./values-dev-pr.yaml --wait zeva-spilo-dev-${{ inputs.pr-number }} .
+            helm upgrade --install -n ${{ secrets.dev-namespace }} -f ./values-dev-pr.yaml --wait zeva-spilo-dev-${{ inputs.pr-number }} .
             oc -n ${{ secrets.dev-namespace }} wait --for=condition=Ready pod/zeva-spilo-dev-${{ inputs.pr-number }}-0
             echo "==> Spilo is up and running"
             echo "==> Creating user and database and loading test data"
@@ -115,7 +114,7 @@ jobs:
     steps:
 
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.1.1
         with:
           ref: refs/pull/${{ inputs.pr-number }}/head
 
@@ -143,7 +142,7 @@ jobs:
     steps:
 
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.1.1
         with:
           ref: refs/pull/${{ inputs.pr-number }}/head
 
@@ -171,7 +170,7 @@ jobs:
     steps:
 
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.1.1
         with:
           ref: refs/pull/${{ inputs.pr-number }}/head
 
