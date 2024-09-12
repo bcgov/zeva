@@ -88,7 +88,7 @@ const CreditRequestListTable = (props) => {
         return item.totals.vins > 0 ? item.totals.vins : '-'
       },
       className: 'text-right',
-      Header: 'Total Eligible Sales',
+      Header: 'Total Eligible ZEVs Supplied',
       maxWidth: 150,
       id: 'total-sales',
       filterable: false,

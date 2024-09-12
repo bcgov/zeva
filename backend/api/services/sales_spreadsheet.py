@@ -79,13 +79,13 @@ def add_instructions_sheet(**kwargs):
     row += 1
     worksheet.write(
         row, 0,
-        'Record each individual sale in the next sheet (ZEV Sales).'
-        'Vehicle Model, VIN and Retail Sales Date fields are required.'
+        'Record each individual ZEV supplied in the next sheet (ZEVs Supplied).'
+        'Vehicle Model, VIN and Date Supplied for Consumer Sale fields are required.'
     )
     row += 2
     worksheet.write(
         row, 0,
-        'Retail Sales Date in YYYY-MM-DD format, '
+        'Date Supplied for Consumer Sale in YYYY-MM-DD format, '
         'eg. 2020-07-20'
     )
     row += 2
@@ -98,7 +98,7 @@ def add_instructions_sheet(**kwargs):
     row += 2
     worksheet.write(
         row, 0,
-        'Please input the Sales date in YYYY-MM-DD format.'
+        'Please input the Date Supplied for Consumer Sale in YYYY-MM-DD format.'
     )
 
     row += 2
@@ -115,7 +115,7 @@ def add_instructions_sheet(**kwargs):
 
 
 def add_sales_sheet(**kwargs):
-    sheet_name = 'ZEV Sales'
+    sheet_name = 'ZEVs Supplied'
 
     workbook = kwargs.pop('workbook')
     descriptor = kwargs.pop('descriptor')
@@ -134,7 +134,7 @@ def add_sales_sheet(**kwargs):
     worksheet.write(row, 1, 'Make', style=BOLD)
     worksheet.write(row, 2, 'Vehicle Model', style=BOLD)
     worksheet.write(row, 3, 'VIN', style=BOLD)
-    worksheet.write(row, 4, 'Retail Sales Date (yyyy-mm-dd)', style=BOLD)
+    worksheet.write(row, 4, 'Date Supplied for Consumer Sale (yyyy-mm-dd)', style=BOLD)
 
     vin_col = worksheet.col(3)
     vin_col.width = 256 * 30  # 30 characters for VIN
@@ -255,7 +255,7 @@ def ingest_sales_spreadsheet(
             submission_id=submission_id
         ).delete()
 
-    sheet = workbook.sheet_by_name('ZEV Sales')
+    sheet = workbook.sheet_by_name('ZEVs Supplied')
 
     start_row = 1
     row = start_row
@@ -332,10 +332,10 @@ def validate_spreadsheet(data, user_organization=None, skip_authorization=False)
         )
 
     try:
-        sheet = workbook.sheet_by_name('ZEV Sales')
+        sheet = workbook.sheet_by_name('ZEVs Supplied')
     except XLRDError:
         raise ValidationError(
-            'Spreadsheet is missing ZEV Sales sheet.'
+            'Spreadsheet is missing ZEVs Supplied sheet.'
             'Please download the template again and try again.'
         )
 
@@ -468,6 +468,15 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
         id=submission_id,
         organization_id=organization_id
     )
+    is_legacy_submission = False
+    threshold_date = datetime(year=2024, month=10, day=21).date()
+    date_in_question = None
+    if sales_submission.submission_date:
+        date_in_question = sales_submission.submission_date
+    elif sales_submission.create_timestamp:
+        date_in_question = sales_submission.create_timestamp.date()
+    if date_in_question and date_in_question < threshold_date:
+        is_legacy_submission = True
 
     organization = sales_submission.organization
 
@@ -481,7 +490,9 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
         'sheets': []
     }
 
-    sheet_name = 'ZEV Sales Errors'
+    sheet_name = 'ZEVs Supplied Errors'
+    if is_legacy_submission:
+        sheet_name = 'ZEV Sales Errors'
     worksheet = workbook.add_sheet(sheet_name)
     worksheet.protect = True
     descriptor['sheets'].append({
@@ -495,7 +506,10 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
     worksheet.write(row, 1, 'Make', style=BOLD)
     worksheet.write(row, 2, 'Vehicle Model', style=BOLD)
     worksheet.write(row, 3, 'VIN', style=BOLD)
-    worksheet.write(row, 4, 'Sales Date', style=BOLD)
+    if is_legacy_submission:
+        worksheet.write(row, 4, 'Sales Date', style=BOLD)
+    else:
+        worksheet.write(row, 4, 'Date Supplied for Consumer Sale', style=BOLD)
     worksheet.write(row, 5, 'Error', style=BOLD)
 
     record_of_sales_vin = Subquery(RecordOfSale.objects.filter(
