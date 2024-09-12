@@ -65,11 +65,11 @@ objects:
         ref: ${GIT_REF}
       type: Git
     strategy:
+      type: Docker
       dockerStrategy:
         dockerfilePath: ./Dockerfile-Openshift
         pullSecret:
-          name: docker-artifactory-secret
-      type: Docker
+          name: artifacts-pull-default-erhptx
     triggers:
     - type: ConfigChange
     - type: ImageChange

@@ -53,7 +53,7 @@ autoscaling:
   cpuAverageUtilization: 80
 
 # the frontend host name is appConfigMap.hostName
-frontendRoute: 
+frontendRoute:
   create: true
 
 livenessProbe:
