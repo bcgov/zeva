@@ -38,7 +38,7 @@ class UserBasicSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = (
-            'id', 'display_name', 'organization'
+            'display_name', 'organization'
         )
 
 class UserSerializer(serializers.ModelSerializer):
