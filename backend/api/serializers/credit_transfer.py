@@ -19,7 +19,7 @@ from api.serializers.credit_transfer_comment import \
 from api.serializers.credit_transfer_content import \
     CreditTransferContentSerializer, CreditTransferContentSaveSerializer
 from api.serializers.user import MemberSerializer, UserSerializer
-from api.serializers.organization import OrganizationSerializer
+from api.serializers.organization import OrganizationSerializer, OrganizationNameSerializer
 from api.services.credit_transaction import calculate_insufficient_credits
 from api.services.send_email import notifications_credit_transfers
 
@@ -97,11 +97,11 @@ class CreditTransferListSerializer(
         CreditTransferBaseSerializer
 ):
     history = SerializerMethodField()
-    credit_to = OrganizationSerializer()
+    credit_to = OrganizationNameSerializer()
     credit_transfer_content = CreditTransferContentSerializer(
         many=True, read_only=True
     )
-    debit_from = OrganizationSerializer()
+    debit_from = OrganizationNameSerializer()
     status = SerializerMethodField()
     update_user = SerializerMethodField()
 
@@ -128,11 +128,11 @@ class CreditTransferSerializer(
         CreditTransferBaseSerializer
 ):
     history = SerializerMethodField()
-    credit_to = OrganizationSerializer()
+    credit_to = OrganizationNameSerializer()
     credit_transfer_content = CreditTransferContentSerializer(
         many=True, read_only=True
     )
-    debit_from = OrganizationSerializer()
+    debit_from = OrganizationNameSerializer()
     status = SerializerMethodField()
     update_user = SerializerMethodField()
     sufficient_credits = SerializerMethodField()
