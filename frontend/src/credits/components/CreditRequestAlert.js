@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment-timezone'
 import Alert from '../../app/components/Alert'
+import isLegacySubmission from '../../app/utilities/isLegacySubmission'
 
 const CreditRequestAlert = (props) => {
   const { isGovernment, submission, icbcDate, invalidSubmission } = props
@@ -139,7 +140,7 @@ const CreditRequestAlert = (props) => {
       break
     case 'CHECKED':
       title = 'Validated'
-      message = `CA-${id} Sales checked against ICBC registration data ${moment(
+      message = `CA-${id} ${isLegacySubmission(submission) ? "Sales " : ''}checked against ICBC registration data ${moment(
         statusFilter('CHECKED').createTimestamp
       ).format('MMM D, YYYY')} by ${
         statusFilter('CHECKED').createUser.displayName

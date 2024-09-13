@@ -29,7 +29,7 @@ const CreditRequestsPage = (props) => {
     <div id="credit-requests-list" className="page">
       <div className="row mt-3 mb-2">
         <div className="col-md-8 d-flex align-items-end">
-          <h2>Application for Credits for Consumer Sales</h2>
+          <h2>Application for Credits for ZEVs Supplied</h2>
         </div>
 
         <div className="col-md-4 text-right">

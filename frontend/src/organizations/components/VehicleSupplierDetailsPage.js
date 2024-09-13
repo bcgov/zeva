@@ -107,19 +107,19 @@ const VehicleSupplierDetailsPage = (props) => {
 
 
           <div className="mt-3">
-            <h4 className="d-inline">3 Year Average LDV Sales: </h4>
+            <h4 className="d-inline">3 Year Average Vehicles Supplied: </h4>
             <span> {formatNumeric(Math.round(details.avgLdvSales), 0)} </span>
           </div>
 
           <div className="mt-3">
             {!details.hasSubmittedReport && (
               <div className="mb-2">
-                Enter the previous 3 year LDV sales total to determine vehicle
+                Enter the previous 3 year vehicles supplied total to determine vehicle
                 supplier class.
               </div>
             )}
             {details.hasSubmittedReport && (
-              <h4 className="d-inline">Previous 3 Year LDV Sales: </h4>
+              <h4 className="d-inline">Previous 3 Year Vehicles Supplied: </h4>
             )}
             <form onSubmit={handleSubmit}>
               <div className="ldv-sales">

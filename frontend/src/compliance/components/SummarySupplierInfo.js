@@ -56,7 +56,7 @@ const SummarySupplierInfo = ({
         </div>
         <div className="mt-3">
           <div className="d-inline font-weight-bold">
-            3 Year Average ({modelYear - 3}-{modelYear - 1}) LDV Sales\Leases:
+            3 Year Average ({modelYear - 3}-{modelYear - 1}) {modelYear < 2024 ? "LDV Sales\\Leases" : "Vehicles Supplied"}:
           </div>
           <span className="text-black">
             {' '}

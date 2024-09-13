@@ -99,7 +99,7 @@ const ComplianceCalculatorDetailsInputs = (props) => {
               className="col-12 col-lg-7 col-form-label pl-0"
               htmlFor="provisional-sales"
             >
-              Estimated LDV Sales:
+              Estimated Vehicles Supplied:
             </label>
             <input
               type="number"

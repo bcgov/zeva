@@ -165,6 +165,7 @@ const CreditRequestVINListPage = (props) => {
             sorts={sorts}
             setSorts={setSorts}
             applyFilters={applyFilters}
+            submission={submission}
           />
         </div>
       </div>
