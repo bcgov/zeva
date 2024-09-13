@@ -141,7 +141,7 @@ const RecordsUpload = ({ currentModelYear, setRecords, setTotals }) => {
   const handleDownloadTemplate = () => {
     axios.get(FORECAST_ROUTES.TEMPLATE).then((response) => {
       const url = response.data.url;
-      download(url, { headers: { Authorization: null } });
+      download(url, { headers: { Authorization: null } }, 'forecast_report_template.xlsx');
     });
   };
 
