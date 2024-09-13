@@ -30,8 +30,8 @@ const CreditBalanceHeader = (props) => {
     content = 'Deficit'
   } else {
     content = `Credit Balance: A-
-        ${formatNumeric(totalCredits['Total Current LDV Credits'].A, 2, true)}/ B-
-        ${formatNumeric(totalCredits['Total Current LDV Credits'].B, 2, true)}`
+        ${formatNumeric(totalCredits['Total Current ZEV Credits'].A, 2, true)}/ B-
+        ${formatNumeric(totalCredits['Total Current ZEV Credits'].B, 2, true)}`
   }
   return (
     <Link

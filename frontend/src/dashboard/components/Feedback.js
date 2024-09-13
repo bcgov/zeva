@@ -10,7 +10,7 @@ const Feedback = () => (
       <h2>We want to hear from you</h2>
     </div>
     <div className="content">
-      <p>We are always striving to improve ZEVA.</p>
+      <p>We are always striving to improve the ZEV Reporting System.</p>
       <p>
         {'Please send your suggestions and feedback to '}
         <a

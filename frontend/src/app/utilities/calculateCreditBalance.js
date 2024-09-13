@@ -90,7 +90,7 @@ const calculateCreditBalance = (balances, assessedBalances) => {
 
   const totalCredits = {}
   if (deficitAExists || deficitBExists) {
-    totalCredits['Total Current LDV Credits - Your total balance cannot be calculated due to having an assessed deficit.'] = {
+    totalCredits['Total Current ZEV Credits - Your total balance cannot be calculated due to having an assessed deficit.'] = {
       A: 0,
       B: 0
     }
@@ -112,7 +112,7 @@ const calculateCreditBalance = (balances, assessedBalances) => {
         totalB = totalB + creditsAandB.B
       }
     })
-    totalCredits['Total Current LDV Credits'] = {
+    totalCredits['Total Current ZEV Credits'] = {
       A: totalA,
       B: totalB
     }

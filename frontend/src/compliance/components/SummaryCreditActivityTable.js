@@ -33,9 +33,15 @@ const SummaryCreditActivityTable = (props) => {
       title.indexOf('Balance at end') >= 0 ||
       title.indexOf('Balance after Credit Reduction') >= 0
     ) {
+      let realTitle = title
+      if (title === 'Consumer ZEV Sales:' && year >= 2024) {
+        realTitle = 'ZEVs Supplied and Registered:'
+      } else if (title === 'Pending for Consumer Sales:' && year >= 2024) {
+        realTitle = 'Pending for ZEVs Supplied and Registered:'
+      }
       return (
         <tr>
-          <th className="large-column text-blue">{title}</th>
+          <th className="large-column text-blue">{realTitle}</th>
           <td className={`${numberClassname} a-class`}>
             {title.indexOf('Balance after Credit Reduction') >= 0 &&
             input.A < 0
@@ -93,7 +99,7 @@ const SummaryCreditActivityTable = (props) => {
         </tr>
         <tr>
           <td className="font-weight-bold text-blue">
-            {year} {reportYear < 2024 ? "Model Year LDV Sales" : "Vehicles Supplied"}:
+            {year} {year < 2024 ? "Model Year LDV Sales" : "Vehicles Supplied"}:
           </td>
           <td />
           <td className="text-right font-weight-bold">

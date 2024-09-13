@@ -146,31 +146,45 @@ const ConsumerSalesDetailsPage = (props) => {
             </span>
             <div className="ldv-zev-models mt-2">
               <label className="text-blue mr-4 font-weight-bold">
-                {modelYear} Model Year Zero-Emission Vehicles Sales
+                {modelYear} Model Year {modelYear < 2024 ? "Zero-Emission Vehicles Sales" : "ZEVs Supplied"}
               </label>
-              <div className="text-blue mt-2">
-                If you have {modelYear} model year ZEV sales or leases that
-                occurred before Oct. 1, {modelYear + 1} that you haven&apos;t
-                applied for credits you must{' '}
-                <button
-                  className="text-primary credit-request-link"
-                  onClick={() => {
-                    history.push('/credit-requests/new')
-                  }}
-                  type="button"
-                >
-                  {' '}
-                  <u>enter an application for credits for consumer sales</u>
-                </button>{' '}
-                before submitting this model year report.
-              </div>
-              <div className="total-ldv-sales mt-2 mb-2">
-                *Sales Submitted are VIN submitted in credit applications
-                awaiting government review, Sales Issued are those VIN already
-                verified by government and have been issued credits.
-              </div>
+              {modelYear < 2024 ?
+                <div className="text-blue mt-2">
+                  If you have {modelYear} model year ZEV sales or leases that
+                  occurred before Oct. 1, {modelYear + 1} that you haven&apos;t
+                  applied for credits you must{' '}
+                  <button
+                    className="text-primary credit-request-link"
+                    onClick={() => {
+                      history.push('/credit-requests/new')
+                    }}
+                    type="button"
+                  >
+                    {' '}
+                    <u>enter an application for credits for consumer sales</u>
+                  </button>{' '}
+                  before submitting this model year report.
+                </div>
+                :
+                <div className="text-blue mt-2">
+                  Suppliers must ensure all credit applications to be considered within this compliance period have been 
+                  submitted to the Director before submitting this Model Year Report.
+                </div>
+              }
+              {modelYear < 2024 ?
+                <div className="total-ldv-sales mt-2 mb-2">
+                  *Sales Submitted are VIN submitted in credit applications
+                  awaiting government review, Sales Issued are those VIN already
+                  verified by government and have been issued credits.
+                </div>
+                :
+                <div className="total-ldv-sales mt-2 mb-2">
+                  In the table below, “ZEVs Submitted” are credit applications awaiting Director review. 
+                  “ZEVs Issued” are VINs that have been issued credits by the Director.
+                </div>
+              } 
               <div className="sales-table mt-2">
-                <ConsumerSalesLDVModalTable vehicles={vehicles} />
+                <ConsumerSalesLDVModalTable vehicles={vehicles} modelYear={modelYear} />
               </div>
             </div>
           </div>

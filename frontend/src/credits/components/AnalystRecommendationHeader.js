@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests'
+import isLegacySubmission from '../../app/utilities/isLegacySubmission'
 
 const AnalystRecommendationHeader = (props) => {
   const { submission, user, handleCheckboxClick, issueAsMY } = props
@@ -39,7 +40,8 @@ const AnalystRecommendationHeader = (props) => {
                           id
                         )}
                       >
-                        View sales not eligible for credits or overridden by the analyst from system default
+                        View {isLegacySubmission(submission) ? 'sales' : 'VINs'} not eligible for credits or 
+                        overridden by the analyst from system default
                       </Link>
                     </li>
                   </ul>
