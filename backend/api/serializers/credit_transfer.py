@@ -18,8 +18,8 @@ from api.serializers.credit_transfer_comment import \
     CreditTransferCommentSerializer
 from api.serializers.credit_transfer_content import \
     CreditTransferContentSerializer, CreditTransferContentSaveSerializer
-from api.serializers.user import MemberSerializer, UserSerializer
-from api.serializers.organization import OrganizationSerializer
+from api.serializers.user import UserBasicSerializer
+from api.serializers.organization import OrganizationNameSerializer
 from api.services.credit_transaction import calculate_insufficient_credits
 from api.services.send_email import notifications_credit_transfers
 
@@ -29,7 +29,7 @@ class CreditTransferBaseSerializer:
         user_profile = UserProfile.objects.filter(username=obj.update_user)
 
         if user_profile.exists():
-            serializer = MemberSerializer(user_profile.first(), read_only=True)
+            serializer = UserBasicSerializer(user_profile.first(), read_only=True)
             return serializer.data
 
         return obj.update_user
@@ -37,7 +37,7 @@ class CreditTransferBaseSerializer:
     def get_create_user(self, obj):
         user_profile = UserProfile.objects.filter(username=obj.create_user)
         if user_profile.exists():
-            serializer = UserSerializer(user_profile.first(), read_only=True)
+            serializer = UserBasicSerializer(user_profile.first(), read_only=True)
             return serializer.data
         return obj.create_user
 
@@ -47,6 +47,8 @@ class CreditTransferBaseSerializer:
             history = CreditTransferHistory.objects.filter(
                 transfer_id=obj.id)
         else:
+            create_user_subquery = UserProfile.objects.filter(organization__is_government=True).values_list('username', flat=True)
+            
             history = CreditTransferHistory.objects.filter(
                 transfer_id=obj.id,
                 status__in=[
@@ -58,8 +60,8 @@ class CreditTransferBaseSerializer:
                     CreditTransferStatuses.RESCIND_PRE_APPROVAL,
                     CreditTransferStatuses.REJECTED,
                     CreditTransferStatuses.VALIDATED
-                ])
-        serializer = CreditTransferHistorySerializer(history, many=True, read_only=True)
+                ]).exclude(create_user__in=create_user_subquery, status__in=[CreditTransferStatuses.APPROVED, CreditTransferStatuses.DISAPPROVED,])
+        serializer = CreditTransferHistorySerializer(history, many=True, read_only=True, context={'request': request})
         return serializer.data
 
 
@@ -97,11 +99,11 @@ class CreditTransferListSerializer(
         CreditTransferBaseSerializer
 ):
     history = SerializerMethodField()
-    credit_to = OrganizationSerializer()
+    credit_to = OrganizationNameSerializer()
     credit_transfer_content = CreditTransferContentSerializer(
         many=True, read_only=True
     )
-    debit_from = OrganizationSerializer()
+    debit_from = OrganizationNameSerializer()
     status = SerializerMethodField()
     update_user = SerializerMethodField()
 
@@ -128,11 +130,11 @@ class CreditTransferSerializer(
         CreditTransferBaseSerializer
 ):
     history = SerializerMethodField()
-    credit_to = OrganizationSerializer()
+    credit_to = OrganizationNameSerializer()
     credit_transfer_content = CreditTransferContentSerializer(
         many=True, read_only=True
     )
-    debit_from = OrganizationSerializer()
+    debit_from = OrganizationNameSerializer()
     status = SerializerMethodField()
     update_user = SerializerMethodField()
     sufficient_credits = SerializerMethodField()
