@@ -4,8 +4,11 @@
 name: Emergency Release Build 1.59.1
 
 on:
-  workflow_dispatch:
-  workflow_call:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+    branches:
+      - "release-1.59.1"
+  # workflow_dispatch:
 
 env:
   ## The pull request number of the Tracking pull request to merge the release branch to main
