@@ -280,6 +280,7 @@ const ReassessmentDetailsPage = (props) => {
         makes={makes}
         supplierClass={supplierClass}
         disabledInputs={false}
+        modelYear={reportYear}
       />
       <br></br>
       <h3>Compliance Obligation</h3>

@@ -31,10 +31,10 @@ const ComplianceCalculatorDetailsPage = (props) => {
           The compliance calculator is to assist in estimating your compliance
           obligation.
           <br />
-          Enter your estimated total LDV sales for a model year to see an
+          Enter your estimated total vehicle sales for a model year to see an
           estimated ratio reduction.
           <br />
-          Enter your estimated total ZEV sales by model to see an estimate of
+          Enter your estimated total ZEVs supplied by model to see an estimate of
           credits generated from these sales.
         </div>
       </div>
