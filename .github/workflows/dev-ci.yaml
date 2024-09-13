@@ -3,39 +3,36 @@
 name: Zeva new-pipeline-1.60.0 Dev CI
 
 on:
-  push:
-    branches: [ new-pipeline-1.60.0 ]
-    # paths:
-    #   - frontend/**
-    #   - backend/**
+  # push:
+  #   branches: [ new-pipeline-1.60.0 ]
+  #   paths:
+  #     - frontend/**
+  #     - backend/**
   workflow_dispatch:
 
 env:
   VERSION: 1.60.0
-  GIT_URL: https://github.com/bcgov/zeva.git 
+  GIT_URL: https://github.com/bcgov/zeva.git
   TOOLS_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
   DEV_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
 
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true  
+  cancel-in-progress: true
 
 jobs:
-
   set-pre-release:
     name: Calculate pre-release number
     runs-on: ubuntu-latest
-  
+
     outputs:
       output1: ${{ steps.set-pre-release.outputs.PRE_RELEASE }}
-    
+
     steps:
       - id: set-pre-release
         run: echo "PRE_RELEASE=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
 
   build-backend:
-
     name: Build Zeva Backend
     runs-on: ubuntu-latest
     needs: set-pre-release
@@ -45,7 +42,6 @@ jobs:
       PRE_RELEASE: ${{ needs.set-pre-release.outputs.output1 }}
 
     steps:
-
       - name: Check out repository
         uses: actions/checkout@v4.1.1
 
@@ -66,7 +62,6 @@ jobs:
           oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.DEV_NAMESPACE }}/zeva-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
 
   build-frontend:
-
     name: Build Zeva Frontend
     runs-on: ubuntu-latest
     needs: set-pre-release
@@ -76,7 +71,6 @@ jobs:
       PRE_RELEASE: ${{ needs.set-pre-release.outputs.output1 }}
 
     steps:
-
       - name: Check out repository
         uses: actions/checkout@v4.1.1
 
@@ -95,9 +89,8 @@ jobs:
           sleep 5s
           oc -n ${{ env.TOOLS_NAMESPACE }} wait --for=condition=Complete --timeout=900s build/zeva-frontend-${{ env.VERSION }}-${{ env.PRE_RELEASE }}-1
           oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.DEV_NAMESPACE }}/zeva-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
-                  
-  deploy:
 
+  deploy:
     name: Deploy Zeva on Dev
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -107,21 +100,19 @@ jobs:
       PRE_RELEASE: ${{ needs.set-pre-release.outputs.output1 }}
 
     steps:
-      
       - name: Checkout Manifest repository
         uses: actions/checkout@v4.1.1
         with:
           repository: bcgov-c/tenant-gitops-e52f12
           ref: main
           ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
-      
+
       - name: Update tags
         uses: mikefarah/yq@v4.40.5
         with:
-            cmd: |
-              yq -i '.frontend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-dev.yaml
-              yq -i '.backend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-dev.yaml
-
+          cmd: |
+            yq -i '.frontend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-dev.yaml
+            yq -i '.backend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-dev.yaml
 
       - name: GitHub Commit & Push
         run: |
@@ -130,4 +121,3 @@ jobs:
           git add zeva/values-dev.yaml
           git commit -m "Update the image tag to ${{ env.VERSION }}-${{ env.PRE_RELEASE }} on Dev"
           git push
-  
