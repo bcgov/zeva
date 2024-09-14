@@ -16,7 +16,7 @@ class OrganizationNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
         fields = (
-            'name', 'short_name', 'is_government'
+            'id', 'name', 'short_name', 'is_government'
         )
 
 

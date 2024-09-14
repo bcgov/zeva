@@ -8,7 +8,7 @@ from api.models.credit_transfer import CreditTransfer
 from api.models.credit_transfer_statuses import CreditTransferStatuses
 from api.permissions.credit_transfer import CreditTransferPermissions
 from api.serializers.credit_transfer import CreditTransferSerializer, \
-    CreditTransferSaveSerializer, CreditTransferListSerializer
+    CreditTransferSaveSerializer, CreditTransferListSerializer, CreditTransferOrganizationBalancesSerializer
 from api.serializers.credit_transfer_comment import CreditTransferCommentSerializer
 from auditable.views import AuditableMixin
 from api.services.send_email import notifications_credit_transfers
@@ -124,4 +124,12 @@ class CreditTransferViewset(
         if username == comment.create_user:
             delete_comment(comment_id)
             return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_403_FORBIDDEN)
+    
+    @action(detail=True, methods=["GET"])
+    def org_balances(self, request, pk):
+        if request.user.is_government:
+            transfer = self.get_queryset().filter(pk=pk).first()
+            serializer = CreditTransferOrganizationBalancesSerializer(transfer)
+            return Response(serializer.data)
         return Response(status=status.HTTP_403_FORBIDDEN)

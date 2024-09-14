@@ -32,7 +32,8 @@ const CreditTransfersDetailsPage = (props) => {
     sufficientCredit,
     submission,
     user,
-    errorMessage
+    errorMessage,
+    orgBalances
   } = props
   const { id } = useParams()
   const [comment, setComment] = useState('')
@@ -501,9 +502,10 @@ const CreditTransfersDetailsPage = (props) => {
         </div>
       )}
 
-      {transferRole.governmentAnalyst && (
+      {transferRole.governmentAnalyst && Object.keys(orgBalances).length !== 0 && (
         <CreditTransfersDetailsSupplierTable
           submission={submission}
+          orgBalances={orgBalances}
           tableType="supplierBalance"
         />
       )}
@@ -556,7 +558,8 @@ CreditTransfersDetailsPage.propTypes = {
   sufficientCredit: PropTypes.bool.isRequired,
   user: CustomPropTypes.user.isRequired,
   submission: PropTypes.shape().isRequired,
-  errorMessage: PropTypes.arrayOf(PropTypes.string)
+  errorMessage: PropTypes.arrayOf(PropTypes.string),
+  orgBalances: PropTypes.shape().isRequired
 }
 
 export default CreditTransfersDetailsPage
