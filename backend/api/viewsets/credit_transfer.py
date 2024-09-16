@@ -128,8 +128,10 @@ class CreditTransferViewset(
     
     @action(detail=True, methods=["GET"])
     def org_balances(self, request, pk):
-        if request.user.is_government:
-            transfer = self.get_queryset().filter(pk=pk).first()
+        transfer = self.get_queryset().filter(pk=pk).first()
+        if transfer is None:
+            return Response({})
+        if request.user.is_government and transfer.status == CreditTransferStatuses.APPROVED:
             serializer = CreditTransferOrganizationBalancesSerializer(transfer)
             return Response(serializer.data)
         return Response(status=status.HTTP_403_FORBIDDEN)
