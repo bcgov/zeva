@@ -19,7 +19,7 @@ from api.serializers.credit_transfer_comment import \
 from api.serializers.credit_transfer_content import \
     CreditTransferContentSerializer, CreditTransferContentSaveSerializer
 from api.serializers.user import UserBasicSerializer
-from api.serializers.organization import OrganizationNameSerializer
+from api.serializers.organization import OrganizationNameSerializer, OrganizationSerializer
 from api.services.credit_transaction import calculate_insufficient_credits
 from api.services.send_email import notifications_credit_transfers
 
@@ -198,6 +198,15 @@ class CreditTransferSerializer(
             'debit_from', 'id', 'status', 'update_user',
             'history', 'sufficient_credits', 'pending'
         )
+
+
+class CreditTransferOrganizationBalancesSerializer(ModelSerializer):
+    credit_to = OrganizationSerializer()
+    debit_from = OrganizationSerializer()
+
+    class Meta:
+        model = CreditTransfer
+        fields = ('credit_to', 'debit_from')
 
 
 class CreditTransferSaveSerializer(ModelSerializer):
