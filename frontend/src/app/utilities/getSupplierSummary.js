@@ -1,17 +1,17 @@
-const getSupplierSummary = (submission) => {
+const getSupplierSummary = (submission, orgBalances) => {
   const initiatingSupplier = {
-    currentBalanceA: parseFloat(submission.debitFrom.balance.A),
-    currentBalanceB: parseFloat(submission.debitFrom.balance.B),
-    newBalanceA: parseFloat(submission.debitFrom.balance.A),
-    newBalanceB: parseFloat(submission.debitFrom.balance.B),
-    supplierLabel: submission.debitFrom.name
+    currentBalanceA: parseFloat(orgBalances.debitFrom.balance.A),
+    currentBalanceB: parseFloat(orgBalances.debitFrom.balance.B),
+    newBalanceA: parseFloat(orgBalances.debitFrom.balance.A),
+    newBalanceB: parseFloat(orgBalances.debitFrom.balance.B),
+    supplierLabel: orgBalances.debitFrom.name
   }
   const receivingSupplier = {
-    currentBalanceA: parseFloat(submission.creditTo.balance.A),
-    currentBalanceB: parseFloat(submission.creditTo.balance.B),
-    newBalanceA: parseFloat(submission.creditTo.balance.A),
-    newBalanceB: parseFloat(submission.creditTo.balance.B),
-    supplierLabel: submission.creditTo.name
+    currentBalanceA: parseFloat(orgBalances.creditTo.balance.A),
+    currentBalanceB: parseFloat(orgBalances.creditTo.balance.B),
+    newBalanceA: parseFloat(orgBalances.creditTo.balance.A),
+    newBalanceB: parseFloat(orgBalances.creditTo.balance.B),
+    supplierLabel: orgBalances.creditTo.name
   }
   submission.creditTransferContent.forEach((item) => {
     if (item.creditClass.creditClass === 'A') {

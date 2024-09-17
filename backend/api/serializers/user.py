@@ -5,7 +5,7 @@ from rest_framework.relations import PrimaryKeyRelatedField
 from api.models.role import Role
 from api.models.user_profile import UserProfile
 from api.services.user import update_roles, create_default_user_notification_settings
-from .organization import OrganizationSerializer
+from .organization import OrganizationSerializer, OrganizationNameSerializer
 from .permission import PermissionSerializer
 from .role import RoleSerializer
 
@@ -29,6 +29,17 @@ class MemberSerializer(serializers.ModelSerializer):
             'roles', 'is_mapped'
         )
 
+
+class UserBasicSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the basic details of a user
+    """
+    organization = OrganizationNameSerializer(read_only=True)
+    class Meta:
+        model = UserProfile
+        fields = (
+            'display_name', 'organization'
+        )
 
 class UserSerializer(serializers.ModelSerializer):
     """
