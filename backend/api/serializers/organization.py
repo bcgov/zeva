@@ -9,6 +9,16 @@ from api.serializers.organization_ldv_sales import \
     OrganizationLDVSalesSerializer
 from api.models.model_year import ModelYear
 
+class OrganizationNameSerializer(serializers.ModelSerializer):
+    """
+    Serializer for passing just the necessary info for credit transfers etc
+    """
+    class Meta:
+        model = Organization
+        fields = (
+            'id', 'name', 'short_name', 'is_government'
+        )
+
 
 class OrganizationSerializer(serializers.ModelSerializer):
     """
