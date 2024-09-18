@@ -7,7 +7,6 @@ const CREDIT_REQUESTS = {
   EDIT: `${API_BASE_PATH}/:id/edit`,
   UPDATE_COMMENT: `${API_BASE_PATH}/:id/update_comment`,
   DELETE_COMMENT: `${API_BASE_PATH}/:id/delete_comment`,
-  ORG_BALANCES: `${API_BASE_PATH}/:id/org_balances`,
 }
 
 export default CREDIT_REQUESTS

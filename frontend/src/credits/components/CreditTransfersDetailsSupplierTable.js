@@ -6,7 +6,7 @@ import formatNumeric from '../../app/utilities/formatNumeric'
 import getSupplierSummary from '../../app/utilities/getSupplierSummary'
 
 const CreditTransfersDetailsSupplierTable = (props) => {
-  const { submission, orgBalances } = props
+  const { submission } = props
 
   const tableText = (
     <div className="text-blue my-3">
@@ -15,7 +15,7 @@ const CreditTransfersDetailsSupplierTable = (props) => {
     </div>
   )
 
-  const supplierBalanceData = getSupplierSummary(submission, orgBalances)
+  const supplierBalanceData = getSupplierSummary(submission)
   const supplierBalanceColumns = [
     {
       Header: 'Supplier',
@@ -99,7 +99,6 @@ const CreditTransfersDetailsSupplierTable = (props) => {
   )
 }
 CreditTransfersDetailsSupplierTable.propTypes = {
-  submission: PropTypes.shape().isRequired,
-  orgBalances: PropTypes.shape().isRequired
+  submission: PropTypes.shape().isRequired
 }
 export default CreditTransfersDetailsSupplierTable
