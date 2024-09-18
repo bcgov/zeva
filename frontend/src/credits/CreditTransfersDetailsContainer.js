@@ -23,7 +23,6 @@ const CreditTransfersDetailsContainer = (props) => {
   const [sufficientCredit, setSufficientCredit] = useState(true)
   const { id } = match.params
   const [submission, setSubmission] = useState({})
-  const [orgBalances, setOrgBalances] = useState({})
   const [loading, setLoading] = useState(true)
 
   const refreshDetails = () => {
@@ -49,14 +48,6 @@ const CreditTransfersDetailsContainer = (props) => {
   useEffect(() => {
     refreshDetails()
   }, [id])
-
-  useEffect(() => {
-    if (user.isGovernment && submission.status === 'APPROVED') {
-      axios.get(ROUTES_CREDIT_TRANSFERS.ORG_BALANCES.replace(':id', id)).then((response) => {
-        setOrgBalances(response.data)
-      })
-    }
-  }, [id, user, submission])
 
   const handleCheckboxClick = (event) => {
     if (!event.target.checked) {
@@ -179,7 +170,6 @@ const CreditTransfersDetailsContainer = (props) => {
       submission={submission}
       user={user}
       errorMessage={errorMessage}
-      orgBalances={orgBalances}
     />
   ]
 }

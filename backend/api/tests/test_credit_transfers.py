@@ -14,7 +14,6 @@ from ..services.credit_transaction import validate_transfer
 from ..models.organization import Organization
 from ..models.signing_authority_confirmation import SigningAuthorityConfirmation
 from ..models.signing_authority_assertion import SigningAuthorityAssertion
-from ..models.credit_transfer_statuses import CreditTransferStatuses
 from unittest.mock import patch
 
 
@@ -27,19 +26,19 @@ class TestTransfers(BaseTestCase):
 
         gov_user = self.users['RTAN'].organization
 
-        self.transfer = CreditTransfer.objects.create(
+        transfer = CreditTransfer.objects.create(
             status='SUBMITTED',
             credit_to=org1,
             debit_from=org2,
         )
 
-        self.transfer2 = CreditTransfer.objects.create(
+        transfer2 = CreditTransfer.objects.create(
             status='DRAFT',
             credit_to=org1,
             debit_from=org2,
         )
 
-        self.transfer3 = CreditTransfer.objects.create(
+        transfer3 = CreditTransfer.objects.create(
             status='APPROVED',
             credit_to=org1,
             debit_from=org2,
@@ -181,47 +180,3 @@ class TestTransfers(BaseTestCase):
             
             # Test that email method is called properly
             mock_send_credit_transfer_emails.assert_called()
-
-    
-    def test_get_transfer(self):
-        transfer = self.transfer
-        transfer_initial_status = transfer.status
-        transfer_id = transfer.id
-        users = ["EMHILLIE_BCEID", "RTAN"]
-        for status in CreditTransferStatuses:
-            transfer.status = status
-            transfer.save()
-            for user in users:
-                response = self.clients[user].get("/api/credit-transfers/" + str(transfer_id))
-                data = response.data
-                credit_to = data.get("credit_to")
-                debit_from = data.get("debit_from")
-                if credit_to is not None:
-                    self.assertEqual(len(credit_to), 4)
-                    self.assertFalse("balance" in credit_to or "ldv_sales" in credit_to or "avg_ldv_sales" in credit_to)
-                if debit_from is not None:
-                    self.assertEqual(len(debit_from), 4)
-                    self.assertFalse("balance" in debit_from or "ldv_sales" in debit_from or "avg_ldv_sales" in debit_from)
-        transfer.status = transfer_initial_status
-        transfer.save()
-
-
-    def test_get_org_balances(self):
-        gov_user = "RTAN"
-        non_gov_user = "EMHILLIE_BCEID"
-        transfer = self.transfer
-        transfer_initial_status = transfer.status
-        transfer_id = transfer.id
-        for user in (gov_user, non_gov_user):
-            for status in CreditTransferStatuses:
-                transfer.status = status
-                transfer.save()
-                response = self.clients[user].get("/api/credit-transfers/" + str(transfer_id) + "/org_balances")
-                response_status = response.status_code
-                data = response.data
-                if user == gov_user and status == CreditTransferStatuses.APPROVED:
-                    self.assertEqual(response_status, 200)
-                else:
-                    self.assertTrue(response_status == 403 or not data)
-        transfer.status = transfer_initial_status
-        transfer.save()
