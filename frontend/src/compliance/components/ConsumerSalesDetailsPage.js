@@ -111,7 +111,7 @@ const ConsumerSalesDetailsPage = (props) => {
                 next="Compliance Obligation"
                 report={details.consumerSales}
                 status={statuses.consumerSales}
-                type="ZEVs Supplied"
+                type={modelYear < 2024 ? 'Consumer ZEV Sales' : 'ZEVs Supplied'}
               />
           )}
         </div>
