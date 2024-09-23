@@ -111,17 +111,17 @@ const SupplierInformationContainer = (props) => {
     if (supplierClass === 'L') {
       supplierClassString = {
         class: 'Large',
-        secondaryText: '(5,000 or more total LDV sales)'
+        secondaryText: '(5,000 or more total vehicles supplied)'
       }
     } else if (supplierClass === 'M') {
       supplierClassString = {
         class: 'Medium',
-        secondaryText: '(1,000 to 4,999 total LDV sales)'
+        secondaryText: '(1,000 to 4,999 total vehicles supplied)'
       }
     } else if (supplierClass === 'S') {
       supplierClassString = {
         class: 'Small',
-        secondaryText: '(less than  1,000 total LDV sales)'
+        secondaryText: '(less than  1,000 total vehicles supplied)'
       }
     }
     return supplierClassString
