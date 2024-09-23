@@ -202,11 +202,11 @@ const ComplianceReportSummaryDetailsPage = (props) => {
                   {savedInformation(
                     consumerSalesDetails.updateTimestampConsumerSales,
                     confirmationStatuses.consumerSales,
-                    'Consumer Sales'
+                    'ZEVs supplied'
                   )}
                   {signatureInformation(
                     confirmationStatuses.consumerSales,
-                    'Consumer Sales'
+                    'ZEVs supplied'
                   )}
                 </div>
               </div>
