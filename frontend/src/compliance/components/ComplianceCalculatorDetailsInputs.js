@@ -41,11 +41,11 @@ const ComplianceCalculatorDetailsInputs = (props) => {
             <label htmlFor="supplier-size" className="pl-3 col-form-label">
               Supplier Class
             </label>
-            &nbsp; (based on average of previous 3 year total LDV sale):
+            &nbsp; (based on average of previous 3 year total vehicles supplied):
           </div>
           <div className="pl-lg-5">
             <span className="text-blue ml-4">
-              Small Volume Supplier (less than 1,000 total LDV sales)
+              Small Volume Supplier (less than 1,000 total vehicles supplied)
             </span>
             <br />
             <input
@@ -58,7 +58,7 @@ const ComplianceCalculatorDetailsInputs = (props) => {
               }}
             />
             <span className="text-blue">
-              Medium Volume Supplier (1,000 to 4,999 total LDV sales)
+              Medium Volume Supplier (1,000 to 4,999 total vehicles supplied)
             </span>
             <br />
             <input
@@ -71,7 +71,7 @@ const ComplianceCalculatorDetailsInputs = (props) => {
               }}
             />
             <span className="text-blue">
-              Large Volume Supplier (5,000 or more total LDV sales)
+              Large Volume Supplier (5,000 or more total vehicles supplied)
             </span>
           </div>
           <div className="form-group row mb-0">
