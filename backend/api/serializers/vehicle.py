@@ -268,13 +268,14 @@ class VehicleSerializer(
         return obj.update_user
 
     def get_vehicle_comment(self, obj):
+        request = self.context.get('request')
         vehicle_comment = VehicleComment.objects.filter(
             vehicle=obj
         ).order_by('-create_timestamp')
 
         if vehicle_comment.exists():
             serializer = VehicleCommentSerializer(
-                vehicle_comment.first(), read_only=True
+                vehicle_comment.first(), read_only=True, context={'request': request}
             )
             return serializer.data
 

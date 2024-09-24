@@ -217,7 +217,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                         ) {
                           value *= -1
                         }
-                        handleSupplementalChange({
+                        handleSupplementalChange([{
                           originalAValue: Number(each.A),
                           originalBValue: Number(each.B),
                           title: category,
@@ -228,9 +228,9 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                               getDefault(category, each, 'creditBValue')
                             )
                           )
-                        })
+                        }])
                       }}
-                      readOnly={readOnly || each.modelYear.toString() !== reportYear.toString()}
+                      readOnly={readOnly}
                       />
                   </td>
                   <td>
@@ -261,7 +261,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                           value *= -1
                         }
 
-                        handleSupplementalChange({
+                        handleSupplementalChange([{
                           originalAValue: Number(each.A),
                           originalBValue: Number(each.B),
                           title: category,
@@ -272,9 +272,9 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                             )
                           ),
                           creditB: value
-                        })
+                        }])
                       }}
-                      readOnly={readOnly || each.modelYear.toString() !== reportYear.toString()}
+                      readOnly={readOnly}
                     />
                   </td>
                 </>

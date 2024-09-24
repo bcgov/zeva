@@ -1,8 +1,6 @@
-
 # install spilo for specific pr on dev
 # helm -n e52f12-dev install zeva-spilo-dev-1513 . -f ./values-dev-pr.yaml
 spilo:
-
   replicaCount: 1
 
   credentials:
@@ -31,11 +29,11 @@ spilo:
 
   resources:
     limits:
-      cpu: 120m
-      memory: 400Mi
+      cpu: 500m
+      memory: 2Gi
     requests:
-      cpu: 60m
-      memory: 200Mi  
+      cpu: 250m
+      memory: 1Gi
 
   podDisruptionBudget:
     enabled: false
@@ -44,6 +42,6 @@ spilo:
     liveness:
       enabled: false
     readiness:
-      enabled: true 
+      enabled: true
       initialDelaySeconds: 60
-      failureThreshold: 20         
+      failureThreshold: 20

@@ -469,7 +469,10 @@ class SalesSubmissionSerializer(
 
         if sales_submission_comment.exists():
             serializer = SalesSubmissionCommentSerializer(
-                sales_submission_comment, read_only=True, many=True
+                sales_submission_comment,
+                read_only=True,
+                many=True,
+                context={'request': request}
             )
             return serializer.data
 

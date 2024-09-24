@@ -1,14 +1,15 @@
 import axios from 'axios'
+import Big from 'big.js'
 import ROUTES_COMPLIANCE from '../routes/Compliance'
 import ROUTES_ORGANIZATIONS from '../routes/Organizations'
 import ROUTES_CREDITS from '../routes/Credits'
 import getComplianceObligationDetails from './getComplianceObligationDetails'
-import getClassAReduction from './getClassAReduction'
-import getTotalReduction from './getTotalReduction'
-import getUnspecifiedClassReduction from './getUnspecifiedClassReduction'
-import calculateCreditReduction from './calculateCreditReduction'
+import getClassAReductionBig from './getClassAReductionBig'
+import getUnspecifiedClassReductionBig from './getUnspecifiedClassReductionBig'
+import calculateCreditReductionBig from './calculateCreditReductionBig'
+import { convertBalances, convertCarryOverDeficits } from './convertToBig'
 
-const getMostRecentModelYearReportId = (organizationId) => {
+const getMostRecentReportId = (organizationId) => {
   return axios.get(ROUTES_ORGANIZATIONS.MOST_RECENT_MYR_ID.replace(/:id/g, organizationId)).then((response) => {
     return response.data
   })
@@ -55,7 +56,8 @@ const getModelYearReportCreditBalances = (modelYearReportId) => {
       })
     })
 
-    // tempClassAReductions:
+    convertBalances(tempBalances)
+    convertCarryOverDeficits(carryOverDeficits)
 
     const currentReportYear = Number(modelYear.name)
 
@@ -63,7 +65,7 @@ const getModelYearReportCreditBalances = (modelYearReportId) => {
       (data) => Number(data.modelYear) === Number(currentReportYear)
     )
 
-    const classAReduction = getClassAReduction(
+    const classAReduction = getClassAReductionBig(
       ldvSales,
       filteredRatios.zevClassA,
       tempSupplierClass
@@ -72,30 +74,25 @@ const getModelYearReportCreditBalances = (modelYearReportId) => {
     const tempClassAReductions = [
       {
         modelYear: Number(modelYear.name),
-        value: Number(classAReduction)
+        value: new Big(classAReduction.toFixed(2))
       }
     ]
 
-    // tempUnspecifiedReductions:
-
-    const tempTotalReduction = getTotalReduction(
+    const leftoverReduction = getUnspecifiedClassReductionBig(
       ldvSales,
-      filteredRatios.complianceRatio
-    )
-
-    const leftoverReduction = getUnspecifiedClassReduction(
-      tempTotalReduction,
-      classAReduction
+      filteredRatios.complianceRatio,
+      filteredRatios.zevClassA,
+      tempSupplierClass
     )
 
     const tempUnspecifiedReductions = [
       {
         modelYear: Number(modelYear.name),
-        value: Number(leftoverReduction)
+        value: new Big(leftoverReduction.toFixed(2))
       }
     ]
 
-    const creditReduction = calculateCreditReduction(
+    const creditReduction = calculateCreditReductionBig(
       tempBalances,
       tempClassAReductions,
       tempUnspecifiedReductions,
@@ -110,15 +107,45 @@ const getModelYearReportCreditBalances = (modelYearReportId) => {
   }))
 }
 
-const getMostRecentModelYearReportBalances = (organizationId) => {
-  return getMostRecentModelYearReportId(organizationId).then((modelYearReportId) => {
-    return getModelYearReportCreditBalances(modelYearReportId)
-  }).then((modelYearReportBalances) => {
-    return modelYearReportBalances
+const getSupplementalCreditActivity = (supplementalId) => {
+  if (!supplementalId) {
+    return {}
+  }
+  return axios.get(ROUTES_COMPLIANCE.SUPPLEMENTAL_CREDIT_ACTIVITY.replace(/:supp_id/g, supplementalId)).then((response) => {
+    const balances = []
+    const deficits = []
+    const creditActivities = response.data
+    for (const creditActivity of creditActivities) {
+      const category = creditActivity.category
+      if (category === 'ProvisionalBalanceAfterCreditReduction') {
+        balances.push({
+          modelYear: creditActivity.modelYear.name,
+          creditA: creditActivity.creditAValue,
+          creditB: creditActivity.creditBValue
+        })
+      }
+      // todo: handle deficits (need to find out the category key for deficits...)
+    }
+    return {
+      balances: balances,
+      deficits: deficits
+    }
   })
 }
 
-const getPostRecentModelYearReportBalances = (organizationId) => {
+const getMostRecentReportBalances = (organizationId) => {
+  return getMostRecentReportId(organizationId).then((data) => {
+    const id = data.id
+    if (data.isSupplementary) {
+      return getSupplementalCreditActivity(id)
+    }
+    return getModelYearReportCreditBalances(id)
+  }).then((reportBalances) => {
+    return reportBalances
+  })
+}
+
+const getPostRecentReportBalances = (organizationId) => {
   if (organizationId) {
     return axios.get(ROUTES_ORGANIZATIONS.RECENT_SUPPLIER_BALANCE.replace(/:id/g, organizationId)).then((response) => {
       return response.data
@@ -129,4 +156,4 @@ const getPostRecentModelYearReportBalances = (organizationId) => {
   })
 }
 
-export { getMostRecentModelYearReportId, getModelYearReportCreditBalances, getMostRecentModelYearReportBalances, getPostRecentModelYearReportBalances }
+export { getMostRecentReportBalances, getPostRecentReportBalances }

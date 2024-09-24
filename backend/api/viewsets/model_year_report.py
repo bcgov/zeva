@@ -41,7 +41,8 @@ from api.services.minio import minio_put_object, minio_remove_object
 from api.services.model_year_report import (
     get_model_year_report_statuses,
     adjust_credits, adjust_credits_reassessment,
-    delete_model_year_report
+    delete_model_year_report,
+    get_supplemental_credit_activity
 )
 from api.services.model_year_report import check_validation_status_change, get_model_year_report
 from api.serializers.organization_ldv_sales import OrganizationLDVSalesSerializer
@@ -62,6 +63,7 @@ from api.serializers.model_year_report_supplemental import (
     ModelYearReportSupplementalSerializer,
     SupplementalReportAssessmentSerializer,
     SupplementalReportAssessmentCommentSerializer,
+    ModelYearReportSupplementalCreditActivitySerializer
 )
 from api.serializers.model_year_report_noa import (
     ModelYearReportNoaSerializer,
@@ -1240,4 +1242,18 @@ class ModelYearReportViewset(
             else:
                 result = True
         return Response(result)
-
+    
+    # pk is supplemental id
+    @action(detail=True, methods=["get"])
+    def supplemental_credit_activity(self, request, pk):
+        user = request.user
+        user_org = user.organization
+        credit_activity = get_supplemental_credit_activity(pk, "supplemental_report__model_year_report__organization", "model_year")
+        serializer = ModelYearReportSupplementalCreditActivitySerializer(credit_activity, many=True)
+        if user.is_government:
+            return Response(serializer.data)
+        else:
+            for activity in credit_activity:
+                if user_org != activity.supplemental_report.model_year_report.organization:
+                    return Response(status=status.HTTP_403_FORBIDDEN)
+            return Response(serializer.data)

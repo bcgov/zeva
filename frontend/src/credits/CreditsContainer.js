@@ -8,7 +8,7 @@ import ROUTES_CREDITS from '../app/routes/Credits'
 import ROUTES_COMPLIANCE from '../app/routes/Compliance'
 import ROUTES_ORGANIZATION from '../app/routes/Organizations'
 import CustomPropTypes from '../app/utilities/props'
-import { getMostRecentModelYearReportBalances, getPostRecentModelYearReportBalances } from '../app/utilities/getModelYearReportCreditBalances'
+import { getMostRecentReportBalances, getPostRecentReportBalances } from '../app/utilities/getModelYearReportCreditBalances'
 
 const CreditsContainer = (props) => {
   const [loading, setLoading] = useState(true)
@@ -26,7 +26,7 @@ const CreditsContainer = (props) => {
 
   const refreshList = (showLoading) => {
     setLoading(showLoading)
-    const balancePromise = getPostRecentModelYearReportBalances().then((balances) => {
+    const balancePromise = getPostRecentReportBalances().then((balances) => {
       setBalances(balances)
     })
 
@@ -59,7 +59,7 @@ const CreditsContainer = (props) => {
         setAssessedSupplementalsMap(response.data)
       })
 
-    const assessedBalancesPromise = getMostRecentModelYearReportBalances(user.organization.id).then((assessedBalances) => {
+    const assessedBalancesPromise = getMostRecentReportBalances(user.organization.id).then((assessedBalances) => {
       setAssessedBalances(assessedBalances)
     })
 
