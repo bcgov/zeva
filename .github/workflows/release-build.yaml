@@ -11,33 +11,29 @@ env:
   ## The pull request number of the Tracking pull request to merge the release branch to main
   PR_NUMBER: 2190
   VERSION: 1.60.0
-  GIT_URL: https://github.com/bcgov/zeva.git 
+  GIT_URL: https://github.com/bcgov/zeva.git
   TOOLS_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
   DEV_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
   TEST_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-test
   PROD_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-prod
 
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-  
-jobs:
 
+jobs:
   call-unit-test:
     uses: ./.github/workflows/unit-test-template.yaml
     with:
       pr-number: 2190
 
   build:
-
     name: Build ZEVA on Openshift
     runs-on: ubuntu-latest
     timeout-minutes: 60
     needs: call-unit-test
 
     steps:
-
       - name: Check out repository
         uses: actions/checkout@v3
 
@@ -62,14 +58,12 @@ jobs:
           oc start-build --wait=true zeva-frontend-build-${{ env.PR_NUMBER }}
 
   deploy-on-test:
-
     name: Deploy ZEVA on Test
     runs-on: ubuntu-latest
     timeout-minutes: 60
     needs: build
- 
-    steps:
 
+    steps:
       - name: Check out repository
         uses: actions/checkout@v3
 
@@ -79,16 +73,16 @@ jobs:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           insecure_skip_tls_verify: true
-          namespace: ${{ env.TOOLS_NAMESPACE }}  
+          namespace: ${{ env.TOOLS_NAMESPACE }}
 
       - name: Ask for approval for ZEVA Test deployment
         uses: trstringer/manual-approval@v1.6.0
         with:
           secret: ${{ github.TOKEN }}
-          approvers: AlexZorkin,emi-hi,tim738745,kuanfandevops,jig-patel,prv-proton,JulianForeman
+          approvers: emi-hi,tim738745,kuanfandevops,JulianForeman
           minimum-approvals: 1
           issue-title: "ZEVA ${{ env.VERSION }} Test Deployment"
-      
+
       - name: Tag Frontend Image from tools to Test
         run: |
           oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-frontend:build-${{ env.VERSION }}-${{ env.PR_NUMBER }} ${{ env.TEST_NAMESPACE }}/zeva-frontend:test-${{ env.VERSION }}
@@ -107,7 +101,7 @@ jobs:
             echo "zeva-frontend-test release does not exist"
             helm install --set frontendImageTagname=test-${{ env.VERSION }},openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }} -n ${{ env.TEST_NAMESPACE }} -f ./values-test.yaml zeva-frontend-test .
           fi
-          
+
       # helm status will show an error if the helm release doesn't exist. The error will be ignored.
       - name: Deply zeva-backend on Test
         shell: bash {0}
@@ -123,14 +117,12 @@ jobs:
           fi
 
   deploy-on-prod:
-
     name: Deploy ZEVA on Prod
     runs-on: ubuntu-latest
     timeout-minutes: 60
     needs: deploy-on-test
- 
-    steps:
 
+    steps:
       - name: Check out repository
         uses: actions/checkout@v3
 
@@ -140,16 +132,16 @@ jobs:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           insecure_skip_tls_verify: true
-          namespace: ${{ env.TOOLS_NAMESPACE }}  
+          namespace: ${{ env.TOOLS_NAMESPACE }}
 
       - name: Ask for approval for ZEVA Prod deployment
         uses: trstringer/manual-approval@v1.6.0
         with:
           secret: ${{ github.TOKEN }}
-          approvers: AlexZorkin,kuanfandevops,tim738745,emi-hi,jig-patel,prv-proton,JulianForeman
+          approvers: kuanfandevops,tim738745,emi-hi,JulianForeman
           minimum-approvals: 2
           issue-title: "ZEVA ${{ env.VERSION }} Prod Deployment"
-      
+
       - name: Tag Frontend Image from tools to Prod
         run: |
           oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-frontend:build-${{ env.VERSION }}-${{ env.PR_NUMBER }} ${{ env.PROD_NAMESPACE }}/zeva-frontend:prod-${{ env.VERSION }}
@@ -167,7 +159,7 @@ jobs:
             echo "zeva-frontend-prod release does not exist"
             helm install --set frontendImageTagname=prod-${{ env.VERSION }},openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }} -n ${{ env.PROD_NAMESPACE }} -f ./values-prod.yaml zeva-frontend-prod .
           fi
-          
+
       - name: Deply zeva-backend on Prod
         shell: bash {0}
         run: |
@@ -180,4 +172,3 @@ jobs:
             echo "zeva-backend-prod release does not exist"
             helm install --set backendImageTagname=prod-${{ env.VERSION }} -n ${{ env.PROD_NAMESPACE }} -f ./values-prod.yaml zeva-backend-prod .
           fi
-                                        
