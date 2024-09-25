@@ -6,10 +6,19 @@ import FileDropArea from "../../app/components/FileDropArea";
 import FORECAST_ROUTES from "../constants/routes";
 import download from "../../app/utilities/download";
 import columnMapping from "../constants/columnMapping";
+import { zevTypes, zevClasses, vehicleClasses } from "../constants/template_constants";
 
 const RecordsUpload = ({ currentModelYear, setRecords, setTotals }) => {
   const [files, setFiles] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
+
+  const validateHeaders = (headers) => {
+    for (const header of Object.keys(columnMapping)) {
+      if (!headers.includes(header)) {
+        throw new Error("The dataset is missing the column: " + header);
+      }
+    }
+  }
 
   const getInternalRecords = (records) => {
     const result = [];
@@ -26,8 +35,6 @@ const RecordsUpload = ({ currentModelYear, setRecords, setTotals }) => {
   };
 
   const validateRecords = (records) => {
-    const ZEV_TYPE = ["BEV", "PHEV", "FCEV", "EREV"];
-
     records.forEach((record) => {
       if (!/^\d{4}$/.test(record.modelYear)) {
         throw new Error("Model year must be a 4-digit integer.");
@@ -50,9 +57,9 @@ const RecordsUpload = ({ currentModelYear, setRecords, setTotals }) => {
           "Model must be a non-empty string that is no more than 250 characters.",
         );
       }
-      if (!ZEV_TYPE.includes(record.type)) {
+      if (!zevTypes.includes(record.type)) {
         throw new Error(
-          `Type must be one of the following values: ${ZEV_TYPE.join(", ")}.`,
+          `Type must be one of the following values: ${zevTypes.join(", ")}.`,
         );
       }
       if (
@@ -63,8 +70,8 @@ const RecordsUpload = ({ currentModelYear, setRecords, setTotals }) => {
           "Range must be a number with no more than 2 decimal places.",
         );
       }
-      if (typeof record.zevClass !== "string" || record.zevClass.length !== 1) {
-        throw new Error("ZEV class must be a single character.");
+      if (!zevClasses.includes(record.zevClass)) {
+        throw new Error(`ZEV class must be one of the following values: ${zevClasses.join(", ")}.`,);
       }
       if (
         typeof record.vehicleClassInteriorVolume !== "string" ||
@@ -119,6 +126,7 @@ const RecordsUpload = ({ currentModelYear, setRecords, setTotals }) => {
             setErrorMessage("No more than 2000 records allowed");
           } else {
             try {
+              validateHeaders(Object.keys(records[0]))
               const internalRecords = getInternalRecords(records);
               validateRecords(internalRecords);
               setRecords(internalRecords);
