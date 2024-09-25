@@ -6,7 +6,11 @@ import FileDropArea from "../../app/components/FileDropArea";
 import FORECAST_ROUTES from "../constants/routes";
 import download from "../../app/utilities/download";
 import columnMapping from "../constants/columnMapping";
-import { zevTypes, zevClasses, vehicleClasses } from "../constants/template_constants";
+import {
+  zevTypes,
+  zevClasses,
+  vehicleClasses,
+} from "../constants/template_constants";
 
 const RecordsUpload = ({ currentModelYear, setRecords, setTotals }) => {
   const [files, setFiles] = useState([]);
@@ -18,7 +22,7 @@ const RecordsUpload = ({ currentModelYear, setRecords, setTotals }) => {
         throw new Error("The dataset is missing the column: " + header);
       }
     }
-  }
+  };
 
   const getInternalRecords = (records) => {
     const result = [];
@@ -71,15 +75,13 @@ const RecordsUpload = ({ currentModelYear, setRecords, setTotals }) => {
         );
       }
       if (!zevClasses.includes(record.zevClass)) {
-        throw new Error(`ZEV class must be one of the following values: ${zevClasses.join(", ")}.`,);
-      }
-      if (
-        typeof record.vehicleClassInteriorVolume !== "string" ||
-        record.vehicleClassInteriorVolume === "" ||
-        record.vehicleClassInteriorVolume.length > 250
-      ) {
         throw new Error(
-          "Vehicle class and Interior Volume must be a non-empty string that is no more than 250 characters.",
+          `ZEV class must be one of the following values: ${zevClasses.join(", ")}.`,
+        );
+      }
+      if (!vehicleClasses.includes(record.vehicleClassInteriorVolume)) {
+        throw new Error(
+          "Vehicle class and Interior Volume must be a value from the dropdown",
         );
       }
       if (!Number.isInteger(record.totalSupplied)) {
@@ -126,7 +128,7 @@ const RecordsUpload = ({ currentModelYear, setRecords, setTotals }) => {
             setErrorMessage("No more than 2000 records allowed");
           } else {
             try {
-              validateHeaders(Object.keys(records[0]))
+              validateHeaders(Object.keys(records[0]));
               const internalRecords = getInternalRecords(records);
               validateRecords(internalRecords);
               setRecords(internalRecords);
@@ -149,7 +151,11 @@ const RecordsUpload = ({ currentModelYear, setRecords, setTotals }) => {
   const handleDownloadTemplate = () => {
     axios.get(FORECAST_ROUTES.TEMPLATE).then((response) => {
       const url = response.data.url;
-      download(url, { headers: { Authorization: null } }, 'forecast_report_template.xlsx');
+      download(
+        url,
+        { headers: { Authorization: null } },
+        "forecast_report_template.xlsx",
+      );
     });
   };
 
