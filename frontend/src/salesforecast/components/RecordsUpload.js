@@ -11,19 +11,12 @@ import {
   zevClasses,
   vehicleClasses,
 } from "../constants/template_constants";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { fab } from '@fortawesome/free-brands-svg-icons'
-import { far } from '@fortawesome/free-regular-svg-icons'
-import { fas } from '@fortawesome/free-solid-svg-icons'
-
-library.add(fab, far, fas)
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const RecordsUpload = ({ currentModelYear, setRecords, setTotals }) => {
   const [files, setFiles] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
-  const [uploadStatus, setUploadStatus] = useState();
-
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const validateHeaders = (headers) => {
     for (const header of Object.keys(columnMapping)) {
@@ -133,10 +126,8 @@ const RecordsUpload = ({ currentModelYear, setRecords, setTotals }) => {
           const records = utils.sheet_to_json(sheet);
           if (!records || records.length === 0) {
             setErrorMessage("No records found");
-            setUploadStatus(false)
           } else if (records.length > 2000) {
             setErrorMessage("No more than 2000 records allowed");
-            setUploadStatus(false)
           } else {
             try {
               validateHeaders(Object.keys(records[0]));
@@ -147,20 +138,25 @@ const RecordsUpload = ({ currentModelYear, setRecords, setTotals }) => {
               setTotals((prev) => {
                 return { ...prev, ...zevTotals };
               });
-              setUploadStatus(true)
             } catch (error) {
               setErrorMessage(error.message);
-              setUploadStatus(false)
             }
           }
         } catch (error) {
           setErrorMessage("Could not parse uploaded file");
-          setUploadStatus(false)
         }
       };
       reader.readAsArrayBuffer(file);
     }
   }, [files]);
+
+  useEffect(() => {
+    if (files.length === 0 || errorMessage) {
+      setShowSuccess(false);
+    } else {
+      setShowSuccess(true);
+    }
+  }, [files, errorMessage]);
 
   const handleDownloadTemplate = () => {
     axios.get(FORECAST_ROUTES.TEMPLATE).then((response) => {
@@ -192,17 +188,15 @@ const RecordsUpload = ({ currentModelYear, setRecords, setTotals }) => {
             </div>
             <div className="ldv-zev-models mt-2">
               <b>Upload Forecast Report here (Maximum 2,000 rows)</b>
-              {uploadStatus && (
+              {showSuccess && (
                 <div className="mt-2">
-                  <FontAwesomeIcon icon='check-circle' className="report-checkmark" />
-                  <b>Your file has been successfully uploaded.</b> Please review the table below before saving.
+                  <FontAwesomeIcon
+                    icon="check-circle"
+                    className="report-checkmark"
+                  />
+                  <b>Your file has been successfully uploaded.</b> Please review
+                  the table below before saving.
                 </div>
-              )}
-              {!uploadStatus && errorMessage && (
-                <div className="mt-2">
-                  <FontAwesomeIcon icon='exclamation-circle' className="report-fail" />
-                  <b>Report failed: Incorrect format.</b> Please use the correct template and try again.
-              </div>
               )}
               <FileDropArea
                 type="excel"
