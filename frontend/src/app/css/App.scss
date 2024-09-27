@@ -367,3 +367,9 @@ button {
     border: none;
   }
 }
+
+.center-horizontal-content {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
