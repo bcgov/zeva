@@ -91,7 +91,7 @@ class CreditRequestViewset(
             return self.serializer_classes[self.action]
 
         return self.serializer_classes['default']
-    
+
     def perform_update(self, serializer):
         validation_status = self.request.data.get("validation_status")
 
