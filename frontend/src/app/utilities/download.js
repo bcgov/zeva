@@ -1,17 +1,23 @@
 import axios from 'axios'
 
-const download = (url, params) =>
+const download = (url, params, filenameOverride) =>
   axios
     .get(url, {
       responseType: 'blob',
-      params
+      ...params
     })
     .then((response) => {
-      let filename = response.headers['content-disposition'].replace(
-        'attachment; filename=',
-        ''
-      )
-      filename = filename.replace(/"/g, '')
+      let filename = ''
+      const contentDisposition = response.headers['content-disposition']
+      if (filenameOverride) {
+        filename = filenameOverride
+      } else if (contentDisposition) {
+        filename = response.headers['content-disposition'].replace(
+          'attachment; filename=',
+          ''
+        )
+        filename = filename.replace(/"/g, '')
+      }
 
       const objectURL = window.URL.createObjectURL(new Blob([response.data]))
       const link = document.createElement('a')

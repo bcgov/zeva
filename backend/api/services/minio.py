@@ -18,11 +18,12 @@ def get_refined_object_name(object_name):
     return object_name
 
 
-def minio_get_object(object_name):
+def minio_get_object(object_name, response_headers=None):
     return minio.presigned_get_object(
         bucket_name=MINIO['BUCKET_NAME'],
         object_name=get_refined_object_name(object_name),
-        expires=timedelta(seconds=3600)
+        expires=timedelta(seconds=3600),
+        response_headers=response_headers
     )
 
 

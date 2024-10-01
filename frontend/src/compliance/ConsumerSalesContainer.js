@@ -10,11 +10,11 @@ import ConsumerSalesDetailsPage from './components/ConsumerSalesDetailsPage'
 import ROUTES_COMPLIANCE from '../app/routes/Compliance'
 import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions'
 import deleteModelYearReport from '../app/utilities/deleteModelYearReport'
+import FORECAST_ROUTES from '../salesforecast/constants/routes'
 
 const ConsumerSalesContainer = (props) => {
   const { keycloak, user } = props
   const [loading, setLoading] = useState(true)
-  const [errorMessage, setErrorMessage] = useState([])
   const [vehicles, setVehicles] = useState([])
   const [assertions, setAssertions] = useState([])
   const [confirmed, setConfirmed] = useState(false)
@@ -23,8 +23,11 @@ const ConsumerSalesContainer = (props) => {
   const [modelYear, setModelYear] = useState(
     CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR
   )
+  const [disabledCheckboxes, setDisabledCheckboxes] = useState(false);
   const [details, setDetails] = useState({})
   const [statuses, setStatuses] = useState({})
+  const [forecastRecords, setForecastRecords] = useState([])
+  const [forecastTotals, setForecastTotals] = useState({})
   const { id } = useParams()
 
   const refreshDetails = (showLoading) => {
@@ -71,6 +74,12 @@ const ConsumerSalesContainer = (props) => {
 
           setModelYear(year)
           setStatuses(reportStatuses)
+
+          if (['SAVED', 'UNSAVED'].indexOf(
+            reportStatuses.consumerSales.status
+          ) < 0){
+            setDisabledCheckboxes(true)
+          }
 
           setLoading(false)
         })
@@ -120,24 +129,24 @@ const ConsumerSalesContainer = (props) => {
   }
 
   const handleSave = () => {
-    axios
-      .post(ROUTES_COMPLIANCE.CONSUMER_SALES, {
+    if(checkboxes.length === assertions.length){
+      const consumerSalesPromise = axios.post(ROUTES_COMPLIANCE.CONSUMER_SALES, {
         data: vehicles,
         modelYearReportId: id,
         confirmation: checkboxes
       })
-      .then(() => {
+      const forecastPromise = axios.post(FORECAST_ROUTES.SAVE.replace(/:id/g, id), {
+        forecastRecords: forecastRecords,
+        ...forecastTotals
+      })
+      Promise.all([consumerSalesPromise, forecastPromise]).then(() => {
+        setDisabledCheckboxes(true)
         history.push(ROUTES_COMPLIANCE.REPORTS)
         history.replace(
-          ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', id)
+          ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(/:id/g, id)
         )
       })
-      .catch((error) => {
-        const { response } = error
-        if (response.status === 400) {
-          setErrorMessage(error.response.data.status)
-        }
-      })
+    }
   }
 
   const handleDelete = () => {
@@ -163,16 +172,19 @@ const ConsumerSalesContainer = (props) => {
         confirmed={confirmed}
         assertions={assertions}
         checkboxes={checkboxes}
-        disabledCheckboxes={''}
+        disabledCheckboxes={disabledCheckboxes}
         handleCheckboxClick={handleCheckboxClick}
         details={details}
         modelYear={modelYear}
         statuses={statuses}
-        errorMessage={errorMessage}
         id={id}
         handleCancelConfirmation={handleCancelConfirmation}
         checked={checked}
         handleDelete={handleDelete}
+        forecastRecords={forecastRecords}
+        setForecastRecords={setForecastRecords}
+        forecastTotals={forecastTotals}
+        setForecastTotals={setForecastTotals}
       />
     </>
   )

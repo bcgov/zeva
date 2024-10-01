@@ -10,6 +10,9 @@ import ComplianceReportSignOff from './ComplianceReportSignOff'
 import ConsumerSalesLDVModalTable from './ConsumerSalesLDVModelTable'
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
 import ComplianceReportDeleteModal from './ComplianceReportDeleteModal'
+import RecordsUpload from '../../salesforecast/components/RecordsUpload'
+import RecordsTable from '../../salesforecast/components/RecordsTable'
+import TotalsTable from '../../salesforecast/components/TotalsTable'
 
 const ConsumerSalesDetailsPage = (props) => {
   const {
@@ -27,7 +30,11 @@ const ConsumerSalesDetailsPage = (props) => {
     statuses,
     id,
     checked,
-    handleDelete
+    handleDelete,
+    forecastRecords,
+    setForecastRecords,
+    forecastTotals,
+    setForecastTotals
   } = props
 
   const [showModal, setShowModal] = useState(false)
@@ -80,14 +87,8 @@ const ConsumerSalesDetailsPage = (props) => {
     }
   }
 
-  assertions.forEach((assertion) => {
-    if (checkboxes.indexOf(assertion.id) >= 0) {
-      disabledCheckboxes = 'disabled'
-    }
-  })
-
   const disableSave = () => {
-    if (vehicles.length <= 0 && !checked) {
+    if (checkboxes.length !== assertions.length) {
       return true
     }
     return false
@@ -173,6 +174,32 @@ const ConsumerSalesDetailsPage = (props) => {
               </div>
             </div>
           </div>
+          {modelYear >= 2023 &&
+            <div className="p-3 forecast-report">
+              <label className="text-blue mr-4 font-weight-bold">
+                Forecast Report
+              </label>
+              {!user.isGovernment && details.consumerSales.validationStatus === 'DRAFT' && statuses.consumerSales.status !== 'CONFIRMED' &&
+              <RecordsUpload
+                currentModelYear={modelYear}
+                setRecords={setForecastRecords}
+                setTotals={setForecastTotals}
+              />
+              }
+              <RecordsTable
+                modelYearReportId={id}
+                passedRecords={forecastRecords}
+              />
+              <TotalsTable
+                currentModelYear={modelYear}
+                modelYearReportId={id}
+                passedRecords={forecastRecords}
+                totals={forecastTotals}
+                setTotals={setForecastTotals}
+                readOnly={user.isGovernment || details.consumerSales.validationStatus !== 'DRAFT' || statuses.consumerSales.status === 'CONFIRMED'}
+              />
+            </div>
+          }
         </div>
       </div>
       {['SUBMITTED', 'ASSESSED', 'REASSESSED'].indexOf(
@@ -181,13 +208,14 @@ const ConsumerSalesDetailsPage = (props) => {
         <>
           <div className="row">
             <div className="col-12 my-3">
-              <ComplianceReportSignOff
-                assertions={assertions}
-                checkboxes={checkboxes}
-                handleCheckboxClick={handleCheckboxClick}
-                disabledCheckboxes={disabledCheckboxes}
-                user={user}
-              />
+            <ComplianceReportSignOff
+              assertions={assertions}
+              checkboxes={checkboxes}
+              handleCheckboxClick={handleCheckboxClick}
+              disabledCheckboxes={disabledCheckboxes}
+              hoverText="Compliance Report Sign Off"
+              user={user}
+            />
             </div>
           </div>
 
@@ -273,7 +301,7 @@ ConsumerSalesDetailsPage.propTypes = {
   handleCancelConfirmation: PropTypes.func.isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
   id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-  disabledCheckboxes: PropTypes.string.isRequired,
+  disabledCheckboxes: PropTypes.bool.isRequired,
   modelYear: PropTypes.number.isRequired,
   statuses: PropTypes.shape().isRequired,
   handleDelete: PropTypes.func.isRequired,
