@@ -1,7 +1,7 @@
 ## For each release, please update the value of workflow name, branches and PR_NUMBER
 ## Also update frontend/package.json version
 
-name: Release Build 1.61.0
+name: Release Build 1.62.0
 
 on:
   workflow_dispatch:
@@ -10,7 +10,7 @@ on:
 env:
   ## The pull request number of the Tracking pull request to merge the release branch to main
   PR_NUMBER: 2270
-  VERSION: 1.61.0
+  VERSION: 1.62.0
   GIT_URL: https://github.com/bcgov/zeva.git
   TOOLS_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
   DEV_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
