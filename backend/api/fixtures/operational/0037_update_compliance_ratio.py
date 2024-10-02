@@ -12,7 +12,11 @@ class UpdateComplianceRatio(OperationalDataScript):
 
     def check_run_preconditions(self):
         return True
+
     def update_compliance_ratio(self):
+        """
+        Update compliance ratios based on predefined values.
+        """
         ratios = [
             (2026, 26.30, 15.20),
             (2027, 42.60, 28.70),
@@ -33,9 +37,10 @@ class UpdateComplianceRatio(OperationalDataScript):
             compliance_ratio.save()
 
     def delete_compliance_ratio(self):
-        ComplianceRatio.objects.filter(
-            model_year__gte=2036
-        ).delete()
+        """
+        Delete compliance ratios for model years greater than or equal to 2036.
+        """
+        ComplianceRatio.objects.filter(model_year__gte=2036).delete()
 
     @transaction.atomic
     def run(self):
