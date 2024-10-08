@@ -1,21 +1,27 @@
-name: Teardown PR on Dev
+name: PR Teardown on Dev
 
 on:
   pull_request:
-    types: closed
+    types: [unlabeled, closed]
 
 env:
-  TOOLS_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
   DEV_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
+  PR_NUMBER: ${{ github.event.pull_request.number }}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true  
 
 jobs:
 
-  teardown-on-dev:
-    if: endsWith( github.event.pull_request.title, 'build-on-dev' )
-    name: Tear ZEVA down on Dev
+  teardown:
+    if: >
+      (github.event.action == 'unlabeled' && github.event.label.name == 'build') || 
+      (github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'build') )
+    name: PR Teardown
     runs-on: ubuntu-latest
-    timeout-minutes: 20
- 
+    timeout-minutes: 60
+
     steps:
 
       - name: Log in to Openshift
@@ -24,11 +30,11 @@ jobs:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           insecure_skip_tls_verify: true
-          namespace: ${{ env.TOOLS_NAMESPACE }}  
+          namespace: ${{ env.DEV_NAMESPACE }}
 
-      - name: Undeploy on Dev
-        shell: bash {0}
+      - name: Teardown the pull request
         run: |
-          helm -n ${{ env.DEV_NAMESPACE }} uninstall zeva-backend-dev-${{ github.event.pull_request.number }} || true
-          helm -n ${{ env.DEV_NAMESPACE }} uninstall zeva-frontend-dev-${{ github.event.pull_request.number }} || true
-          helm -n ${{ env.DEV_NAMESPACE }} uninstall zeva-spilo-dev-${{ github.event.pull_request.number }} || true
+          helm -n ${{ env.DEV_NAMESPACE }} uninstall zeva-frontend-dev-${{ env.PR_NUMBER }}
+          helm -n ${{ env.DEV_NAMESPACE }} uninstall zeva-backend-dev-${{ env.PR_NUMBER }}
+          helm -n ${{ env.DEV_NAMESPACE }} uninstall zeva-postgres-dev-${{ env.PR_NUMBER }}
+          oc -n ${{ env.DEV_NAMESPACE }} delete pvc -l app.kubernetes.io/instance=zeva-postgres-dev-${{ env.PR_NUMBER }}
