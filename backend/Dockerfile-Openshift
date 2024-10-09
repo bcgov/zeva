@@ -26,5 +26,6 @@ RUN pip install --upgrade pip==24.0 && \
 # Expose the port the app runs on
 EXPOSE 8080
 
+
 # Start the Django server
 CMD ["gunicorn", "wsgi", "--config", "gunicorn.cfg.py"]
