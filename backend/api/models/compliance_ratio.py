@@ -30,5 +30,6 @@ class ComplianceRatio(Auditable):
 
     class Meta:
         db_table = "compliance_ratio"
+        ordering = ['model_year']
 
     db_table_comment = "Table to store compliance ratio based on model year"

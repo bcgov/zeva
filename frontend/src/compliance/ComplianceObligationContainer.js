@@ -504,6 +504,7 @@ const ComplianceObligationContainer = (props) => {
         active="credit-activity"
         reportStatuses={statuses}
         user={user}
+        modelYear={reportYear}
       />
       <ComplianceObligationDetailsPage
         assertions={assertions}

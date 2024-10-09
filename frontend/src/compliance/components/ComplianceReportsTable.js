@@ -138,11 +138,20 @@ const ComplianceReportsTable = (props) => {
     },
     {
       accessor: (item) =>
-        item.ldvSales ? formatNumeric(item.ldvSales, 0) : '-',
+        item.ldvSales && (parseInt(item.modelYear.name, 10) < 2024) ? formatNumeric(item.ldvSales, 0) : '-',
       className: 'text-right px-3',
       Header: 'Total LDV Sales',
       headerClassName: 'font-weight-bold',
       id: 'total-ldv-sales',
+      maxWidth: 260
+    },
+    {
+      accessor: (item) =>
+        item.ldvSales && (parseInt(item.modelYear.name, 10) >= 2024) ? formatNumeric(item.ldvSales, 0) : '-',
+      className: 'text-right px-3',
+      Header: 'Total Vehicles Supplied',
+      headerClassName: 'font-weight-bold',
+      id: 'total-vehicles-supplied',
       maxWidth: 260
     },
     {

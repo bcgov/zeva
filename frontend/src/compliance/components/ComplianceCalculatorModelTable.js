@@ -41,7 +41,7 @@ const ComplianceCalculatorModelTable = (props) => {
                       Credit Entitlement
                     </th>
                     <th className="estimated-sales">
-                      Estimated Annual Sales Total
+                      Estimated annual ZEVs supplied
                     </th>
                     <th className="estimated-credits text-right">
                       Estimated Credits Total

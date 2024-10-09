@@ -7,7 +7,8 @@ const NoticeOfAssessmentSection = ({
   supplierClass,
   disabledInputs,
   reassessmentServiceAddress,
-  reassessmentRecordsAddress
+  reassessmentRecordsAddress,
+  modelYear
 }) => {
   const getClassDescriptions = (_supplierClass) => {
     switch (_supplierClass) {
@@ -76,7 +77,7 @@ const NoticeOfAssessmentSection = ({
         </div>
       )}
       <div className="mt-4">
-        <h4>Light Duty Vehicle Makes:</h4>
+        <h4>{modelYear < 2024 ? "Light Duty Vehicle Makes:" : "Vehicle Makes:"}</h4>
         {makes.length > 0 && (
           <div className={`mt-0 list ${disabledInputs ? 'disabled' : ''}`}>
             <ul>

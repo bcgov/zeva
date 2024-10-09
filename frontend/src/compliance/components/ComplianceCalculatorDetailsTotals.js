@@ -51,7 +51,7 @@ const ComplianceCalculatorDetailsTotals = (props) => {
             </tr>
             <tr>
               <td className="text-blue pt-4">
-                <b>Estimated Annual ZEV Sales</b> (from below):
+                <b>Estimated Annual ZEVs Supplied</b> (from below):
               </td>
               <td />
             </tr>

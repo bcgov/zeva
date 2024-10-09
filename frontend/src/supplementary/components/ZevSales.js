@@ -11,6 +11,11 @@ const ZevSales = (props) => {
     ? details.actualStatus
     : details.status
 
+  let modelYear = 0
+  if (details && details.assessmentData && details.assessmentData.modelYear) {
+    modelYear = Number(details.assessmentData.modelYear)
+  }
+
   const columns = [
     {
       Cell: (item) => (
@@ -57,7 +62,7 @@ const ZevSales = (props) => {
         </>
       ),
       className: 'text-right',
-      Header: 'Sales',
+      Header: modelYear < 2024 ? 'Sales' : 'ZEVs',
       headerClassName: 'font-weight-bold ',
       id: 'zevSales',
       sortable: false,
@@ -368,11 +373,11 @@ const ZevSales = (props) => {
     <>
       <h3>
         {details.assessmentData && details.assessmentData.modelYear}
-        &nbsp; Model Year Zero-Emission Vehicles Sales
+        &nbsp; Model Year {modelYear < 2024 ? "Zero-Emission Vehicles Sales" : "ZEVs Supplied"}
       </h3>
       <div className="text-blue my-3">
         Provide additional details in the comment box at the bottom of this form
-        if there are changes to the consumer ZEV sales details.
+        if there are changes to the {modelYear < 2024 ? "consumer ZEV sales" : "ZEVs supplied and registered"} details.
       </div>
       <div className="my-4 sales-table-container">
         {salesRows && (

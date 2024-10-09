@@ -1,3 +1,5 @@
+import isLegacySubmission from "../../app/utilities/isLegacySubmission"
+
 const analystRecommendationColumns = (props) => {
   const { submission, user } = props
 
@@ -33,7 +35,7 @@ const analystRecommendationColumns = (props) => {
 
         return sum
       },
-      Header: 'Eligible Sales',
+      Header: isLegacySubmission(submission) ? 'Eligible Sales' : 'Eligible ZEVs Supplied',
       headerClassName: ' eligible-sales',
       id: 'eligible-sales',
       show: user.isGovernment,

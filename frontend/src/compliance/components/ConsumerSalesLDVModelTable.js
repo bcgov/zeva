@@ -3,7 +3,7 @@ import React from 'react'
 import ReactTable from '../../app/components/ReactTable'
 
 const ConsumerSalesLDVModalTable = (props) => {
-  const { vehicles } = props
+  const { vehicles, modelYear } = props
   let totalPendingSales
   let totalSalesIssued
   if (vehicles.length > 0) {
@@ -15,7 +15,7 @@ const ConsumerSalesLDVModalTable = (props) => {
     {
       accessor: (item) => item.pendingSales,
       className: 'text-center',
-      Header: '*Sales Submitted',
+      Header: modelYear < 2024 ? '*Sales Submitted' : 'ZEVs Submitted',
       headerClassName: 'font-weight-bold ',
       id: 'pending-sales',
       maxWidth: 200,
@@ -28,7 +28,7 @@ const ConsumerSalesLDVModalTable = (props) => {
     {
       accessor: (item) => item.salesIssued,
       className: 'text-center',
-      Header: 'Sales Issued',
+      Header: modelYear < 2024 ? 'Sales Issued' : 'ZEVs Issued',
       headerClassName: 'font-weight-bold ',
       id: 'sales-issued',
       maxWidth: 200,
@@ -101,7 +101,8 @@ const ConsumerSalesLDVModalTable = (props) => {
 ConsumerSalesLDVModalTable.defaultProps = {}
 
 ConsumerSalesLDVModalTable.propTypes = {
-  vehicles: PropTypes.arrayOf(PropTypes.shape({})).isRequired
+  vehicles: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  modelYear: PropTypes.number.isRequired
 }
 
 export default ConsumerSalesLDVModalTable
