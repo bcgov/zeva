@@ -163,20 +163,6 @@ jobs:
           ls -l
           cat zeva/values-dev-pr.yaml
 
-      - name: Update values-dev-pr.yaml for frontend and backend
-        uses: mikefarah/yq@v4.40.5
-        with:
-          cmd: |
-            yq -i '.image.tag = "${{ env.VERSION }}-${{ env.PR_NUMBER }}"' zeva/charts/zeva-frontend/values-dev-pr.yaml
-            yq -i '.route.host = "zeva-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca"' zeva/charts/zeva-frontend/values-dev-pr.yaml
-            yq -i '.volumes[0].configMap.name = "zeva-frontend-dev-${{ env.PR_NUMBER }}"' zeva/charts/zeva-frontend/values-dev-pr.yaml
-            yq -i '.apiBase = "https://zeva-backend-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca/api"' zeva/charts/zeva-frontend/values-dev-pr.yaml
-            yq -i '.keycloak.postLogoutUrl = "https://zeva-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca/"' zeva/charts/zeva-frontend/values-dev-pr.yaml
-            yq -i '.image.tag = "${{ env.VERSION }}-${{ env.PR_NUMBER }}"' zeva/charts/zeva-backend/values-dev-pr.yaml
-            yq -i '.route.host = "zeva-backend-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca"' zeva/charts/zeva-backend/values-dev-pr.yaml
-            yq -i eval '(.env[] | select(.name == "ZEVA_DB_HOST") | .value) = "zeva-postgres-dev-${{ env.PR_NUMBER }}-postgresql.${{ env.DEV_NAMESPACE }}.svc.cluster.local"' zeva/charts/zeva-backend/values-dev-pr.yaml
-            yq -i eval '(.env[] | select(.name == "ZEVA_REDIS_HOST") | .value) = "zeva-redis-dev-${{ env.PR_NUMBER }}-master.${{ env.DEV_NAMESPACE }}.svc.cluster.local"' zeva/charts/zeva-backend/values-dev-pr.yaml
-
       - name: Helm Deployment
         shell: bash {0}
         run: |
