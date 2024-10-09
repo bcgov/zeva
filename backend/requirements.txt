@@ -9,7 +9,7 @@ chardet==3.0.4
 configparser==5.0.0
 coverage==5.0.3
 cryptography==42.0.4
-Django==3.2.25
+Django==4.2.16
 django-celery-beat==1.5.0
 django-cors-headers==3.2.1
 django-enumfields==2.1.1
