@@ -90,7 +90,7 @@ jobs:
 
       - name: Build ZEVA Backend
         run: |
-          cd openshift/templates
+          cd openshift/templates/backend
           oc process -f ./backend-bc.yaml VERSION=${{ env.VERSION }}-${{ env.PR_NUMBER }} GIT_URL=${{ env.GIT_URL }} GIT_REF=${{ github.event.pull_request.head.ref }} | oc apply --wait=true -f - -n ${{ env.TOOLS_NAMESPACE }}
           sleep 2s
           for build in $(oc -n ${{ env.TOOLS_NAMESPACE }} get builds -l buildconfig=zeva-backend-${{ env.VERSION }}-${{ env.PR_NUMBER }} -o jsonpath='{.items[?(@.status.phase=="Running")].metadata.name}'); do
@@ -103,7 +103,7 @@ jobs:
 
       - name: Build ZEVA Frontend
         run: |
-          cd openshift/templates
+          cd openshift/templates/frontend
           oc process -f ./frontend-bc.yaml VERSION=${{ env.VERSION }}-${{ env.PR_NUMBER }} GIT_URL=${{ env.GIT_URL }} GIT_REF=${{ github.event.pull_request.head.ref }} | oc apply --wait=true -f - -n ${{ env.TOOLS_NAMESPACE }}
           sleep 2s
           for build in $(oc -n ${{ env.TOOLS_NAMESPACE }} get builds -l buildconfig=zeva-frontend-${{ env.VERSION }}-${{ env.PR_NUMBER }} -o jsonpath='{.items[?(@.status.phase=="Running")].metadata.name}'); do
@@ -131,9 +131,25 @@ jobs:
       - name: Checkout Manifest repository
         uses: actions/checkout@v4.1.1
         with:
-          repository: bcgov-c/tenant-gitops-d2bd59
+          repository: bcgov-c/tenant-gitops-e52f12
           ref: main
           ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
+
+      - name: Replace VERSION in values-dev-pr.yaml
+        uses: jacobtomlinson/gha-find-replace@v3
+        with:
+          find: "VERSION"
+          replace: "${{ env.VERSION }}"
+          include: "zeva/values-dev-pr.yaml"
+          regex: false
+
+      - name: Replace PRNUMBER in values-dev-pr.yaml
+        uses: jacobtomlinson/gha-find-replace@v3
+        with:
+          find: "PRNUMBER"
+          replace: "${{ env.PR_NUMBER }}"
+          include: "zeva/values-dev-pr.yaml"
+          regex: false
 
       - name: Log in to Openshift
         uses: redhat-actions/oc-login@v1.3
@@ -142,28 +158,33 @@ jobs:
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           insecure_skip_tls_verify: true
           namespace: ${{ env.TOOLS_NAMESPACE }}
-      
-      - name: Update values-dev-pr.yaml for frontend and backend
-        uses: mikefarah/yq@v4.40.5
-        with:
-            cmd: |
-                yq -i '.image.tag = "${{ env.VERSION }}-${{ env.PR_NUMBER }}"' zeva/charts/zeva-frontend/values-dev-pr.yaml
-                yq -i '.route.host = "zeva-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca"' zeva/charts/zeva-frontend/values-dev-pr.yaml
-                yq -i '.volumes[0].configMap.name = "zeva-frontend-dev-${{ env.PR_NUMBER }}"' zeva/charts/zeva-frontend/values-dev-pr.yaml
-                yq -i '.apiBase = "https://zeva-backend-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca/api"' zeva/charts/zeva-frontend/values-dev-pr.yaml
-                yq -i '.keycloak.postLogoutUrl = "https://zeva-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca/"' zeva/charts/zeva-frontend/values-dev-pr.yaml
-                yq -i '.image.tag = "${{ env.VERSION }}-${{ env.PR_NUMBER }}"' zeva/charts/zeva-backend/values-dev-pr.yaml
-                yq -i '.route.host = "zeva-backend-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca"' zeva/charts/zeva-backend/values-dev-pr.yaml
-                yq -i eval '(.env[] | select(.name == "ZEVA_DB_HOST") | .value) = "zeva-postgres-dev-${{ env.PR_NUMBER }}-postgresql.${{ env.DEV_NAMESPACE }}.svc.cluster.local"' zeva/charts/zeva-backend/values-dev-pr.yaml
-                yq -i eval '(.env[] | select(.name == "ZEVA_REDIS_HOST") | .value) = "zeva-redis-dev-${{ env.PR_NUMBER }}-master.${{ env.DEV_NAMESPACE }}.svc.cluster.local"' zeva/charts/zeva-backend/values-dev-pr.yaml
-      
+
       - name: Helm Deployment 
         shell: bash {0}
         run: |
-          cd zeva/charts/zeva-postgres-pr
-          helm -n ${{ env.DEV_NAMESPACE }} -f ./values-dev-pr.yaml upgrade --install zeva-postgres-dev-${{ env.PR_NUMBER }} oci://registry-1.docker.io/bitnamicharts/postgresql --version 15.5.17
-          cd ../zeva-frontend
-          helm -n ${{ env.DEV_NAMESPACE }} -f ./values-dev-pr.yaml upgrade --install zeva-frontend-dev-${{ env.PR_NUMBER }} .
-          sleep 60s
-          cd ../zeva-backend
-          helm -n ${{ env.DEV_NAMESPACE }} -f ./values-dev-pr.yaml upgrade --install zeva-backend-dev-${{ env.PR_NUMBER }} .
+          cat zeva/values-dev-pr.yaml
+      
+      # - name: Update values-dev-pr.yaml for frontend and backend
+      #   uses: mikefarah/yq@v4.40.5
+      #   with:
+      #       cmd: |
+      #           yq -i '.image.tag = "${{ env.VERSION }}-${{ env.PR_NUMBER }}"' zeva/charts/zeva-frontend/values-dev-pr.yaml
+      #           yq -i '.route.host = "zeva-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca"' zeva/charts/zeva-frontend/values-dev-pr.yaml
+      #           yq -i '.volumes[0].configMap.name = "zeva-frontend-dev-${{ env.PR_NUMBER }}"' zeva/charts/zeva-frontend/values-dev-pr.yaml
+      #           yq -i '.apiBase = "https://zeva-backend-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca/api"' zeva/charts/zeva-frontend/values-dev-pr.yaml
+      #           yq -i '.keycloak.postLogoutUrl = "https://zeva-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca/"' zeva/charts/zeva-frontend/values-dev-pr.yaml
+      #           yq -i '.image.tag = "${{ env.VERSION }}-${{ env.PR_NUMBER }}"' zeva/charts/zeva-backend/values-dev-pr.yaml
+      #           yq -i '.route.host = "zeva-backend-dev-${{ env.PR_NUMBER }}.apps.silver.devops.gov.bc.ca"' zeva/charts/zeva-backend/values-dev-pr.yaml
+      #           yq -i eval '(.env[] | select(.name == "ZEVA_DB_HOST") | .value) = "zeva-postgres-dev-${{ env.PR_NUMBER }}-postgresql.${{ env.DEV_NAMESPACE }}.svc.cluster.local"' zeva/charts/zeva-backend/values-dev-pr.yaml
+      #           yq -i eval '(.env[] | select(.name == "ZEVA_REDIS_HOST") | .value) = "zeva-redis-dev-${{ env.PR_NUMBER }}-master.${{ env.DEV_NAMESPACE }}.svc.cluster.local"' zeva/charts/zeva-backend/values-dev-pr.yaml
+      
+      # - name: Helm Deployment 
+      #   shell: bash {0}
+      #   run: |
+      #     cd zeva/charts/zeva-postgres-pr
+      #     helm -n ${{ env.DEV_NAMESPACE }} -f ./values-dev-pr.yaml upgrade --install zeva-postgres-dev-${{ env.PR_NUMBER }} oci://registry-1.docker.io/bitnamicharts/postgresql --version 15.5.17
+      #     cd ../zeva-frontend
+      #     helm -n ${{ env.DEV_NAMESPACE }} -f ./values-dev-pr.yaml upgrade --install zeva-frontend-dev-${{ env.PR_NUMBER }} .
+      #     sleep 60s
+      #     cd ../zeva-backend
+      #     helm -n ${{ env.DEV_NAMESPACE }} -f ./values-dev-pr.yaml upgrade --install zeva-backend-dev-${{ env.PR_NUMBER }} .
