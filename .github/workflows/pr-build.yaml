@@ -87,6 +87,7 @@ jobs:
           done
           sleep 2s
           oc -n ${{ env.TOOLS_NAMESPACE }} start-build zeva-backend-${{ env.VERSION }}-${{ env.PR_NUMBER }} --wait=true
+          sleep 2s
           oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-backend:${{ env.VERSION }}-${{ env.PR_NUMBER }} ${{ env.DEV_NAMESPACE }}/zeva-backend:${{ env.VERSION }}-${{ env.PR_NUMBER }}
 
   build-frontend:
