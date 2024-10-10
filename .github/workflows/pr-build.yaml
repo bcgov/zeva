@@ -83,7 +83,8 @@ jobs:
           oc process -f ./backend-bc-docker.yaml NAME=zeva SUFFIX=-${{ env.VERSION }}-${{ env.PR_NUMBER }} VERSION=${{ env.VERSION }}-${{ env.PR_NUMBER }} GIT_URL=${{ env.GIT_URL }} GIT_REF=${{ env.GIT_REF }} | oc apply --wait=true -f - -n ${{ env.TOOLS_NAMESPACE }}
           sleep 2s
           for build in $(oc -n ${{ env.TOOLS_NAMESPACE }} get builds -l buildconfig=zeva-backend-${{ env.VERSION }}-${{ env.PR_NUMBER }} -o jsonpath='{.items[?(@.status.phase=="Running")].metadata.name}'); do
-            oc -n ${{ env.TOOLS_NAMESPACE }} cancel-build $build --wait=true
+            echo "canceling $build"
+            oc -n ${{ env.TOOLS_NAMESPACE }} cancel-build $build
           done
           sleep 2s
           oc -n ${{ env.TOOLS_NAMESPACE }} start-build zeva-backend-${{ env.VERSION }}-${{ env.PR_NUMBER }} --wait=true
@@ -122,7 +123,8 @@ jobs:
           oc process -f ./frontend-bc-docker.yaml NAME=zeva SUFFIX=-${{ env.VERSION }}-${{ env.PR_NUMBER }} VERSION=${{ env.VERSION }}-${{ env.PR_NUMBER }} GIT_URL=${{ env.GIT_URL }} GIT_REF=${{ env.GIT_REF }} | oc apply --wait=true -f - -n ${{ env.TOOLS_NAMESPACE }}
           sleep 2s
           for build in $(oc -n ${{ env.TOOLS_NAMESPACE }} get builds -l buildconfig=zeva-frontend-${{ env.VERSION }}-${{ env.PR_NUMBER }} -o jsonpath='{.items[?(@.status.phase=="Running")].metadata.name}'); do
-            oc -n ${{ env.TOOLS_NAMESPACE }} cancel-build $build --wait=true
+            echo "canceling $build"
+            oc -n ${{ env.TOOLS_NAMESPACE }} cancel-build $build
           done
           sleep 2s
           oc -n ${{ env.TOOLS_NAMESPACE }} start-build zeva-frontend-${{ env.VERSION }}-${{ env.PR_NUMBER }} --wait=true
