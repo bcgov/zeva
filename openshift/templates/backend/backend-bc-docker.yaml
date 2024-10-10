@@ -14,7 +14,7 @@ parameters:
     required: true
   - name: VERSION
     displayName:
-    description:  image tag name for output
+    description: image tag name for output
     required: true
   - name: GIT_URL
     displayName:
@@ -47,7 +47,7 @@ objects:
       creationTimestamp: null
       name: ${NAME}-backend${SUFFIX}
       labels:
-        shared: "true"      
+        shared: "true"
     spec:
       nodeSelector: null
       output:
@@ -75,9 +75,9 @@ objects:
           pullSecret:
             name: artifacts-pull-default-erhptx
         type: Docker
-      triggers:
-      - imageChange: {}
-        type: ImageChange
-      - type: ConfigChange
+      # triggers:
+      # - imageChange: {}
+      #   type: ImageChange
+      # - type: ConfigChange
     status:
       lastVersion: 0

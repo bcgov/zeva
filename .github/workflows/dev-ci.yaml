@@ -1,6 +1,6 @@
 ## For each release, the value of workflow name, branches and VERSION need to be adjusted accordingly
 
-name: Zeva new-pipeline-1.61.0 Dev CI
+name: Zeva new-pipeline-1.62.0 Dev CI
 
 on:
   # push:
@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 env:
-  VERSION: 1.61.0
+  VERSION: 1.62.0
   GIT_URL: https://github.com/bcgov/zeva.git
   TOOLS_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
   DEV_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
