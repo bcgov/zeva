@@ -29,14 +29,6 @@ jobs:
       output1: ${{ steps.set-pre-release.outputs.PRE_RELEASE }}
 
     steps:
-      - name: Log in to Openshift
-        uses: redhat-actions/oc-login@v1.3
-        with:
-          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
-          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
-          insecure_skip_tls_verify: true
-          namespace: ${{ env.TOOLS_NAMESPACE }}
-
       - id: set-pre-release
         run: |
           echo "PRE_RELEASE=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
@@ -121,19 +113,6 @@ jobs:
       PRE_RELEASE: ${{ needs.set-pre-release.outputs.output1 }}
 
     steps:
-      - name: Log in to Openshift
-        uses: redhat-actions/oc-login@v1.3
-        with:
-          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
-          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
-          insecure_skip_tls_verify: true
-          namespace: ${{ env.TOOLS_NAMESPACE }}
-
-      - name: Tag backend and frontend to Dev namespace
-        run: |
-          oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.DEV_NAMESPACE }}/zeva-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
-          oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.DEV_NAMESPACE }}/zeva-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
-
       - name: Checkout Manifest repository
         uses: actions/checkout@v4.1.1
         with:
