@@ -30,7 +30,9 @@ jobs:
 
     steps:
       - id: set-pre-release
-        run: echo "PRE_RELEASE=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
+        run: |
+          helm -n ${{ env.DEV_NAMESPACE }} list
+          echo "PRE_RELEASE=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
 
   build-backend:
     name: Build Zeva Backend
@@ -147,10 +149,19 @@ jobs:
           git commit -m "Update the image tag to ${{ env.VERSION }}-${{ env.PRE_RELEASE }} on Dev"
           git push
 
+      - name: Log in to Openshift
+        uses: redhat-actions/oc-login@v1.3
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          insecure_skip_tls_verify: true
+          namespace: ${{ env.DEV_NAMESPACE }}
+
       - name: Deploy Zeva on Dev
         run: |
           pwd
           cd zeva
           pwd
           ls -l
+          helm -n ${{ env.DEV_NAMESPACE }} list
           helm -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml upgrade --install zeva-dev .
