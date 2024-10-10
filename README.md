@@ -42,7 +42,6 @@ Add this entry to your `/etc/hosts` file:
 to view the database use:
 docker-compose exec db psql -U postgres postgres
 
-
 #### Django
 
 Django offers many helpful [mangement commands](https://docs.djangoproject.com/en/4.0/ref/django-admin/) out of the box. To be able to use these with docker you can access the python environment with bash:
@@ -62,7 +61,6 @@ We take advantage that MinIO is S3 compatible and use [django-storages](https://
 ### Auth
 
 We are using a shared realm [Keycloak](https://www.keycloak.org/) client. Shared realm clients can be accessed and configured via [Common Hosted Single Sign-on (CSS)](https://bcgov.github.io/sso-requests)
-
 
 ### Email
 
@@ -96,7 +94,7 @@ python manage.py test api.services.tests.test_credit_transfers.py
 
 ### Squashing migrations
 
-To squash migrations: python manage.py squashmigrations {app_name} {#_of_migration_you_wish_to_squash_up_to_and_include}
+To squash migrations: python manage.py squashmigrations {app_name} {#\_of_migration_you_wish_to_squash_up_to_and_include}
 For example: "python manage.py squashmigrations api 0100" will squash all migrations between the first migration and the 100th migration, inclusive.
 
 If, in the migrations you're squashing, there exists RunPython operations executing certain functions, those functions will have to be copied into the squashed migration file, and the RunPython operations in the squashed migration file will have to reference those copied over functions.
@@ -134,23 +132,22 @@ Code released under the [Apache License, Version 2.0](./LICENSE).
 
 # List of Dev Work | What to do before bringing in a new ticket into a Sprint
 
-This is a list that was created on 2023-02-01 with all Zelda Devs to provide alternative work instead of bringing in a new ticket.  
+This is a list that was created on 2023-02-01 with all Zelda Devs to provide alternative work instead of bringing in a new ticket.
 
-**Team Rule* Do not bring in ticket After Friday* 
+\*_Team Rule_ Do not bring in ticket After Friday\*
 
-1. Help another Dev - see if other Devs need help to finish their ticket 
+1. Help another Dev - see if other Devs need help to finish their ticket
 
-2. PR Reviews – linked to the task above 
+2. PR Reviews – linked to the task above
 
-3. Writing additional tests – for both tront and back end 
+3. Writing additional tests – for both tront and back end
 
-4. Take a look at Tech Debt tickets - If we bring in tickets let's bring in Tech Debt first 
+4. Take a look at Tech Debt tickets - If we bring in tickets let's bring in Tech Debt first
 
-5. Learning time: 
+5. Learning time:
 
-- Take the opportunity to familiarize yourself with business logic, tech (anything around work we do) 
+- Take the opportunity to familiarize yourself with business logic, tech (anything around work we do)
 
-- New learning and applying it to our work 
+- New learning and applying it to our work
 
-- Innovation work 
-
+- Innovation work
