@@ -10,10 +10,9 @@ env:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true  
+  cancel-in-progress: true
 
 jobs:
-
   teardown:
     if: >
       (github.event.action == 'unlabeled' && github.event.label.name == 'build') || 
@@ -23,7 +22,6 @@ jobs:
     timeout-minutes: 60
 
     steps:
-
       - name: Log in to Openshift
         uses: redhat-actions/oc-login@v1.3
         with:
@@ -36,5 +34,5 @@ jobs:
         run: |
           helm -n ${{ env.DEV_NAMESPACE }} uninstall zeva-dev-${{ env.PR_NUMBER }}-frontend
           helm -n ${{ env.DEV_NAMESPACE }} uninstall zeva-dev-${{ env.PR_NUMBER }}-backend
-          helm -n ${{ env.DEV_NAMESPACE }} uninstall zeva-dev-${{ env.PR_NUMBER }}-postgres
-          oc -n ${{ env.DEV_NAMESPACE }} delete pvc -l app.kubernetes.io/instance=zeva-dev-${{ env.PR_NUMBER }}-postgres
+          helm -n ${{ env.DEV_NAMESPACE }} uninstall zeva-dev-${{ env.PR_NUMBER }}-postgresql
+          oc -n ${{ env.DEV_NAMESPACE }} delete pvc -l app.kubernetes.io/instance=zeva-dev-${{ env.PR_NUMBER }}-postgresql
