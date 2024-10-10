@@ -149,5 +149,8 @@ jobs:
 
       - name: Deploy Zeva on Dev
         run: |
+          pwd
           cd zeva
-          helm -n e52f12-dev upgrade --install -f ./values-dev.yaml zeva-dev .
+          pwd
+          ls -l
+          helm -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml upgrade --install zeva-dev .
