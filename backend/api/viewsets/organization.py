@@ -13,7 +13,7 @@ from api.models.sales_submission_statuses import SalesSubmissionStatuses
 from api.serializers.sales_submission import SalesSubmissionListSerializer
 from api.serializers.organization import \
     OrganizationSerializer, OrganizationWithMembersSerializer, \
-    OrganizationSaveSerializer
+    OrganizationSaveSerializer, OrganizationNameSerializer
 from api.serializers.organization_ldv_sales import \
     OrganizationLDVSalesSerializer
 from api.permissions.organization import OrganizationPermissions
@@ -85,8 +85,11 @@ class OrganizationViewSet(
             is_government=False
         ).order_by('name')
 
-        serializer = self.get_serializer(organizations, many=True)
-        return Response(serializer.data)
+        serializer = OrganizationNameSerializer
+        if request.user.is_government:
+            serializer = OrganizationSerializer
+
+        return Response(serializer(organizations, many=True).data)
 
     @action(detail=False)
     def mine(self, request):
