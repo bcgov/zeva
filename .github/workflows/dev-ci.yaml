@@ -148,4 +148,5 @@ jobs:
           helm -n ${{ env.DEV_NAMESPACE }} list
           oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.DEV_NAMESPACE }}/zeva-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
           oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.DEV_NAMESPACE }}/zeva-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
+          cd zeva
           helm -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml upgrade --install zeva-dev .
