@@ -1,7 +1,6 @@
 from django.db.models import Q
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from api.models.credit_transaction import CreditTransaction
@@ -17,14 +16,24 @@ from api.services.credit_transaction import (
     get_timestamp_of_most_recent_reduction
 )
 from auditable.views import AuditableMixin
+from api.permissions.same_organization import SameOrganizationPermissions
+from api.models.organization import Organization
 
 
 class CreditTransactionViewSet(
-        AuditableMixin, viewsets.GenericViewSet,
-        mixins.ListModelMixin, mixins.RetrieveModelMixin
+        AuditableMixin, viewsets.GenericViewSet, mixins.RetrieveModelMixin
 ):
-    permission_classes = (AllowAny,)
-    http_method_names = ['get', 'post', 'put', 'patch']
+    permission_classes = [SameOrganizationPermissions]
+    same_org_permissions_context = {
+        "actions_not_to_check": ["retrieve"],
+        "custom_pk_actions": {
+            "calculate_balance": {
+                "manager": Organization.objects,
+                "path_to_org": ()
+            }
+        }
+    }
+    http_method_names = ['get']
 
     serializer_classes = {
         'default': CreditTransactionSerializer,
@@ -58,7 +67,7 @@ class CreditTransactionViewSet(
         serializer = self.get_serializer(transactions, many=True)
         return Response(serializer.data)
 
-    @action(detail=False)
+    @action(detail=False, methods=['get'])
     def recent_balances(self, request):
         user = self.request.user
         timestamp = get_timestamp_of_most_recent_reduction(user.organization)
@@ -73,9 +82,9 @@ class CreditTransactionViewSet(
         serializer = CreditTransactionBalanceSerializer(balances, many=True)
         return Response(serializer.data)
 
-    @action(detail=True)
-    def calculate_balance(self, request, **kwargs):
-        org_id = kwargs.pop('pk')
+    @action(detail=True, methods=['get'])
+    def calculate_balance(self, request, pk=None):
+        org_id = pk
         balances = calculate_insufficient_credits(org_id)
         serializer = CreditTransactionBalanceSerializer(balances, many=True)
         return Response(serializer.data)
@@ -87,7 +96,7 @@ class CreditTransactionViewSet(
         return Response(compliance_years)
     
     @action(detail=False, methods=['get'])
-    def list_by_year(self, request, pk=None):
+    def list_by_year(self, request):
         user = self.request.user
         compliance_year = request.GET.get('year', None)
         if compliance_year:

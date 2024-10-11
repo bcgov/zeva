@@ -3,7 +3,7 @@ import os
 import urllib.request
 
 from django.http import HttpResponse
-from rest_framework import mixins, viewsets
+from rest_framework import mixins, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -20,7 +20,7 @@ class IcbcVerificationViewSet(
         viewsets.GenericViewSet, mixins.ListModelMixin
 ):
     permission_classes = (AllowAny,)
-    http_method_names = ['get', 'post', 'put', 'patch']
+    http_method_names = ['get', 'post']
 
     serializer_classes = {
         'default': IcbcUploadDateSerializer
@@ -40,6 +40,9 @@ class IcbcVerificationViewSet(
 
     @action(detail=False, methods=['post'])
     def chunk_upload(self, request):
+        user = request.user
+        if not user.is_government:
+            return Response(status=status.HTTP_403_FORBIDDEN)
         try:
             data = request.FILES.get('files')
             os.rename(data.temporary_file_path(), data.name)
@@ -54,8 +57,10 @@ class IcbcVerificationViewSet(
     @action(detail=False, methods=['post'])
     def upload(self, request):
         user = request.user
+        if not user.is_government:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        
         filename = request.data.get('filename')
-
         try:
             try:
                 # get previous upload file so we can compare

@@ -38,8 +38,8 @@ from api.serializers.vehicle import ModelYearSerializer
 
 class OrganizationViewSet(
         AuditableMixin, viewsets.GenericViewSet,
-        mixins.CreateModelMixin, mixins.ListModelMixin,
-        mixins.UpdateModelMixin, mixins.RetrieveModelMixin
+        mixins.CreateModelMixin, mixins.UpdateModelMixin, 
+        mixins.RetrieveModelMixin
 ):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
@@ -88,7 +88,7 @@ class OrganizationViewSet(
         serializer = OrganizationNameSerializer
         if request.user.is_government:
             serializer = OrganizationSerializer
-
+        
         return Response(serializer(organizations, many=True).data)
 
     @action(detail=False)
