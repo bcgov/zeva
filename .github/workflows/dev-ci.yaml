@@ -5,9 +5,9 @@ name: Zeva new-pipeline-1.62.0 Dev CI
 on:
   push:
     branches: [release-1.62.0]
-    # paths:
-    #   - frontend/**
-    #   - backend/**
+    paths:
+      - frontend/**
+      - backend/**
   workflow_dispatch:
 
 env:
