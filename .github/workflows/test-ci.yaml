@@ -62,7 +62,7 @@ jobs:
               return 0
           }
 
-          input_string=$(oc -n ${{ env.DEV_NAMESPACE }} describe deployment/zeva-frontend-dev | grep Image | awk -F '-' '{print $NF}')
+          input_string=$(oc -n ${{ env.DEV_NAMESPACE }} describe deployment/zeva-dev-frontend | grep Image | awk -F '-' '{print $NF}')
 
           echo "The retrieved pre-release number on Dev is $input_string "
           if check_string "$input_string"; then
