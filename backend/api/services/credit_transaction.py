@@ -77,7 +77,6 @@ def award_credits(submission):
         credit_value = vehicle.get_credit_value()
         total_value = number_of_credits * credit_value
         credit_class = vehicle.get_credit_class()
-        print('total value: ', total_value)
         if credit_class in ['A', 'B']:
             vehicle_credit_class = CreditClass.objects.get(
                 credit_class=credit_class

@@ -43,7 +43,7 @@ class TestCreditTransactions(BaseTestCase):
                 'credit', 'debit', 'creditclass', 'type', 'value', 'vehicle'
             )
         )
-    
+
         self.org1_vehicle = Vehicle.objects.filter(organization=self.org1).first()
         org2_vehicle = Vehicle.objects.filter(organization=self.org2).first()
         
