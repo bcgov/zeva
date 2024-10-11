@@ -73,13 +73,13 @@ from api.serializers.model_year_report_noa import (
 )
 from api.models.organization import Organization
 from api.services.supplemental_report import get_ordered_list_of_supplemental_reports
+from api.permissions.same_organization import SameOrganizationPermissions
 
 
 class ModelYearReportViewset(
     AuditableMixin,
     viewsets.GenericViewSet,
     mixins.ListModelMixin,
-    mixins.RetrieveModelMixin,
     mixins.CreateModelMixin,
     mixins.UpdateModelMixin,
     mixins.DestroyModelMixin
@@ -89,7 +89,18 @@ class ModelYearReportViewset(
     and  `update`  actions.
     """
 
-    permission_classes = (ModelYearReportPermissions,)
+    permission_classes = [SameOrganizationPermissions & ModelYearReportPermissions]
+    same_org_permissions_context = {
+        "default_manager": ModelYearReport.objects,
+        "default_path_to_org": ("organization",),
+        "actions_not_to_check": [
+            "retrieve", "update", "partial_update", "destroy",
+            "noa_history", "supplemental_history", "makes", "submission_confirmation",
+            "assessment_patch", "comment_patch", "comment_delete", "assessment",
+            "supplemental", "minio_url", "supplemental_comment_edit", "supplemental_comment_delete",
+            "supplemental_credit_activity"
+        ]
+    }
     http_method_names = ["get", "post", "put", "patch", "delete"]
 
     serializer_classes = {
@@ -417,10 +428,10 @@ class ModelYearReportViewset(
 
         return Response({"confirmation": confirmation})
 
-    @action(detail=False, methods=["patch"])
-    def submission(self, request):
+    @action(detail=True, methods=["patch"])
+    def submission(self, request, pk=None):
         validation_status = request.data.get("validation_status")
-        model_year_report_id = request.data.get("model_year_report_id")
+        model_year_report_id = pk
         confirmations = request.data.get("confirmation", None)
         description = request.data.get("description")
         remove_submission_confirmation = request.data.get("remove_confirmation", None)

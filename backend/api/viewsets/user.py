@@ -20,7 +20,12 @@ class UserViewSet(
     """
     permission_classes = (UserPermissions,)
     http_method_names = ['get', 'post', 'put', 'patch']
-    queryset = UserProfile.objects.all()
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_government:
+            return UserProfile.objects.all()
+        return UserProfile.objects.filter(organization=user.organization)
 
     serializer_classes = {
         'default': UserSerializer,

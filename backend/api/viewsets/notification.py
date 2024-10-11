@@ -18,20 +18,19 @@ class NotificationViewSet(
         AuditableMixin,
         mixins.CreateModelMixin,
         mixins.ListModelMixin,
-        mixins.UpdateModelMixin,
         viewsets.GenericViewSet
 ):
     """
     This viewset automatically provides `list`
     """
     permission_classes = (permissions.AllowAny,)
-    http_method_names = ['get', 'post', 'put']
-    queryset = Notification.objects.all().order_by('name')
+    http_method_names = ['get', 'post']
+    
+    def get_queryset(self):
+        return Notification.objects.all().order_by('name')
 
     serializer_classes = {
         'default': NotificationSerializer,
-        'create': NotificationSubscriptionSerializer,
-        'update': NotificationSubscriptionSerializer
     }
 
     def get_serializer_class(self):

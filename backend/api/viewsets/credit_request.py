@@ -45,6 +45,7 @@ from api.services.filter_utilities import get_search_terms, get_search_q_object
 from api.services.sales_submission import get_map_of_sales_submission_ids_to_timestamps
 from api.services.sales_submission import get_warnings_and_maps, get_helping_objects
 from api.utilities.generic import get_inverse_map
+from api.permissions.same_organization import SameOrganizationPermissions
 
 
 class CreditRequestViewset(
@@ -53,7 +54,15 @@ class CreditRequestViewset(
         mixins.UpdateModelMixin
 ):
     pagination_class = BasicPagination
-    permission_classes = (CreditRequestPermissions,)
+    permission_classes = [SameOrganizationPermissions & CreditRequestPermissions]
+    same_org_permissions_context = {
+        "default_manager": SalesSubmission.objects,
+        "default_path_to_org": ("organization",),
+        "actions_not_to_check": [
+            "retrieve", "update", "partial_update", "download_errors", "content", "unselected", "minio_url", "reasons",
+            "update_comment", "delete_comment"
+        ]
+    }
     http_method_names = ['get', 'patch', 'post', 'put']
 
     def get_queryset(self):

@@ -24,11 +24,10 @@ from api.services.send_email import notifications_zev_model
 
 class VehicleViewSet(
     AuditableMixin, viewsets.GenericViewSet, mixins.CreateModelMixin,
-    mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin
+    mixins.RetrieveModelMixin, mixins.UpdateModelMixin
 ):
     permission_classes = (VehiclePermissions,)
     http_method_names = ['get', 'post', 'put', 'patch']
-    queryset = Vehicle.objects.all()
 
     serializer_classes = {
         'default': VehicleSerializer,
@@ -115,7 +114,7 @@ class VehicleViewSet(
         change active / inactive status for vehicle
         """
         serializer = self.get_serializer(
-            self.queryset.get(id=pk),
+            self.get_object(),
             data=request.data
         )
 
@@ -132,7 +131,7 @@ class VehicleViewSet(
         Update the state of a vehicle
         """
         serializer = self.get_serializer(
-            self.queryset.get(id=pk),
+            self.get_object(),
             data=request.data
         )
 

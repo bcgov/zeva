@@ -566,15 +566,13 @@ const AssessmentContainer = (props) => {
           }
           
           const ObligationData = {
-            reportId: id,
             creditActivity: reportDetailsArray
           }
 
-          axios.patch(ROUTES_COMPLIANCE.OBLIGATION_SAVE, ObligationData)
+          axios.patch(ROUTES_COMPLIANCE.OBLIGATION_SAVE.replace(/:id/g, id), ObligationData)
         }
 
         const data = {
-          modelYearReportId: id,
           validation_status: status,
           modelYear: reportYear
         }
@@ -590,7 +588,7 @@ const AssessmentContainer = (props) => {
           }
         }
 
-        axios.patch(ROUTES_COMPLIANCE.REPORT_SUBMISSION, data).then(() => {
+        axios.patch(ROUTES_COMPLIANCE.REPORT_SUBMISSION.replace(':id', id), data).then(() => {
           if (status === 'DRAFT' && analystAction) {
             history.push(ROUTES_COMPLIANCE.REPORTS)
           } else {
