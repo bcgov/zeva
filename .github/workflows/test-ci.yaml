@@ -1,12 +1,12 @@
 ## For each release, the value of workflow name, branches and VERSION need to be adjusted accordingly
 
-name: ZEVA new-pipeline-1.62.0 Test CI
+name: ZEVA new-pipeline-1.63.0 Test CI
 
 on:
   workflow_dispatch:
 
 env:
-  VERSION: 1.62.0
+  VERSION: 1.63.0
   GIT_URL: https://github.com/bcgov/zeva.git
   DEV_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
   TEST_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-test
