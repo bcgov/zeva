@@ -18,6 +18,7 @@ from ..models.credit_transfer_statuses import CreditTransferStatuses
 from unittest.mock import patch
 from ..models.organization_deficits import OrganizationDeficits
 from ..models.model_year import ModelYear
+from .test_utils import create_deficit, give_org_credits
 
 class TestTransfers(BaseTestCase):
     def setUp(self):
@@ -50,41 +51,7 @@ class TestTransfers(BaseTestCase):
             credit_to=self.org1,
             debit_from=org2,
         )
-        
-    def give_org_credits(self, org_to_receive_credits, amount, credit_value, model_year, credit_class):
-        """ give org  some credits so they always have enough for the transfer """
-        return CreditTransaction.objects.create(
-            credit_to=org_to_receive_credits,
-            model_year=model_year,
-            credit_class=credit_class,
-            weight_class=WeightClass.objects.get(weight_class_code='LDV'),
-            credit_value=credit_value,
-            number_of_credits=amount,
-            total_value=amount*credit_value,
-            transaction_type=CreditTransactionType.objects.get(
-                transaction_type="Validation"),
-            transaction_timestamp=timezone.now()
-        )
-    def create_deficit(self):
-        """create a deficit for testing purposes """
-        OrganizationDeficits.objects.create(
-            organization_id=self.org3.id,
-            credit_value=50,
-            credit_class=self.class_b,
-            model_year=self.model_year,
-            create_user="test",
-            update_timestamp=timezone.now(),
-            )
-        OrganizationDeficits.objects.create(
-            organization_id=self.org3.id,
-            credit_value=50,
-            credit_class=self.class_a,
-            model_year=self.model_year,
-            create_user="test",
-            update_timestamp=timezone.now(),
-            )
-        self.org_deficits = OrganizationDeficits.objects.filter(organization_id=self.org3.id)
-    
+
     def create_credit_transfer(self, credit_to, debit_from, status):
         """Helper method to create a Credit Transfer."""
         return CreditTransfer.objects.create(
@@ -155,7 +122,7 @@ class TestTransfers(BaseTestCase):
          - organization balances are calculated correctly """
         model_year=ModelYear.objects.get(name='2020')
         credit_class=CreditClass.objects.get(credit_class="A")
-        self.give_org_credits(self.users['EMHILLIE_BCEID'].organization, 100, 4, model_year, credit_class)
+        give_org_credits(self.users['EMHILLIE_BCEID'].organization, 100, 4, model_year, credit_class)
         transfer_enough = self.create_credit_transfer(
             self.users['RTAN_BCEID'].organization, 
             self.users['EMHILLIE_BCEID'].organization,
@@ -277,9 +244,11 @@ class TestTransfers(BaseTestCase):
     def test_org_in_deficit_gets_transfer_credits(self):
         """ test that an organization with a deficit still gets credits from a transfer"""
         # Create deficit for org3 and give credits to org1
-        self.create_deficit()
-        self.give_org_credits(self.org1, 50, 4, 
-                              self.model_year, self.class_a)       
+        create_deficit(self.org3, self.class_a,  self.model_year)
+        create_deficit(self.org3, self.class_b,  self.model_year)
+        give_org_credits(self.org1, 50, 4, 
+                              self.model_year, self.class_a)
+        self.org_deficits = OrganizationDeficits.objects.filter(organization_id=self.org3.id)
         #get initial balances
         org3_balance_before_transfer = self.clients['KMENKE_BCEID'].get(
             "/api/organizations/mine"

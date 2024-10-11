@@ -16,6 +16,7 @@ from ..models.record_of_sale import RecordOfSale
 from ..models.vin_statuses import VINStatuses
 from ..models.vehicle_zev_type import ZevType
 from ..models.vehicle_class import VehicleClass
+from .test_utils import create_deficit
 
 
 class TestCreditTransactions(BaseTestCase):
@@ -101,25 +102,7 @@ class TestCreditTransactions(BaseTestCase):
                     weight_class=WeightClass.objects.get(weight_class_code='LDV'),
                     transaction_timestamp=timezone.now(),
                 )
-    def create_deficit(self):
-        """ create a deficit for testing purposes """
-        OrganizationDeficits.objects.create(
-            organization_id=self.org3.id,
-            credit_value=50,
-            credit_class=self.class_b,
-            model_year=self.model_year,
-            create_user="test",
-            update_timestamp=timezone.now(),
-            )
-        OrganizationDeficits.objects.create(
-            organization_id=self.org3.id,
-            credit_value=50,
-            credit_class=self.class_a,
-            model_year=self.model_year,
-            create_user="test",
-            update_timestamp=timezone.now(),
-            )
-        self.org_deficits = OrganizationDeficits.objects.filter(organization_id=self.org3.id)
+   
     def test_org1_credits(self):
         response = self.clients['RTAN_BCEID'].get("/api/credit-transactions")
         self.assertEqual(response.status_code, 200)
@@ -180,7 +163,8 @@ class TestCreditTransactions(BaseTestCase):
         ).data['balance']
 
         # create a deficit so we can make sure it doesnt change when credits are awarded
-        self.create_deficit()
+        create_deficit(self.org3, self.class_a,  self.model_year)
+        create_deficit(self.org3, self.class_b,  self.model_year)
 
         org_deficits = OrganizationDeficits.objects.filter(organization_id=self.org3.id)
 
