@@ -15,9 +15,6 @@ from api.models.sales_submission_credit_transaction import \
 from api.models.record_of_sale import RecordOfSale
 from api.models.vehicle import Vehicle
 from api.models.weight_class import WeightClass
-from api.models.organization_deficits import OrganizationDeficits
-from api.models.model_year_report import ModelYearReport
-from api.models.model_year_report_statuses import ModelYearReportStatuses
 from api.models.sales_submission import SalesSubmission
 from api.models.model_year import ModelYear
 from api.models.model_year_report_credit_transaction import ModelYearReportCreditTransaction
@@ -61,81 +58,6 @@ def aggregate_credit_balance_details(organization, *credit_transaction_q_objs):
 
     return balance
 
-
-def adjust_deficits(organization):
-    """
-    the following code automatically reduces their awarded credits
-    if they have any deficits in their account
-    only reduce the deficits relating to the credit class
-    they selected to reduce first from the latest report
-    """
-    model_year_report = ModelYearReport.objects.filter(
-        organization_id=organization.id,
-        validation_status=ModelYearReportStatuses.ASSESSED
-    ).order_by('-model_year__name').first()
-
-    if not model_year_report:
-        return False
-
-    selected_credit_class = CreditClass.objects.filter(
-        credit_class=model_year_report.credit_reduction_selection
-    ).first()
-
-    reduction_type = CreditTransactionType.objects.get(
-        transaction_type="Reduction"
-    )
-
-    balances = aggregate_credit_balance_details(organization)
-    balances = balances.filter(
-        credit_class_id=selected_credit_class.id
-    )
-
-    credit_transaction = None
-    total_current_reduction = 0
-
-    for balance in balances:
-        remaining_balance = Decimal(balance.get('total_value'))
-
-        if remaining_balance <= 0:
-            continue
-
-        amount_to_reduce = 0
-        credit_transaction = None
-
-        deficits = OrganizationDeficits.objects.filter(
-            organization_id=organization.id,
-            credit_class_id=selected_credit_class.id
-        ).order_by('model_year__name')
-
-        for deficit in deficits:
-            if remaining_balance > 0:
-                if remaining_balance > deficit.credit_value:
-                    amount_to_reduce = deficit.credit_value
-                    remaining_balance -= deficit.credit_value
-                else:
-                    amount_to_reduce = remaining_balance
-                    remaining_balance = 0
-
-                credit_transaction = CreditTransaction.objects.create(
-                    create_user="SYSTEM",
-                    credit_class_id=selected_credit_class.id,
-                    debit_from_id=organization.id,
-                    model_year_id=balance.get('model_year_id'),
-                    number_of_credits=1,
-                    credit_value=amount_to_reduce,
-                    transaction_type=reduction_type,
-                    total_value=amount_to_reduce,
-                    update_user="SYSTEM",
-                    weight_class_id=balance.get('weight_class_id')
-                )
-
-                deficit.credit_value -= amount_to_reduce
-                deficit.save()
-                total_current_reduction += amount_to_reduce
-
-    return True
-
-
 def award_credits(submission):
     part_of_model_year_report = SalesSubmission.objects.filter(
         id=submission.id
@@ -155,7 +77,7 @@ def award_credits(submission):
         credit_value = vehicle.get_credit_value()
         total_value = number_of_credits * credit_value
         credit_class = vehicle.get_credit_class()
-
+        print('total value: ', total_value)
         if credit_class in ['A', 'B']:
             vehicle_credit_class = CreditClass.objects.get(
                 credit_class=credit_class
@@ -188,9 +110,6 @@ def award_credits(submission):
                 sales_submission_id=submission.id,
                 credit_transaction_id=credit_transaction.id
             )
-
-            adjust_deficits(submission.organization)
-
 
 def aggregate_transactions_by_submission(organization, *credit_transaction_q_objs):
     balance_credits = Coalesce(Sum('total_value', filter=Q(
@@ -372,11 +291,6 @@ def validate_transfer(transfer):
                 credit_transfer_id=transfer.id,
                 update_user=transfer.update_user,
             )
-
-    for year, v in credit_total.items():
-        for credit_class, credit_value in v.items():
-            adjust_deficits(transfer.credit_to)
-
 
 def get_map_of_credit_transactions(key_field, value_field):
     result = {}
