@@ -92,7 +92,7 @@ jobs:
           issue-title: "ZEVA ${{ env.VERSION }}-${{ env.PRE_RELEASE }} Test Deployment"
 
       - name: Checkout Manifest repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.1.1
         with:
           repository: bcgov-c/tenant-gitops-e52f12
           ref: main
@@ -102,8 +102,8 @@ jobs:
         uses: mikefarah/yq@v4.40.5
         with:
           cmd: |
-            yq -i 'frontend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-test.yaml
-            yq -i 'backend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-test.yaml
+            yq -i '.frontend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-test.yaml
+            yq -i '.backend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-test.yaml
 
       - name: GitHub Commit & Push
         run: |
