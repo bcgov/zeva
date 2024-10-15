@@ -25,7 +25,7 @@ from api.serializers.vehicle import VehicleSalesSerializer
 
 class ModelYearReportConsumerSalesViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
 
-    permission_classes = (ModelYearReportPermissions,)
+    permission_classes = [ModelYearReportPermissions]
     http_method_names = ['get', 'post']
     
     def get_queryset(self):

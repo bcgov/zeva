@@ -17,7 +17,7 @@ from api.serializers.organization import \
 from api.serializers.organization_ldv_sales import \
     OrganizationLDVSalesSerializer
 from api.permissions.organization import OrganizationPermissions
-from auditable.views import AuditableMixin
+from auditable.views import AuditableCreateMixin, AuditableUpdateMixin
 from api.services.supplemental_report import get_map_of_model_year_report_ids_to_latest_supplemental_ids
 from api.services.credit_transaction import (
     aggregate_credit_balance_details,
@@ -37,15 +37,16 @@ from api.serializers.vehicle import ModelYearSerializer
 
 
 class OrganizationViewSet(
-        AuditableMixin, viewsets.GenericViewSet,
-        mixins.CreateModelMixin, mixins.UpdateModelMixin, 
+        viewsets.GenericViewSet,
+        AuditableCreateMixin, 
+        AuditableUpdateMixin,
         mixins.RetrieveModelMixin
 ):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
     and  `update`  actions.
     """
-    permission_classes = (OrganizationPermissions,)
+    permission_classes = [OrganizationPermissions]
     http_method_names = ['get', 'post', 'put', 'patch']
 
     serializer_classes = {
@@ -172,7 +173,7 @@ class OrganizationViewSet(
         serializer = CreditTransactionListSerializer(transactions, many=True)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['patch', 'put'])
+    @action(detail=True, methods=['put'])
     @method_decorator(permission_required('VIEW_SALES'))
     def ldv_sales(self, request, pk=None):
         delete_id = request.data.get('id', None)

@@ -2,17 +2,16 @@ from rest_framework import mixins, viewsets
 from api.permissions.user import UserPermissions
 from api.models.organization import Organization
 from api.serializers.dashboard import DashboardListSerializer
-from auditable.views import AuditableMixin
 
 
 class DashboardViewset(
-        AuditableMixin, viewsets.GenericViewSet, 
+        viewsets.GenericViewSet, 
         mixins.ListModelMixin
 ):
     """
     This viewset automatically provides the "list" action
     """
-    permission_classes = (UserPermissions,)
+    permission_classes = [UserPermissions]
     http_method_names = ['get']
     
     def get_queryset(self):

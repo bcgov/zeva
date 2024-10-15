@@ -3,21 +3,19 @@ from datetime import datetime
 from django.db.models import Q
 from rest_framework import filters, mixins, permissions, viewsets
 
-from auditable.views import AuditableMixin
-
 from api.models.signing_authority_assertion import SigningAuthorityAssertion
 from api.serializers.signing_authority_assertion import \
     SigningAuthorityAssertionSerializer
 
 
 class SigningAuthorityAssertionViewSet(
-        AuditableMixin, mixins.ListModelMixin,
-        viewsets.GenericViewSet
+        viewsets.GenericViewSet,
+        mixins.ListModelMixin,
 ):
     """
     This viewset automatically provides `list`
     """
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = [permissions.AllowAny]
     http_method_names = ['get']
     queryset = SigningAuthorityAssertion.objects.all()
     filter_backends = (filters.OrderingFilter,)

@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework import mixins, viewsets, status
 from rest_framework.decorators import action
 
-from auditable.views import AuditableMixin
+from auditable.views import AuditableCreateMixin, AuditableUpdateMixin
 from api.models.model_year import ModelYear
 from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_confirmation import ModelYearReportConfirmation
@@ -77,11 +77,10 @@ from api.permissions.same_organization import SameOrganizationPermissions
 
 
 class ModelYearReportViewset(
-    AuditableMixin,
     viewsets.GenericViewSet,
+    AuditableCreateMixin,
+    AuditableUpdateMixin,
     mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    mixins.UpdateModelMixin,
     mixins.DestroyModelMixin
 ):
     """
@@ -101,7 +100,7 @@ class ModelYearReportViewset(
             "supplemental_credit_activity"
         ]
     }
-    http_method_names = ["get", "post", "put", "patch", "delete"]
+    http_method_names = ["get", "post", "patch", "delete"]
 
     serializer_classes = {
         "default": ModelYearReportSerializer,

@@ -38,7 +38,7 @@ from api.services.sales_spreadsheet import (
     create_errors_spreadsheet,
     create_details_spreadsheet,
 )
-from auditable.views import AuditableMixin
+from auditable.views import AuditableUpdateMixin
 import numpy as np
 from api.paginations import BasicPagination
 from api.services.filter_utilities import get_search_terms, get_search_q_object
@@ -49,9 +49,10 @@ from api.permissions.same_organization import SameOrganizationPermissions
 
 
 class CreditRequestViewset(
-        AuditableMixin, viewsets.GenericViewSet,
-        mixins.ListModelMixin, mixins.RetrieveModelMixin,
-        mixins.UpdateModelMixin
+        viewsets.GenericViewSet,
+        AuditableUpdateMixin, 
+        mixins.ListModelMixin, 
+        mixins.RetrieveModelMixin,
 ):
     pagination_class = BasicPagination
     permission_classes = [SameOrganizationPermissions & CreditRequestPermissions]
@@ -63,7 +64,7 @@ class CreditRequestViewset(
             "update_comment", "delete_comment"
         ]
     }
-    http_method_names = ['get', 'patch', 'post', 'put']
+    http_method_names = ['get', 'patch', 'post']
 
     def get_queryset(self):
         user = self.request.user

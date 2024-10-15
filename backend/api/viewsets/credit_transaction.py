@@ -1,5 +1,5 @@
 from django.db.models import Q
-from rest_framework import mixins, viewsets
+from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -15,17 +15,13 @@ from api.services.credit_transaction import (
     get_compliance_period_bounds,
     get_timestamp_of_most_recent_reduction
 )
-from auditable.views import AuditableMixin
 from api.permissions.same_organization import SameOrganizationPermissions
 from api.models.organization import Organization
 
 
-class CreditTransactionViewSet(
-        AuditableMixin, viewsets.GenericViewSet, mixins.RetrieveModelMixin
-):
+class CreditTransactionViewSet(viewsets.GenericViewSet):
     permission_classes = [SameOrganizationPermissions]
     same_org_permissions_context = {
-        "actions_not_to_check": ["retrieve"],
         "custom_pk_actions": {
             "calculate_balance": {
                 "manager": Organization.objects,
