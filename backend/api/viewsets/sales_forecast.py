@@ -26,6 +26,7 @@ class SalesForecastViewset(viewsets.GenericViewSet):
         "default_manager": ModelYearReport.objects,
         "default_path_to_org": ("organization",),
     }
+    http_method_names = ['get', 'post']
     pagination_class = BasicPagination
 
     # pk should be a myr_id

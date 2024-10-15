@@ -60,7 +60,7 @@ class CreditRequestViewset(
         "default_manager": SalesSubmission.objects,
         "default_path_to_org": ("organization",),
         "actions_not_to_check": [
-            "retrieve", "update", "partial_update", "download_errors", "content", "unselected", "minio_url", "reasons",
+            "retrieve", "partial_update", "download_errors", "content", "unselected", "minio_url", "reasons",
             "update_comment", "delete_comment"
         ]
     }
@@ -88,7 +88,6 @@ class CreditRequestViewset(
         'default': SalesSubmissionListSerializer,
         'retrieve': SalesSubmissionSerializer,
         'partial_update': SalesSubmissionSaveSerializer,
-        'update': SalesSubmissionSaveSerializer,
         'content': SalesSubmissionContentSerializer,
         'paginated': SalesSubmissionBaseListSerializer
     }

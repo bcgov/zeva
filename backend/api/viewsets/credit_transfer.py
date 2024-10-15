@@ -11,7 +11,7 @@ from api.permissions.credit_transfer import CreditTransferPermissions
 from api.serializers.credit_transfer import CreditTransferSerializer, \
     CreditTransferSaveSerializer, CreditTransferListSerializer, CreditTransferOrganizationBalancesSerializer
 from api.serializers.credit_transfer_comment import CreditTransferCommentSerializer
-from auditable.views import AuditableCreateMixin, AuditableUpdateMixin
+from auditable.views import AuditableUpdateMixin
 from api.services.send_email import notifications_credit_transfers
 from api.services.credit_transaction import validate_transfer
 from api.services.credit_transfer_comment import get_comment, delete_comment
@@ -37,7 +37,6 @@ class CreditTransferViewset(
         'default': CreditTransferSerializer,
         'create': CreditTransferSaveSerializer,
         'partial_update': CreditTransferSaveSerializer,
-        'update': CreditTransferSaveSerializer,
         'list': CreditTransferListSerializer,
     }
 
