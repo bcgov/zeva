@@ -45,7 +45,6 @@ class CreditAgreementViewSet(
     serializer_classes = {
         'default': CreditAgreementSerializer,
         'create': CreditAgreementSaveSerializer,
-        'update': CreditAgreementSaveSerializer,
         'partial_update': CreditAgreementSaveSerializer,
         'list': CreditAgreementListSerializer,
     }

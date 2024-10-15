@@ -93,7 +93,7 @@ class ModelYearReportViewset(
         "default_manager": ModelYearReport.objects,
         "default_path_to_org": ("organization",),
         "actions_not_to_check": [
-            "retrieve", "update", "partial_update", "destroy",
+            "retrieve", "partial_update", "destroy",
             "noa_history", "supplemental_history", "makes", "submission_confirmation",
             "assessment_patch", "comment_patch", "comment_delete", "assessment",
             "supplemental", "minio_url", "supplemental_comment_edit", "supplemental_comment_delete",
@@ -106,7 +106,6 @@ class ModelYearReportViewset(
         "default": ModelYearReportSerializer,
         "create": ModelYearReportSaveSerializer,
         "list": ModelYearReportListSerializer,
-        "update": ModelYearReportSaveSerializer,
         "partial_update": ModelYearReportSaveSerializer,
     }
 
