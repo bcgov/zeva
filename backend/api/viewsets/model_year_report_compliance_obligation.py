@@ -1,5 +1,5 @@
 from datetime import date
-from rest_framework import mixins, viewsets
+from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.http import HttpResponse
@@ -7,7 +7,6 @@ from django.db.models import Sum
 from django.utils.decorators import method_decorator
 from django.shortcuts import get_object_or_404
 
-from auditable.views import AuditableMixin
 from api.decorators.permission import permission_required
 from api.models.model_year import ModelYear
 from api.models.model_year_report import ModelYearReport
@@ -43,9 +42,7 @@ from api.services.model_year_report_ldv_sales import get_most_recent_ldv_sales
 from api.permissions.same_organization import SameOrganizationPermissions
 
 
-class ModelYearReportComplianceObligationViewset(
-        AuditableMixin, viewsets.GenericViewSet
-):
+class ModelYearReportComplianceObligationViewset(viewsets.GenericViewSet):
     permission_classes = [SameOrganizationPermissions & ModelYearReportPermissions]
     same_org_permissions_context = {
         "default_manager": ModelYearReport.objects,

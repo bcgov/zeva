@@ -2,6 +2,7 @@ import logging
 from rest_framework import mixins, status, viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.settings import api_settings
 from django.db.models import Q
 
 from api.models.credit_transfer import CreditTransfer
@@ -10,7 +11,7 @@ from api.permissions.credit_transfer import CreditTransferPermissions
 from api.serializers.credit_transfer import CreditTransferSerializer, \
     CreditTransferSaveSerializer, CreditTransferListSerializer, CreditTransferOrganizationBalancesSerializer
 from api.serializers.credit_transfer_comment import CreditTransferCommentSerializer
-from auditable.views import AuditableMixin
+from auditable.views import AuditableCreateMixin, AuditableUpdateMixin
 from api.services.send_email import notifications_credit_transfers
 from api.services.credit_transaction import validate_transfer
 from api.services.credit_transfer_comment import get_comment, delete_comment
@@ -20,16 +21,17 @@ LOGGER = logging.getLogger(__name__)
 
 
 class CreditTransferViewset(
-        AuditableMixin, viewsets.GenericViewSet,
-        mixins.CreateModelMixin, mixins.ListModelMixin,
-        mixins.UpdateModelMixin, mixins.RetrieveModelMixin
+        viewsets.GenericViewSet,
+        AuditableUpdateMixin,
+        mixins.ListModelMixin,
+        mixins.RetrieveModelMixin
 ):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
     and  `update`  actions.
     """
-    permission_classes = (CreditTransferPermissions,)
-    http_method_names = ['get', 'post', 'put', 'patch']
+    permission_classes = [CreditTransferPermissions]
+    http_method_names = ['get', 'post', 'patch']
 
     serializer_classes = {
         'default': CreditTransferSerializer,
@@ -83,7 +85,11 @@ class CreditTransferViewset(
         credit_transfer = serializer.save()
 
         response = credit_transfer
-        headers = self.get_success_headers(response)
+        headers = {}
+        try:
+            headers = {"Location": str(response[api_settings.URL_FIELD_NAME])}
+        except (TypeError, KeyError):
+            pass
 
         return Response(
             response, status=status.HTTP_201_CREATED, headers=headers

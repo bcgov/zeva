@@ -18,7 +18,7 @@ from api.serializers.credit_agreement import CreditAgreementSerializer, \
     CreditAgreementListSerializer, CreditAgreementSaveSerializer
 from api.services.minio import minio_put_object
 from api.services.credit_agreement import adjust_credits
-from auditable.views import AuditableMixin
+from auditable.views import AuditableCreateMixin, AuditableUpdateMixin
 from api.models.credit_agreement_statuses import CreditAgreementStatuses
 from api.services.send_email import notifications_credit_agreement
 from api.models.model_year_report import ModelYearReport
@@ -30,16 +30,18 @@ from api.permissions.same_organization import SameOrganizationPermissions
 
 
 class CreditAgreementViewSet(
-    AuditableMixin, viewsets.GenericViewSet, mixins.CreateModelMixin,
-    mixins.RetrieveModelMixin, mixins.UpdateModelMixin
+    viewsets.GenericViewSet,
+    AuditableCreateMixin,
+    AuditableUpdateMixin,
+    mixins.RetrieveModelMixin,
 ):
     permission_classes = [SameOrganizationPermissions]
     same_org_permissions_context = {
         "default_manager": CreditAgreement.objects,
         "default_path_to_org": ("organization",),
-        "actions_not_to_check": ["retrieve", "update", "partial_update", "minio_url", "update_comment", "delete_comment"]
+        "actions_not_to_check": ["retrieve", "partial_update", "minio_url", "update_comment", "delete_comment"]
     }
-    http_method_names = ['get', 'post', 'put', 'patch']
+    http_method_names = ['get', 'post', 'patch']
     serializer_classes = {
         'default': CreditAgreementSerializer,
         'create': CreditAgreementSaveSerializer,

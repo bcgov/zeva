@@ -3,7 +3,7 @@ import os
 import urllib.request
 
 from django.http import HttpResponse
-from rest_framework import mixins, viewsets, status
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -12,14 +12,10 @@ from api.services.icbc_upload import ingest_icbc_spreadsheet
 from api.services.minio import minio_get_object, minio_remove_object
 from api.models.icbc_upload_date import IcbcUploadDate
 from api.serializers.icbc_upload_date import IcbcUploadDateSerializer
-from auditable.views import AuditableMixin
 
 
-class IcbcVerificationViewSet(
-        viewsets.ViewSet, AuditableMixin,
-        viewsets.GenericViewSet, mixins.ListModelMixin
-):
-    permission_classes = (AllowAny,)
+class IcbcVerificationViewSet(viewsets.GenericViewSet):
+    permission_classes = [AllowAny]
     http_method_names = ['get', 'post']
 
     serializer_classes = {

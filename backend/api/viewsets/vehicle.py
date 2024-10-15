@@ -18,16 +18,18 @@ from api.serializers.vehicle import ModelYearSerializer, \
     VehicleStatusChangeSerializer, VehicleIsActiveChangeSerializer, \
     VehicleListSerializer
 from api.services.minio import minio_put_object
-from auditable.views import AuditableMixin
+from auditable.views import AuditableCreateMixin, AuditableUpdateMixin
 from api.models.vehicle import VehicleDefinitionStatuses
 from api.services.send_email import notifications_zev_model
 
 class VehicleViewSet(
-    AuditableMixin, viewsets.GenericViewSet, mixins.CreateModelMixin,
-    mixins.RetrieveModelMixin, mixins.UpdateModelMixin
+    viewsets.GenericViewSet,
+    AuditableCreateMixin,
+    AuditableUpdateMixin,
+    mixins.RetrieveModelMixin, 
 ):
-    permission_classes = (VehiclePermissions,)
-    http_method_names = ['get', 'post', 'put', 'patch']
+    permission_classes = [VehiclePermissions]
+    http_method_names = ['get', 'post', 'patch']
 
     serializer_classes = {
         'default': VehicleSerializer,
