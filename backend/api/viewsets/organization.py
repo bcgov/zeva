@@ -52,7 +52,6 @@ class OrganizationViewSet(
     serializer_classes = {
         'default': OrganizationSerializer,
         'mine': OrganizationWithMembersSerializer,
-        'update': OrganizationSaveSerializer,
         'create': OrganizationSaveSerializer,
         'partial_update': OrganizationSaveSerializer,
         'sales': SalesSubmissionListSerializer,
