@@ -62,10 +62,29 @@ jobs:
         run: |
           echo "VERSION=$(echo "${{ github.event.pull_request.head.ref }}" | grep -oP '\d+\.\d+\.\d+')" >> $GITHUB_OUTPUT
 
+  verify-build-suffix:
+    name: verify-build-suffix 
+    runs-on: ubuntu-latest
+    needs: [set-pre-release,get-version]
+
+    env:
+      BUILD_SUFFIX: ${{ needs.get-version.outputs.output1 }}-${{ needs.set-pre-release.outputs.output1 }}
+
+    steps:
+      - id: verify-build-suffix
+        run: |
+          echo "Validating ${{ env.BUILD_SUFFIX }}"
+          if [[ "$suffix" =~ ^[0-9]+\.[0-9]+\.[0-9]+-[0-9]{14}$ ]]; then
+            echo "Build suffix ${{ env.BUILD_SUFFIX }} format is valid."
+          else
+            echo "Error: Build suffix ${{ env.BUILD_SUFFIX }} format is invalid!"
+            exit 1
+          fi
+
   build-backend:
     name: Build Zeva Backend
     runs-on: ubuntu-latest
-    needs: [set-pre-release, get-version]
+    needs: [set-pre-release,get-version,verify-build-suffix]
     timeout-minutes: 60
 
     env:
