@@ -1,15 +1,15 @@
-name: pipeline-test
+name: Post Release Work
 
 on:
-  push:
+  pull_request:
+    # Trigger only on PRs targeting the master branch
     branches:
-      - pipeline-test-1.63.0
-  workflow_dispatch:
+      - master
+    types: [closed]
 
 env:
   GH_TOKEN: ${{ github.token }}
   
-
 jobs:
   verify-pr:
     name: Verify pull request title started with Tracking
@@ -18,6 +18,12 @@ jobs:
       - name: Check PR Title
         id: check_pr_title
         run: |
+          if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
+            echo "The pull request was merged."
+          else
+            echo "The pull request was closed without merging."
+            exit 1
+          fi
           pr_title="${{ github.event.pull_request.title }}"
           echo "Pull Request Title: $pr_title"
 
