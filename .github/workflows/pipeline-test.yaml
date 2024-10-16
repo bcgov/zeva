@@ -15,24 +15,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      # Step 2a: Get the current default branch and set tag name
       - name: Get Current Default Branch and Set Tag Name
         id: get_default_branch
         run: |
           # Fetch the current default branch using the GitHub API
           current_default_branch=$(gh api repos/${{ github.repository }} | jq -r '.default_branch')
           echo "Current default branch is: $current_default_branch"
-          
-          # Extract the current release version number (assumes format is release-X.Y.Z)
-          current_version=$(echo "$current_default_branch" | grep -oP '\d+\.\d+\.\d+')
-          echo "Current version extracted: $current_version"
-
-          # Create tag in the format vX.Y.Z
-          tag_name="v$current_version"
-          echo "Generated tag name: $tag_name"
-
           echo "current_default_branch=$current_default_branch" >> $GITHUB_OUTPUT
           
+          # # Extract the current release version number (assumes format is release-X.Y.Z)
+          # current_version=$(echo "$current_default_branch" | grep -oP '\d+\.\d+\.\d+')
+          # echo "Current version extracted: $current_version"
+
+          # # Create tag in the format vX.Y.Z
+          # tag_name="v$current_version"
+          # echo "Generated tag name: $tag_name"
+
       - name: Get New Release Branch
         id: get_new_release_branch
         run: |
@@ -52,3 +50,17 @@ jobs:
           new_release_branch="release-${major_version}.${new_minor_version}.0"
           
           echo "New release branch will be: $new_release_branch"
+          echo "new_release_branch=$new_release_branch" >> $GITHUB_OUTPUT
+
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
+
+      - name: Create New Release Branch
+        id: create_new_release_branch
+        run: |
+          # Get the new release branch name from the previous step
+          new_release_branch="${{ steps.get_new_release_branch.outputs.new_release_branch }}""
+          
+          # Create the new branch from master
+          git checkout -b $new_release_branch master
+          # git push origin $new_release_branch
