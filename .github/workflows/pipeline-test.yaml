@@ -5,7 +5,7 @@ on:
     branches:
       - pipeline-test-1.63.0
   workflow_dispatch:
-    
+
 env:
   GH_TOKEN: ${{ github.token }}
   
@@ -31,6 +31,22 @@ jobs:
           tag_name="v$current_version"
           echo "Generated tag name: $tag_name"
           
-          # Set both outputs: current default branch and the tag name
-          echo "::set-output name=current_default_branch::$current_default_branch"
-          echo "::set-output name=tag_name::$tag_name"
+      - name: Get New Release Branch
+        id: get_new_release_branch
+        run: |
+          # Get the current default branch from the previous step
+          current_default_branch="${{ steps.get_default_branch.outputs.current_default_branch }}"
+          
+          # Extract the current release version number (assumes format is release-X.Y.Z)
+          current_version=$(echo "$current_default_branch" | grep -oP '\d+\.\d+\.\d+')
+          
+          # Increment the minor version (X.Y.Z -> X.(Y+1).0)
+          major_version=$(echo "$current_version" | cut -d. -f1)
+          minor_version=$(echo "$current_version" | cut -d. -f2)
+          patch_version=$(echo "$current_version" | cut -d. -f3)
+
+          # Increment the minor version by 1 for the new release branch
+          new_minor_version=$((minor_version + 1))
+          new_release_branch="release-${major_version}.${new_minor_version}.0"
+          
+          echo "New release branch will be: $new_release_branch"
