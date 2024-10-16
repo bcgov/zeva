@@ -54,6 +54,8 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@v4.1.1
+        with:
+          ref: main
 
       - name: Create New Release Branch
         id: create_new_release_branch
