@@ -30,7 +30,7 @@ jobs:
           # Check if the title starts with "Tracking"
           if [[ "$pr_title" != Tracking* ]]; then
             echo "PR title does not start with 'Tracking'. Exiting..."
-            exit 0
+            exit 1
           fi
 
   set-pre-release:

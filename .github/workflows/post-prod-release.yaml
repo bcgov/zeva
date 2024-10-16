@@ -1,0 +1,110 @@
+name: Post Release Work
+
+on:
+  pull_request:
+    # Trigger only on PRs targeting the master branch
+    branches:
+      - master
+    types: [closed]
+
+env:
+  GH_TOKEN: ${{ github.token }}
+  
+jobs:
+  verify-pr:
+    name: Verify pull request title started with Tracking
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR Title
+        id: check_pr_title
+        run: |
+          if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
+            echo "The pull request was merged."
+          else
+            echo "The pull request was closed without merging."
+            exit 1
+          fi
+          pr_title="${{ github.event.pull_request.title }}"
+          echo "Pull Request Title: $pr_title"
+
+          # Check if the title starts with "Tracking"
+          if [[ "$pr_title" != Tracking* ]]; then
+            echo "PR title does not start with 'Tracking'. Exiting..."
+            exit 1
+          fi
+
+  post-release-work:
+    runs-on: ubuntu-latest
+    needs: verify-pr
+    steps:
+      - name: Find tag name
+        uses: mad9000/actions-find-and-replace-string@5
+        id: tag_name
+        with:
+          source: ${{ github.event.pull_request.head.ref }}
+          find: 'release-'
+          replace: 'v'
+
+      # - name: Create Release
+      #   uses: softprops/action-gh-release@v1.1.0
+      #   with:
+      #     name: ${{ steps.tag_name.outputs.value }}
+      #     tag_name: ${{ steps.tag_name.outputs.value }}
+      #     target_commitish: master
+      #     body: |
+      #       ${{ github.event.pull_request.body }}
+      #     token: ${{ env.GITHUB_TOKEN }}
+      #     draft: false
+      #     prerelease: false
+
+      - name: Get Current Default Branch and Set Tag Name
+        id: get_default_branch
+        run: |
+          # Fetch the current default branch using the GitHub API
+          current_default_branch=$(gh api repos/${{ github.repository }} | jq -r '.default_branch')
+          echo "Current default branch is: $current_default_branch"
+          echo "current_default_branch=$current_default_branch" >> $GITHUB_OUTPUT
+          
+          # # Extract the current release version number (assumes format is release-X.Y.Z)
+          # current_version=$(echo "$current_default_branch" | grep -oP '\d+\.\d+\.\d+')
+          # echo "Current version extracted: $current_version"
+
+          # # Create tag in the format vX.Y.Z
+          # tag_name="v$current_version"
+          # echo "Generated tag name: $tag_name"
+
+      - name: Get New Release Branch
+        id: get_new_release_branch
+        run: |
+          # Get the current default branch from the previous step
+          current_default_branch="${{ steps.get_default_branch.outputs.current_default_branch }}"
+          
+          # Extract the current release version number (assumes format is release-X.Y.Z)
+          current_version=$(echo "$current_default_branch" | grep -oP '\d+\.\d+\.\d+')
+          
+          # Increment the minor version (X.Y.Z -> X.(Y+1).0)
+          major_version=$(echo "$current_version" | cut -d. -f1)
+          minor_version=$(echo "$current_version" | cut -d. -f2)
+          patch_version=$(echo "$current_version" | cut -d. -f3)
+
+          # Increment the minor version by 1 for the new release branch
+          new_minor_version=$((minor_version + 1))
+          new_release_branch="release-${major_version}.${new_minor_version}.0"
+          
+          echo "New release branch will be: $new_release_branch"
+          echo "new_release_branch=$new_release_branch" >> $GITHUB_OUTPUT
+
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
+        with:
+          ref: master
+
+      - name: Create New Release Branch
+        id: create_new_release_branch
+        run: |
+          # Get the new release branch name from the previous step
+          new_release_branch="${{ steps.get_new_release_branch.outputs.new_release_branch }}"
+          
+          # Create the new branch from master
+          git checkout -b $new_release_branch master
+          # git push origin $new_release_branch
