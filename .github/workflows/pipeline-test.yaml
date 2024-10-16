@@ -29,9 +29,10 @@ jobs:
 
   post-release-work:
     runs-on: ubuntu-latest
+    needs: verify-pr
     steps:
       - name: Find tag name
-        uses: mad9000/actions-find-and-replace-string@4
+        uses: mad9000/actions-find-and-replace-string@5
         id: tag_name
         with:
           source: ${{ github.event.pull_request.head.ref }}
