@@ -45,17 +45,17 @@ jobs:
           find: 'release-'
           replace: 'v'
 
-      # - name: Create Release
-      #   uses: softprops/action-gh-release@v1.1.0
-      #   with:
-      #     name: ${{ steps.tag_name.outputs.value }}
-      #     tag_name: ${{ steps.tag_name.outputs.value }}
-      #     target_commitish: master
-      #     body: |
-      #       ${{ github.event.pull_request.body }}
-      #     token: ${{ env.GITHUB_TOKEN }}
-      #     draft: false
-      #     prerelease: false
+      - name: Create Release
+        uses: softprops/action-gh-release@v1.1.0
+        with:
+          name: ${{ steps.tag_name.outputs.value }}
+          tag_name: ${{ steps.tag_name.outputs.value }}
+          target_commitish: master
+          body: |
+            ${{ github.event.pull_request.body }}
+          token: ${{ env.GITHUB_TOKEN }}
+          draft: false
+          prerelease: false
 
       - name: Get Current Default Branch and Set Tag Name
         id: get_default_branch
@@ -107,4 +107,4 @@ jobs:
           
           # Create the new branch from master
           git checkout -b $new_release_branch master
-          # git push origin $new_release_branch
+          git push origin $new_release_branch
