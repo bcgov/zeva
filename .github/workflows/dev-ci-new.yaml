@@ -62,7 +62,7 @@ jobs:
         run: |
           
           # Extract the current release version number (assumes format is release-X.Y.Z)
-          current_version=$(echo "$${{ github.event.pull_request.head.ref }}" | grep -oP '\d+\.\d+\.\d+')
+          current_version=$(echo "${{ github.event.pull_request.head.ref }}" | grep -oP '\d+\.\d+\.\d+')
           echo "Current version extracted: $current_version"
 
           echo "VERSION=$(current_version)" >> $GITHUB_OUTPUT
@@ -91,6 +91,8 @@ jobs:
 
       - name: Build Zeva Backend
         run: |
+          echo ${{ env.VERSION }}
+          echo ${{ env.PRE_RELEASE }}
           cd openshift/templates/backend
           oc process -f ./backend-bc-docker.yaml NAME=zeva SUFFIX=-${{ env.VERSION }}-${{ env.PRE_RELEASE }} VERSION=${{ env.VERSION }}-${{ env.PRE_RELEASE }} GIT_URL=${{ env.GIT_URL }} GIT_REF=release-${{ env.VERSION }} | oc apply --wait=true -f - -n ${{ env.TOOLS_NAMESPACE }}
           sleep 2s
