@@ -30,6 +30,8 @@ jobs:
           # Create tag in the format vX.Y.Z
           tag_name="v$current_version"
           echo "Generated tag name: $tag_name"
+
+          echo "current_default_branch=$current_default_branch" >> $GITHUB_OUTPUT
           
       - name: Get New Release Branch
         id: get_new_release_branch
