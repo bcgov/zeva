@@ -11,7 +11,23 @@ env:
   
 
 jobs:
-  get-default-branch:
+  verify-pr:
+    name: Verify pull request title started with Tracking
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR Title
+        id: check_pr_title
+        run: |
+          pr_title="${{ github.event.pull_request.title }}"
+          echo "Pull Request Title: $pr_title"
+
+          # Check if the title starts with "Tracking"
+          if [[ "$pr_title" != Tracking* ]]; then
+            echo "PR title does not start with 'Tracking'. Exiting..."
+            exit 0
+          fi
+
+  post-release-work:
     runs-on: ubuntu-latest
     steps:
       - name: Find tag name
