@@ -59,7 +59,7 @@ jobs:
         id: create_new_release_branch
         run: |
           # Get the new release branch name from the previous step
-          new_release_branch="${{ steps.get_new_release_branch.outputs.new_release_branch }}""
+          new_release_branch="${{ steps.get_new_release_branch.outputs.new_release_branch }}"
           
           # Create the new branch from master
           git checkout -b $new_release_branch master
