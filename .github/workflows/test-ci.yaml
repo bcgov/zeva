@@ -96,7 +96,7 @@ jobs:
       - name: Tag ZEVA images to Test
         run: |
           helm -n ${{ env.TEST_NAMESPACE }} list
-          oc tag ${{ env.TEST_NAMESPACE }}/zeva-backend:${{ env.BUILD_SUFFIX }} ${{ env.TEST_NAMESPACE }}/zeva-backend:${{ env.BUILD_SUFFIX }}
-          oc tag ${{ env.TEST_NAMESPACE }}/zeva-frontend:${{ env.BUILD_SUFFIX }} ${{ env.TEST_NAMESPACE }}/zeva-frontend:${{ env.BUILD_SUFFIX }}
+          oc tag ${{ env.DEV_NAMESPACE }}/zeva-backend:${{ env.BUILD_SUFFIX }} ${{ env.TEST_NAMESPACE }}/zeva-backend:${{ env.BUILD_SUFFIX }}
+          oc tag ${{ env.DEV_NAMESPACE }}/zeva-frontend:${{ env.BUILD_SUFFIX }} ${{ env.TEST_NAMESPACE }}/zeva-frontend:${{ env.BUILD_SUFFIX }}
           cd zeva
           helm -n ${{ env.TEST_NAMESPACE }} -f ./values-test.yaml upgrade --install zeva-test .
