@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      output1: ${{ steps. get-build-suffix.outputs.BUILD_SUFFIX }}
+      output1: ${{ steps.get-build-suffix.outputs.BUILD_SUFFIX }}
 
     steps:
       - name: Log in to Openshift

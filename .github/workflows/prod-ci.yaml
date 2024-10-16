@@ -1,12 +1,11 @@
 ## For each release, the value of workflow name, branches and VERSION need to be adjusted accordingly
 
-name: Zeva new-pipeline-1.63.0 Prod CI
+name: Zeva new-pipeline Prod CI
 
 on:
   workflow_dispatch:
 
 env:
-  VERSION: 1.63.0
   GIT_URL: https://github.com/bcgov/zeva.git
   TEST_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-test
   PROD_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-prod
@@ -16,12 +15,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  set-pre-release:
-    name: Find Test deployment pre-release number
+  get-build-suffix:
+    name: Find Test deployment build suffix 
     runs-on: ubuntu-latest
 
     outputs:
-      output1: ${{ steps.set-pre-release.outputs.PRE_RELEASE }}
+      output1: ${{ steps.get-build-suffix.outputs.BUILD_SUFFIX }}
 
     steps:
       - name: Log in to Openshift
@@ -30,66 +29,37 @@ jobs:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           insecure_skip_tls_verify: true
-          namespace: ${{ env.TEST_NAMESPACE }}
+          namespace: ${{ env.DEV_NAMESPACE }}
 
-      - id: set-pre-release
+      - id: get-build-suffix
         run: |
-          check_string() {
-              local string="$1"
-
-              if [ ${#string} -ne 14 ]; then
-                  echo "String length must be 14 characters"
-                  return 1
-              fi
-
-              if ! [[ $string =~ ^[0-9]+$ ]]; then
-                  echo "String can only contain numbers"
-                  return 1
-              fi
-
-              local year="${string:0:4}"
-              local month="${string:4:2}"
-              local day="${string:6:2}"
-              local hour="${string:8:2}"
-              local minute="${string:10:2}"
-              local second="${string:12:2}"
-
-              if ! date -d "$year-$month-$day $hour:$minute:$second" &> /dev/null; then
-                  echo "String format must be yyyymmddhhmmss"
-                  return 1
-              fi
-
-              return 0
-          }
-
-          input_string=$(oc -n ${{ env.TEST_NAMESPACE }} describe deployment/zeva-test-frontend | grep Image | awk -F '-' '{print $NF}')
-
-          echo "The retrieved pre-release number on Test is $input_string "
-          if check_string "$input_string"; then
-              echo "It is valid"
-              echo "PRE_RELEASE=$input_string" >> $GITHUB_OUTPUT
+          build_suffix=$(oc -n ${{ env.DEV_NAMESPACE }} describe deployment/zeva-test-frontend | grep Image | awk -F ':' '{print $NF}')
+          echo "Validating $build_suffix"
+          if [[ "$build_suffix" =~ ^[0-9]+\.[0-9]+\.[0-9]+-[0-9]{14}$ ]]; then
+            echo "Build suffix $build_suffix format is valid."
+            echo "BUILD_SUFFIX=$build_suffix" >> $GITHUB_OUTPUT
           else
-              echo "It is not valid"
-              exit 1
+            echo "Error: Build suffix $build_suffix format is invalid!"
+            exit 1
           fi
 
   deploy-on-prod:
     name: Deploy ZEVA on Prod
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    needs: [set-pre-release]
+    needs: [get-build-suffix]
 
     env:
-      PRE_RELEASE: ${{ needs.set-pre-release.outputs.output1 }}
+      BUILD_SUFFIX: ${{ needs.get-build-suffix.outputs.output1 }}
 
     steps:
-      - name: Ask for approval for ZEVA release-${{ env.VERSION }} Prod deployment
+      - name: Ask for approval for ZEVA ${{ env.BUILD_SUFFIX }} Prod deployment
         uses: trstringer/manual-approval@v1.6.0
         with:
           secret: ${{ github.TOKEN }}
           approvers: emi-hi,tim738745,kuanfandevops,JulianForeman,rogerlcleung
           minimum-approvals: 2
-          issue-title: "ZEVA ${{ env.VERSION }}-${{ env.PRE_RELEASE }} Prod Deployment"
+          issue-title: "ZEVA ${{ env.BUILD_SUFFIX }} Prod Deployment"
 
       - name: Checkout Manifest repository
         uses: actions/checkout@v4.1.1
@@ -102,8 +72,8 @@ jobs:
         uses: mikefarah/yq@v4.40.5
         with:
           cmd: |
-            yq -i '.frontend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-prod.yaml
-            yq -i '.backend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-prod.yaml
+            yq -i '.frontend.image.tag = "${{ env.BUILD_SUFFIX }}"' zeva/values-prod.yaml
+            yq -i '.backend.image.tag = "${{ env.BUILD_SUFFIX }}"' zeva/values-prod.yaml
 
       - name: GitHub Commit & Push
         shell: bash {0}
@@ -111,7 +81,7 @@ jobs:
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
           git add zeva/values-prod.yaml
-          git commit -m "Update the image tag to ${{ env.VERSION }}-${{ env.PRE_RELEASE }} on Zeva Prod Environment"
+          git commit -m "Update the image tag to ${{ env.BUILD_SUFFIX }} on Zeva Prod Environment"
           git push
 
       # For prod deployment, replace the following with ArgoCD
@@ -126,7 +96,7 @@ jobs:
       # - name: Tag ZEVA images to Test
       #   run: |
       #     helm -n ${{ env.PROD_NAMESPACE }} list
-      #     oc tag ${{ env.TEST_NAMESPACE }}/zeva-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.TEST_NAMESPACE }}/zeva-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
-      #     oc tag ${{ env.TEST_NAMESPACE }}/zeva-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.TEST_NAMESPACE }}/zeva-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
+      #     oc tag ${{ env.TEST_NAMESPACE }}/zeva-backend:${{ env.BUILD_SUFFIX }} ${{ env.PROD_NAMESPACE }}/zeva-backend:${{ env.BUILD_SUFFIX }}
+      #     oc tag ${{ env.TEST_NAMESPACE }}/zeva-frontend:${{ env.BUILD_SUFFIX }} ${{ env.PROD_NAMESPACE }}/zeva-frontend:${{ env.BUILD_SUFFIX }}
       #     cd zeva
       #     helm -n ${{ env.PROD_NAMESPACE }} -f ./values-prod.yaml upgrade --install zeva-prod .
