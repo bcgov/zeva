@@ -60,7 +60,7 @@ jobs:
     steps:
       - id: get-version
         run: |
-          echo "VERSION=$("${{ github.event.pull_request.head.ref }}" | grep -oP '\d+\.\d+\.\d+')" >> $GITHUB_OUTPUT
+          echo "VERSION=$(echo "${{ github.event.pull_request.head.ref }}" | grep -oP '\d+\.\d+\.\d+')" >> $GITHUB_OUTPUT
 
   build-backend:
     name: Build Zeva Backend
