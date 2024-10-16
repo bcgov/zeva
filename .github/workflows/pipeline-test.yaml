@@ -14,6 +14,25 @@ jobs:
   get-default-branch:
     runs-on: ubuntu-latest
     steps:
+      - name: Find tag name
+        uses: mad9000/actions-find-and-replace-string@4
+        id: tag_name
+        with:
+          source: ${{ github.event.pull_request.head.ref }}
+          find: 'release-'
+          replace: 'v'
+
+      # - name: Create Release
+      #   uses: softprops/action-gh-release@v1.1.0
+      #   with:
+      #     name: ${{ steps.tag_name.outputs.value }}
+      #     tag_name: ${{ steps.tag_name.outputs.value }}
+      #     target_commitish: master
+      #     body: |
+      #       ${{ github.event.pull_request.body }}
+      #     token: ${{ env.GITHUB_TOKEN }}
+      #     draft: false
+      #     prerelease: false
 
       - name: Get Current Default Branch and Set Tag Name
         id: get_default_branch
