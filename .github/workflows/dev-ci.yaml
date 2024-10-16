@@ -6,7 +6,6 @@ on:
     branches:
       - master
     types: [opened, synchronize, reopened]
-  workflow_dispatch:
 
 env:
   GIT_URL: https://github.com/bcgov/zeva.git
