@@ -208,9 +208,9 @@ const VehicleDetailsPage = (props) => {
               label="Vehicle Class"
               id={eligibleWeight ? '' : 'danger-text'}
               value={
-                eligibleWeight
-                  ? 'LDV (calculated)'
-                  : 'Not within LDV range (calculated)'
+                details.weightKg > 3856 && details.weightKg < 4537
+                  ? '2b'
+                  : 'LDV (Calculated)'
               }
             />
             {details.creditClass && (

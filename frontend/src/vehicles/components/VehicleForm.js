@@ -265,7 +265,7 @@ const VehicleForm = (props) => {
                 id="weightKg"
                 label="GVWR (kg)"
                 mandatory
-                maxnum={3856}
+                maxnum={4536}
                 name="weightKg"
                 num
               />
