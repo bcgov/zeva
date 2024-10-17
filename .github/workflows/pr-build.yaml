@@ -188,4 +188,4 @@ jobs:
           helm -n ${{ env.DEV_NAMESPACE }} -f ./values-dev-pr.yaml upgrade --install zeva-dev-${{ env.PR_NUMBER }}-postgresql oci://registry-1.docker.io/bitnamicharts/postgresql --version 15.5.17
           sleep 60s
           cd ../zeva
-          helm -n ${{ env.DEV_NAMESPACE }} -f ./values-dev-pr.yaml upgrade --install zeva-dev-${{ env.PR_NUMBER }} .
+          helm -n ${{ env.DEV_NAMESPACE }} -f ./values-dev-pr.yaml upgrade --install zeva-dev-${{ env.PR_NUMBER }} . --set podAnnotations.rolloutTriggered="A$(date +%s)E"
