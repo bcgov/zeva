@@ -44,6 +44,10 @@ to run tests use a terminal in the api container and type
 or to run specific test files, point to the folder or file
 `python manage.py test api.services.tests.test_credit_transfers.py`
 
+to get coverage for the backend run the tests using coverage
+`coverage run manage.py test`
+`coverage report -m`
+
 Tests on the frontend use Jest
 
 - `npm test`: Runs Jest for all unit tests in the project

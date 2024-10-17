@@ -159,7 +159,7 @@ class ModelYearReportViewset(
                 model_year_report_id=pk
             )
 
-            history = ModelYearReportHistorySerializer(history_list, many=True)
+            history = ModelYearReportHistorySerializer(history_list, many=True, context={'request': request})
 
             confirmations = (
                 ModelYearReportConfirmation.objects.filter(model_year_report_id=pk)
