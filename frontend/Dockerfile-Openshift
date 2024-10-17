@@ -13,6 +13,7 @@ RUN yes | npm run dist
 FROM artifacts.developer.gov.bc.ca/docker-remote/bitnami/nginx:1.21.6
 COPY ./nginx.conf /opt/bitnami/nginx/conf/
 COPY --from=builder /usr/src/app/public/build /app
+
 EXPOSE 8080
 
 CMD ["nginx", "-g", "daemon off;"]
