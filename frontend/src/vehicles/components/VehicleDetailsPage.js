@@ -211,8 +211,8 @@ const VehicleDetailsPage = (props) => {
               id={validWeight ? '' : 'danger-text'}
               value={
                 details.weightKg > 3856 && details.weightKg < 4537
-                  ? '2b'
-                  : 'LDV (Calculated)'
+                  ? '2B (calculated'
+                  : 'LDV (calculated)'
               }
             />
             )}
