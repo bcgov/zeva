@@ -119,10 +119,17 @@ const ComplianceObligationTableCreditsIssued = (props) => {
         category = title
     }
 
+    let realTitle = title
+    if (title === 'Issued for Consumer ZEV Sales' && reportYear >= 2024) {
+      realTitle = 'Issued for ZEVs Supplied and Registered'
+    } else if (title === 'Pending Issuance for Consumer ZEV Sales' && reportYear >= 2024) {
+      realTitle = 'Pending Issuance for ZEVs Supplied and Registered'
+    }
+
     return (
       <>
         <tr className="subclass">
-          <th className="large-column">{title}</th>
+          <th className="large-column">{realTitle}</th>
           <th className="small-column text-center text-blue">A</th>
           <th className="small-column text-center text-blue">B</th>
           {supplementalReport && (

@@ -66,10 +66,9 @@ const ComplianceReportListPage = (props) => {
               the number of credits offset or transferred away from your balance
             </li>
           </ul>
-          Consumer sales of zero-emission vehicles made prior to October 1 must
-          be included in a submitted credit application prior to completing your
-          model year report. Model year reports must be submitted on or before
-          October 20.
+          Only submit this Model Year Report if all relevant credit applications to be considered in this 
+          compliance period have been submitted to the Director. Model Year Reports must be submitted on 
+          or before October 20.
         </div>
       )}
       <div className="row mt-4">

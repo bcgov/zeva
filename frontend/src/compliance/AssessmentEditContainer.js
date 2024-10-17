@@ -210,6 +210,7 @@ const AssessmentEditContainer = (props) => {
         reportStatuses={statuses}
         id={id}
         user={user}
+        modelYear={modelYear}
       />
       <AssessmentEditPage
         modelYear={modelYear}

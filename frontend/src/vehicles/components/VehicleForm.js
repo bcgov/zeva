@@ -44,7 +44,7 @@ const VehicleForm = (props) => {
   } = props
   const [showModal, setShowModal] = useState(false)
   const [modalType, setModalType] = useState('')
-  const eligibleWeight = fields.weightKg <= 3856
+  const eligibleWeight = fields.weightKg <= 4536
   const modalText =
     fields && fields.hasPassedUs06Test
       ? 'Submit vehicle model and range test results to Government of B.C.'
@@ -230,7 +230,7 @@ const VehicleForm = (props) => {
               />
               <div className="form-group row mt-0 pt-0 text-blue">
                 <span className="col-sm-4" htmlFor="uploadRangeResults">
-                  Upload Range Test Results
+                  Upload Proof of Range and Range Test Results
                 </span>
                 <div className={"col-sm-8"}>
                   <input
@@ -265,7 +265,7 @@ const VehicleForm = (props) => {
                 id="weightKg"
                 label="GVWR (kg)"
                 mandatory
-                maxnum={3856}
+                maxnum={4536}
                 name="weightKg"
                 num
               />
@@ -276,7 +276,7 @@ const VehicleForm = (props) => {
             (status === 'CHANGES_REQUESTED' && setUploadFiles)) && (
             <div className="col-xl-6 col-lg-12 mt-2 mt-xl-0">
               <h3 className="font-weight-bold mb-2">
-                Upload range test results/US06 certificate
+                Upload Files
               </h3>
               <fieldset>
                 <div className="form-group row">

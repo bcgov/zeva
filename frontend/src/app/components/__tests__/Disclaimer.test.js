@@ -11,7 +11,7 @@ describe('Disclaimer component', () => {
     render(<Disclaimer />)
     const contentElement = document.getElementById('content')
     expect(contentElement.textContent).toEqual(
-      'This information does not replace or constitute legal advice. Users are responsible for ensuring compliance with the Zero-Emissions Vehicles Act and Regulations.'
+      'This information does not replace or constitute legal advice. Users are responsible for ensuring compliance with the Zero-Emission Vehicles Act and Regulations.'
     )
   })
 })

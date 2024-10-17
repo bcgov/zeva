@@ -378,6 +378,7 @@ const ComplianceReportSummaryContainer = (props) => {
         reportStatuses={confirmationStatuses}
         id={id}
         user={user}
+        modelYear={modelYear}
       />
       <ComplianceReportSummaryDetailsPage
         assertions={assertions}

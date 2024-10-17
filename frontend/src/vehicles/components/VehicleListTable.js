@@ -89,7 +89,7 @@ const VehicleListTable = (props) => {
     {
       accessor: (row) => (row.salesIssued ? row.salesIssued : '-'),
       className: 'text-center',
-      Header: 'Sales',
+      Header: 'ZEVs Submitted',
       id: 'sales',
       width: 100
     },

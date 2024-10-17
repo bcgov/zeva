@@ -30,7 +30,8 @@ const VehicleDetailsPage = (props) => {
   const [requestChangeCheck, setRequestChangeCheck] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [modalType, setModalType] = useState('')
-  const eligibleWeight = details.weightKg <= 3856
+  const [isChecked, setIsChecked] = useState(false)
+  const validWeight = details.weightKg <= 4536
   if (loading) {
     return <Loading />
   }
@@ -204,20 +205,22 @@ const VehicleDetailsPage = (props) => {
               value={details.vehicleClassCode.description}
             />
             <DetailField label="Weight (kg)" value={details.weightKg} />
-            <DetailField
+            {user.isGovernment && (
+              <DetailField
               label="Vehicle Class"
-              id={eligibleWeight ? '' : 'danger-text'}
+              id={validWeight ? '' : 'danger-text'}
               value={
-                eligibleWeight
-                  ? 'LDV (calculated)'
-                  : 'Not within LDV range (calculated)'
+                details.weightKg > 3856 && details.weightKg < 4537
+                  ? '2B (calculated)'
+                  : 'LDV (calculated)'
               }
             />
+            )}
             {details.creditClass && (
               <DetailField
                 label="ZEV Class"
                 value={
-                  eligibleWeight ? ` ${details.creditClass} (calculated)` : ''
+                  validWeight ? ` ${details.creditClass} (calculated)` : ''
                 }
               />
             )}
@@ -225,7 +228,7 @@ const VehicleDetailsPage = (props) => {
               <DetailField
                 label="Credit Entitlement"
                 value={
-                  eligibleWeight ? ` ${details.creditValue} (calculated)` : ''
+                  validWeight ? ` ${details.creditValue} (calculated)` : ''
                 }
               />
             )}
@@ -369,7 +372,7 @@ const VehicleDetailsPage = (props) => {
                     </button>
                     <Button
                       buttonType="submit"
-                      disabled={!eligibleWeight}
+                      disabled={!validWeight}
                       action={() => {
                         setModalType('submit')
                         setShowModal(true)

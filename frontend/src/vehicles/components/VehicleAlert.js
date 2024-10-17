@@ -27,7 +27,7 @@ const VehicleAlert = (props) => {
       break
     case 'VALIDATED':
       title = 'Validated'
-      message = `validated by Government of B.C. ${date}. Credits can be issued for eligible sales of this model`
+      message = `validated by Government of B.C. ${date}. Credits can be issued for ZEVs supplied of this model that have been registered.`
       classname = 'alert-success'
       icon = 'check-circle'
       break
