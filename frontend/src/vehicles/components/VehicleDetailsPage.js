@@ -208,8 +208,12 @@ const VehicleDetailsPage = (props) => {
             {user.isGovernment && (
               <DetailField
               label="Vehicle Class"
-              id={ validWeight ? '' : 'danger-text'}
-              value={"LDV (Calculated)"}
+              id={eligibleWeight ? '' : 'danger-text'}
+              value={
+                details.weightKg > 3856 && details.weightKg < 4537
+                  ? '2b'
+                  : 'LDV (Calculated)'
+              }
             />
             )}
             {details.creditClass && (
