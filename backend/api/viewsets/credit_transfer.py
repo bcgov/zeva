@@ -106,13 +106,14 @@ class CreditTransferViewset(
 
     @action(detail=True, methods=["PATCH"])
     def update_comment(self, request, pk):
+        request = self.context.get('request')
         comment_id = request.data.get("comment_id")
         comment_text = request.data.get("comment_text")
         username = request.user.username
         comment = get_comment(comment_id)
         if username == comment.create_user:
             updated_comment = update_comment_text(comment, comment_text)
-            serializer = CreditTransferCommentSerializer(updated_comment)
+            serializer = CreditTransferCommentSerializer(updated_comment, context={'request': request})
             return Response(serializer.data)
         return Response(status=status.HTTP_403_FORBIDDEN)
 
