@@ -138,7 +138,7 @@ class SupplementalReportSerializer(ModelSerializer, UserMixin):
 
         refined_history = exclude_from_history(history, request.user)
 
-        serializer = SupplementalReportHistorySerializer(refined_history, many=True)
+        serializer = SupplementalReportHistorySerializer(refined_history, many=True, context={'request': request})
         return serializer.data
 
     def get_update_user(self, obj):
