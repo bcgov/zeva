@@ -84,7 +84,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'api.keycloak_authentication.UserAuthentication',),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',),
+        'api.permissions.allow_none.AllowNone',),
     # 'EXCEPTION_HANDLER': 'core.exceptions.exception_handler',
     'DEFAULT_RENDERER_CLASSES': (
         'djangorestframework_camel_case.render.CamelCaseJSONRenderer',

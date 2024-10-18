@@ -1,37 +1,31 @@
 import logging
-from django.db.models import Q
 from django.http import HttpResponseBadRequest
-from rest_framework import filters, mixins, status, permissions, viewsets
+from rest_framework import mixins, permissions, viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from auditable.views import AuditableMixin
 
 from api.models.notification import Notification
 from api.models.notification_subscription import NotificationSubscription
 from api.serializers.notification import NotificationSerializer
-from api.serializers.notification_subscription import NotificationSubscriptionSerializer
 
 LOGGER = logging.getLogger(__name__)
 
 
 class NotificationViewSet(
-        AuditableMixin,
-        mixins.CreateModelMixin,
+        viewsets.GenericViewSet,
         mixins.ListModelMixin,
-        mixins.UpdateModelMixin,
-        viewsets.GenericViewSet
 ):
     """
     This viewset automatically provides `list`
     """
-    permission_classes = (permissions.AllowAny,)
-    http_method_names = ['get', 'post', 'put']
-    queryset = Notification.objects.all().order_by('name')
+    permission_classes = [permissions.AllowAny]
+    http_method_names = ['get', 'post']
+    
+    def get_queryset(self):
+        return Notification.objects.all().order_by('name')
 
     serializer_classes = {
         'default': NotificationSerializer,
-        'create': NotificationSubscriptionSerializer,
-        'update': NotificationSubscriptionSerializer
     }
 
     def get_serializer_class(self):
