@@ -3,10 +3,8 @@ from ..models.user_profile import UserProfile
 from ..serializers.user import MemberSerializer
 
 class UserMixin:
-    def get_user_data(self, obj, user_attr, context=None):
-        if context is None:
-            # Called as instance method
-            context = self.context
+    def get_user_data(self, obj, user_attr):
+        context = self.context
         request = context.get('request')
         if request is None:
             return getattr(obj, user_attr, None)
