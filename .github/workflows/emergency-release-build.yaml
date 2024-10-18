@@ -85,7 +85,7 @@ jobs:
         uses: trstringer/manual-approval@v1.6.0
         with:
           secret: ${{ github.TOKEN }}
-          approvers: AlexZorkin,emi-hi,tim738745,kuanfandevops,jig-patel,prv-proton
+          approvers: emi-hi,tim738745,kuanfandevops,ArawuSamuel1,JulianForeman,katerinkus,rogerlcleung,katerinkus
           minimum-approvals: 1
           issue-title: "ZEVA ${{ env.VERSION }} Test Deployment"
       
@@ -145,7 +145,7 @@ jobs:
         uses: trstringer/manual-approval@v1.6.0
         with:
           secret: ${{ github.TOKEN }}
-          approvers: AlexZorkin,kuanfandevops,tim738745,emi-hi
+          approvers: emi-hi,tim738745,kuanfandevops,ArawuSamuel1,JulianForeman,katerinkus,rogerlcleung,katerinkus
           minimum-approvals: 1
           issue-title: "ZEVA ${{ env.VERSION }} Prod Deployment"
       
