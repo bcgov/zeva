@@ -108,7 +108,7 @@ const ModelListTable = (props) => {
             return eligibleSales.vinCount
           },
           className: 'text-right no-footer',
-          Header: 'Eligible Sales',
+          Header: isLegacySubmission(submission) ? 'Eligible Sales' : 'Eligible ZEVs Supplied',
           id: 'eligible-sales',
           show:
             !user.isGovernment && submission.validationStatus === 'VALIDATED',
