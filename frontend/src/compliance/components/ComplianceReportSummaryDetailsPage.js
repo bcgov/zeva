@@ -194,18 +194,19 @@ const ComplianceReportSummaryDetailsPage = (props) => {
                 </div>
 
                 <div className="mt-4 compliance-report-summary-grey">
-                  <h3>Consumer ZEV Sales</h3>
+                  <h3>{modelYear < 2024 ? 'Consumer ZEV Sales' : 'ZEVs Supplied and Registered'}</h3>
                   <SummaryConsumerSalesTable
                     consumerSalesDetails={consumerSalesDetails}
+                    modelYear={modelYear}
                   />
                   {savedInformation(
                     consumerSalesDetails.updateTimestampConsumerSales,
                     confirmationStatuses.consumerSales,
-                    'Consumer Sales'
+                    modelYear < 2024 ? 'Consumer Sales' : 'ZEVs Supplied'
                   )}
                   {signatureInformation(
                     confirmationStatuses.consumerSales,
-                    'Consumer Sales'
+                    modelYear < 2024 ? 'Consumer Sales' : 'ZEVs Supplied'
                   )}
                 </div>
               </div>

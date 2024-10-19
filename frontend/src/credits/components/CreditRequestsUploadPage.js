@@ -55,10 +55,10 @@ const CreditRequestsUploadPage = (props) => {
     <div id="sales-edit" className="page">
       <div className="row mt-3 mb-2">
         <div className="col-12">
-          <h2 className="mb-2">Application for Credits for Consumer Sales</h2>
+          <h2 className="mb-2">Application for Credits for ZEVs Supplied</h2>
           <h3 className="sales-upload-grey">
             Download an Excel template containing all eligible ZEV models to
-            submit consumer sales
+            submit ZEVs supplied
           </h3>
         </div>
       </div>
@@ -68,7 +68,7 @@ const CreditRequestsUploadPage = (props) => {
           <div className="compact content p-3">
             <Button
               buttonType="download"
-              optionalText="Download Excel Sales Template"
+              optionalText="Download Excel Template"
               action={(e) => {
                 downloadTemplate(e)
               }}
@@ -79,9 +79,9 @@ const CreditRequestsUploadPage = (props) => {
 
       <div className="row mt-5 mb-2">
         <div className="col-12">
-          <h2 className="mb-2">Upload ZEV Sales Information (Maximum 2,000 VIN per application)</h2>
+          <h2 className="mb-2">Upload Information on ZEVs Supplied (Maximum 2,000 VIN per application)</h2>
           <p>
-            Credits can be issued for active ZEV sales made prior to {icbcDate}.
+            Credits can be issued for ZEVs supplied prior to {icbcDate}.
           </p>
           {submission && submission.id && (
             <>
@@ -120,62 +120,6 @@ const CreditRequestsUploadPage = (props) => {
           setErrorMessage={setErrorMessage}
           setUploadFiles={setUploadFiles}
         />
-      )}
-      <div className="row mt-5 mb-2">
-        <div className="col-12">
-          <h2 className="mb-2">Upload Sales Evidence</h2>
-          <p>
-            If you are reapplying for credits for VIN that were previously
-            returned as errors you can upload additional sales evidence to
-            support your credit application.
-          </p>
-          <div>
-            <input
-              type="checkbox"
-              name="evidence-upload-checkbox"
-              id="evidence-upload-checkbox"
-              onChange={(event) => {
-                handleCheckboxChange(event)
-              }}
-              defaultChecked={evidenceCheckbox}
-              className="m-3"
-            />
-            <span className="text-blue">
-              Upload sales evidence document (in addition to the Excel ZEV Sales
-              Information above)
-            </span>
-          </div>
-        </div>
-      </div>
-      {evidenceCheckbox && (
-        <>
-          <div className="row">
-            <div className="col-12">
-              <div className="compact content p-3">
-                <Button
-                  buttonType="download"
-                  optionalText="Download Sales Evidence Template"
-                  action={() => {
-                    downloadSalesEvidenceTemplate()
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-
-          <FileDropArea
-            type="pdf"
-            errorMessage={evidenceErrorMessage}
-            files={uploadEvidenceFiles}
-            setErrorMessage={setEvidenceErrorMessage}
-            setUploadFiles={setEvidenceUploadFiles}
-            showProgressBars={showProgressBars}
-            progressBars={progressBars}
-            submission={submission}
-            evidenceDeleteList={evidenceDeleteList}
-            setEvidenceDeleteList={setEvidenceDeleteList}
-          />
-        </>
       )}
       <div className="action-bar">
         <span className="left-content">

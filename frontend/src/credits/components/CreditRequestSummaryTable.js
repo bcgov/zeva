@@ -7,12 +7,13 @@ import getCreditRequestSummary from '../../app/utilities/getCreditRequestSummary
 import ReactTable from '../../app/components/ReactTable'
 import formatNumeric from '../../app/utilities/formatNumeric'
 import CustomPropTypes from '../../app/utilities/props'
+import isLegacySubmission from '../../app/utilities/isLegacySubmission'
 
 const CreditRequestSummaryTable = (props) => {
   const columns = [
     {
       headerClassName: 'header-group font-weight-bold',
-      Header: 'Consumer ZEV Sales',
+      Header: isLegacySubmission(props.submission) ? 'Consumer ZEV Sales' : 'ZEVs Supplied',
       columns: [
         {
           headerClassName: 'd-none',

@@ -235,6 +235,7 @@ const AssessmentDetailsPage = (props) => {
             reportStatuses={statuses}
             id={id}
             user={user}
+            modelYear={reportYear}
           />
         </div>
       </div>
@@ -349,6 +350,7 @@ const AssessmentDetailsPage = (props) => {
               makes={makes}
               supplierClass={supplierClass}
               disabledInputs={disabledInputs}
+              modelYear={reportYear}
             />
 
             <div className="mt-4">

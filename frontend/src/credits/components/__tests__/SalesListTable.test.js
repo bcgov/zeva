@@ -35,7 +35,10 @@ const baseProps = {
     displayName: 'Gavin McPerson',
     isGovernment: true
   },
-  validatedList: [0, 1, 2]
+  validatedList: [0, 1, 2],
+  submission: {
+    submissionDate: '2020-01-01'
+  }
 }
 const basePropsNoError = {
   items: [
@@ -106,6 +109,7 @@ it('renders without crashing', () => {
       validatedList={baseProps.validatedList}
       invalidatedList={[]}
       pages={1}
+      submission={baseProps.submission}
     />
   )
 })
@@ -123,6 +127,7 @@ it('gives an error code of 21 if vin has already been validated', () => {
       validatedList={baseProps.validatedList}
       invalidatedList={[]}
       pages={1}
+      submission={baseProps.submission}
     />
   )
   expect(getByText('21')).toBeInTheDocument()
@@ -141,6 +146,7 @@ it('gives an error code of 11 if there is no matching icbc vin', () => {
       user={baseProps.user}
       validatedList={basePropsNoMatch.validatedList}
       pages={1}
+      submission={baseProps.submission}
     />
   )
   expect(getByText('11')).toBeInTheDocument()
@@ -159,6 +165,7 @@ it('gives no error code if everything matches with icbcdata', () => {
       user={baseProps.user}
       validatedList={baseProps.validatedList}
       pages={1}
+      submission={baseProps.submission}
     />
   )
   expect(queryByText('21')).not.toBeInTheDocument()

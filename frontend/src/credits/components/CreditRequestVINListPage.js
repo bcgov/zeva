@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import Button from '../../app/components/Button'
 import CustomPropTypes from '../../app/utilities/props'
 import VINListTable from './VINListTable'
+import isLegacySubmission from '../../app/utilities/isLegacySubmission'
 
 const CreditRequestVINListPage = (props) => {
   const {
@@ -94,7 +95,7 @@ const CreditRequestVINListPage = (props) => {
             {submission.organization && `${submission.organization.name} `}
           </h1>
           <h2 className="my-0 py-0">
-            ZEV Sales Submission {submission.submissionDate}
+            {isLegacySubmission(submission) ? 'ZEV Sales Submission' : 'VIN Submission'} {submission.submissionDate}
           </h2>
         </div>
       </div>
@@ -165,6 +166,7 @@ const CreditRequestVINListPage = (props) => {
             sorts={sorts}
             setSorts={setSorts}
             applyFilters={applyFilters}
+            submission={submission}
           />
         </div>
       </div>

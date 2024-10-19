@@ -9,6 +9,7 @@ import CustomPropTypes from '../../app/utilities/props'
 import AnalystRecommendationHeader from './AnalystRecommendationHeader'
 import getAnalystRecommendationColumns from './getAnalystRecommendationColumns'
 import CreditApplicationHeader from './CreditApplicationHeader'
+import isLegacySubmission from '../../app/utilities/isLegacySubmission'
 
 const ModelListTable = (props) => {
   const { submission, user, handleCheckboxClick, issueAsMY, setDisplayUploadPage } = props
@@ -49,7 +50,7 @@ const ModelListTable = (props) => {
 
             return sum
           },
-          Header: 'Sales Submitted',
+          Header: isLegacySubmission(submission) ? 'Sales Submitted' : 'Vehicles Submitted',
           headerClassName: 'gap-left',
           id: 'sales',
           width: 150
@@ -107,7 +108,7 @@ const ModelListTable = (props) => {
             return eligibleSales.vinCount
           },
           className: 'text-right no-footer',
-          Header: 'Eligible Sales',
+          Header: isLegacySubmission(submission) ? 'Eligible Sales' : 'Eligible ZEVs Supplied',
           id: 'eligible-sales',
           show:
             !user.isGovernment && submission.validationStatus === 'VALIDATED',
