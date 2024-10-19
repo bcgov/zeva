@@ -247,7 +247,7 @@ const SupplierInformationDetailsPage = (props) => {
             <div className="mt-4">
               <h4>{modelYear < 2024 && "Light Duty "}Vehicle Makes</h4>
               <div className="mt-1 mb-2">
-                Enter all the {modelYear < 2024 && "LDV "}makes {details.organization.name} supplied in
+                Enter all the {modelYear < 2024? "LDV ": "vehicle"} makes {details.organization.name} supplied in
                 British Columbia in the {modelYear >= 2024 && "model year "}{modelYear} compliance period ending
                 September 30, {modelYear + 1}{modelYear < 2024 ? "." : ", that had a gross vehicle weight rating of 4,536 kg or less."}
               </div>
