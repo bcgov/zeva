@@ -106,7 +106,6 @@ class CreditTransferViewset(
 
     @action(detail=True, methods=["PATCH"])
     def update_comment(self, request, pk):
-        request = self.context.get('request')
         comment_id = request.data.get("comment_id")
         comment_text = request.data.get("comment_text")
         username = request.user.username
