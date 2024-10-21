@@ -27,12 +27,19 @@ from api.models.supplemental_report_comment import \
     SupplementalReportComment
 from api.services.minio import minio_get_object
 from api.models.user_profile import UserProfile
-from api.serializers.user import MemberSerializer
 from api.models.supplemental_report_supplier_information import \
     SupplementalReportSupplierInformation
 from ..mixins.user_mixin import UserMixin
 
-class ModelYearReportZevSalesSerializer(ModelSerializer):
+class ModelYearReportZevSalesSerializer(ModelSerializer, UserMixin):
+    create_user = SerializerMethodField()
+    update_user = SerializerMethodField()
+    def get_create_user(self, obj):
+        return self.get_user_data(obj, 'create_user')
+
+    def get_update_user(self, obj):
+        return self.get_user_data(obj, 'update_user')
+
     class Meta:
         model = SupplementalReportSales
         fields = '__all__'
@@ -347,6 +354,7 @@ class ModelYearReportSupplementalSerializer(ModelSerializer, UserMixin):
         return serializer.data
 
     def get_zev_sales(self, obj):
+        request = self.context.get('request')
         sales_queryset = SupplementalReportSales.objects.filter(
             supplemental_report_id=obj.id
         )
@@ -356,7 +364,7 @@ class ModelYearReportSupplementalSerializer(ModelSerializer, UserMixin):
         #         supplemental_report_id=obj.supplemental_id
         #     )
 
-        sales_serializer = ModelYearReportZevSalesSerializer(sales_queryset, many=True)
+        sales_serializer = ModelYearReportZevSalesSerializer(sales_queryset, many=True, context={'request': request})
 
         return sales_serializer.data
 
