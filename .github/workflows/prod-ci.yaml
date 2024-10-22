@@ -68,6 +68,20 @@ jobs:
           ref: main
           ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
 
+      - name: Log in to Openshift
+        uses: redhat-actions/oc-login@v1.3
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          insecure_skip_tls_verify: true
+          namespace: ${{ env.PROD_NAMESPACE }}
+
+      - name: Tag ZEVA images to Test
+        run: |
+          helm -n ${{ env.PROD_NAMESPACE }} list
+          oc tag ${{ env.TEST_NAMESPACE }}/zeva-backend:${{ env.BUILD_SUFFIX }} ${{ env.PROD_NAMESPACE }}/zeva-backend:${{ env.BUILD_SUFFIX }}
+          oc tag ${{ env.TEST_NAMESPACE }}/zeva-frontend:${{ env.BUILD_SUFFIX }} ${{ env.PROD_NAMESPACE }}/zeva-frontend:${{ env.BUILD_SUFFIX }}
+
       - name: Update frontend and backend image tags
         uses: mikefarah/yq@v4.40.5
         with:
@@ -84,19 +98,3 @@ jobs:
           git commit -m "Update the image tag to ${{ env.BUILD_SUFFIX }} on Zeva Prod Environment"
           git push
 
-      # For prod deployment, replace the following with ArgoCD
-      # - name: Log in to Openshift
-      #   uses: redhat-actions/oc-login@v1.3
-      #   with:
-      #     openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
-      #     openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
-      #     insecure_skip_tls_verify: true
-      #     namespace: ${{ env.PROD_NAMESPACE }}
-
-      # - name: Tag ZEVA images to Test
-      #   run: |
-      #     helm -n ${{ env.PROD_NAMESPACE }} list
-      #     oc tag ${{ env.TEST_NAMESPACE }}/zeva-backend:${{ env.BUILD_SUFFIX }} ${{ env.PROD_NAMESPACE }}/zeva-backend:${{ env.BUILD_SUFFIX }}
-      #     oc tag ${{ env.TEST_NAMESPACE }}/zeva-frontend:${{ env.BUILD_SUFFIX }} ${{ env.PROD_NAMESPACE }}/zeva-frontend:${{ env.BUILD_SUFFIX }}
-      #     cd zeva
-      #     helm -n ${{ env.PROD_NAMESPACE }} -f ./values-prod.yaml upgrade --install zeva-prod .
