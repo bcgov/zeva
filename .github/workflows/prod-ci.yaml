@@ -61,13 +61,6 @@ jobs:
           minimum-approvals: 2
           issue-title: "ZEVA ${{ env.BUILD_SUFFIX }} Prod Deployment"
 
-      - name: Checkout Manifest repository
-        uses: actions/checkout@v4.1.1
-        with:
-          repository: bcgov-c/tenant-gitops-e52f12
-          ref: main
-          ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
-
       - name: Log in to Openshift
         uses: redhat-actions/oc-login@v1.3
         with:
@@ -81,6 +74,13 @@ jobs:
           helm -n ${{ env.PROD_NAMESPACE }} list
           oc tag ${{ env.TEST_NAMESPACE }}/zeva-backend:${{ env.BUILD_SUFFIX }} ${{ env.PROD_NAMESPACE }}/zeva-backend:${{ env.BUILD_SUFFIX }}
           oc tag ${{ env.TEST_NAMESPACE }}/zeva-frontend:${{ env.BUILD_SUFFIX }} ${{ env.PROD_NAMESPACE }}/zeva-frontend:${{ env.BUILD_SUFFIX }}
+
+      - name: Checkout Manifest repository
+        uses: actions/checkout@v4.1.1
+        with:
+          repository: bcgov-c/tenant-gitops-e52f12
+          ref: main
+          ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
 
       - name: Update frontend and backend image tags
         uses: mikefarah/yq@v4.40.5
