@@ -25,6 +25,7 @@ import EditableCommentList from '../../app/components/EditableCommentList'
 import ModelYearReportWarning from './ModelYearReportWarning'
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
 import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations'
+import isLegacySubmission from '../../app/utilities/isLegacySubmission'
 
 const CreditRequestDetailsPage = (props) => {
   const {
@@ -344,7 +345,9 @@ const CreditRequestDetailsPage = (props) => {
       {modal}
       <div className="row mt-3 mb-2">
         <div className="col-sm-12">
-          <h2>Application for Credits for Consumer Sales</h2>
+          <h2>
+            {isLegacySubmission(submission) ? "Application for Credits for Consumer Sales" : "Application for Credits for ZEVs Supplied"}
+          </h2>
         </div>
       </div>
       {analystAction && submission.icbcCurrentTo && (
@@ -539,7 +542,7 @@ const CreditRequestDetailsPage = (props) => {
               {formatNumeric(totalEligibleCredits, 2)} ZEV credits to{' '}
               {submission.organization.name} based on{' '}
               {formatNumeric(submission?.eligible?.map(e => e.vinCount).reduce((a, b) => a + b, 0))}{' '}
-              eligible ZEV sales.
+              eligible {isLegacySubmission(submission) ? 'ZEV sales' : 'ZEVs supplied and registered'}.
             </div>
           </div>
       )}

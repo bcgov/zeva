@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import isLegacySubmission from '../../app/utilities/isLegacySubmission'
 
 const ModelYearReportWarning = (props) => {
   const { submission, user, handleCheckboxClick, conflictingReport, issueAsMY } = props
@@ -47,7 +48,7 @@ const ModelYearReportWarning = (props) => {
                   </>
                 : <>
                     <div className='myr-alert-wrapper'>
-                      <p className='bold pr-1 text-blue'>{conflictingReport.organizationName}&apos;s credit application has been issued as part of a Model Year Report any invalid sales credits have not been issued and may be resubmitted.</p>
+                      <p className='bold pr-1 text-blue'>{conflictingReport.organizationName}&apos;s credit application has been issued as part of a Model Year Report any invalid {isLegacySubmission(submission) ? 'sales ' : ''}credits have not been issued and may be resubmitted.</p>
                     </div>
                   </>
               }

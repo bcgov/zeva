@@ -1,17 +1,13 @@
-## For each release, the value of workflow name, branches and VERSION need to be adjusted accordingly
-
-name: Zeva new-pipeline-1.62.0 Dev CI
+name: Zeva new-pipeline Dev CI
 
 on:
-  push:
-    branches: [release-1.62.0]
-    paths:
-      - frontend/**
-      - backend/**
-  workflow_dispatch:
+  pull_request:
+    # Trigger only on PRs targeting the master branch
+    branches:
+      - master
+    types: [opened, synchronize, reopened]
 
 env:
-  VERSION: 1.62.0
   GIT_URL: https://github.com/bcgov/zeva.git
   TOOLS_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
   DEV_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
@@ -21,9 +17,26 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  verify-pr:
+    name: Verify pull request title started with Tracking
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR Title
+        id: check_pr_title
+        run: |
+          pr_title="${{ github.event.pull_request.title }}"
+          echo "Pull Request Title: $pr_title"
+
+          # Check if the title starts with "Tracking"
+          if [[ "$pr_title" != Tracking* ]]; then
+            echo "PR title does not start with 'Tracking'. Exiting..."
+            exit 1
+          fi
+
   set-pre-release:
     name: Calculate pre-release number
     runs-on: ubuntu-latest
+    needs: verify-pr
 
     outputs:
       output1: ${{ steps.set-pre-release.outputs.PRE_RELEASE }}
@@ -33,14 +46,47 @@ jobs:
         run: |
           echo "PRE_RELEASE=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
 
+  get-version:
+    name: Get the version
+    runs-on: ubuntu-latest
+    needs: verify-pr
+    
+    outputs:
+      output1: ${{ steps.get-version.outputs.VERSION }}
+
+    steps:
+      - id: get-version
+        run: |
+          echo "VERSION=$(echo "${{ github.event.pull_request.head.ref }}" | grep -oP '\d+\.\d+\.\d+')" >> $GITHUB_OUTPUT
+
+  verify-build-suffix:
+    name: Verify-build-suffix 
+    runs-on: ubuntu-latest
+    needs: [set-pre-release,get-version]
+
+    env:
+      BUILD_SUFFIX: ${{ needs.get-version.outputs.output1 }}-${{ needs.set-pre-release.outputs.output1 }}
+
+    steps:
+      - id: verify-build-suffix
+        run: |
+          echo "Validating ${{ env.BUILD_SUFFIX }}"
+          if [[ "${{ env.BUILD_SUFFIX }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+-[0-9]{14}$ ]]; then
+            echo "Build suffix ${{ env.BUILD_SUFFIX }} format is valid."
+          else
+            echo "Error: Build suffix ${{ env.BUILD_SUFFIX }} format is invalid!"
+            exit 1
+          fi
+
   build-backend:
     name: Build Zeva Backend
     runs-on: ubuntu-latest
-    needs: set-pre-release
+    needs: [set-pre-release,get-version,verify-build-suffix]
     timeout-minutes: 60
 
     env:
       PRE_RELEASE: ${{ needs.set-pre-release.outputs.output1 }}
+      VERSION: ${{ needs.get-version.outputs.output1 }}
 
     steps:
       - name: Check out repository
@@ -56,6 +102,8 @@ jobs:
 
       - name: Build Zeva Backend
         run: |
+          echo ${{ env.PRE_RELEASE }}
+          echo ${{ env.VERSION }}
           cd openshift/templates/backend
           oc process -f ./backend-bc-docker.yaml NAME=zeva SUFFIX=-${{ env.VERSION }}-${{ env.PRE_RELEASE }} VERSION=${{ env.VERSION }}-${{ env.PRE_RELEASE }} GIT_URL=${{ env.GIT_URL }} GIT_REF=release-${{ env.VERSION }} | oc apply --wait=true -f - -n ${{ env.TOOLS_NAMESPACE }}
           sleep 2s
@@ -71,11 +119,12 @@ jobs:
   build-frontend:
     name: Build Zeva Frontend
     runs-on: ubuntu-latest
-    needs: set-pre-release
+    needs: [set-pre-release,get-version,verify-build-suffix]
     timeout-minutes: 60
 
     env:
       PRE_RELEASE: ${{ needs.set-pre-release.outputs.output1 }}
+      VERSION: ${{ needs.get-version.outputs.output1 }}
 
     steps:
       - name: Check out repository
@@ -107,10 +156,11 @@ jobs:
     name: Deploy Zeva on Dev
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    needs: [set-pre-release, build-backend, build-frontend]
+    needs: [set-pre-release,get-version,build-backend, build-frontend]
 
     env:
       PRE_RELEASE: ${{ needs.set-pre-release.outputs.output1 }}
+      VERSION: ${{ needs.get-version.outputs.output1 }}
 
     steps:
       - name: Checkout Manifest repository
@@ -128,6 +178,7 @@ jobs:
             yq -i '.backend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-dev.yaml
 
       - name: GitHub Commit & Push
+        shell: bash {0}
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"

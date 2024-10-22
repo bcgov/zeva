@@ -310,9 +310,9 @@ const CreditActivity = (props) => {
     <>
       <h3>Compliance Obligation</h3>
       <div className="text-blue my-3">
-        A change to the LDV sales total could result in a change of compliance
+        A change to the {reportYear < 2024 ? "LDV sales" : "vehicles supplied"} total could result in a change of compliance
         status for this and any subsequent model year reports. Provide an
-        explanation for any change to the LDV Sales total in the comment box at
+        explanation for any change to the {reportYear < 2024 ? "LDV sales" : "vehicles supplied"} total in the comment box at
         the bottom of this form.
       </div>
       <div className="compliance-reduction-table mb-3">
@@ -322,7 +322,7 @@ const CreditActivity = (props) => {
               <tbody>
                 <tr>
                   <td className="text-blue" width="30%">
-                    {reportYear} Model Year LDV Sales:
+                    {reportYear} {reportYear < 2024 ? "Model Year LDV Sales" : "Vehicles Supplied"}:
                   </td>
                   <td className="text-right" width="10%">
                     {formatNumeric(ldvSales, 0)}

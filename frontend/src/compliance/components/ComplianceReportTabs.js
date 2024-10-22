@@ -5,7 +5,7 @@ import { Link, useParams } from 'react-router-dom'
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
 
 const ComplianceReportTabs = (props) => {
-  const { active, reportStatuses, user } = props
+  const { active, reportStatuses, user, modelYear } = props
   const { id } = useParams()
   const disableOtherTabs =
     reportStatuses.supplierInformation &&
@@ -51,10 +51,10 @@ const ComplianceReportTabs = (props) => {
           `}
         role="presentation"
       >
-        {disableOtherTabs && <span className="disabled">Consumer Sales</span>}
+        {disableOtherTabs && <span className="disabled">{modelYear < 2024 ? "Consumer Sales" : "ZEVs Supplied and Registered"}</span>}
         {!disableOtherTabs && (
           <Link to={ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', id)}>
-            Consumer ZEV Sales
+            {modelYear < 2024 ? "Consumer ZEV Sales" : "ZEVs Supplied and Registered"}
           </Link>
         )}
       </li>
@@ -138,7 +138,8 @@ ComplianceReportTabs.defaultProps = {
 ComplianceReportTabs.propTypes = {
   active: PropTypes.string.isRequired,
   reportStatuses: PropTypes.shape(),
-  user: PropTypes.shape().isRequired
+  user: PropTypes.shape().isRequired,
+  modelYear: PropTypes.number.isRequired
 }
 
 export default ComplianceReportTabs

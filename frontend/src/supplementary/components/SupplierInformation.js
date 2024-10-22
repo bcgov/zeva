@@ -82,6 +82,11 @@ const SupplierInformation = (props) => {
     return ''
   }
 
+  let modelYear = 0
+  if (assessmentData && assessmentData.modelYear) {
+    modelYear = Number(assessmentData.modelYear)
+  }
+
   return (
     <>
       {!user.isGovernment && (
@@ -229,7 +234,7 @@ const SupplierInformation = (props) => {
       <div className="my-4">
         <div className="d-inline-block col-sm-4">
           <label className="text-blue font-weight-bold" htmlFor="ldvMakes">
-            Light Duty Vehicle Makes
+            {modelYear < 2024 ? "Light Duty Vehicle Makes" : "Vehicle Makes"}
           </label>
           <div className="w-75">
             {assessmentData &&

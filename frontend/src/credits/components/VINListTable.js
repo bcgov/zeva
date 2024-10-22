@@ -9,6 +9,7 @@ import CREDIT_ERROR_CODES from '../../app/constants/errorCodes'
 import CustomPropTypes from '../../app/utilities/props'
 import calculateNumberOfPages from '../../app/utilities/calculateNumberOfPages'
 import CustomFilterComponent from '../../app/components/CustomFilterComponent'
+import isLegacySubmission from '../../app/utilities/isLegacySubmission'
 
 const VINListTable = (props) => {
   const {
@@ -31,7 +32,8 @@ const VINListTable = (props) => {
     setFilters,
     sorts,
     setSorts,
-    applyFilters
+    applyFilters,
+    submission
   } = props
 
   const reset = query && query.reset
@@ -105,7 +107,7 @@ const VINListTable = (props) => {
               : row.salesDate,
           className: 'text-center sales-date',
           filterable: false,
-          Header: 'Retail Sale',
+          Header: isLegacySubmission(submission) ? 'Retail Sale' : 'Supplied for Consumer Sale',
           id: 'xls_sale_date',
           width: 100
         }
@@ -411,7 +413,8 @@ VINListTable.propTypes = {
   setFilters: PropTypes.func.isRequired,
   sorts: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   setSorts: PropTypes.func.isRequired,
-  applyFilters: PropTypes.func.isRequired
+  applyFilters: PropTypes.func.isRequired,
+  submission: PropTypes.shape().isRequired
 }
 
 export default VINListTable

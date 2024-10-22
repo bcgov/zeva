@@ -20,7 +20,7 @@ const CreditTransfersListPage = (props) => {
     <div className="page">
       <div className="row mt-3 mb-2">
         <div className="col-md-8 d-flex align-items-end">
-          <h2>Light Duty Vehicle Credit Transfers</h2>
+          <h2>ZEV Credit Transfers</h2>
         </div>
 
         <div className="col-md-4 text-right">
