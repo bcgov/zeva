@@ -9,7 +9,7 @@ from api.services.minio import minio_put_object
 
 
 class UploadViewSet(ViewSet):
-    permission_classes = (UploadPermissions,)
+    permission_classes = [UploadPermissions]
     http_method_names = ['get']
 
     @action(detail=False, methods=['get'])

@@ -6,21 +6,28 @@ from api.models.user_profile import UserProfile
 from api.permissions.user import UserPermissions
 from api.serializers.user import UserSerializer, UserSaveSerializer
 from api.services.bceid_email_spreadsheet import create_bceid_emails_sheet
-from auditable.views import AuditableMixin
+from auditable.views import AuditableCreateMixin, AuditableUpdateMixin
 
 
 class UserViewSet(
-        AuditableMixin, viewsets.GenericViewSet,
-        mixins.CreateModelMixin, mixins.ListModelMixin,
-        mixins.UpdateModelMixin, mixins.RetrieveModelMixin
+        viewsets.GenericViewSet,
+        AuditableCreateMixin,
+        AuditableUpdateMixin, 
+        mixins.ListModelMixin,
+        mixins.RetrieveModelMixin
 ):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
     and  `update`  actions.
     """
-    permission_classes = (UserPermissions,)
-    http_method_names = ['get', 'post', 'put', 'patch']
-    queryset = UserProfile.objects.all()
+    permission_classes = [UserPermissions]
+    http_method_names = ['get', 'post', 'put']
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_government:
+            return UserProfile.objects.all()
+        return UserProfile.objects.filter(organization=user.organization)
 
     serializer_classes = {
         'default': UserSerializer,

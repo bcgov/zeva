@@ -1,9 +1,8 @@
 import uuid
 
-from django.utils.decorators import method_decorator
 from django.db.models import Q
 
-from rest_framework import mixins, viewsets, permissions
+from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
@@ -19,27 +18,33 @@ from api.serializers.credit_agreement import CreditAgreementSerializer, \
     CreditAgreementListSerializer, CreditAgreementSaveSerializer
 from api.services.minio import minio_put_object
 from api.services.credit_agreement import adjust_credits
-from auditable.views import AuditableMixin
+from auditable.views import AuditableCreateMixin, AuditableUpdateMixin
 from api.models.credit_agreement_statuses import CreditAgreementStatuses
 from api.services.send_email import notifications_credit_agreement
 from api.models.model_year_report import ModelYearReport
-from api.serializers.model_year_report import ModelYearReportSerializer, ModelYearReportsSerializer
+from api.serializers.model_year_report import ModelYearReportsSerializer
 from api.serializers.credit_agreement_comment import CreditAgreementCommentSerializer
 from api.services.credit_agreement_comment import get_comment, delete_comment
 from api.utilities.comment import update_comment_text
+from api.permissions.same_organization import SameOrganizationPermissions
 
 
 class CreditAgreementViewSet(
-    AuditableMixin, viewsets.GenericViewSet, mixins.CreateModelMixin,
-    mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin
+    viewsets.GenericViewSet,
+    AuditableCreateMixin,
+    AuditableUpdateMixin,
+    mixins.RetrieveModelMixin,
 ):
-    permission_classes = (permissions.AllowAny,)
-    http_method_names = ['get', 'post', 'put', 'patch']
-    queryset = CreditAgreement.objects.all()
+    permission_classes = [SameOrganizationPermissions]
+    same_org_permissions_context = {
+        "default_manager": CreditAgreement.objects,
+        "default_path_to_org": ("organization",),
+        "actions_not_to_check": ["retrieve", "partial_update", "minio_url", "update_comment", "delete_comment"]
+    }
+    http_method_names = ['get', 'post', 'patch']
     serializer_classes = {
         'default': CreditAgreementSerializer,
         'create': CreditAgreementSaveSerializer,
-        'update': CreditAgreementSaveSerializer,
         'partial_update': CreditAgreementSaveSerializer,
         'list': CreditAgreementListSerializer,
     }

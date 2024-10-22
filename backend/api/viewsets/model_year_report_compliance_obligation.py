@@ -1,5 +1,5 @@
 from datetime import date
-from rest_framework import mixins, viewsets
+from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.http import HttpResponse
@@ -7,7 +7,6 @@ from django.db.models import Sum
 from django.utils.decorators import method_decorator
 from django.shortcuts import get_object_or_404
 
-from auditable.views import AuditableMixin
 from api.decorators.permission import permission_required
 from api.models.model_year import ModelYear
 from api.models.model_year_report import ModelYearReport
@@ -40,23 +39,16 @@ from api.services.summary import parse_summary_serializer, \
 from api.models.organization_deficits import OrganizationDeficits
 from api.services.supplemental_report import get_latest_assessed_supplemental
 from api.services.model_year_report_ldv_sales import get_most_recent_ldv_sales
+from api.permissions.same_organization import SameOrganizationPermissions
 
 
-class ModelYearReportComplianceObligationViewset(
-        AuditableMixin, viewsets.GenericViewSet,
-        mixins.ListModelMixin, mixins.RetrieveModelMixin,
-        mixins.CreateModelMixin, mixins.UpdateModelMixin
-):
-    """
-    This viewset automatically provides `list`, `create`, `retrieve`,
-    and  `update`  actions.
-    """
-    permission_classes = (ModelYearReportPermissions,)
-    http_method_names = ['get', 'post', 'put', 'patch']
-
-    serializer_classes = {
-
+class ModelYearReportComplianceObligationViewset(viewsets.GenericViewSet):
+    permission_classes = [SameOrganizationPermissions & ModelYearReportPermissions]
+    same_org_permissions_context = {
+        "default_manager": ModelYearReport.objects,
+        "default_path_to_org": ("organization",),
     }
+    http_method_names = ['get', 'post', 'patch']
 
     def get_queryset(self):
         request = self.request
@@ -64,11 +56,6 @@ class ModelYearReportComplianceObligationViewset(
             organization_id=request.user.organization.id
         )
         return queryset
-
-    def get_serializer_class(self):
-        if self.action in list(self.serializer_classes.keys()):
-            return self.serializer_classes[self.action]
-        return self.serializer_classes['default']
 
     def create(self, request, *args, **kwargs):
         id = request.data.get('report_id')
@@ -129,9 +116,9 @@ class ModelYearReportComplianceObligationViewset(
 
         return Response(id)
 
-    @action(detail=False, methods=['patch'])
-    def update_obligation(self, request):
-        id = request.data.get('report_id')
+    @action(detail=True, methods=['patch'])
+    def update_obligation(self, request, pk=None):
+        id = pk
         credit_activity = request.data.get('credit_activity')
         records = ModelYearReportComplianceObligation.objects.filter(
             model_year_report_id=id,
@@ -160,17 +147,15 @@ class ModelYearReportComplianceObligationViewset(
             status=201, content="Record Updated"
         )
 
-    @action(detail=False, url_path=r'(?P<id>\d+)')
+    @action(detail=True, methods=['get'])
     @method_decorator(permission_required('VIEW_SALES'))
-    def details(self, request, *args, **kwargs):
-        summary_param = request.GET.get('summary', None)
-        summary = True if summary_param == "true" else None
+    def details(self, request, pk=None):
 
         most_recent_ldv_sales_param = request.GET.get("most_recent_ldv_sales", None)
         most_recent_ldv_sales = True if most_recent_ldv_sales_param == "true" else False
 
         organization = request.user.organization
-        id = kwargs.get('id')
+        id = pk
         report = get_object_or_404(ModelYearReport, pk=id)
 
         confirmation = ModelYearReportConfirmation.objects.filter(
@@ -188,7 +173,7 @@ class ModelYearReportComplianceObligationViewset(
         if offset_snapshot:
             offset_serializer = ModelYearReportComplianceObligationOffsetSerializer(
                 offset_snapshot,
-                context={'request': request, 'kwargs': kwargs},
+                context={'request': request},
                 many=True
             )
             compliance_offset = offset_serializer.data
@@ -525,8 +510,7 @@ class ModelYearReportComplianceObligationViewset(
 
             serializer = ModelYearReportComplianceObligationSnapshotSerializer(
                 report.get_credit_reductions(), context={
-                    'request': request,
-                    'kwargs': kwargs
+                    'request': request
                 }, many=True
             )
 
@@ -537,7 +521,7 @@ class ModelYearReportComplianceObligationViewset(
             })
         else:
             serializer = ModelYearReportComplianceObligationSnapshotSerializer(
-                snapshot, context={'request': request, 'kwargs': kwargs}, many=True
+                snapshot, context={'request': request}, many=True
             )
         return Response({
             'compliance_obligation': serializer.data,
