@@ -1,15 +1,12 @@
-from django.shortcuts import render
-
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.settings import api_settings
 
-from api.models.user_profile import UserProfile
 
-
-class AuditableMixin(object,):
+class AuditableCreateMixin:
     def serialize_object(self, request, data):
         user = request.user
-        data.update({'create_user': user.username, 'update_user': user.username})
+        data.update({"create_user": user.username, "update_user": user.username})
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
@@ -28,23 +25,26 @@ class AuditableMixin(object,):
         return Response(response, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
-        instance = serializer.save()
+        serializer.save()
 
+    def get_success_headers(self, data):
+        try:
+            return {"Location": str(data[api_settings.URL_FIELD_NAME])}
+        except (TypeError, KeyError):
+            return {}
+
+
+class AuditableUpdateMixin:
     def update(self, request, *args, **kwargs):
-        if request.method == 'PATCH':
-            partial = kwargs.pop('partial', True)
-        else:
-            partial = kwargs.pop('partial', False)
-
+        partial = kwargs.pop("partial", False)
         instance = self.get_object()
         user = request.user
-        request.data.update({'update_user': user.id})
-        serializer = self.get_serializer(instance, data=request.data,
-                                         partial=partial)
+        request.data.update({"update_user": user.id})
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
 
-        if getattr(instance, '_prefetched_objects_cache', None):
+        if getattr(instance, "_prefetched_objects_cache", None):
             # If 'prefetch_related' has been applied to a queryset, we need to
             # forcibly invalidate the prefetch cache on the instance.
             instance._prefetched_objects_cache = {}
@@ -53,3 +53,7 @@ class AuditableMixin(object,):
 
     def perform_update(self, serializer):
         serializer.save()
+
+    def partial_update(self, request, *args, **kwargs):
+        kwargs["partial"] = True
+        return self.update(request, *args, **kwargs)

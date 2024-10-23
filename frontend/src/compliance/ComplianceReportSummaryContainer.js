@@ -43,12 +43,11 @@ const ComplianceReportSummaryContainer = (props) => {
   }
   const handleSubmit = (status) => {
     const data = {
-      modelYearReportId: id,
       validation_status: status,
       confirmation: checkboxes
     }
 
-    axios.patch(ROUTES_COMPLIANCE.REPORT_SUBMISSION, data).then(() => {
+    axios.patch(ROUTES_COMPLIANCE.REPORT_SUBMISSION.replace(':id', id), data).then(() => {
       history.push(ROUTES_COMPLIANCE.REPORTS)
       history.replace(ROUTES_COMPLIANCE.REPORT_SUMMARY.replace(':id', id))
     })
