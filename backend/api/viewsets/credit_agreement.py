@@ -68,11 +68,6 @@ class CreditAgreementViewSet(
         kwargs['context'] = self.get_serializer_context()
         return self.get_serializer_class()(*args, **kwargs)
 
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context['request'] = self.request
-        return context
-
     def perform_update(self, serializer, *args, **kwargs):
         agreement = serializer.save()
         if agreement.status == CreditAgreementStatuses.ISSUED:
