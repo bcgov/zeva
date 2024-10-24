@@ -41,6 +41,7 @@ const SupplementaryContainer = (props) => {
   ])
   const location = useLocation()
   const [reassessmentReductions, setReassessmentReductions] = useState({})
+  const [previousReassessmentCreditActivities, setPreviousReassessmentCreditActivities] = useState([])
 
   const query = qs.parse(location.search, { ignoreQueryPrefix: true })
 
@@ -460,6 +461,17 @@ const SupplementaryContainer = (props) => {
           }
           creditActivity.push(creditActivityAddition)
         }
+        if (!supplementaryId) {
+          for (const each of previousReassessmentCreditActivities) {
+            const category = each.category
+            if (category === 'PreviousReassessmentEndingBalance') {
+              const creditActivityAddition = { ... each }
+              creditActivityAddition.modelYear = each.modelYear.name
+              delete creditActivityAddition.id
+              creditActivity.push(creditActivityAddition)
+            }
+          }
+        }
 
         setNewData({ ...newData, creditActivity })
         if (status) {
@@ -575,28 +587,38 @@ const SupplementaryContainer = (props) => {
 
   const refreshDetails = () => {
     setLoading(true)
+    const promises = [
+      axios.get(
+        `${ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id)}?supplemental_id=${
+          supplementaryId || ''
+        }`
+      ),
+      axios.get(
+        `${ROUTES_SUPPLEMENTARY.ASSESSED_SUPPLEMENTALS.replace(':id', id)}`
+      ),
+      axios.get(
+        `${ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(':id', id)}?most_recent_ldv_sales=true&use_from_gov_snapshot=True`
+      ),
+      axios.get(ROUTES_COMPLIANCE.RATIOS),
+      axios.get(
+        `${ROUTES_SUPPLEMENTARY.ASSESSMENT.replace(
+          ':id',
+          id
+        )}?supplemental_id=${supplementaryId || ''}`
+      )
+    ]
+    if (supplementaryId) {
+      promises.push(
+        axios.get(ROUTES_COMPLIANCE.REASSESSMENT_CREDIT_ACTIVITY.replace(':supp_id', supplementaryId))
+      )
+    } else {
+      promises.push(
+        axios.get(ROUTES_COMPLIANCE.PREVIOUS_REASSESSMENT_CREDIT_ACTIVITY.replace(':id', id))
+      )
+    }
 
     axios
-      .all([
-        axios.get(
-          `${ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id)}?supplemental_id=${
-            supplementaryId || ''
-          }`
-        ),
-        axios.get(
-          `${ROUTES_SUPPLEMENTARY.ASSESSED_SUPPLEMENTALS.replace(':id', id)}`
-        ),
-        axios.get(
-          `${ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(':id', id)}?most_recent_ldv_sales=true&use_from_gov_snapshot=True`
-        ),
-        axios.get(ROUTES_COMPLIANCE.RATIOS),
-        axios.get(
-          `${ROUTES_SUPPLEMENTARY.ASSESSMENT.replace(
-            ':id',
-            id
-          )}?supplemental_id=${supplementaryId || ''}`
-        )
-      ])
+      .all(promises)
       .then(
         axios.spread(
           (
@@ -604,7 +626,8 @@ const SupplementaryContainer = (props) => {
             assessedSupplementals,
             complianceResponse,
             ratioResponse,
-            assessmentResponse
+            assessmentResponse,
+            previousReassessmentCreditActivityResponse
           ) => {
             if (response.data) {
               let assessedSupplementalsData = assessedSupplementals.data
@@ -635,6 +658,7 @@ const SupplementaryContainer = (props) => {
                   }
                 }
               }
+              const previousReassessmentCreditActivityResponseData = previousReassessmentCreditActivityResponse.data
               const {
                 reconciledAssessmentData,
                 reconciledLdvSales,
@@ -642,7 +666,8 @@ const SupplementaryContainer = (props) => {
               } = reconcileSupplementaries(
                 response.data.assessmentData,
                 assessedSupplementalsData,
-                complianceResponse.data
+                complianceResponse.data,
+                previousReassessmentCreditActivityResponseData
               )
               if (reconciledAssessmentData) {
                 response.data.assessmentData = reconciledAssessmentData
@@ -803,6 +828,7 @@ const SupplementaryContainer = (props) => {
 
               if (reconciledComplianceObligation) {
                 setObligationDetails(reconciledComplianceObligation)
+                setPreviousReassessmentCreditActivities(previousReassessmentCreditActivityResponseData)
               }
 
               if (reconciledLdvSales) {

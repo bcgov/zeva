@@ -3,7 +3,8 @@
 const reconcileSupplementaries = (
   assessmentData,
   assessedSupplementaries,
-  complianceData
+  complianceData,
+  previousReassessmentCreditActivities
 ) => {
   const result = {
     reconciledAssessmentData: assessmentData,
@@ -146,6 +147,21 @@ const reconcileSupplementaries = (
           } else {
             complianceData.complianceObligation.push(suppCreditActivity)
           }
+        }
+      }
+    }
+  }
+
+  if (complianceData?.complianceObligation && previousReassessmentCreditActivities) {
+    const creditActivites = complianceData.complianceObligation
+    for (const previousReassessmentCreditActivity of previousReassessmentCreditActivities) {
+      const category = previousReassessmentCreditActivity.category
+      const modelYear = previousReassessmentCreditActivity.modelYear.name
+      if (category === 'PreviousReassessmentEndingBalance') {
+        const creditActivityInQuestion = creditActivites.find((activity) => activity.category === 'creditBalanceStart' && activity.modelYear.name === modelYear)
+        if (creditActivityInQuestion) {
+          creditActivityInQuestion.creditAValue = previousReassessmentCreditActivity.creditAValue
+          creditActivityInQuestion.creditBValue = previousReassessmentCreditActivity.creditBValue
         }
       }
     }

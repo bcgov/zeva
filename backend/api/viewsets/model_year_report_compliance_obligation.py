@@ -37,9 +37,15 @@ from api.serializers.credit_transaction import \
 from api.services.summary import parse_summary_serializer, \
     get_current_year_balance
 from api.models.organization_deficits import OrganizationDeficits
-from api.services.supplemental_report import get_latest_assessed_supplemental
+from api.services.supplemental_report import (
+    get_latest_assessed_supplemental, 
+    get_previous_reassessment_credit_activity,
+    get_reassessment_credit_activity
+)
 from api.services.model_year_report_ldv_sales import get_most_recent_ldv_sales
 from api.permissions.same_organization import SameOrganizationPermissions
+from api.models.supplemental_report import SupplementalReport
+from api.serializers.model_year_report_supplemental import ModelYearReportSupplementalCreditActivitySerializer
 
 
 class ModelYearReportComplianceObligationViewset(viewsets.GenericViewSet):
@@ -47,6 +53,12 @@ class ModelYearReportComplianceObligationViewset(viewsets.GenericViewSet):
     same_org_permissions_context = {
         "default_manager": ModelYearReport.objects,
         "default_path_to_org": ("organization",),
+        "custom_pk_actions": {
+            "reassessment_credit_activity": {
+                "manager": SupplementalReport.objects,
+                "path_to_org": ("model_year_report", "organization")
+            }
+        }
     }
     http_method_names = ['get', 'post', 'patch']
 
@@ -528,3 +540,21 @@ class ModelYearReportComplianceObligationViewset(viewsets.GenericViewSet):
             'compliance_offset': compliance_offset,
             'ldv_sales': get_most_recent_ldv_sales(report) if most_recent_ldv_sales else report.ldv_sales
         })
+
+    # pk should be MYR id
+    @action(detail=True, methods=['get'])
+    def previous_reassessment_credit_activity(self, request, pk=None):
+        credit_activity = get_previous_reassessment_credit_activity(pk, "ProvisionalBalanceAfterCreditReduction")
+        serializer = ModelYearReportSupplementalCreditActivitySerializer(
+            credit_activity, 
+            many=True, 
+            context={"category_transforms": {"ProvisionalBalanceAfterCreditReduction": "PreviousReassessmentEndingBalance"}}
+        )
+        return Response(serializer.data)
+    
+    # pk should be a supplemental id
+    @action(detail=True, methods=['get'])
+    def reassessment_credit_activity(self, request, pk=None):
+        credit_activity = get_reassessment_credit_activity(pk, "PreviousReassessmentEndingBalance")
+        serializer = ModelYearReportSupplementalCreditActivitySerializer(credit_activity, many=True)
+        return Response(serializer.data)
