@@ -22,24 +22,14 @@ from api.serializers.user import UserBasicSerializer
 from api.serializers.organization import OrganizationNameSerializer, OrganizationSerializer
 from api.services.credit_transaction import calculate_insufficient_credits
 from api.services.send_email import notifications_credit_transfers
+from ..mixins.user_mixin import UserMixin
 
+class CreditTransferBaseSerializer(UserMixin):
 
-class CreditTransferBaseSerializer:
     def get_update_user(self, obj):
-        user_profile = UserProfile.objects.filter(username=obj.update_user)
-
-        if user_profile.exists():
-            serializer = UserBasicSerializer(user_profile.first(), read_only=True)
-            return serializer.data
-
-        return obj.update_user
-
+        return self.get_user_data(obj, 'update_user')
     def get_create_user(self, obj):
-        user_profile = UserProfile.objects.filter(username=obj.create_user)
-        if user_profile.exists():
-            serializer = UserBasicSerializer(user_profile.first(), read_only=True)
-            return serializer.data
-        return obj.create_user
+            return self.get_user_data(obj, 'create_user')
 
     def get_history(self, obj):
         request = self.context.get('request')
@@ -75,13 +65,14 @@ class CreditTransferHistorySerializer(
     comment = SerializerMethodField()
 
     def get_comment(self, obj):
+        request = self.context.get('request')
         credit_transfer_comment = CreditTransferComment.objects.filter(
             credit_transfer_history=obj
         ).first()
 
         if credit_transfer_comment:
             serializer = CreditTransferCommentSerializer(
-                credit_transfer_comment, read_only=True, many=False
+                credit_transfer_comment, read_only=True, many=False, context={'request': request}
             )
             return serializer.data
         return None

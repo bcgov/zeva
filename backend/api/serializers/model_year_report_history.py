@@ -1,25 +1,17 @@
 from enumfields.drf import EnumField
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from ..models.model_year_report_history import ModelYearReportHistory
+from ..models.model_year_report_statuses import ModelYearReportStatuses
+from ..mixins.user_mixin import UserMixin
 
-from api.models.model_year_report_history import ModelYearReportHistory
-from api.models.model_year_report_statuses import ModelYearReportStatuses
-from api.models.user_profile import UserProfile
-from api.serializers.user import MemberSerializer
-
-
-class ModelYearReportHistorySerializer(ModelSerializer):
+class ModelYearReportHistorySerializer(ModelSerializer, UserMixin):
+    
     create_user = SerializerMethodField()
     validation_status = EnumField(ModelYearReportStatuses, read_only=True)
-
-    def get_create_user(self, obj):
-        user_profile = UserProfile.objects.filter(username=obj.create_user)
-
-        if user_profile.exists():
-            serializer = MemberSerializer(user_profile.first(), read_only=True)
-            return serializer.data
-
-        return obj.create_user
 
     class Meta:
         model = ModelYearReportHistory
         fields = ('create_timestamp', 'create_user', 'validation_status')
+
+    def get_create_user(self, obj):
+        return self.get_user_data(obj, 'create_user')

@@ -62,8 +62,11 @@ class CreditAgreementViewSet(
     def get_serializer_class(self):
         if self.action in list(self.serializer_classes.keys()):
             return self.serializer_classes[self.action]
-
         return self.serializer_classes['default']
+
+    def get_serializer(self, *args, **kwargs):
+        kwargs['context'] = self.get_serializer_context()
+        return self.get_serializer_class()(*args, **kwargs)
 
     def perform_update(self, serializer, *args, **kwargs):
         agreement = serializer.save()

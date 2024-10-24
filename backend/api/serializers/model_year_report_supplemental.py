@@ -27,12 +27,19 @@ from api.models.supplemental_report_comment import \
     SupplementalReportComment
 from api.services.minio import minio_get_object
 from api.models.user_profile import UserProfile
-from api.serializers.user import MemberSerializer
 from api.models.supplemental_report_supplier_information import \
     SupplementalReportSupplierInformation
+from ..mixins.user_mixin import UserMixin
 
+class ModelYearReportZevSalesSerializer(ModelSerializer, UserMixin):
+    create_user = SerializerMethodField()
+    update_user = SerializerMethodField()
+    def get_create_user(self, obj):
+        return self.get_user_data(obj, 'create_user')
 
-class ModelYearReportZevSalesSerializer(ModelSerializer):
+    def get_update_user(self, obj):
+        return self.get_user_data(obj, 'update_user')
+
     class Meta:
         model = SupplementalReportSales
         fields = '__all__'
@@ -49,7 +56,10 @@ class ModelYearReportSupplementalCreditActivitySerializer(ModelSerializer):
         )
 
 
-class ModelYearReportSupplementalCommentSerializer(ModelSerializer):
+class ModelYearReportSupplementalCommentSerializer(ModelSerializer, UserMixin):
+    create_user = SerializerMethodField()
+    def get_create_user(self, obj):
+        return self.get_user_data(obj, 'create_user')
     class Meta:
         model = SupplementalReportComment
         fields = (
@@ -60,19 +70,14 @@ class ModelYearReportSupplementalCommentSerializer(ModelSerializer):
         )
 
 
-class SupplementalReportAssessmentCommentSerializer(ModelSerializer):
+class SupplementalReportAssessmentCommentSerializer(ModelSerializer, UserMixin):
     """
     Serializer for supplemental report assessment comments
     """
     create_user = SerializerMethodField()
 
     def get_create_user(self, obj):
-        user = UserProfile.objects.filter(username=obj.create_user).first()
-        if user is None:
-            return obj.create_user
-
-        serializer = MemberSerializer(user, read_only=True)
-        return serializer.data
+        return self.get_user_data(obj, 'create_user')
 
     class Meta:
         model = SupplementalReportAssessmentComment
@@ -201,7 +206,7 @@ class SupplementalReportAssessmentSerializer(
         if not assessment_comment:
             return []
         serializer = SupplementalReportAssessmentCommentSerializer(
-            assessment_comment, read_only=True, many=True
+            assessment_comment, read_only=True, many=True, context={'request': request}
         )
         return serializer.data
 
@@ -213,7 +218,7 @@ class SupplementalReportAssessmentSerializer(
         )
 
 
-class ModelYearReportSupplementalSerializer(ModelSerializer):
+class ModelYearReportSupplementalSerializer(ModelSerializer, UserMixin):
     status = EnumField(ModelYearReportStatuses)
     credit_activity = SerializerMethodField()
     supplier_information = SerializerMethodField()
@@ -280,11 +285,7 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
         }
 
     def get_create_user(self, obj):
-        user_profile = UserProfile.objects.filter(username=obj.create_user)
-        if user_profile.exists():
-            serializer = MemberSerializer(user_profile.first(), read_only=True)
-            return serializer.data
-        return obj.create_user
+        return self.get_user_data(obj, 'create_user')
 
     def get_actual_status(self, obj):
         request = self.context.get('request')
@@ -353,6 +354,7 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
         return serializer.data
 
     def get_zev_sales(self, obj):
+        request = self.context.get('request')
         sales_queryset = SupplementalReportSales.objects.filter(
             supplemental_report_id=obj.id
         )
@@ -362,7 +364,7 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
         #         supplemental_report_id=obj.supplemental_id
         #     )
 
-        sales_serializer = ModelYearReportZevSalesSerializer(sales_queryset, many=True)
+        sales_serializer = ModelYearReportZevSalesSerializer(sales_queryset, many=True, context={'request': request})
 
         return sales_serializer.data
 

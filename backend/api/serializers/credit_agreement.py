@@ -18,20 +18,14 @@ from api.serializers.credit_agreement_content import \
 from .organization import OrganizationSerializer
 from api.models.credit_agreement_history import CreditAgreementHistory
 from api.services.minio import minio_remove_object
+from ..mixins.user_mixin import UserMixin
 
-
-class CreditAgreementBaseSerializer:
+class CreditAgreementBaseSerializer(UserMixin):
     def get_update_user(self, obj):
-        user_profile = UserProfile.objects.filter(username=obj.update_user)
-
-        if user_profile.exists():
-            serializer = MemberSerializer(user_profile.first(), read_only=True)
-            return serializer.data
-
-        return obj.update_user
+        return self.get_user_data(obj, 'update_user')
 
 
-class CreditAgreementSerializer(ModelSerializer, CreditAgreementBaseSerializer):
+class CreditAgreementSerializer(ModelSerializer, CreditAgreementBaseSerializer, UserMixin):
     organization = OrganizationSerializer(read_only=True)
     transaction_type = EnumField(CreditAgreementTransactionTypes)
     credit_agreement_content = CreditAgreementContentSerializer(
@@ -43,22 +37,23 @@ class CreditAgreementSerializer(ModelSerializer, CreditAgreementBaseSerializer):
     update_user = SerializerMethodField()
 
     def get_update_user(self, obj):
-        user_profile = UserProfile.objects.filter(username=obj.update_user)
-
-        if user_profile.exists():
-            serializer = MemberSerializer(user_profile.first(), read_only=True)
-            return serializer.data
-
-        return obj.update_user
+        return self.get_user_data(obj, 'update_user')
 
     def get_comments(self, obj):
-        agreement_comment = CreditAgreementComment.objects.filter(
-            credit_agreement=obj
-        ).order_by('-create_timestamp')
+        request = self.context.get('request')
+        if request.user.is_government:
+            agreement_comment = CreditAgreementComment.objects.filter(
+                credit_agreement=obj
+            ).order_by('-create_timestamp')
+        else:
+            agreement_comment = CreditAgreementComment.objects.filter(
+                credit_agreement=obj,
+                to_director='f'
+            ).order_by('-create_timestamp')
 
         if agreement_comment.exists():
             serializer = CreditAgreementCommentSerializer(
-                agreement_comment, read_only=True, many=True
+                agreement_comment, read_only=True, many=True, context={'request': request}
             )
             return serializer.data
 

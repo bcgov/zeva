@@ -7,6 +7,7 @@ from api.models.supplemental_report_history import SupplementalReportHistory
 from api.models.supplemental_report import SupplementalReport
 from api.models.user_profile import UserProfile
 from api.serializers.user import MemberSerializer
+from ..mixins.user_mixin import UserMixin
 from django.db.models import Q
 from api.utilities.report_history import exclude_from_history
 
@@ -27,7 +28,7 @@ class ModelYearReportNoaSerializer(ModelSerializer):
         )
 
 
-class SupplementalNOASerializer(ModelSerializer):
+class SupplementalNOASerializer(ModelSerializer, UserMixin):
     status = SerializerMethodField()
     update_user = SerializerMethodField()
     is_reassessment = SerializerMethodField()
@@ -37,10 +38,7 @@ class SupplementalNOASerializer(ModelSerializer):
         return obj.validation_status.value
 
     def get_update_user(self, obj):
-        user = UserProfile.objects.filter(username=obj.update_user).first()
-        if user is None:
-            return obj.create_user
-        return user.display_name
+        return self.get_user_data(obj, 'update_user')
 
     def get_display_superseded_text(self, obj):
         if obj.validation_status == ModelYearReportStatuses.ASSESSED:
@@ -76,7 +74,7 @@ class SupplementalNOASerializer(ModelSerializer):
         )
 
 
-class ModelYearReportHistorySerializer(ModelSerializer):
+class ModelYearReportHistorySerializer(ModelSerializer, UserMixin):
     status = SerializerMethodField()
     create_user = SerializerMethodField()
     is_reassessment = SerializerMethodField()
@@ -92,13 +90,7 @@ class ModelYearReportHistorySerializer(ModelSerializer):
         return obj.validation_status.value
 
     def get_create_user(self, obj):
-        user = UserProfile.objects.filter(username=obj.create_user).first()
-        if user is None:
-            return None
-
-        serializer = MemberSerializer(user)
-
-        return serializer.data
+        return self.get_user_data(obj, 'create_user')
 
     class Meta:
         model = ModelYearReportHistory
@@ -113,10 +105,11 @@ class SupplementalReportHistorySerializer(ModelYearReportHistorySerializer):
         fields = ModelYearReportHistorySerializer.Meta.fields + ('supplemental_report_id',)
 
 
-class SupplementalReportSerializer(ModelSerializer):
+class SupplementalReportSerializer(ModelSerializer, UserMixin):
     status = SerializerMethodField()
     history = SerializerMethodField()
     is_supplementary = SerializerMethodField()
+    update_user = SerializerMethodField()
 
     def get_is_supplementary(self, obj):
         return True
@@ -145,9 +138,11 @@ class SupplementalReportSerializer(ModelSerializer):
 
         refined_history = exclude_from_history(history, request.user)
 
-        serializer = SupplementalReportHistorySerializer(refined_history, many=True)
+        serializer = SupplementalReportHistorySerializer(refined_history, many=True, context={'request': request})
         return serializer.data
 
+    def get_update_user(self, obj):
+        return self.get_user_data(obj, 'update_user')
     class Meta:
         model = SupplementalReport
         fields = (
@@ -156,11 +151,15 @@ class SupplementalReportSerializer(ModelSerializer):
         )
 
 
-class SupplementalModelYearReportSerializer(ModelSerializer):
+class SupplementalModelYearReportSerializer(ModelSerializer, UserMixin):
     status = SerializerMethodField()
     history = SerializerMethodField()
     supplemental_id = SerializerMethodField()
     is_supplementary = SerializerMethodField()
+    update_user = SerializerMethodField()
+
+    def get_update_user(self, obj):
+        return self.get_user_data(obj, 'update_user')
 
     def get_is_supplementary(self, obj):
         return False
@@ -186,7 +185,7 @@ class SupplementalModelYearReportSerializer(ModelSerializer):
 
         refined_history = exclude_from_history(history, request.user)
 
-        serializer = ModelYearReportHistorySerializer(refined_history, many=True)
+        serializer = ModelYearReportHistorySerializer(refined_history, many=True, context={'request': request})
 
         return serializer.data
 

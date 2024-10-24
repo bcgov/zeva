@@ -112,7 +112,7 @@ class CreditTransferViewset(
         comment = get_comment(comment_id)
         if username == comment.create_user:
             updated_comment = update_comment_text(comment, comment_text)
-            serializer = CreditTransferCommentSerializer(updated_comment)
+            serializer = CreditTransferCommentSerializer(updated_comment, context={'request': request})
             return Response(serializer.data)
         return Response(status=status.HTTP_403_FORBIDDEN)
 

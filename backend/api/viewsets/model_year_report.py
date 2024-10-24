@@ -159,7 +159,7 @@ class ModelYearReportViewset(
                 model_year_report_id=pk
             )
 
-            history = ModelYearReportHistorySerializer(history_list, many=True)
+            history = ModelYearReportHistorySerializer(history_list, many=True, context={'request': request})
 
             confirmations = (
                 ModelYearReportConfirmation.objects.filter(model_year_report_id=pk)
@@ -212,7 +212,7 @@ class ModelYearReportViewset(
                     "create_user": report.create_user,
                     "confirmations": confirmations,
                     "ldv_sales": report.ldv_sales,
-                    "statuses": get_model_year_report_statuses(report, request.user),
+                    "statuses": get_model_year_report_statuses(report, request),
                     "ldv_sales_previous": ldv_sales_previous.data
                     if ldv_sales_previous
                     else [],
