@@ -18,17 +18,11 @@ from api.serializers.credit_agreement_content import \
 from .organization import OrganizationSerializer
 from api.models.credit_agreement_history import CreditAgreementHistory
 from api.services.minio import minio_remove_object
+from ..mixins.user_mixin import get_user_data
 
-
-class CreditAgreementBaseSerializer:
+class CreditAgreementBaseSerializer():
     def get_update_user(self, obj):
-        user_profile = UserProfile.objects.filter(username=obj.update_user)
-
-        if user_profile.exists():
-            serializer = MemberSerializer(user_profile.first(), read_only=True)
-            return serializer.data
-
-        return obj.update_user
+        return get_user_data(obj, 'update_user', self.context.get('request'))
 
 
 class CreditAgreementSerializer(ModelSerializer, CreditAgreementBaseSerializer):
@@ -41,15 +35,6 @@ class CreditAgreementSerializer(ModelSerializer, CreditAgreementBaseSerializer):
     comments = SerializerMethodField()
     attachments = SerializerMethodField()
     update_user = SerializerMethodField()
-
-    def get_update_user(self, obj):
-        user_profile = UserProfile.objects.filter(username=obj.update_user)
-
-        if user_profile.exists():
-            serializer = MemberSerializer(user_profile.first(), read_only=True)
-            return serializer.data
-
-        return obj.update_user
 
     def get_comments(self, obj):
         agreement_comment = CreditAgreementComment.objects.filter(

@@ -30,9 +30,19 @@ from api.models.user_profile import UserProfile
 from api.serializers.user import MemberSerializer
 from api.models.supplemental_report_supplier_information import \
     SupplementalReportSupplierInformation
+from ..mixins.user_mixin import get_user_data
 
+class ModelYearReportSupplementalBaseSerializer():
 
-class ModelYearReportZevSalesSerializer(ModelSerializer):
+    def get_update_user(self, obj):
+        return get_user_data(obj, 'update_user', self.context.get('request'))
+    def get_create_user(self, obj):
+        return get_user_data(obj, 'create_user', self.context.get('request'))
+
+class ModelYearReportZevSalesSerializer(ModelSerializer, ModelYearReportSupplementalBaseSerializer):
+    create_user = SerializerMethodField()
+    update_user = SerializerMethodField()
+
     class Meta:
         model = SupplementalReportSales
         fields = '__all__'
@@ -49,7 +59,9 @@ class ModelYearReportSupplementalCreditActivitySerializer(ModelSerializer):
         )
 
 
-class ModelYearReportSupplementalCommentSerializer(ModelSerializer):
+class ModelYearReportSupplementalCommentSerializer(ModelSerializer, ModelYearReportSupplementalBaseSerializer):
+    create_user = SerializerMethodField()
+
     class Meta:
         model = SupplementalReportComment
         fields = (
@@ -60,19 +72,11 @@ class ModelYearReportSupplementalCommentSerializer(ModelSerializer):
         )
 
 
-class SupplementalReportAssessmentCommentSerializer(ModelSerializer):
+class SupplementalReportAssessmentCommentSerializer(ModelSerializer, ModelYearReportSupplementalBaseSerializer):
     """
     Serializer for supplemental report assessment comments
     """
     create_user = SerializerMethodField()
-
-    def get_create_user(self, obj):
-        user = UserProfile.objects.filter(username=obj.create_user).first()
-        if user is None:
-            return obj.create_user
-
-        serializer = MemberSerializer(user, read_only=True)
-        return serializer.data
 
     class Meta:
         model = SupplementalReportAssessmentComment
@@ -213,7 +217,7 @@ class SupplementalReportAssessmentSerializer(
         )
 
 
-class ModelYearReportSupplementalSerializer(ModelSerializer):
+class ModelYearReportSupplementalSerializer(ModelSerializer, ModelYearReportSupplementalBaseSerializer):
     status = EnumField(ModelYearReportStatuses)
     credit_activity = SerializerMethodField()
     supplier_information = SerializerMethodField()
@@ -278,13 +282,6 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
             'reassessment_report_id': reassessment_report_id,
             'status': obj.status.value
         }
-
-    def get_create_user(self, obj):
-        user_profile = UserProfile.objects.filter(username=obj.create_user)
-        if user_profile.exists():
-            serializer = MemberSerializer(user_profile.first(), read_only=True)
-            return serializer.data
-        return obj.create_user
 
     def get_actual_status(self, obj):
         request = self.context.get('request')

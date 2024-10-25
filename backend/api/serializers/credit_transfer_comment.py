@@ -6,7 +6,7 @@ from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from api.models.user_profile import UserProfile
 from api.models.credit_transfer_comment import CreditTransferComment
 from api.serializers.user import MemberSerializer
-
+from ..mixins.user_mixin import  get_user_data
 
 class CreditTransferCommentSerializer(ModelSerializer):
     """
@@ -15,13 +15,7 @@ class CreditTransferCommentSerializer(ModelSerializer):
     create_user = SerializerMethodField()
 
     def get_create_user(self, obj):
-        user = UserProfile.objects.filter(username=obj.create_user).first()
-        if user is None:
-            return obj.create_user
-
-        serializer = MemberSerializer(user, read_only=True)
-        return serializer.data
-
+        return get_user_data(obj, 'create_user', self.context.get('request'))
     class Meta:
         model = CreditTransferComment
         fields = (

@@ -7,11 +7,18 @@ from api.models.supplemental_report_history import SupplementalReportHistory
 from api.models.supplemental_report import SupplementalReport
 from api.models.user_profile import UserProfile
 from api.serializers.user import MemberSerializer
+from ..mixins.user_mixin import get_user_data
 from django.db.models import Q
 from api.utilities.report_history import exclude_from_history
 
+class ModelYearReportNOABaseSerializer:
+    def get_update_user(self, obj):
+        return get_user_data(obj, 'update_user', self.context.get('request'))
+    
+    def get_create_user(self, obj):
+        return get_user_data(obj, 'create_user', self.context.get('request'))
 
-class ModelYearReportNoaSerializer(ModelSerializer):
+class ModelYearReportNoaSerializer(ModelSerializer,):
     validation_status = SerializerMethodField()
 
     def get_validation_status(self, obj):
@@ -27,20 +34,13 @@ class ModelYearReportNoaSerializer(ModelSerializer):
         )
 
 
-class SupplementalNOASerializer(ModelSerializer):
+class SupplementalNOASerializer(ModelSerializer, ModelYearReportNOABaseSerializer):
     status = SerializerMethodField()
-    update_user = SerializerMethodField()
     is_reassessment = SerializerMethodField()
     display_superseded_text = SerializerMethodField()
 
     def get_status(self, obj):
         return obj.validation_status.value
-
-    def get_update_user(self, obj):
-        user = UserProfile.objects.filter(username=obj.update_user).first()
-        if user is None:
-            return obj.create_user
-        return user.display_name
 
     def get_display_superseded_text(self, obj):
         if obj.validation_status == ModelYearReportStatuses.ASSESSED:
@@ -71,12 +71,12 @@ class SupplementalNOASerializer(ModelSerializer):
     class Meta:
         model = SupplementalReportHistory
         fields = (
-            'update_timestamp', 'status', 'id', 'update_user', 'supplemental_report_id', 'display_superseded_text',
+            'update_timestamp', 'status', 'id', 'supplemental_report_id', 'display_superseded_text',
             'is_reassessment'
         )
 
 
-class ModelYearReportHistorySerializer(ModelSerializer):
+class ModelYearReportHistorySerializer(ModelSerializer, ModelYearReportNOABaseSerializer):
     status = SerializerMethodField()
     create_user = SerializerMethodField()
     is_reassessment = SerializerMethodField()
@@ -91,15 +91,6 @@ class ModelYearReportHistorySerializer(ModelSerializer):
     def get_status(self, obj):
         return obj.validation_status.value
 
-    def get_create_user(self, obj):
-        user = UserProfile.objects.filter(username=obj.create_user).first()
-        if user is None:
-            return None
-
-        serializer = MemberSerializer(user)
-
-        return serializer.data
-
     class Meta:
         model = ModelYearReportHistory
         fields = (
@@ -113,7 +104,7 @@ class SupplementalReportHistorySerializer(ModelYearReportHistorySerializer):
         fields = ModelYearReportHistorySerializer.Meta.fields + ('supplemental_report_id',)
 
 
-class SupplementalReportSerializer(ModelSerializer):
+class SupplementalReportSerializer(ModelSerializer, ModelYearReportNOABaseSerializer):
     status = SerializerMethodField()
     history = SerializerMethodField()
     is_supplementary = SerializerMethodField()
@@ -156,11 +147,12 @@ class SupplementalReportSerializer(ModelSerializer):
         )
 
 
-class SupplementalModelYearReportSerializer(ModelSerializer):
+class SupplementalModelYearReportSerializer(ModelSerializer, ModelYearReportNOABaseSerializer):
     status = SerializerMethodField()
     history = SerializerMethodField()
     supplemental_id = SerializerMethodField()
     is_supplementary = SerializerMethodField()
+    update_user = SerializerMethodField()
 
     def get_is_supplementary(self, obj):
         return False

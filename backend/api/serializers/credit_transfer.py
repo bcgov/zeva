@@ -22,24 +22,13 @@ from api.serializers.user import UserBasicSerializer
 from api.serializers.organization import OrganizationNameSerializer, OrganizationSerializer
 from api.services.credit_transaction import calculate_insufficient_credits
 from api.services.send_email import notifications_credit_transfers
-
+from ..mixins.user_mixin import get_user_data
 
 class CreditTransferBaseSerializer:
     def get_update_user(self, obj):
-        user_profile = UserProfile.objects.filter(username=obj.update_user)
-
-        if user_profile.exists():
-            serializer = UserBasicSerializer(user_profile.first(), read_only=True)
-            return serializer.data
-
-        return obj.update_user
-
+        return get_user_data(obj, 'update_user', self.context.get('request'))
     def get_create_user(self, obj):
-        user_profile = UserProfile.objects.filter(username=obj.create_user)
-        if user_profile.exists():
-            serializer = UserBasicSerializer(user_profile.first(), read_only=True)
-            return serializer.data
-        return obj.create_user
+        return get_user_data(obj, 'create_user', self.context.get('request'))
 
     def get_history(self, obj):
         request = self.context.get('request')

@@ -1,9 +1,7 @@
 from rest_framework.serializers import ModelSerializer, \
     SerializerMethodField
 from api.models.model_year_report_assessment_comment import ModelYearReportAssessmentComment
-from api.models.user_profile import UserProfile
-from api.serializers.user import MemberSerializer
-
+from ..mixins.user_mixin import get_user_data
 
 class ModelYearReportAssessmentCommentSerializer(ModelSerializer):
     """
@@ -12,13 +10,8 @@ class ModelYearReportAssessmentCommentSerializer(ModelSerializer):
     create_user = SerializerMethodField()
 
     def get_create_user(self, obj):
-        user = UserProfile.objects.filter(username=obj.create_user).first()
-        if user is None:
-            return obj.create_user
-
-        serializer = MemberSerializer(user, read_only=True)
-        return serializer.data
-
+        return get_user_data(obj, 'create_user', self.context.get('request'))
+    
     class Meta:
         model = ModelYearReportAssessmentComment
         fields = (

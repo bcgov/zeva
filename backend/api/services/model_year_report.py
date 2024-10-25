@@ -39,8 +39,9 @@ from api.models.model_year_report_history import ModelYearReportHistory
 from api.models.model_year_report_make import ModelYearReportMake
 from api.models.model_year_report_assessment import ModelYearReportAssessment
 from api.models.model_year_report_assessment_comment import ModelYearReportAssessmentComment
+from ..mixins.user_mixin import get_user_data
 
-def get_model_year_report_statuses(report, request_user=None):
+def get_model_year_report_statuses(report, request=None):
     supplier_information_status = 'UNSAVED'
     consumer_sales_status = 'UNSAVED'
     compliance_obligation_status = 'UNSAVED'
@@ -112,16 +113,11 @@ def get_model_year_report_statuses(report, request_user=None):
         consumer_sales_status = 'SUBMITTED'
         compliance_obligation_status = 'SUBMITTED'
         summary_status = 'SUBMITTED'
-
-        user_profile = UserProfile.objects.filter(username=report.update_user)
-
-        if user_profile.exists():
-            serializer = MemberSerializer(user_profile.first(), read_only=True)
-
-            summary_confirmed_by = {
-                'create_timestamp': report.update_timestamp,
-                'create_user': serializer.data
-            }
+        user_serializer = get_user_data(report, 'create_user', request)
+        assessment_confirmed_by = {
+            'create_timestamp': report.create_timestamp, ##there are some discrepancies in the 
+            'create_user': user_serializer ## create/update timestamps and users so i made a guess here
+        }
 
     if report.validation_status == ModelYearReportStatuses.RECOMMENDED:
         assessment_status = 'RECOMMENDED'
@@ -130,21 +126,17 @@ def get_model_year_report_statuses(report, request_user=None):
         compliance_obligation_status = 'RECOMMENDED'
         summary_status = 'RECOMMENDED'
 
-        if not request_user.is_government:
+        if not request.user.is_government:
             assessment_status = 'SUBMITTED'
             supplier_information_status = 'SUBMITTED'
             consumer_sales_status = 'SUBMITTED'
             compliance_obligation_status = 'SUBMITTED'
             summary_status = 'SUBMITTED'
-
-        user_profile = UserProfile.objects.filter(username=report.update_user)
-        if user_profile.exists():
-            serializer = MemberSerializer(user_profile.first(), read_only=True)
-
-            assessment_confirmed_by = {
-                'create_timestamp': report.update_timestamp,
-                'create_user': serializer.data
-            }
+        user_serializer = get_user_data(report, 'create_user', request)
+        assessment_confirmed_by = {
+            'create_timestamp': report.update_timestamp,
+            'create_user': user_serializer.data
+        }
 
     if report.validation_status == ModelYearReportStatuses.RETURNED:
         assessment_status = 'RETURNED'
@@ -152,21 +144,17 @@ def get_model_year_report_statuses(report, request_user=None):
         consumer_sales_status = 'RETURNED'
         compliance_obligation_status = 'RETURNED'
         summary_status = 'RETURNED'
-        if not request_user.is_government:
+        if not request.user.is_government:
             assessment_status = 'SUBMITTED'
             supplier_information_status = 'SUBMITTED'
             consumer_sales_status = 'SUBMITTED'
             compliance_obligation_status = 'SUBMITTED'
             summary_status = 'SUBMITTED'
-
-        user_profile = UserProfile.objects.filter(username=report.update_user)
-        if user_profile.exists():
-            serializer = MemberSerializer(user_profile.first(), read_only=True)
-
-            assessment_confirmed_by = {
-                'create_timestamp': report.update_timestamp,
-                'create_user': serializer.data
-            }
+        user_serializer = get_user_data(report, 'create_user', request)
+        assessment_confirmed_by = {
+            'create_timestamp': report.create_timestamp,
+            'create_user': user_serializer
+        }
 
     if report.validation_status == ModelYearReportStatuses.ASSESSED:
         supplier_information_status = 'ASSESSED'
@@ -174,14 +162,11 @@ def get_model_year_report_statuses(report, request_user=None):
         compliance_obligation_status = 'ASSESSED'
         summary_status = 'ASSESSED'
         assessment_status = 'ASSESSED'
-        user_profile = UserProfile.objects.filter(username=report.update_user)
-        if user_profile.exists():
-            serializer = MemberSerializer(user_profile.first(), read_only=True)
-
-            assessment_confirmed_by = {
-                'create_timestamp': report.update_timestamp,
-                'create_user': serializer.data
-            }
+        user_serializer = get_user_data(report, 'create_user', request)
+        assessment_confirmed_by = {
+            'update_timestamp': report.update_timestamp,
+            'update_user': user_serializer
+        }
 
     return {
         'supplier_information': {
