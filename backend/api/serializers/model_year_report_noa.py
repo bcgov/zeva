@@ -12,12 +12,6 @@ from django.db.models import Q
 from api.utilities.report_history import exclude_from_history
 from api.mixins.user_mixin import UserMixin
 
-# class ModelYearReportNOABaseSerializer:
-#     def get_update_user(self, obj):
-#         return get_user_data(obj, 'update_user', self.context.get('request'))
-    
-#     def get_create_user(self, obj):
-#         return get_user_data(obj, 'create_user', self.context.get('request'))
 
 class ModelYearReportNoaSerializer(ModelSerializer):
     validation_status = SerializerMethodField()
