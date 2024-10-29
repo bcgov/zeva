@@ -18,14 +18,9 @@ from api.serializers.credit_agreement_content import \
 from .organization import OrganizationSerializer
 from api.models.credit_agreement_history import CreditAgreementHistory
 from api.services.minio import minio_remove_object
-from ..mixins.user_mixin import get_user_data
+from ..mixins.user_mixin import UserMixin
 
-class CreditAgreementBaseSerializer():
-    def get_update_user(self, obj):
-        return get_user_data(obj, 'update_user', self.context.get('request'))
-
-
-class CreditAgreementSerializer(ModelSerializer, CreditAgreementBaseSerializer):
+class CreditAgreementSerializer(ModelSerializer, UserMixin):
     organization = OrganizationSerializer(read_only=True)
     transaction_type = EnumField(CreditAgreementTransactionTypes)
     credit_agreement_content = CreditAgreementContentSerializer(
@@ -37,13 +32,14 @@ class CreditAgreementSerializer(ModelSerializer, CreditAgreementBaseSerializer):
     update_user = SerializerMethodField()
 
     def get_comments(self, obj):
+        request = self.context.get('request')
         agreement_comment = CreditAgreementComment.objects.filter(
             credit_agreement=obj
         ).order_by('-create_timestamp')
 
         if agreement_comment.exists():
             serializer = CreditAgreementCommentSerializer(
-                agreement_comment, read_only=True, many=True
+                agreement_comment, read_only=True, many=True, context={"request": request}
             )
             return serializer.data
 
@@ -272,9 +268,9 @@ class CreditAgreementSaveSerializer(ModelSerializer, EnumSupportSerializerMixin)
 
 
 class CreditAgreementListSerializer(
-        ModelSerializer, EnumSupportSerializerMixin, CreditAgreementBaseSerializer
+        ModelSerializer, EnumSupportSerializerMixin, UserMixin
 ):
-
+    update_user=SerializerMethodField()
     organization = OrganizationSerializer()
     credit_agreement_content = CreditAgreementContentSerializer(
         many=True, read_only=True

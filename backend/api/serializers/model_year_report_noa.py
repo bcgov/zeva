@@ -7,18 +7,19 @@ from api.models.supplemental_report_history import SupplementalReportHistory
 from api.models.supplemental_report import SupplementalReport
 from api.models.user_profile import UserProfile
 from api.serializers.user import MemberSerializer
-from ..mixins.user_mixin import get_user_data
+from ..mixins.user_mixin import UserMixin
 from django.db.models import Q
 from api.utilities.report_history import exclude_from_history
+from api.mixins.user_mixin import UserMixin
 
-class ModelYearReportNOABaseSerializer:
-    def get_update_user(self, obj):
-        return get_user_data(obj, 'update_user', self.context.get('request'))
+# class ModelYearReportNOABaseSerializer:
+#     def get_update_user(self, obj):
+#         return get_user_data(obj, 'update_user', self.context.get('request'))
     
-    def get_create_user(self, obj):
-        return get_user_data(obj, 'create_user', self.context.get('request'))
+#     def get_create_user(self, obj):
+#         return get_user_data(obj, 'create_user', self.context.get('request'))
 
-class ModelYearReportNoaSerializer(ModelSerializer,):
+class ModelYearReportNoaSerializer(ModelSerializer):
     validation_status = SerializerMethodField()
 
     def get_validation_status(self, obj):
@@ -34,10 +35,11 @@ class ModelYearReportNoaSerializer(ModelSerializer,):
         )
 
 
-class SupplementalNOASerializer(ModelSerializer, ModelYearReportNOABaseSerializer):
+class SupplementalNOASerializer(ModelSerializer, UserMixin):
     status = SerializerMethodField()
     is_reassessment = SerializerMethodField()
     display_superseded_text = SerializerMethodField()
+    update_user = SerializerMethodField()
 
     def get_status(self, obj):
         return obj.validation_status.value
@@ -72,11 +74,11 @@ class SupplementalNOASerializer(ModelSerializer, ModelYearReportNOABaseSerialize
         model = SupplementalReportHistory
         fields = (
             'update_timestamp', 'status', 'id', 'supplemental_report_id', 'display_superseded_text',
-            'is_reassessment'
+            'is_reassessment', 'update_user'
         )
 
 
-class ModelYearReportHistorySerializer(ModelSerializer, ModelYearReportNOABaseSerializer):
+class ModelYearReportHistorySerializer(ModelSerializer, UserMixin):
     status = SerializerMethodField()
     create_user = SerializerMethodField()
     is_reassessment = SerializerMethodField()
@@ -104,10 +106,11 @@ class SupplementalReportHistorySerializer(ModelYearReportHistorySerializer):
         fields = ModelYearReportHistorySerializer.Meta.fields + ('supplemental_report_id',)
 
 
-class SupplementalReportSerializer(ModelSerializer, ModelYearReportNOABaseSerializer):
+class SupplementalReportSerializer(ModelSerializer, UserMixin):
     status = SerializerMethodField()
     history = SerializerMethodField()
     is_supplementary = SerializerMethodField()
+    update_user = SerializerMethodField()
 
     def get_is_supplementary(self, obj):
         return True
@@ -136,7 +139,7 @@ class SupplementalReportSerializer(ModelSerializer, ModelYearReportNOABaseSerial
 
         refined_history = exclude_from_history(history, request.user)
 
-        serializer = SupplementalReportHistorySerializer(refined_history, many=True)
+        serializer = SupplementalReportHistorySerializer(refined_history, many=True, context={'request': request})
         return serializer.data
 
     class Meta:
@@ -147,7 +150,7 @@ class SupplementalReportSerializer(ModelSerializer, ModelYearReportNOABaseSerial
         )
 
 
-class SupplementalModelYearReportSerializer(ModelSerializer, ModelYearReportNOABaseSerializer):
+class SupplementalModelYearReportSerializer(ModelSerializer, UserMixin):
     status = SerializerMethodField()
     history = SerializerMethodField()
     supplemental_id = SerializerMethodField()
@@ -178,7 +181,7 @@ class SupplementalModelYearReportSerializer(ModelSerializer, ModelYearReportNOAB
 
         refined_history = exclude_from_history(history, request.user)
 
-        serializer = ModelYearReportHistorySerializer(refined_history, many=True)
+        serializer = ModelYearReportHistorySerializer(refined_history, many=True, context={'request': request})
 
         return serializer.data
 

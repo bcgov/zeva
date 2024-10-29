@@ -158,7 +158,7 @@ class ModelYearReportAssessmentSerializer(
         if not assessment_comment:
             return []
         serializer = ModelYearReportAssessmentCommentSerializer(
-            assessment_comment, read_only=True, many=True
+            assessment_comment, read_only=True, many=True, context={'request': request}
         )
         return serializer.data
 

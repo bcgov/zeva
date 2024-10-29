@@ -31,14 +31,9 @@ from api.services.sales_spreadsheet import get_date
 from api.models.sales_evidence import SalesEvidence
 from api.serializers.sales_evidence import SalesEvidenceSerializer
 from api.services.minio import minio_remove_object
-from ..mixins.user_mixin import get_user_data
+from ..mixins.user_mixin import UserMixin
 
 class BaseSerializer():
-    def get_update_user(self, obj):
-        return get_user_data(obj, 'update_user', self.context.get('request'))
-    def get_create_user(self, obj):
-        return get_user_data(obj, 'create_user', self.context.get('request'))
-        
     def get_validation_status(self, obj):
         request = self.context.get('request')
 
@@ -57,7 +52,7 @@ class BaseSerializer():
 
 
 class SalesSubmissionHistorySerializer(
-        ModelSerializer, EnumSupportSerializerMixin, BaseSerializer
+        ModelSerializer, EnumSupportSerializerMixin, BaseSerializer, UserMixin
 ):
     create_user = SerializerMethodField()
     update_user = SerializerMethodField()
@@ -279,7 +274,7 @@ class SalesSubmissionObligationActivitySerializer(
 
 class SalesSubmissionSerializer(
         ModelSerializer, EnumSupportSerializerMixin,
-        BaseSerializer
+        BaseSerializer, UserMixin
 ):
     evidence = SerializerMethodField()
     content = SerializerMethodField()

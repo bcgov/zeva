@@ -22,14 +22,9 @@ from api.serializers.user import UserBasicSerializer
 from api.serializers.organization import OrganizationNameSerializer, OrganizationSerializer
 from api.services.credit_transaction import calculate_insufficient_credits
 from api.services.send_email import notifications_credit_transfers
-from ..mixins.user_mixin import get_user_data
+from ..mixins.user_mixin import UserMixin
 
-class CreditTransferBaseSerializer:
-    def get_update_user(self, obj):
-        return get_user_data(obj, 'update_user', self.context.get('request'))
-    def get_create_user(self, obj):
-        return get_user_data(obj, 'create_user', self.context.get('request'))
-
+class CreditTransferBaseSerializer(UserMixin):
     def get_history(self, obj):
         request = self.context.get('request')
         if request.user.is_government:
@@ -64,13 +59,14 @@ class CreditTransferHistorySerializer(
     comment = SerializerMethodField()
 
     def get_comment(self, obj):
+        request = self.context.get('request')
         credit_transfer_comment = CreditTransferComment.objects.filter(
             credit_transfer_history=obj
         ).first()
 
         if credit_transfer_comment:
             serializer = CreditTransferCommentSerializer(
-                credit_transfer_comment, read_only=True, many=False
+                credit_transfer_comment, read_only=True, many=False, context={'request': request}
             )
             return serializer.data
         return None

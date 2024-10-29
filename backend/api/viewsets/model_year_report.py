@@ -168,7 +168,7 @@ class ModelYearReportViewset(
                 model_year_report_id=pk
             )
 
-            history = ModelYearReportHistorySerializer(history_list, many=True)
+            history = ModelYearReportHistorySerializer(history_list, many=True, context={'request': request})
 
             confirmations = (
                 ModelYearReportConfirmation.objects.filter(model_year_report_id=pk)
@@ -755,7 +755,6 @@ class ModelYearReportViewset(
         if not data:
             data = SupplementalReport()
             data.model_year_report_id = report.id
-
         serializer = ModelYearReportSupplementalSerializer(
             data, context={"request": request}
         )
@@ -1231,10 +1230,11 @@ class ModelYearReportViewset(
 
     @action(detail=True, methods=["get"])
     def assessed_supplementals(self, request, pk):
+        print('::::::::', request)
         report = get_object_or_404(ModelYearReport, pk=pk)
         data = report.get_assessed_supplementals()
         serializer = ModelYearReportSupplementalSerializer(
-            data, context={"request": request}, many=True
+            data, many=True, context={"request": request}
         )
         return Response(serializer.data)
     
