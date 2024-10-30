@@ -210,7 +210,7 @@ class SalesSubmissionBaseListSerializer(
 
 
 class SalesSubmissionListSerializer(
-        SalesSubmissionBaseListSerializer
+        SalesSubmissionBaseListSerializer, UserMixin
 ):
     organization = OrganizationSerializer(read_only=True)
     update_user = SerializerMethodField()
