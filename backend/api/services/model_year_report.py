@@ -113,10 +113,10 @@ def get_model_year_report_statuses(report, request=None):
         consumer_sales_status = 'SUBMITTED'
         compliance_obligation_status = 'SUBMITTED'
         summary_status = 'SUBMITTED'
-        user_serializer = get_user_data(report, 'create_user', request)
+        create_user = get_user_data(report.create_user, request)
         assessment_confirmed_by = {
             'create_timestamp': report.create_timestamp, ##there are some discrepancies in the 
-            'create_user': user_serializer ## create/update timestamps and users so i made a guess here
+            'create_user': create_user ## create/update timestamps and users so i made a guess here
         }
 
     if report.validation_status == ModelYearReportStatuses.RECOMMENDED:
@@ -132,10 +132,10 @@ def get_model_year_report_statuses(report, request=None):
             consumer_sales_status = 'SUBMITTED'
             compliance_obligation_status = 'SUBMITTED'
             summary_status = 'SUBMITTED'
-        user_serializer = get_user_data(report, 'create_user', request)
+        create_user = get_user_data(report.create_user, request)
         assessment_confirmed_by = {
             'create_timestamp': report.update_timestamp,
-            'create_user': user_serializer.data
+            'create_user': create_user
         }
 
     if report.validation_status == ModelYearReportStatuses.RETURNED:
@@ -150,10 +150,10 @@ def get_model_year_report_statuses(report, request=None):
             consumer_sales_status = 'SUBMITTED'
             compliance_obligation_status = 'SUBMITTED'
             summary_status = 'SUBMITTED'
-        user_serializer = get_user_data(report, 'create_user', request)
+        create_user = get_user_data(report.create_user, request)
         assessment_confirmed_by = {
             'create_timestamp': report.create_timestamp,
-            'create_user': user_serializer
+            'create_user': create_user
         }
 
     if report.validation_status == ModelYearReportStatuses.ASSESSED:
@@ -162,10 +162,10 @@ def get_model_year_report_statuses(report, request=None):
         compliance_obligation_status = 'ASSESSED'
         summary_status = 'ASSESSED'
         assessment_status = 'ASSESSED'
-        user_serializer = get_user_data(report, 'create_user', request)
+        create_user = get_user_data(report.create_user, request)
         assessment_confirmed_by = {
             'update_timestamp': report.update_timestamp,
-            'update_user': user_serializer
+            'update_user': create_user
         }
 
     return {

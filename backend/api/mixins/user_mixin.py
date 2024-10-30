@@ -1,35 +1,44 @@
-from rest_framework import serializers
-from ..models.user_profile import UserProfile
-from ..serializers.user import UserBasicSerializer
-from ..serializers.organization import OrganizationNameSerializer
+from api.models.user_profile import UserProfile
+from api.serializers.user import UserBasicSerializer
+from api.serializers.organization import OrganizationNameSerializer
 
-def get_user_data(obj, user_attr, request):
-    user_attr_value = getattr(obj, user_attr, None)
 
-    if user_attr_value is None:
-        return f"{user_attr} does not exist on the object."
-    user_profile = UserProfile.objects.filter(username=user_attr_value).first()
+def get_user_data(username, request):
+    if username is None:
+        return f"{username} does not exist on the object."
+    user_profile = UserProfile.objects.filter(username=username).first()
     if not user_profile:
-        return {'display_name': user_attr_value}  # Return the username if the user profile doesn't exist
+        return {
+            "display_name": username
+        }  # Return the username if the user profile doesn't exist
 
-    if not user_profile.is_government or request.user.is_government:
+    is_government = False
+    if request is not None:
+        is_government = request.user.is_government
+
+    if not user_profile.is_government or is_government:
         # If the user is non-government or the requesting user is government, return full data
         serializer = UserBasicSerializer(user_profile, read_only=True)
         return serializer.data
     else:
         # If the requesting user is non-government and the user is government, limit info
-        organization = OrganizationNameSerializer(user_profile.organization, read_only=True)
+        organization = OrganizationNameSerializer(
+            user_profile.organization, read_only=True
+        )
         return {
-            'display_name': 'Government User',
-            'is_government': user_profile.is_government,
-            'organization': organization.data
+            "display_name": "Government User",
+            "is_government": user_profile.is_government,
+            "organization": organization.data,
         }
+
 
 class UserMixin:
     def get_create_user(self, obj):
-        # Call get_user_data with the appropriate user attribute 'create_user'
-        return get_user_data(obj, 'create_user', self.context.get('request'))
+        username = getattr(obj, "create_user", None)
+        request = self.context.get("request")
+        return get_user_data(username, request)
 
     def get_update_user(self, obj):
-        # Call get_user_data with the appropriate user attribute 'update_user'
-        return get_user_data(obj, 'update_user', self.context.get('request'))
+        username = getattr(obj, "update_user", None)
+        request = self.context.get("request")
+        return get_user_data(username, request)

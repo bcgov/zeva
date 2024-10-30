@@ -221,7 +221,7 @@ class ModelYearReportViewset(
                     "create_user": report.create_user,
                     "confirmations": confirmations,
                     "ldv_sales": report.ldv_sales,
-                    "statuses": get_model_year_report_statuses(report, request.user),
+                    "statuses": get_model_year_report_statuses(report, request),
                     "ldv_sales_previous": ldv_sales_previous.data
                     if ldv_sales_previous
                     else [],

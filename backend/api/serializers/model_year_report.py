@@ -164,7 +164,7 @@ class ModelYearReportSerializer(ModelSerializer):
     def get_statuses(self, obj):
         request = self.context.get("request")
 
-        return get_model_year_report_statuses(obj, request.user)
+        return get_model_year_report_statuses(obj, request)
 
     def get_model_year_report_history(self, obj):
         request = self.context.get("request")
