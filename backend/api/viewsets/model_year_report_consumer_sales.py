@@ -149,7 +149,7 @@ class ModelYearReportConsumerSalesViewSet(viewsets.GenericViewSet, mixins.ListMo
             create_user__in=users
         )
 
-        history = ModelYearReportHistorySerializer(history_list, many=True)
+        history = ModelYearReportHistorySerializer(history_list, many=True, context={'request': request})
 
         validation_status = report.validation_status.value
         if not request.user.is_government and \

@@ -18,29 +18,12 @@ from api.serializers.credit_transfer_comment import \
     CreditTransferCommentSerializer
 from api.serializers.credit_transfer_content import \
     CreditTransferContentSerializer, CreditTransferContentSaveSerializer
-from api.serializers.user import UserBasicSerializer
 from api.serializers.organization import OrganizationNameSerializer, OrganizationSerializer
 from api.services.credit_transaction import calculate_insufficient_credits
 from api.services.send_email import notifications_credit_transfers
+from api.mixins.user_mixin import UserSerializerMixin
 
-
-class CreditTransferBaseSerializer:
-    def get_update_user(self, obj):
-        user_profile = UserProfile.objects.filter(username=obj.update_user)
-
-        if user_profile.exists():
-            serializer = UserBasicSerializer(user_profile.first(), read_only=True)
-            return serializer.data
-
-        return obj.update_user
-
-    def get_create_user(self, obj):
-        user_profile = UserProfile.objects.filter(username=obj.create_user)
-        if user_profile.exists():
-            serializer = UserBasicSerializer(user_profile.first(), read_only=True)
-            return serializer.data
-        return obj.create_user
-
+class CreditTransferBaseSerializer(UserSerializerMixin):
     def get_history(self, obj):
         request = self.context.get('request')
         if request.user.is_government:
@@ -66,22 +49,21 @@ class CreditTransferBaseSerializer:
 
 
 class CreditTransferHistorySerializer(
-        ModelSerializer, EnumSupportSerializerMixin,
-        CreditTransferBaseSerializer
+        CreditTransferBaseSerializer,
+        EnumSupportSerializerMixin,
 ):
-    create_user = SerializerMethodField()
-    update_user = SerializerMethodField()
     status = EnumField(CreditTransferStatuses)
     comment = SerializerMethodField()
 
     def get_comment(self, obj):
+        request = self.context.get('request')
         credit_transfer_comment = CreditTransferComment.objects.filter(
             credit_transfer_history=obj
         ).first()
 
         if credit_transfer_comment:
             serializer = CreditTransferCommentSerializer(
-                credit_transfer_comment, read_only=True, many=False
+                credit_transfer_comment, read_only=True, many=False, context={'request': request}
             )
             return serializer.data
         return None
@@ -95,8 +77,8 @@ class CreditTransferHistorySerializer(
 
 
 class CreditTransferListSerializer(
-        ModelSerializer, EnumSupportSerializerMixin,
-        CreditTransferBaseSerializer
+        CreditTransferBaseSerializer,
+        EnumSupportSerializerMixin
 ):
     history = SerializerMethodField()
     credit_to = OrganizationNameSerializer()
@@ -105,7 +87,6 @@ class CreditTransferListSerializer(
     )
     debit_from = OrganizationNameSerializer()
     status = SerializerMethodField()
-    update_user = SerializerMethodField()
 
     def get_status(self, obj):
         request = self.context.get('request')
@@ -126,8 +107,8 @@ class CreditTransferListSerializer(
 
 
 class CreditTransferSerializer(
-        ModelSerializer, EnumSupportSerializerMixin,
-        CreditTransferBaseSerializer
+        CreditTransferBaseSerializer,
+        EnumSupportSerializerMixin,
 ):
     history = SerializerMethodField()
     credit_to = OrganizationNameSerializer()
@@ -136,7 +117,6 @@ class CreditTransferSerializer(
     )
     debit_from = OrganizationNameSerializer()
     status = SerializerMethodField()
-    update_user = SerializerMethodField()
     sufficient_credits = SerializerMethodField()
     pending = SerializerMethodField()
 
