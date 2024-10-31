@@ -1,13 +1,10 @@
-from rest_framework.serializers import ModelSerializer, \
-    SerializerMethodField
 from api.models.credit_agreement_comment import CreditAgreementComment
-from ..mixins.user_mixin import UserMixin
+from api.mixins.user_mixin import UserSerializerMixin
 
-class CreditAgreementCommentSerializer(ModelSerializer, UserMixin):
+class CreditAgreementCommentSerializer(UserSerializerMixin):
     """
     Serializer for credit agreement comments
     """
-    create_user = SerializerMethodField()
     
     class Meta:
         model = CreditAgreementComment

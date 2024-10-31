@@ -20,9 +20,7 @@ from api.models.vehicle_statuses import VehicleDefinitionStatuses
 from api.models.icbc_snapshot_data import IcbcSnapshotData
 from api.serializers.sales_submission_comment import \
     SalesSubmissionCommentSerializer
-from api.models.user_profile import UserProfile
 from api.models.vin_statuses import VINStatuses
-from api.serializers.user import MemberSerializer
 from api.serializers.organization import OrganizationSerializer
 from api.serializers.sales_submission_content import \
     SalesSubmissionContentSerializer
@@ -31,7 +29,7 @@ from api.services.sales_spreadsheet import get_date
 from api.models.sales_evidence import SalesEvidence
 from api.serializers.sales_evidence import SalesEvidenceSerializer
 from api.services.minio import minio_remove_object
-from ..mixins.user_mixin import UserMixin
+from api.mixins.user_mixin import UserSerializerMixin
 
 class BaseSerializer():
     def get_validation_status(self, obj):
@@ -52,10 +50,8 @@ class BaseSerializer():
 
 
 class SalesSubmissionHistorySerializer(
-        ModelSerializer, EnumSupportSerializerMixin, BaseSerializer, UserMixin
+        UserSerializerMixin, EnumSupportSerializerMixin, BaseSerializer
 ):
-    create_user = SerializerMethodField()
-    update_user = SerializerMethodField()
     validation_status = SerializerMethodField()
     
     class Meta:
@@ -210,10 +206,9 @@ class SalesSubmissionBaseListSerializer(
 
 
 class SalesSubmissionListSerializer(
-        SalesSubmissionBaseListSerializer, UserMixin
+        UserSerializerMixin, SalesSubmissionBaseListSerializer
 ):
     organization = OrganizationSerializer(read_only=True)
-    update_user = SerializerMethodField()
 
     class Meta(SalesSubmissionBaseListSerializer.Meta):
         fields = SalesSubmissionBaseListSerializer.Meta.fields + [
@@ -273,18 +268,16 @@ class SalesSubmissionObligationActivitySerializer(
 
 
 class SalesSubmissionSerializer(
-        ModelSerializer, EnumSupportSerializerMixin,
-        BaseSerializer, UserMixin
+        UserSerializerMixin, EnumSupportSerializerMixin,
+        BaseSerializer
 ):
     evidence = SerializerMethodField()
     content = SerializerMethodField()
-    create_user = SerializerMethodField()
     eligible = SerializerMethodField()
     history = SerializerMethodField()
     icbc_current_to = SerializerMethodField()
     organization = OrganizationSerializer(read_only=True)
     sales_submission_comment = SerializerMethodField()
-    update_user = SerializerMethodField()
     validation_status = SerializerMethodField()
 
     def get_evidence(self, instance):

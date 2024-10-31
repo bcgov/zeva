@@ -18,13 +18,12 @@ from api.serializers.credit_transfer_comment import \
     CreditTransferCommentSerializer
 from api.serializers.credit_transfer_content import \
     CreditTransferContentSerializer, CreditTransferContentSaveSerializer
-from api.serializers.user import UserBasicSerializer
 from api.serializers.organization import OrganizationNameSerializer, OrganizationSerializer
 from api.services.credit_transaction import calculate_insufficient_credits
 from api.services.send_email import notifications_credit_transfers
-from ..mixins.user_mixin import UserMixin
+from api.mixins.user_mixin import UserSerializerMixin
 
-class CreditTransferBaseSerializer(UserMixin):
+class CreditTransferBaseSerializer(UserSerializerMixin):
     def get_history(self, obj):
         request = self.context.get('request')
         if request.user.is_government:
@@ -50,11 +49,9 @@ class CreditTransferBaseSerializer(UserMixin):
 
 
 class CreditTransferHistorySerializer(
-        ModelSerializer, EnumSupportSerializerMixin,
-        CreditTransferBaseSerializer
+        CreditTransferBaseSerializer,
+        EnumSupportSerializerMixin,
 ):
-    create_user = SerializerMethodField()
-    update_user = SerializerMethodField()
     status = EnumField(CreditTransferStatuses)
     comment = SerializerMethodField()
 
@@ -80,8 +77,8 @@ class CreditTransferHistorySerializer(
 
 
 class CreditTransferListSerializer(
-        ModelSerializer, EnumSupportSerializerMixin,
-        CreditTransferBaseSerializer
+        CreditTransferBaseSerializer,
+        EnumSupportSerializerMixin
 ):
     history = SerializerMethodField()
     credit_to = OrganizationNameSerializer()
@@ -90,7 +87,6 @@ class CreditTransferListSerializer(
     )
     debit_from = OrganizationNameSerializer()
     status = SerializerMethodField()
-    update_user = SerializerMethodField()
 
     def get_status(self, obj):
         request = self.context.get('request')
@@ -111,8 +107,8 @@ class CreditTransferListSerializer(
 
 
 class CreditTransferSerializer(
-        ModelSerializer, EnumSupportSerializerMixin,
-        CreditTransferBaseSerializer
+        CreditTransferBaseSerializer,
+        EnumSupportSerializerMixin,
 ):
     history = SerializerMethodField()
     credit_to = OrganizationNameSerializer()
@@ -121,7 +117,6 @@ class CreditTransferSerializer(
     )
     debit_from = OrganizationNameSerializer()
     status = SerializerMethodField()
-    update_user = SerializerMethodField()
     sufficient_credits = SerializerMethodField()
     pending = SerializerMethodField()
 

@@ -27,14 +27,11 @@ from api.models.supplemental_report_comment import \
     SupplementalReportComment
 from api.services.minio import minio_get_object
 from api.models.user_profile import UserProfile
-from api.serializers.user import MemberSerializer
 from api.models.supplemental_report_supplier_information import \
     SupplementalReportSupplierInformation
-from ..mixins.user_mixin import UserMixin
+from api.mixins.user_mixin import UserSerializerMixin
 
-class ModelYearReportZevSalesSerializer(ModelSerializer, UserMixin):
-    create_user = SerializerMethodField()
-    update_user = SerializerMethodField()
+class ModelYearReportZevSalesSerializer(UserSerializerMixin):
 
     class Meta:
         model = SupplementalReportSales
@@ -52,8 +49,7 @@ class ModelYearReportSupplementalCreditActivitySerializer(ModelSerializer):
         )
 
 
-class ModelYearReportSupplementalCommentSerializer(ModelSerializer, UserMixin):
-    create_user = SerializerMethodField()
+class ModelYearReportSupplementalCommentSerializer(UserSerializerMixin):
 
     class Meta:
         model = SupplementalReportComment
@@ -65,11 +61,10 @@ class ModelYearReportSupplementalCommentSerializer(ModelSerializer, UserMixin):
         )
 
 
-class SupplementalReportAssessmentCommentSerializer(ModelSerializer, UserMixin):
+class SupplementalReportAssessmentCommentSerializer(UserSerializerMixin):
     """
     Serializer for supplemental report assessment comments
     """
-    create_user = SerializerMethodField()
 
     class Meta:
         model = SupplementalReportAssessmentComment
@@ -210,7 +205,7 @@ class SupplementalReportAssessmentSerializer(
         )
 
 
-class ModelYearReportSupplementalSerializer(ModelSerializer, UserMixin):
+class ModelYearReportSupplementalSerializer(UserSerializerMixin):
     status = EnumField(ModelYearReportStatuses)
     credit_activity = SerializerMethodField()
     supplier_information = SerializerMethodField()
@@ -219,7 +214,6 @@ class ModelYearReportSupplementalSerializer(ModelSerializer, UserMixin):
     attachments = SerializerMethodField()
     from_supplier_comments = SerializerMethodField()
     actual_status = SerializerMethodField()
-    create_user = SerializerMethodField()
     reassessment = SerializerMethodField()
 
     def get_reassessment(self, obj):

@@ -6,11 +6,9 @@ from api.models.model_year_report_statuses import ModelYearReportStatuses
 from api.models.supplemental_report_history import SupplementalReportHistory
 from api.models.supplemental_report import SupplementalReport
 from api.models.user_profile import UserProfile
-from api.serializers.user import MemberSerializer
-from ..mixins.user_mixin import UserMixin
 from django.db.models import Q
 from api.utilities.report_history import exclude_from_history
-from api.mixins.user_mixin import UserMixin
+from api.mixins.user_mixin import UserSerializerMixin
 
 
 class ModelYearReportNoaSerializer(ModelSerializer):
@@ -29,11 +27,10 @@ class ModelYearReportNoaSerializer(ModelSerializer):
         )
 
 
-class SupplementalNOASerializer(ModelSerializer, UserMixin):
+class SupplementalNOASerializer(UserSerializerMixin):
     status = SerializerMethodField()
     is_reassessment = SerializerMethodField()
     display_superseded_text = SerializerMethodField()
-    update_user = SerializerMethodField()
 
     def get_status(self, obj):
         return obj.validation_status.value
@@ -72,9 +69,8 @@ class SupplementalNOASerializer(ModelSerializer, UserMixin):
         )
 
 
-class ModelYearReportHistorySerializer(ModelSerializer, UserMixin):
+class ModelYearReportHistorySerializer(UserSerializerMixin):
     status = SerializerMethodField()
-    create_user = SerializerMethodField()
     is_reassessment = SerializerMethodField()
 
     def get_is_reassessment(self, obj):
@@ -100,11 +96,10 @@ class SupplementalReportHistorySerializer(ModelYearReportHistorySerializer):
         fields = ModelYearReportHistorySerializer.Meta.fields + ('supplemental_report_id',)
 
 
-class SupplementalReportSerializer(ModelSerializer, UserMixin):
+class SupplementalReportSerializer(UserSerializerMixin):
     status = SerializerMethodField()
     history = SerializerMethodField()
     is_supplementary = SerializerMethodField()
-    update_user = SerializerMethodField()
 
     def get_is_supplementary(self, obj):
         return True
@@ -144,12 +139,11 @@ class SupplementalReportSerializer(ModelSerializer, UserMixin):
         )
 
 
-class SupplementalModelYearReportSerializer(ModelSerializer, UserMixin):
+class SupplementalModelYearReportSerializer(UserSerializerMixin):
     status = SerializerMethodField()
     history = SerializerMethodField()
     supplemental_id = SerializerMethodField()
     is_supplementary = SerializerMethodField()
-    update_user = SerializerMethodField()
 
     def get_is_supplementary(self, obj):
         return False

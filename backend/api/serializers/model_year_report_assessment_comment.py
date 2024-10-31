@@ -1,13 +1,10 @@
-from rest_framework.serializers import ModelSerializer, \
-    SerializerMethodField
 from api.models.model_year_report_assessment_comment import ModelYearReportAssessmentComment
-from ..mixins.user_mixin import UserMixin
+from api.mixins.user_mixin import UserSerializerMixin
 
-class ModelYearReportAssessmentCommentSerializer(ModelSerializer, UserMixin):
+class ModelYearReportAssessmentCommentSerializer(UserSerializerMixin):
     """
     Serializer for assessment comments
     """
-    create_user = SerializerMethodField()
     
     class Meta:
         model = ModelYearReportAssessmentComment

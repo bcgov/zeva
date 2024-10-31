@@ -1,14 +1,11 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
-
 from api.models.model_year_report_confirmation import \
     ModelYearReportConfirmation
 from api.serializers.signing_authority_assertion import \
     SigningAuthorityAssertionSerializer
-from api.mixins.user_mixin import UserMixin
+from api.mixins.user_mixin import UserSerializerMixin
 
 
-class ModelYearReportConfirmationSerializer(ModelSerializer, UserMixin):
-    create_user = SerializerMethodField()
+class ModelYearReportConfirmationSerializer(UserSerializerMixin):
     signing_authority_assertion = SigningAuthorityAssertionSerializer()
 
 

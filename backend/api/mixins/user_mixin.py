@@ -1,3 +1,4 @@
+from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from api.models.user_profile import UserProfile
 from api.serializers.user import UserBasicSerializer
 from api.serializers.organization import OrganizationNameSerializer
@@ -32,7 +33,11 @@ def get_user_data(username, request):
         }
 
 
-class UserMixin:
+class UserSerializerMixin(ModelSerializer):
+    create_user = SerializerMethodField()
+
+    update_user = SerializerMethodField()
+
     def get_create_user(self, obj):
         username = getattr(obj, "create_user", None)
         request = self.context.get("request")

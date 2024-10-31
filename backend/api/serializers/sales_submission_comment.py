@@ -1,19 +1,15 @@
 """
 Sales Submission Comment Serializer
 """
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
-from api.models.user_profile import UserProfile
 from api.models.sales_submission_comment import SalesSubmissionComment
-from api.serializers.user import MemberSerializer
-from ..mixins.user_mixin import UserMixin
+from api.mixins.user_mixin import UserSerializerMixin
 
 
-class SalesSubmissionCommentSerializer(ModelSerializer, UserMixin):
+class SalesSubmissionCommentSerializer(UserSerializerMixin):
     """
     Serializer for sales submission comments
     """
-    create_user = SerializerMethodField()
 
     def update(self, instance, validated_data):
         instance.comment = validated_data.get("comment")

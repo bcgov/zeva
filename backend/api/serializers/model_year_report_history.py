@@ -1,12 +1,10 @@
 from enumfields.drf import EnumField
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
-from ..models.model_year_report_history import ModelYearReportHistory
-from ..models.model_year_report_statuses import ModelYearReportStatuses
-from ..mixins.user_mixin import UserMixin
+from api.models.model_year_report_history import ModelYearReportHistory
+from api.models.model_year_report_statuses import ModelYearReportStatuses
+from api.mixins.user_mixin import UserSerializerMixin
 
-class ModelYearReportHistorySerializer(ModelSerializer, UserMixin):
+class ModelYearReportHistorySerializer(UserSerializerMixin):
     
-    create_user = SerializerMethodField()
     validation_status = EnumField(ModelYearReportStatuses, read_only=True)
 
         

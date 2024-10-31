@@ -9,8 +9,6 @@ from api.models.credit_agreement_statuses import CreditAgreementStatuses
 from api.models.credit_agreement_transaction_types import CreditAgreementTransactionTypes
 from api.models.credit_class import CreditClass
 from api.models.model_year import ModelYear
-from api.models.user_profile import UserProfile
-from api.serializers.user import MemberSerializer
 from api.serializers.credit_agreement_attachment import CreditAgreementAttachmentSerializer
 from api.serializers.credit_agreement_comment import CreditAgreementCommentSerializer
 from api.serializers.credit_agreement_content import \
@@ -18,9 +16,9 @@ from api.serializers.credit_agreement_content import \
 from .organization import OrganizationSerializer
 from api.models.credit_agreement_history import CreditAgreementHistory
 from api.services.minio import minio_remove_object
-from ..mixins.user_mixin import UserMixin
+from api.mixins.user_mixin import UserSerializerMixin
 
-class CreditAgreementSerializer(ModelSerializer, UserMixin):
+class CreditAgreementSerializer(UserSerializerMixin):
     organization = OrganizationSerializer(read_only=True)
     transaction_type = EnumField(CreditAgreementTransactionTypes)
     credit_agreement_content = CreditAgreementContentSerializer(
@@ -29,7 +27,6 @@ class CreditAgreementSerializer(ModelSerializer, UserMixin):
     status = EnumField(CreditAgreementStatuses)
     comments = SerializerMethodField()
     attachments = SerializerMethodField()
-    update_user = SerializerMethodField()
 
     def get_comments(self, obj):
         request = self.context.get('request')
@@ -268,15 +265,13 @@ class CreditAgreementSaveSerializer(ModelSerializer, EnumSupportSerializerMixin)
 
 
 class CreditAgreementListSerializer(
-        ModelSerializer, EnumSupportSerializerMixin, UserMixin
+       UserSerializerMixin, EnumSupportSerializerMixin
 ):
-    update_user=SerializerMethodField()
     organization = OrganizationSerializer()
     credit_agreement_content = CreditAgreementContentSerializer(
         many=True, read_only=True
     )
     status = EnumField(CreditAgreementStatuses)
-    update_user = SerializerMethodField()
     transaction_type = EnumField(CreditAgreementTransactionTypes)
 
     class Meta:
