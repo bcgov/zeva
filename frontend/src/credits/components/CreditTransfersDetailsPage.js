@@ -336,8 +336,9 @@ const CreditTransfersDetailsPage = (props) => {
           {latestSubmit && (
             <div className="text-blue mb-0" data-testid="submit-signature">
               Signed and submitted by {latestSubmit.createUser.displayName}{' '}
-              of&nbsp;
-              {latestSubmit.createUser.organization.name}&nbsp;
+              {latestSubmit.createUser.organization && 
+              <>of&nbsp;{latestSubmit.createUser.organization.name}&nbsp;</>
+              }
               {moment(latestSubmit.createTimestamp)
                 .tz('America/Vancouver')
                 .format('YYYY-MM-DD hh:mm:ss z')}
