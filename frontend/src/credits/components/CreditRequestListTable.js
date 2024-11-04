@@ -13,6 +13,7 @@ import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests'
 import calculateNumberOfPages from '../../app/utilities/calculateNumberOfPages'
 import CustomFilterComponent from '../../app/components/CustomFilterComponent'
 import moment from 'moment-timezone'
+import isLegacySubmission from '../../app/utilities/isLegacySubmission'
 
 const CreditRequestListTable = (props) => {
   const {
@@ -38,6 +39,15 @@ const CreditRequestListTable = (props) => {
     setApplyFiltersCount((prev) => {
       return prev + 1
     })
+  }
+
+  const getSubmissionTotals = (submission) => {
+    if (['DRAFT', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0) {
+      const totals = submission.totals.vins + submission.unselected
+      return totals > 0 ? totals : '-'
+    }
+
+    return submission.totals.vins > 0 ? submission.totals.vins : '-'
   }
 
   const columns = [
@@ -80,17 +90,29 @@ const CreditRequestListTable = (props) => {
     },
     {
       accessor: (item) => {
-        if (['DRAFT', 'SUBMITTED'].indexOf(item.validationStatus) >= 0) {
-          const totals = item.totals.vins + item.unselected
-          return totals > 0 ? totals : '-'
+        if (isLegacySubmission(item)) {
+          return getSubmissionTotals(item)
         }
-
-        return item.totals.vins > 0 ? item.totals.vins : '-'
+        return '-'
+      },
+      className: 'text-right',
+      Header: 'Total Eligible Sales',
+      maxWidth: 150,
+      id: 'total-sales',
+      filterable: false,
+      sortable: false
+    },
+    {
+      accessor: (item) => {
+        if (!isLegacySubmission(item)) {
+          return getSubmissionTotals(item)
+        }
+        return '-'
       },
       className: 'text-right',
       Header: 'Total Eligible ZEVs Supplied',
       maxWidth: 150,
-      id: 'total-sales',
+      id: 'total-supplied',
       filterable: false,
       sortable: false
     },
