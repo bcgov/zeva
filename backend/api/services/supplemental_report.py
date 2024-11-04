@@ -1,5 +1,9 @@
 from api.models.supplemental_report import SupplementalReport
 from api.models.model_year_report_statuses import ModelYearReportStatuses
+from api.models.model_year_report import ModelYearReport
+from api.models.supplemental_report_credit_activity import (
+    SupplementalReportCreditActivity,
+)
 
 
 def get_map_of_model_year_report_ids_to_latest_supplemental_ids(
@@ -55,3 +59,56 @@ def get_latest_assessed_supplemental(model_year_report):
     if report_in_question is not None:
         result = SupplementalReport.objects.get(id=report_in_question.id)
     return result
+
+
+def get_previous_reassessment_credit_activity(model_year_report_id, category):
+    result = []
+    report = (
+        ModelYearReport.objects.filter(id=model_year_report_id)
+        .select_related("organization", "model_year")
+        .first()
+    )
+    if report is not None:
+        previous_model_year = int(report.model_year.name) - 1
+        previous_report = (
+            ModelYearReport.objects.filter(organization=report.organization)
+            .filter(model_year__name=previous_model_year)
+            .filter(
+                validation_status__in=[
+                    ModelYearReportStatuses.ASSESSED,
+                    ModelYearReportStatuses.REASSESSED,
+                ]
+            )
+            .first()
+        )
+        if previous_report is not None:
+            supplemental_report = (
+                SupplementalReport.objects.filter(model_year_report=previous_report)
+                .filter(
+                    status__in=[
+                        ModelYearReportStatuses.ASSESSED,
+                        ModelYearReportStatuses.REASSESSED,
+                    ]
+                )
+                .order_by("-create_timestamp")
+                .first()
+            )
+            if supplemental_report is not None:
+                result = list(
+                    SupplementalReportCreditActivity.objects.filter(
+                        supplemental_report=supplemental_report
+                    )
+                    .filter(category=category)
+                    .select_related("model_year")
+                )
+    return result
+
+
+def get_reassessment_credit_activity(supplemental_id, category):
+    return list(
+        SupplementalReportCreditActivity.objects.filter(
+            supplemental_report=supplemental_id
+        )
+        .filter(category=category)
+        .select_related("model_year")
+    )
