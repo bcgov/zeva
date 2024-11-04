@@ -40,6 +40,17 @@ class ModelYearReportZevSalesSerializer(UserSerializerMixin):
 
 class ModelYearReportSupplementalCreditActivitySerializer(ModelSerializer):
     model_year = ModelYearSerializer()
+    category = SerializerMethodField()
+
+    def get_category(self, obj):
+        context = getattr(self, "context", None)
+        if context is not None and context.get("category_transforms") is not None:
+            category_transforms = context.get("category_transforms")
+            category = obj.category
+            new_category = category_transforms.get(category)
+            if new_category is not None:
+                return new_category
+        return obj.category
 
     class Meta:
         model = SupplementalReportCreditActivity
