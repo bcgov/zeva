@@ -40,8 +40,8 @@ class TestUsers(BaseTestCase):
         response = self.clients[self.user1.username].get("/api/users/current")
         self.assertEqual(response.status_code, 200)
 
+    """user can get details of users in their own org"""
     def test_get_details_other_user_in_org(self):
-        """user can get details of users in their own org"""
         response = self.clients[self.user1.username].get("/api/users/{}".format(self.user2.id))
         self.assertEqual(response.status_code, 200)
 
@@ -50,8 +50,8 @@ class TestUsers(BaseTestCase):
         response = self.clients[self.user1.username].get("/api/users/{}".format(self.user3.id))
         self.assertEqual(response.status_code, 404)
     
+    """user can update their own profile"""
     def test_edit_self(self):
-        """user can update their own profile"""
         response = self.clients[self.user1.username].put(
         "/api/users/{}".format(self.user1.id),
         {'first_name':"test change",
@@ -65,8 +65,8 @@ class TestUsers(BaseTestCase):
         self.assertEquals(response.data['first_name'], 'test change')
         self.assertEqual(response.status_code, 200)
 
+    """that user can update other users in their own org"""
     def test_edit_user_in_same_org(self):
-        """that user can update other users in their own org"""
         response = self.clients[self.user1.username].put(
             "/api/users/{}".format(self.user2.id),
             {'first_name':"test change",
@@ -79,8 +79,8 @@ class TestUsers(BaseTestCase):
         self.assertEquals(response.data['first_name'], 'test change')
         self.assertEqual(response.status_code, 200)
 
+    """updating a user from another org should fail"""
     def test_edit_user_in_other_org(self):
-        """updating a user from another org should fail"""
         response = self.clients[self.user1.username].put(
             "/api/users/{}".format(self.user3.id),
             {'first_name':"test change",
