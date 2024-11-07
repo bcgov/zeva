@@ -352,10 +352,13 @@ class Router extends Component {
               <Route
                 path={ROUTES_ORGANIZATIONS.DETAILS}
                 render={() => (
+                  user.isGovernment
+                    && (
                   <VehicleSupplierDetailsContainer
                     keycloak={keycloak}
                     user={user}
                   />
+                  )
                 )}
               />
               <Route
