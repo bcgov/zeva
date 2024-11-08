@@ -1,4 +1,4 @@
-name: Scheduled cleanup old workflow runs
+name: Cleanup old workflow runs (scheduled)
 on:
   schedule:
     - cron: "0 0 * * 0"
