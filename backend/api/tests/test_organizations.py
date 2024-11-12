@@ -118,14 +118,9 @@ class TestOrganizations(BaseTestCase):
         response = self.clients['RTAN_BCEID'].get("/api/organizations/{}/list_by_year".format(self.other_organization.id))
         self.assertEqual(response.status_code, 403)
 
-    """a bceid user cannot see model years for another org"""
-    def test_bceid_get_model_years_other_org(self):
-        response = self.clients['RTAN_BCEID'].get("/api/organizations/{}/model_years".format(self.other_organization.id))
-        self.assertEqual(response.status_code, 403)
-
-    """a bceid user can see model years for their own org"""
+    """a bceid user can see model years"""
     def test_bceid_get_model_years(self):
-        response = self.clients['RTAN_BCEID'].get("/api/organizations/{}/model_years".format(self.organization.id))
+        response = self.clients['RTAN_BCEID'].get("/api/organizations/model_years")
         self.assertEqual(response.status_code, 200)
 
     """
@@ -229,8 +224,8 @@ class TestOrganizations(BaseTestCase):
         response = self.clients['RTAN'].get("/api/organizations/{}/list_by_year".format(self.other_organization.id))
         self.assertEqual(response.status_code, 200)
 
-    """an idir user can see model years for an org"""
+    """an idir user can see model years"""
     def test_idir_get_model_years(self):
-        response = self.clients['RTAN'].get("/api/organizations/{}/model_years".format(self.other_organization.id))
+        response = self.clients['RTAN'].get("/api/organizations/model_years")
         self.assertEqual(response.status_code, 200)
         

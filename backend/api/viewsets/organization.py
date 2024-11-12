@@ -47,12 +47,22 @@ class OrganizationViewSet(
     This viewset automatically provides `list`, `create`, `retrieve`,
     and  `update`  actions.
     """
-    permission_classes = [OrganizationPermissions & SameOrganizationPermissions]
+    permission_classes = [SameOrganizationPermissions & OrganizationPermissions]
     http_method_names = ['get', 'post', 'put', 'patch']
     same_org_permissions_context = {
         "default_manager": Organization.objects,
         "default_path_to_org": (),
-        "actions_not_to_check": ["retrieve", "partial_update", "users", "list", "mine"]
+        "actions_not_to_check": [
+            "retrieve",
+            "update",
+            "partial_update",
+            "users",
+            "sales",
+            "recent_supplier_balance",
+            "supplier_transactions",
+            "ldv_sales",
+            "list_by_year",
+        ]
     }
     serializer_classes = {
         'default': OrganizationSerializer,
@@ -170,7 +180,7 @@ class OrganizationViewSet(
         Get the list of transactions of a specific organization
         """
         if not request.user.is_government:
-            return Response(None)
+            return Response({'detail': 'You do not have permission to perform this action.'}, status=status.HTTP_403_FORBIDDEN)
 
         transactions = aggregate_transactions_by_submission(pk)
 
@@ -249,8 +259,8 @@ class OrganizationViewSet(
             return Response(serializer.data)
         return Response([])
     
-    @action(detail=True, methods=['get'])
-    def model_years(self, request, pk=None):
+    @action(detail=False, methods=['get'])
+    def model_years(self, request):
         model_years = get_model_years()
         serializer = ModelYearSerializer(model_years, many=True)
         return Response(serializer.data)
