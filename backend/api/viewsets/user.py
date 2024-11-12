@@ -1,7 +1,7 @@
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-
+from rest_framework import status
 from api.models.user_profile import UserProfile
 from api.permissions.user import UserPermissions
 from api.serializers.user import UserSerializer, UserSaveSerializer
@@ -53,7 +53,9 @@ class UserViewSet(
     
     @action(detail=False)
     def download_active(self, request):
-
-        active_bceid_users_excel = create_bceid_emails_sheet()
-
-        return active_bceid_users_excel
+        user = self.request.user
+        if user.is_government:
+            active_bceid_users_excel = create_bceid_emails_sheet()
+            return active_bceid_users_excel
+        else:
+            return Response({'detail': 'You do not have permission to perform this action.'}, status=status.HTTP_403_FORBIDDEN)
