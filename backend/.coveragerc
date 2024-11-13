@@ -15,5 +15,9 @@ exclude_lines =
 omit =
     zeva/wsgi.py
     api/management/*
+    */tests/*
+    */migrations/*
+    */models/*
+    */fixtures/*
 
 fail_under = 80
