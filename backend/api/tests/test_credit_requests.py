@@ -97,14 +97,12 @@ class TestSales(BaseTestCase):
         self.assertEqual(response.status_code, 200)
     """user can edit comment that they wrote"""
     def test_update_own_comment(self):
-        
         response = self.clients['RTAN'].patch("/api/credit-requests/{}/update_comment".format(self.comment.id),
             {'comment':"test edit", }, content_type='application/json',
         )
         self.assertEqual(response.status_code, 200)
     """user cannot edit comment that they didn't write"""
     def test_update_others_comment(self):
-
         response = self.clients['RTAN'].patch("/api/credit-requests/{}/update_comment".format(self.other_comment.id),
             {'comment':"test edit fail"}, content_type='application/json',
         )
@@ -114,13 +112,11 @@ class TestSales(BaseTestCase):
         response = self.clients['RTAN'].patch("/api/credit-requests/{}/delete_comment".format(self.comment.id),
         )
         self.assertEqual(response.status_code, 200)
-    
+    """user cannot delete another users comment"""
     def test_delete_other_comment(self):
         response = self.clients['RTAN'].patch("/api/credit-requests/{}/delete_comment".format(self.other_comment.id),
         )
         self.assertEqual(response.status_code, 403)
-
-
     """some submission statuses can not be changed by bceid"""
     def test_validate_validation_status(self):
         sub = SalesSubmission.objects.create(
@@ -128,7 +124,6 @@ class TestSales(BaseTestCase):
             submission_sequence=1,
             validation_status=SalesSubmissionStatuses.NEW
         )
-
         request = {
             'user': self.users['RTAN_BCEID']
         }
