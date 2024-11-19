@@ -30,13 +30,13 @@ const CreditAgreementsAlert = (props) => {
   switch (status) {
     case 'DRAFT':
       title = 'Draft'
-      message = `saved, ${date} by ${typeof updateUser === 'string' ? updateUser : updateUser.firstName + " " + updateUser.lastName}.`
+      message = `saved, ${date} by ${updateUser.displayName}.`
       classname = 'alert-warning'
       break
 
     case 'RECOMMENDED':
       title = 'Recommended'
-      message = `recommended for issuance, ${date} by ${typeof updateUser === 'string' ? updateUser : updateUser.firstName + " " + updateUser.lastName}.`
+      message = `recommended for issuance, ${date} by ${updateUser.displayName}.`
       classname = 'alert-primary'
       break
 
@@ -72,7 +72,7 @@ CreditAgreementsAlert.defaultProps = {
 
 CreditAgreementsAlert.propTypes = {
   date: PropTypes.string.isRequired,
-  user: PropTypes.string.isRequired,
+  updateUser: PropTypes.shape().isRequired,
   status: PropTypes.string.isRequired,
   transactionType: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,

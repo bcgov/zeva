@@ -1230,7 +1230,6 @@ class ModelYearReportViewset(
 
     @action(detail=True, methods=["get"])
     def assessed_supplementals(self, request, pk):
-        print('::::::::', request)
         report = get_object_or_404(ModelYearReport, pk=pk)
         data = report.get_assessed_supplementals()
         serializer = ModelYearReportSupplementalSerializer(

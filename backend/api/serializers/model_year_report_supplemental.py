@@ -1,8 +1,8 @@
 from django.core.exceptions import ImproperlyConfigured
+from django.db.models import Q
 from enumfields.drf import EnumField
 from rest_framework.serializers import ModelSerializer, \
     SerializerMethodField, SlugRelatedField
-
 from api.models.supplemental_report import SupplementalReport
 from api.models.supplemental_report_sales import SupplementalReportSales
 from api.models.model_year_report_address import ModelYearReportAddress
@@ -316,10 +316,10 @@ class ModelYearReportSupplementalSerializer(UserSerializerMixin):
         return model_year_report.validation_status.value
 
     def get_from_supplier_comments(self, obj):
+        
         comments = SupplementalReportComment.objects.filter(
-            supplemental_report_id=obj.id
-        ).order_by('-create_timestamp')
-
+            Q(supplemental_report_id=obj.id) | Q(supplemental_report_id=obj.supplemental_id)
+                ).order_by('-create_timestamp')
         if comments.exists():
             serializer = ModelYearReportSupplementalCommentSerializer(comments, many=True)
             return serializer.data
