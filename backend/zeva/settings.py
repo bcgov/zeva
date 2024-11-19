@@ -13,10 +13,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 import sys
 
-from pika import ConnectionParameters, PlainCredentials
-from django.db.models import BigAutoField
-
-from . import database, amqp, email, keycloak, minio
+from . import database, email, keycloak, minio
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -50,7 +47,6 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django_celery_beat',
     'rest_framework',
     'zeva',
     'corsheaders',
@@ -109,15 +105,6 @@ DATABASES = {
 }
 
 KEYCLOAK = keycloak.config()
-
-AMQP = amqp.config()
-
-AMQP_CONNECTION_PARAMETERS = ConnectionParameters(
-    host=AMQP['HOST'],
-    port=AMQP['PORT'],
-    virtual_host=AMQP['VHOST'],
-    credentials=PlainCredentials(AMQP['USER'], AMQP['PASSWORD'])
-)
 
 FILE_UPLOAD_HANDLERS = [
     'django.core.files.uploadhandler.TemporaryFileUploadHandler'
@@ -193,10 +180,6 @@ if RUNSERVER:
             },
             'django.request': {
                 'level': 'INFO',
-                'handlers': ['console'],
-            },
-            'celery': {
-                'level': 'WARNING',
                 'handlers': ['console'],
             },
             'zeva': {

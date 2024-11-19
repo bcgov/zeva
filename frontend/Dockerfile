@@ -1,4 +1,4 @@
-FROM node:16.20.0
+FROM node:20.18.0-bookworm-slim
 
 WORKDIR /web
 
