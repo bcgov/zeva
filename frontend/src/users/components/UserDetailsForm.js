@@ -100,7 +100,7 @@ const UserDetailsForm = (props) => {
               <div className="form-layout row">
                 <span className="col-md-8">
                   <TextInput
-                    defaultValue={details.firstName}
+                    defaultValue={details.firstName || ''}
                     errorMessage={
                       'firstName' in errorFields && errorFields.firstName
                     }
@@ -111,7 +111,7 @@ const UserDetailsForm = (props) => {
                     name="firstName"
                   />
                   <TextInput
-                    defaultValue={details.lastName}
+                    defaultValue={details.lastName || ''}
                     errorMessage={
                       'lastName' in errorFields && errorFields.lastName
                     }
@@ -122,7 +122,7 @@ const UserDetailsForm = (props) => {
                     name="lastName"
                   />
                   <TextInput
-                    defaultValue={details.title}
+                    defaultValue={details.title || ''}
                     errorMessage={'title' in errorFields && errorFields.title}
                     handleInputChange={handleInputChange}
                     id="jobTitle"
@@ -131,7 +131,7 @@ const UserDetailsForm = (props) => {
                     name="title"
                   />
                   <TextInput
-                    defaultValue={details.username}
+                    defaultValue={details.username || ''}
                     errorMessage={
                       'username' in errorFields && errorFields.username
                     }
@@ -142,7 +142,7 @@ const UserDetailsForm = (props) => {
                     name="username"
                   />
                   <TextInput
-                    defaultValue={details.keycloakEmail}
+                    defaultValue={details.keycloakEmail || ''}
                     details={
                       accountType === 'BCeID'
                         ? `the email associated with the ${accountType} account`
@@ -161,7 +161,7 @@ const UserDetailsForm = (props) => {
                     name="keycloakEmail"
                   />
                   <TextInput
-                    defaultValue={details.email}
+                    defaultValue={details.email || ''}
                     details="the email used to receive notifications, if different from above"
                     errorMessage={'email' in errorFields && errorFields.email}
                     handleInputChange={handleInputChange}
@@ -172,7 +172,7 @@ const UserDetailsForm = (props) => {
                   />
                   {accountType === 'BCeID' && (
                     <TextInput
-                      defaultValue={details.phone}
+                      defaultValue={details.phone || ''}
                       errorMessage={'phone' in errorFields && errorFields.phone}
                       handleInputChange={handleInputChange}
                       id="phone"
