@@ -41,7 +41,7 @@ def format_dataframe(df):
 
 
 @transaction.atomic
-def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo, previous_excelfile):
+def ingest_icbc_spreadsheet(current_excelfile, current_excelfile_name, requesting_user, dateCurrentTo, previous_excelfile):
     try:
         start_time = time.time()
 
@@ -71,7 +71,7 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo, previous_
         # Latest file processing
         df_l = []
         for df in pd.read_csv(
-            excelfile, sep=",", error_bad_lines=False, iterator=True, low_memory=True,
+            current_excelfile, sep=",", error_bad_lines=False, iterator=True, low_memory=True,
             chunksize=50000, header=0
         ):
             # df = format_dataframe(df) # pre-processing manually for now
@@ -95,7 +95,7 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo, previous_
         # latest filename
         if c_result.empty:
             print("No file changes detected.")
-            current_to_date.filename = excelfile
+            current_to_date.filename = current_excelfile_name
             current_to_date.save()
             return (True, 0, 0)
 
@@ -210,7 +210,7 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo, previous_
         has completed. If the upload failed then the IcbcUploadDate
         object will have an empty filename which we can skip on
         next upload """
-        current_to_date.filename = excelfile
+        current_to_date.filename = current_excelfile_name
         current_to_date.save()
 
         print("Total processing time: ", time.time() - start_time)
