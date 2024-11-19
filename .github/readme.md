@@ -27,7 +27,7 @@ Notes: the change may take about 20 minutes to be promoted to Zeva development e
 
 ## Merge the tracking pull request and create the new release branch
 
-- Squash and merge the tracking pull request to master
+- Squash merge the tracking pull request to master
 - Create the release on GitHub from master branch
 - Create the new release branch from master branch (this is done automatically by pipeline create-release.yaml)
 - Change the new release branch as the default branch in the repo and update the branch protection rules https://github.com/bcgov/zeva/settings/branches
