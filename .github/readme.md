@@ -9,61 +9,30 @@
 
 Notes: the change may take about 20 minutes to be promoted to Zeva development environment on Openshift
 
-## Add the build-on-dev to the end of pull request's title
-
-The "Build PR on Dev" pipeline will be triggered when it identified pull request's title ends with "build-on-dev"
-
-# Production release
-
-## Pre-production release
-
-- Update the description of the tracking pull request
-- Verify the changes made during the previous post production release
-
-## Production release
-
-- Manually trigger the pipeline release-build.yaml (Release Build 1.49.0)
-
-## Post production release
-
-### Merge the tracking pull request and create the new release branch
-
-- Squash merge the tracking pull request to master
-- Create the release on GitHub from master branch
-- Create the new release branch from master branch (this is done automatically by pipeline create-release.yaml)
-- Change the new release branch as the default branch in the repo and update the branch protection rules https://github.com/bcgov/zeva/settings/branches
-
-### Updates for the new release branch
-
-- dev-build.yaml
-  - on -> push -> branches
-  - env -> PR_NUMBER
-  - env -> VERSION
-  - jobs -> call-unit-test -> with -> pr-number
-- Update frontend/package.json version and create the new tracking pull request
-- Update release-build.yaml
-  - name
-  - env -> PR_NUMBER
-  - env -> VERSION
-  - jobs -> call-unit-test -> with -> pr-numb
-- Create the trackings pull request to merge the new release branch to master. Update the abour PR_NUMBER after the trackings pull request is created.
-
 # Pipelines
 
 ## Primary Pipelines
 
-- build-on-dev.yaml (Build PR on Dev): Build pull request if the string build-on-dev is appended at the end of pull request title
-- dev-build.yaml (Dev Build 1.49.0): Every commit on the current release branch is automatically released to Dev.
-- release-build.yaml (Release Build 1.49.0): This is a manually managed pipeline. It needs to be triggered manually to build the current release branch and deploy on Test and further on Prod.
-- create-release.yaml (Create Release after merging to master): Automatically tag and create the release after merging release branch to master. The description of the tracking pull request becomes release notes.
+- dev-ci.yaml: Build the tracking pull request and delpoy on Dev
+- test-ci.yaml: Tag the running images on Dev to Test and delpoy on Test
+- prod-ci.yaml: Tag the running images on Test to Test and delpoy on Prod
 
 ## Other Pipelines
 
 - cleanup-cron-workflow-runs.yaml (Scheduled cleanup old workflow runs): a cron job running periodically to cleanup old workflow runs
 - cleanup-workflow-runs.yaml (Cleanup old workflow runs): manually cleanup the workflow runs
 - emergency-release-build.yaml (Emergency Release Build 1.47.1): the pipeline built for emergency release 1.47.1
-- pr-build-template.yaml (PR Build Template): a pipeline template for pull request build
-- pr-lable.yaml (Label PR): ignore this one for now, it is automatically triggered after the pull request is merged or closed
-- pr-teardown.yaml (Teardown PR on Dev): remove the deployed pull request on Dev
-- release-build.yaml (Release Build 1.49.0): a pipeline to build release branch
-- unit-test-template.yaml (Unit Test Template): a pipeline template for unit test
+
+# Post production release
+
+## Merge the tracking pull request and create the new release branch
+
+- Squash merge the tracking pull request to master
+- Create the release on GitHub from master branch
+- Create the new release branch from master branch (this is done automatically by pipeline create-release.yaml)
+- Change the new release branch as the default branch in the repo and update the branch protection rules https://github.com/bcgov/zeva/settings/branches
+
+## Updates for the new release branch
+
+- Update frontend/package.json version in the new release branch
+- Create the new tracking pull request to merge the nre release branch to master
