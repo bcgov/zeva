@@ -201,7 +201,7 @@ class SalesSubmissionBaseListSerializer(
         model = SalesSubmission
         fields = [
             'id', 'submission_history_timestamp', 'submission_history', 'organization', 'totals', 'unselected',
-            'total_warnings', 'total_credits', 'validation_status', 'submission_date'
+            'total_warnings', 'total_credits', 'validation_status'
         ]
 
 
