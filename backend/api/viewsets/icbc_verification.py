@@ -1,26 +1,21 @@
 import json
 import os
-import urllib.request
 
 from django.http import HttpResponse
-from rest_framework import mixins, viewsets
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from api.services.icbc_upload import ingest_icbc_spreadsheet
-from api.services.minio import minio_get_object, minio_remove_object
+from api.services.minio import get_minio_object, minio_remove_object
 from api.models.icbc_upload_date import IcbcUploadDate
 from api.serializers.icbc_upload_date import IcbcUploadDateSerializer
-from auditable.views import AuditableMixin
 
 
-class IcbcVerificationViewSet(
-        viewsets.ViewSet, AuditableMixin,
-        viewsets.GenericViewSet, mixins.ListModelMixin
-):
-    permission_classes = (AllowAny,)
-    http_method_names = ['get', 'post', 'put', 'patch']
+class IcbcVerificationViewSet(viewsets.GenericViewSet):
+    permission_classes = [AllowAny]
+    http_method_names = ['get', 'post']
 
     serializer_classes = {
         'default': IcbcUploadDateSerializer
@@ -40,6 +35,9 @@ class IcbcVerificationViewSet(
 
     @action(detail=False, methods=['post'])
     def chunk_upload(self, request):
+        user = request.user
+        if not user.is_government:
+            return Response(status=status.HTTP_403_FORBIDDEN)
         try:
             data = request.FILES.get('files')
             os.rename(data.temporary_file_path(), data.name)
@@ -54,8 +52,10 @@ class IcbcVerificationViewSet(
     @action(detail=False, methods=['post'])
     def upload(self, request):
         user = request.user
+        if not user.is_government:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        
         filename = request.data.get('filename')
-
         try:
             try:
                 # get previous upload file so we can compare
@@ -69,27 +69,21 @@ class IcbcVerificationViewSet(
 
             print("Last upload date", last_icbc_date.upload_date)
             
-            # download previously uploaded file from minio to local directory
+            # get previous file
             previous_filename = last_icbc_date.filename
-            print("Downlading previous file", previous_filename)
-            last_url = minio_get_object(previous_filename)
-            urllib.request.urlretrieve(last_url, previous_filename)
+            print("Downloading previous file", previous_filename)
+            previous_file = get_minio_object(previous_filename)
             
-            # download latest file from minio to local directory
-            print("Downlading latest file", filename)
-            url = minio_get_object(filename)
-            urllib.request.urlretrieve(url, filename)
+            # get latest file
+            print("Downloading latest file", filename)
+            current_file = get_minio_object(filename)
 
             print("Starting Ingest")
             date_current_to = request.data.get('submission_current_date')
             try:
-                done = ingest_icbc_spreadsheet(filename, user, date_current_to, previous_filename)
+                done = ingest_icbc_spreadsheet(current_file, filename, user, date_current_to, previous_file)
             except:
                 return HttpResponse(status=400, content='Error processing data file. Please contact your administrator for assistance.')
-
-            # remove files from local directory
-            os.remove(filename)
-            os.remove(previous_filename)
 
             if done[0]:
                 # We remove the previous file from minio but keep the 
@@ -99,6 +93,12 @@ class IcbcVerificationViewSet(
 
         except Exception as error:
             return HttpResponse(status=400, content=error)
+        
+        finally:
+            previous_file.close()
+            previous_file.release_conn()
+            current_file.close()
+            current_file.release_conn()
 
         return HttpResponse(
             status=201,

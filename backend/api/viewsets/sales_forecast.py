@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from api.paginations import BasicPagination
 from api.permissions.sales_forecast import SalesForecastPermissions
+from api.permissions.same_organization import SameOrganizationPermissions
+from api.models.model_year_report import ModelYearReport
 from api.services.sales_forecast import (
     update_or_create,
     delete_records,
@@ -19,7 +21,12 @@ from api.serializers.sales_forecast import (
 
 
 class SalesForecastViewset(viewsets.GenericViewSet):
-    permission_classes = [SalesForecastPermissions]
+    permission_classes = [SameOrganizationPermissions & SalesForecastPermissions]
+    same_org_permissions_context = {
+        "default_manager": ModelYearReport.objects,
+        "default_path_to_org": ("organization",),
+    }
+    http_method_names = ['get', 'post']
     pagination_class = BasicPagination
 
     # pk should be a myr_id

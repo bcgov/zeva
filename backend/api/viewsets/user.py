@@ -1,26 +1,33 @@
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-
+from rest_framework import status
 from api.models.user_profile import UserProfile
 from api.permissions.user import UserPermissions
 from api.serializers.user import UserSerializer, UserSaveSerializer
 from api.services.bceid_email_spreadsheet import create_bceid_emails_sheet
-from auditable.views import AuditableMixin
+from auditable.views import AuditableCreateMixin, AuditableUpdateMixin
 
 
 class UserViewSet(
-        AuditableMixin, viewsets.GenericViewSet,
-        mixins.CreateModelMixin, mixins.ListModelMixin,
-        mixins.UpdateModelMixin, mixins.RetrieveModelMixin
+        viewsets.GenericViewSet,
+        AuditableCreateMixin,
+        AuditableUpdateMixin, 
+        mixins.ListModelMixin,
+        mixins.RetrieveModelMixin
 ):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
     and  `update`  actions.
     """
-    permission_classes = (UserPermissions,)
-    http_method_names = ['get', 'post', 'put', 'patch']
-    queryset = UserProfile.objects.all()
+    permission_classes = [UserPermissions]
+    http_method_names = ['get', 'post', 'put']
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_government:
+            return UserProfile.objects.all()
+        return UserProfile.objects.filter(organization=user.organization)
 
     serializer_classes = {
         'default': UserSerializer,
@@ -46,7 +53,9 @@ class UserViewSet(
     
     @action(detail=False)
     def download_active(self, request):
-
-        active_bceid_users_excel = create_bceid_emails_sheet()
-
-        return active_bceid_users_excel
+        user = self.request.user
+        if user.is_government:
+            active_bceid_users_excel = create_bceid_emails_sheet()
+            return active_bceid_users_excel
+        else:
+            return Response({'detail': 'You do not have permission to perform this action.'}, status=status.HTTP_403_FORBIDDEN)

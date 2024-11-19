@@ -15,12 +15,12 @@ const COMPLIANCE = {
   REPORT_ASSESSMENT: `${API_BASE_PATH}/reports/:id/assessment`,
   REPORT_ASSESSMENT_SAVE: `${API_BASE_PATH}/reports/:id/assessment_patch`,
   OBLIGATION: `${API_BASE_PATH}/compliance-activity-details`,
-  OBLIGATION_SAVE: `${API_BASE_PATH}/compliance-activity-details/update_obligation`,
+  OBLIGATION_SAVE: `${API_BASE_PATH}/compliance-activity-details/:id/update_obligation`,
   CONSUMER_SALES: `${API_BASE_PATH}/consumer-sales`,
   RETRIEVE_CONSUMER_SALES: `${API_BASE_PATH}/consumer-sales/:id`,
-  REPORT_COMPLIANCE_DETAILS_BY_ID: `${API_BASE_PATH}/compliance-activity-details/:id`,
+  REPORT_COMPLIANCE_DETAILS_BY_ID: `${API_BASE_PATH}/compliance-activity-details/:id/details`,
   REPORT_SUMMARY_CONFIRMATION: `${API_BASE_PATH}/reports/:id/submission_confirmation`,
-  REPORT_SUBMISSION: `${API_BASE_PATH}/reports/submission`,
+  REPORT_SUBMISSION: `${API_BASE_PATH}/reports/:id/submission`,
   ASSESSMENT_COMMENT_SAVE: `${API_BASE_PATH}/reports/:id/comment_save`,
   ASSESSMENT_COMMENT_PATCH: `${API_BASE_PATH}/reports/:id/comment_patch`,
   ASSESSMENT_COMMENT_DELETE: `${API_BASE_PATH}/reports/:id/comment_delete`,
@@ -30,7 +30,9 @@ const COMPLIANCE = {
   NOA_HISTORY: `${API_BASE_PATH}/reports/:id/noa_history`,
   SUPPLEMENTAL_HISTORY: `${API_BASE_PATH}/reports/:id/supplemental_history`,
   STATUSES_ALLOW_REASSESSMENT: `${API_BASE_PATH}/reports/:id/statuses_allow_reassessment`,
-  SUPPLEMENTAL_CREDIT_ACTIVITY: `${API_BASE_PATH}/reports/:supp_id/supplemental_credit_activity`
+  SUPPLEMENTAL_CREDIT_ACTIVITY: `${API_BASE_PATH}/reports/:supp_id/supplemental_credit_activity`,
+  PREVIOUS_REASSESSMENT_CREDIT_ACTIVITY: `${API_BASE_PATH}/compliance-activity-details/:id/previous_reassessment_credit_activity`,
+  REASSESSMENT_CREDIT_ACTIVITY: `${API_BASE_PATH}/compliance-activity-details/:supp_id/reassessment_credit_activity`
 }
 
 export default COMPLIANCE

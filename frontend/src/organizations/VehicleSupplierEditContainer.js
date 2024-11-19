@@ -68,11 +68,7 @@ const VehicleSupplierEditContainer = (props) => {
   }
 
   const getModelYears = () => {
-    let orgId = id
-    if (newSupplier) {
-      orgId = -1
-    }
-    axios.get(ROUTES_ORGANIZATIONS.MODEL_YEARS.replace(/:id/gi, orgId)).then((response) => {
+    axios.get(ROUTES_ORGANIZATIONS.MODEL_YEARS).then((response) => {
       const modelYearObjects = response.data
       const modelYearNames = []
       modelYearObjects.forEach((modelYearObject) => {

@@ -5,11 +5,13 @@ from api.permissions.role import RolePermissions
 from api.serializers.role import RoleSerializer
 
 
-class RoleViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class RoleViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
 
-    permission_classes = (RolePermissions,)
+    permission_classes = [RolePermissions]
     http_method_names = ['get']
-    queryset = Role.objects.all()
+
+    def get_queryset(self):
+        return Role.objects.all()
 
     serializer_classes = {
         'default': RoleSerializer

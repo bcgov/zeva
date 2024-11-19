@@ -23,13 +23,16 @@ from api.services.vehicle import vehicles_sales
 from api.serializers.vehicle import VehicleSalesSerializer
 
 
-class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin,
-                                          mixins.CreateModelMixin,
-                                          viewsets.GenericViewSet):
+class ModelYearReportConsumerSalesViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
 
-    permission_classes = (ModelYearReportPermissions,)
-    http_method_names = ['get', 'post', 'put', 'patch']
-    queryset = ModelYearReport.objects.all()
+    permission_classes = [ModelYearReportPermissions]
+    http_method_names = ['get', 'post']
+    
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_government:
+            return ModelYearReport.objects.all()
+        return ModelYearReport.objects.filter(organization=user.organization)
 
     serializer_classes = {
         'default': ModelYearReportSerializer,
@@ -146,7 +149,7 @@ class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin,
             create_user__in=users
         )
 
-        history = ModelYearReportHistorySerializer(history_list, many=True)
+        history = ModelYearReportHistorySerializer(history_list, many=True, context={'request': request})
 
         validation_status = report.validation_status.value
         if not request.user.is_government and \

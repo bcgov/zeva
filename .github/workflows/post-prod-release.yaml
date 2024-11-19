@@ -9,7 +9,7 @@ on:
 
 env:
   GH_TOKEN: ${{ github.token }}
-  
+
 jobs:
   verify-pr:
     name: Verify pull request title started with Tracking
@@ -42,20 +42,21 @@ jobs:
         id: tag_name
         with:
           source: ${{ github.event.pull_request.head.ref }}
-          find: 'release-'
-          replace: 'v'
+          find: "release-"
+          replace: "v"
 
-      - name: Create Release
-        uses: softprops/action-gh-release@v1.1.0
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
         with:
-          name: ${{ steps.tag_name.outputs.value }}
-          tag_name: ${{ steps.tag_name.outputs.value }}
-          target_commitish: master
-          body: |
-            ${{ github.event.pull_request.body }}
-          token: ${{ env.GITHUB_TOKEN }}
-          draft: false
-          prerelease: false
+          ref: master
+
+      - name: Github Release
+        uses: elgohr/Github-Release-Action@v5
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          title: ${{ steps.tag_name.outputs.value }}
+          tag: ${{ steps.tag_name.outputs.value }}
 
       - name: Get Current Default Branch and Set Tag Name
         id: get_default_branch
@@ -64,7 +65,7 @@ jobs:
           current_default_branch=$(gh api repos/${{ github.repository }} | jq -r '.default_branch')
           echo "Current default branch is: $current_default_branch"
           echo "current_default_branch=$current_default_branch" >> $GITHUB_OUTPUT
-          
+
           # # Extract the current release version number (assumes format is release-X.Y.Z)
           # current_version=$(echo "$current_default_branch" | grep -oP '\d+\.\d+\.\d+')
           # echo "Current version extracted: $current_version"
@@ -78,10 +79,10 @@ jobs:
         run: |
           # Get the current default branch from the previous step
           current_default_branch="${{ steps.get_default_branch.outputs.current_default_branch }}"
-          
+
           # Extract the current release version number (assumes format is release-X.Y.Z)
           current_version=$(echo "$current_default_branch" | grep -oP '\d+\.\d+\.\d+')
-          
+
           # Increment the minor version (X.Y.Z -> X.(Y+1).0)
           major_version=$(echo "$current_version" | cut -d. -f1)
           minor_version=$(echo "$current_version" | cut -d. -f2)
@@ -90,21 +91,16 @@ jobs:
           # Increment the minor version by 1 for the new release branch
           new_minor_version=$((minor_version + 1))
           new_release_branch="release-${major_version}.${new_minor_version}.0"
-          
+
           echo "New release branch will be: $new_release_branch"
           echo "new_release_branch=$new_release_branch" >> $GITHUB_OUTPUT
-
-      - name: Checkout repository
-        uses: actions/checkout@v4.1.1
-        with:
-          ref: master
 
       - name: Create New Release Branch
         id: create_new_release_branch
         run: |
           # Get the new release branch name from the previous step
           new_release_branch="${{ steps.get_new_release_branch.outputs.new_release_branch }}"
-          
+
           # Create the new branch from master
           git checkout -b $new_release_branch master
           git push origin $new_release_branch

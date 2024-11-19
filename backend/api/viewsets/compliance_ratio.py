@@ -5,11 +5,13 @@ from api.models.compliance_ratio import ComplianceRatio
 from api.serializers.compliance_ratio import ComplianceRatioSerializer
 
 
-class ComplianceRatioViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class ComplianceRatioViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
 
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = [permissions.AllowAny]
     http_method_names = ['get']
-    queryset = ComplianceRatio.objects.all()
+
+    def get_queryset(self):
+        return ComplianceRatio.objects.all()
 
     serializer_classes = {
         'default': ComplianceRatioSerializer

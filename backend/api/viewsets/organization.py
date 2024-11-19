@@ -2,7 +2,7 @@ from django.utils.decorators import method_decorator
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-
+from rest_framework import status
 from api.decorators.permission import permission_required
 from api.models.organization import Organization
 from api.models.organization_ldv_sales import OrganizationLDVSales
@@ -17,7 +17,8 @@ from api.serializers.organization import \
 from api.serializers.organization_ldv_sales import \
     OrganizationLDVSalesSerializer
 from api.permissions.organization import OrganizationPermissions
-from auditable.views import AuditableMixin
+from api.permissions.same_organization import SameOrganizationPermissions
+from auditable.views import AuditableCreateMixin, AuditableUpdateMixin
 from api.services.supplemental_report import get_map_of_model_year_report_ids_to_latest_supplemental_ids
 from api.services.credit_transaction import (
     aggregate_credit_balance_details,
@@ -37,21 +38,35 @@ from api.serializers.vehicle import ModelYearSerializer
 
 
 class OrganizationViewSet(
-        AuditableMixin, viewsets.GenericViewSet,
-        mixins.CreateModelMixin, mixins.ListModelMixin,
-        mixins.UpdateModelMixin, mixins.RetrieveModelMixin
+        viewsets.GenericViewSet,
+        AuditableCreateMixin, 
+        AuditableUpdateMixin,
+        mixins.RetrieveModelMixin
 ):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
     and  `update`  actions.
     """
-    permission_classes = (OrganizationPermissions,)
+    permission_classes = [SameOrganizationPermissions & OrganizationPermissions]
     http_method_names = ['get', 'post', 'put', 'patch']
-
+    same_org_permissions_context = {
+        "default_manager": Organization.objects,
+        "default_path_to_org": (),
+        "actions_not_to_check": [
+            "retrieve",
+            "update",
+            "partial_update",
+            "users",
+            "sales",
+            "recent_supplier_balance",
+            "supplier_transactions",
+            "ldv_sales",
+            "list_by_year",
+        ]
+    }
     serializer_classes = {
         'default': OrganizationSerializer,
         'mine': OrganizationWithMembersSerializer,
-        'update': OrganizationSaveSerializer,
         'create': OrganizationSaveSerializer,
         'partial_update': OrganizationSaveSerializer,
         'sales': SalesSubmissionListSerializer,
@@ -88,7 +103,7 @@ class OrganizationViewSet(
         serializer = OrganizationNameSerializer
         if request.user.is_government:
             serializer = OrganizationSerializer
-
+        
         return Response(serializer(organizations, many=True).data)
 
     @action(detail=False)
@@ -124,7 +139,7 @@ class OrganizationViewSet(
         Get the sales submissions of a specific organization
         """
         if not request.user.is_government:
-            return Response(None)
+            return Response({'detail': 'You do not have permission to perform this action.'}, status=status.HTTP_403_FORBIDDEN)
 
         sales = SalesSubmission.objects.filter(
             organization_id=pk
@@ -144,7 +159,7 @@ class OrganizationViewSet(
     @method_decorator(permission_required('VIEW_SALES'))
     def recent_supplier_balance(self, request, pk=None):
         if not request.user.is_government:
-            return Response(None)
+            return Response({'detail': 'You do not have permission to perform this action.'}, status=status.HTTP_403_FORBIDDEN)
 
         timestamp = get_timestamp_of_most_recent_reduction(pk)
         q_obj = None
@@ -165,19 +180,19 @@ class OrganizationViewSet(
         Get the list of transactions of a specific organization
         """
         if not request.user.is_government:
-            return Response(None)
+            return Response({'detail': 'You do not have permission to perform this action.'}, status=status.HTTP_403_FORBIDDEN)
 
         transactions = aggregate_transactions_by_submission(pk)
 
         serializer = CreditTransactionListSerializer(transactions, many=True)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['patch', 'put'])
+    @action(detail=True, methods=['put'])
     @method_decorator(permission_required('VIEW_SALES'))
     def ldv_sales(self, request, pk=None):
         delete_id = request.data.get('id', None)
         if not request.user.is_government:
-            return Response(None)
+            return Response({'detail': 'You do not have permission to perform this action.'}, status=status.HTTP_403_FORBIDDEN)
 
         organization = self.get_object()
         if delete_id:
@@ -233,7 +248,7 @@ class OrganizationViewSet(
     @method_decorator(permission_required('VIEW_SALES'))
     def list_by_year(self, request, pk=None):
         if not request.user.is_government:
-            return Response([])
+            return Response({'detail': 'You do not have permission to perform this action.'}, status=status.HTTP_403_FORBIDDEN)
         compliance_year = request.GET.get('year', None)
         if compliance_year:
             compliance_period_bounds = get_compliance_period_bounds(compliance_year)
@@ -244,8 +259,8 @@ class OrganizationViewSet(
             return Response(serializer.data)
         return Response([])
     
-    @action(detail=True, methods=['get'])
-    def model_years(self, request, pk=None):
+    @action(detail=False, methods=['get'])
+    def model_years(self, request):
         model_years = get_model_years()
         serializer = ModelYearSerializer(model_years, many=True)
         return Response(serializer.data)

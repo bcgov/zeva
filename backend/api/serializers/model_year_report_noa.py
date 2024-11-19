@@ -6,9 +6,9 @@ from api.models.model_year_report_statuses import ModelYearReportStatuses
 from api.models.supplemental_report_history import SupplementalReportHistory
 from api.models.supplemental_report import SupplementalReport
 from api.models.user_profile import UserProfile
-from api.serializers.user import MemberSerializer
 from django.db.models import Q
 from api.utilities.report_history import exclude_from_history
+from api.mixins.user_mixin import UserSerializerMixin
 
 
 class ModelYearReportNoaSerializer(ModelSerializer):
@@ -27,20 +27,13 @@ class ModelYearReportNoaSerializer(ModelSerializer):
         )
 
 
-class SupplementalNOASerializer(ModelSerializer):
+class SupplementalNOASerializer(UserSerializerMixin):
     status = SerializerMethodField()
-    update_user = SerializerMethodField()
     is_reassessment = SerializerMethodField()
     display_superseded_text = SerializerMethodField()
 
     def get_status(self, obj):
         return obj.validation_status.value
-
-    def get_update_user(self, obj):
-        user = UserProfile.objects.filter(username=obj.update_user).first()
-        if user is None:
-            return obj.create_user
-        return user.display_name
 
     def get_display_superseded_text(self, obj):
         if obj.validation_status == ModelYearReportStatuses.ASSESSED:
@@ -71,14 +64,13 @@ class SupplementalNOASerializer(ModelSerializer):
     class Meta:
         model = SupplementalReportHistory
         fields = (
-            'update_timestamp', 'status', 'id', 'update_user', 'supplemental_report_id', 'display_superseded_text',
-            'is_reassessment'
+            'update_timestamp', 'status', 'id', 'supplemental_report_id', 'display_superseded_text',
+            'is_reassessment', 'update_user'
         )
 
 
-class ModelYearReportHistorySerializer(ModelSerializer):
+class ModelYearReportHistorySerializer(UserSerializerMixin):
     status = SerializerMethodField()
-    create_user = SerializerMethodField()
     is_reassessment = SerializerMethodField()
 
     def get_is_reassessment(self, obj):
@@ -90,15 +82,6 @@ class ModelYearReportHistorySerializer(ModelSerializer):
 
     def get_status(self, obj):
         return obj.validation_status.value
-
-    def get_create_user(self, obj):
-        user = UserProfile.objects.filter(username=obj.create_user).first()
-        if user is None:
-            return None
-
-        serializer = MemberSerializer(user)
-
-        return serializer.data
 
     class Meta:
         model = ModelYearReportHistory
@@ -113,7 +96,7 @@ class SupplementalReportHistorySerializer(ModelYearReportHistorySerializer):
         fields = ModelYearReportHistorySerializer.Meta.fields + ('supplemental_report_id',)
 
 
-class SupplementalReportSerializer(ModelSerializer):
+class SupplementalReportSerializer(UserSerializerMixin):
     status = SerializerMethodField()
     history = SerializerMethodField()
     is_supplementary = SerializerMethodField()
@@ -145,7 +128,7 @@ class SupplementalReportSerializer(ModelSerializer):
 
         refined_history = exclude_from_history(history, request.user)
 
-        serializer = SupplementalReportHistorySerializer(refined_history, many=True)
+        serializer = SupplementalReportHistorySerializer(refined_history, many=True, context={'request': request})
         return serializer.data
 
     class Meta:
@@ -156,7 +139,7 @@ class SupplementalReportSerializer(ModelSerializer):
         )
 
 
-class SupplementalModelYearReportSerializer(ModelSerializer):
+class SupplementalModelYearReportSerializer(UserSerializerMixin):
     status = SerializerMethodField()
     history = SerializerMethodField()
     supplemental_id = SerializerMethodField()
@@ -186,7 +169,7 @@ class SupplementalModelYearReportSerializer(ModelSerializer):
 
         refined_history = exclude_from_history(history, request.user)
 
-        serializer = ModelYearReportHistorySerializer(refined_history, many=True)
+        serializer = ModelYearReportHistorySerializer(refined_history, many=True, context={'request': request})
 
         return serializer.data
 
