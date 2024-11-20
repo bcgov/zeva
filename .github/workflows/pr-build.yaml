@@ -59,9 +59,9 @@ jobs:
       output1: ${{ steps.get-version.outputs.VERSION }}
 
     steps:
-      - name: show oepnshift server
-        run: |
-          echo ${{ secrets.OPENSHIFT_SERVER }}
+      - name: Check out repository
+        uses: actions/checkout@v4.1.1
+
       - name: Log in to Openshift
         uses: redhat-actions/oc-login@v1.3
         with:
