@@ -59,20 +59,9 @@ jobs:
       output1: ${{ steps.get-version.outputs.VERSION }}
 
     steps:
-      - name: show
+      - name: show oepnshift server
         run: |
-          echo ${{ env.GIT_URL }}
-          echo ${{ env.TOOLS_NAMESPACE }}
-          echo ${{ env.DEV_NAMESPACE }}
-          echo ${{ env.PR_NUMBER }}
-          echo ${{ env.GIT_REF }}
-
-      - name: Restore oc command from Cache
-        uses: actions/cache@v4.2.0
-        with:
-          path: /usr/local/bin/oc
-          key: oc-cli-${{ runner.os }}
-
+          echo ${{ secrets.OPENSHIFT_SERVER }}
       - name: Log in to Openshift
         uses: redhat-actions/oc-login@v1.3
         with:
