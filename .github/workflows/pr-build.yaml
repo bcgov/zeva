@@ -32,6 +32,14 @@ jobs:
       output1: ${{ steps.get-version.outputs.VERSION }}
 
     steps:
+      - name: show
+        run: |
+          echo ${{ env.GIT_URL }}
+          echo ${{ env.TOOLS_NAMESPACE }}
+          echo ${{ env.DEV_NAMESPACE }}
+          echo ${{ env.PR_NUMBER }}
+          echo ${{ env.GIT_REF }}
+          
       - name: Log in to Openshift
         uses: redhat-actions/oc-login@v1.3
         with:
