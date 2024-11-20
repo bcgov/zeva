@@ -9,6 +9,7 @@ env:
   GIT_URL: https://github.com/bcgov/zeva.git
   TOOLS_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
   DEV_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
+  GIT_REF: ${{ github.event.pull_request.head.ref }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
