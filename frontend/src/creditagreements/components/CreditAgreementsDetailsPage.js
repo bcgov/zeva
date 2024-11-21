@@ -30,14 +30,10 @@ const CreditAgreementsDetailsPage = (props) => {
     user,
   } = props;
 
-  const typesExemptFromCreditContent = [
-    "Automatic Administrative Penalty"
-  ];
-
-  const [showModal, setShowModal] = useState(false);
-  const showComments =
-    details?.filteredIdirComments && details?.filteredIdirComments.length > 0;
-  const showCommentInput = details?.status !== "ISSUED";
+  const [showModal, setShowModal] = useState(false)
+  const showComments = details?.filteredIdirComments &&
+          details?.filteredIdirComments.length > 0
+  const showCommentInput = details?.status !== 'ISSUED'
   const modal = (
     <Modal
       confirmLabel={analystAction ? "Submit" : "Issue"}
@@ -96,12 +92,25 @@ const CreditAgreementsDetailsPage = (props) => {
               className="grey-border-area p-3 comment-box mt-2"
               id="comment-input"
             >
-              {showComments && (
-                <EditableCommentList
-                  comments={details.filteredIdirComments}
-                  user={user}
-                  handleCommentEdit={handleInternalCommentEdit}
-                  handleCommentDelete={handleInternalCommentDelete}
+              { showComments && (
+                  <EditableCommentList 
+                    comments={details.filteredIdirComments} 
+                    user={user}
+                    handleCommentEdit={handleInternalCommentEdit}
+                    handleCommentDelete={handleInternalCommentDelete}
+                  />
+              )}
+              {showCommentInput && (
+                <div>
+                <CommentInput
+                  handleAddComment={handleAddComment}
+                  handleCommentChange={handleCommentChangeIdir}
+                  title={
+                    analystAction
+                      ? 'Add comment to director: '
+                      : 'Add comment to the analyst'
+                  }
+                  buttonText="Add Comment"
                 />
               )}
               {showCommentInput && (
