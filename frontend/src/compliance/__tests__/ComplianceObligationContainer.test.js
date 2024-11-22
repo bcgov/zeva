@@ -100,9 +100,7 @@ const getDataByUrl = (url, id, supplierClass, modelYear, complianceObligation) =
       return complianceRatios;
 
     case ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(":id", id):
-      return {
-        complianceObligation: complianceObligation ?? [],
-      };
+      return { complianceObligation };
 
     case ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST:
       return [
@@ -121,6 +119,20 @@ const getDataByUrl = (url, id, supplierClass, modelYear, complianceObligation) =
       return {};
   }
 };
+
+const mockAxios = (supplierClass, modelYear, complianceObligation) => {
+  jest.spyOn(axios, "get").mockImplementation((url) => {
+    return Promise.resolve({
+      data: getDataByUrl(
+        url,
+        baseParams.id,
+        supplierClass,
+        modelYear,
+        complianceObligation ?? [],
+      ),
+    });
+  });
+}
 
 let detailsPageProps;
 
@@ -206,11 +218,7 @@ afterEach(() => {
 
 describe("Compliance Obligation Container", () => {
   test("renders without crashing", async () => {
-    jest.spyOn(axios, "get").mockImplementation((url) => {
-      return Promise.resolve({
-        data: getDataByUrl(url, baseParams.id, "L", 2020),
-      });
-    });
+    mockAxios("L", 2020);
 
     await act(async () => {
       render(
@@ -226,11 +234,7 @@ describe("Compliance Obligation Container", () => {
     test(`gets credit reduction with zero, empty, or non-numeric sales input for supplier-class ${supplierClass}`, async () => {
       const modelYear = 2021;
 
-      jest.spyOn(axios, "get").mockImplementation((url) => {
-        return Promise.resolve({
-          data: getDataByUrl(url, baseParams.id, supplierClass, modelYear),
-        });
-      });
+      mockAxios(supplierClass, modelYear);
 
       await act(async () => {
         render(
@@ -265,151 +269,53 @@ describe("Compliance Obligation Container", () => {
   }
 
 
-  test("gets credit reduction with multiple compliance-ratios for large supplier", async () => {
-    const supplierClass = "L";
+  for (const testData of [
+    { supplierClass: "L", testSales: 6000 },
+    { supplierClass: "M", testSales: 4000 }
+  ]) {
+    test(`gets credit reduction with multiple compliance-ratios for supplier-class ${testData.supplierClass}`, async () => {
+      const { supplierClass, testSales } = testData;
+      for (const complianceInfo of complianceRatios) {
+        const modelYear = Number(complianceInfo.modelYear);
+        const complianceRatio = supplierClass !== "S" ? complianceInfo.complianceRatio : 0;
+        const zevClassA = supplierClass === "L" ? complianceInfo.zevClassA : 0;
 
-    for (const complianceInfo of complianceRatios) {
-      const modelYear = Number(complianceInfo.modelYear);
-      const complianceRatio = complianceInfo.complianceRatio;
-      const zevClassA = complianceInfo.zevClassA;
+        mockAxios(supplierClass, modelYear);
 
-      jest.spyOn(axios, "get").mockImplementation((url) => {
-        return Promise.resolve({
-          data: getDataByUrl(url, baseParams.id, supplierClass, modelYear),
+        await act(async () => {
+          render(
+            <Router>
+              <ComplianceObligationContainer {...baseProps} />
+            </Router>,
+          );
         });
-      });
 
-      await act(async () => {
-        render(
-          <Router>
-            <ComplianceObligationContainer {...baseProps} />
-          </Router>,
-        );
-      });
+        const expectedTotalReduction = (testSales / 100) * complianceRatio;
+        const expectedClassAReduction = (testSales / 100) * zevClassA;
+        const expectedUnspecifiedReduction =
+          expectedTotalReduction - expectedClassAReduction;
+        const expectedProps = {
+          assertions: [assertionComplianceObligation],
+          ratios: complianceInfo,
+          classAReductions: [
+            { modelYear: modelYear, value: expectedClassAReduction },
+          ],
+          unspecifiedReductions: [
+            { modelYear: modelYear, value: expectedUnspecifiedReduction },
+          ],
+          reportYear: modelYear,
+          sales: testSales,
+          supplierClass,
+          totalReduction: expectedTotalReduction,
+        };
 
-      const testSales = 6000;
-      const expectedTotalReduction = (testSales / 100) * complianceRatio;
-      const expectedClassAReduction = (testSales / 100) * zevClassA;
-      const expectedUnspecifiedReduction =
-        expectedTotalReduction - expectedClassAReduction;
-      const expectedProps = {
-        assertions: [assertionComplianceObligation],
-        ratios: complianceInfo,
-        classAReductions: [
-          { modelYear: modelYear, value: expectedClassAReduction },
-        ],
-        unspecifiedReductions: [
-          { modelYear: modelYear, value: expectedUnspecifiedReduction },
-        ],
-        reportYear: modelYear,
-        sales: testSales,
-        supplierClass,
-        totalReduction: expectedTotalReduction,
-      };
-
-      const salesInput = screen.getByTestId(salesTestId);
-      fireEvent.change(salesInput, { target: { value: testSales } });
-      assertProps(detailsPageProps, expectedProps);
-      document.body.innerHTML = "";
-    }
-  });
-
-
-  test("gets credit reduction with multiple compliance-ratios for medium supplier", async () => {
-    const supplierClass = "M";
-
-    for (const complianceInfo of complianceRatios) {
-      const modelYear = Number(complianceInfo.modelYear);
-      const complianceRatio = complianceInfo.complianceRatio;
-
-      jest.spyOn(axios, "get").mockImplementation((url) => {
-        return Promise.resolve({
-          data: getDataByUrl(url, baseParams.id, supplierClass, modelYear),
-        });
-      });
-
-      await act(async () => {
-        render(
-          <Router>
-            <ComplianceObligationContainer {...baseProps} />
-          </Router>,
-        );
-      });
-
-      const testSales = 4000;
-      const expectedTotalReduction = (testSales / 100) * complianceRatio;
-      const expectedClassAReduction = 0;
-      const expectedUnspecifiedReduction =
-        expectedTotalReduction - expectedClassAReduction;
-      const expectedProps = {
-        assertions: [assertionComplianceObligation],
-        ratios: complianceInfo,
-        classAReductions: [
-          { modelYear: modelYear, value: expectedClassAReduction },
-        ],
-        unspecifiedReductions: [
-          { modelYear: modelYear, value: expectedUnspecifiedReduction },
-        ],
-        reportYear: modelYear,
-        sales: testSales,
-        supplierClass,
-        totalReduction: expectedTotalReduction,
-      };
-
-      const salesInput = screen.getByTestId(salesTestId);
-      fireEvent.change(salesInput, { target: { value: testSales } });
-      assertProps(detailsPageProps, expectedProps);
-      document.body.innerHTML = "";
-    }
-  });
-
-
-  test.skip("gets credit reduction with multiple compliance-ratios for small supplier", async () => {
-    const supplierClass = "S";
-
-    for (const complianceInfo of complianceRatios) {
-      const modelYear = Number(complianceInfo.modelYear);
-
-      jest.spyOn(axios, "get").mockImplementation((url) => {
-        return Promise.resolve({
-          data: getDataByUrl(url, baseParams.id, supplierClass, modelYear),
-        });
-      });
-
-      await act(async () => {
-        render(
-          <Router>
-            <ComplianceObligationContainer {...baseProps} />
-          </Router>,
-        );
-      });
-
-      const testSales = 500;
-      const expectedTotalReduction = 0;
-      const expectedClassAReduction = 0;
-      const expectedUnspecifiedReduction =
-        expectedTotalReduction - expectedClassAReduction;
-      const expectedProps = {
-        assertions: [assertionComplianceObligation],
-        ratios: complianceInfo,
-        classAReductions: [
-          { modelYear: modelYear, value: expectedClassAReduction },
-        ],
-        unspecifiedReductions: [
-          { modelYear: modelYear, value: expectedUnspecifiedReduction },
-        ],
-        reportYear: modelYear,
-        sales: testSales,
-        supplierClass,
-        totalReduction: expectedTotalReduction,
-      };
-
-      const salesInput = screen.getByTestId(salesTestId);
-      fireEvent.change(salesInput, { target: { value: testSales } });
-      assertProps(detailsPageProps, expectedProps);
-      document.body.innerHTML = "";
-    }
-  });
+        const salesInput = screen.getByTestId(salesTestId);
+        fireEvent.change(salesInput, { target: { value: testSales } });
+        assertProps(detailsPageProps, expectedProps);
+        document.body.innerHTML = "";
+      }
+    });
+  }
 
 
   test("gets credit balance for large supplier, positive start balances, no transactions", async () => {
@@ -433,17 +339,7 @@ describe("Compliance Obligation Container", () => {
     );
 
     // Mock Axios
-    jest.spyOn(axios, "get").mockImplementation((url) => {
-      return Promise.resolve({
-        data: getDataByUrl(
-          url,
-          baseParams.id,
-          supplierClass,
-          modelYear,
-          complianceObligation,
-        ),
-      });
-    });
+    mockAxios(supplierClass, modelYear, complianceObligation);
 
     // Render component
     await act(async () => {
@@ -549,17 +445,7 @@ describe("Compliance Obligation Container", () => {
     complianceObligation.push(...toTransactionArray(deficit, "deficit"));
 
     // Mock Axios
-    jest.spyOn(axios, "get").mockImplementation((url) => {
-      return Promise.resolve({
-        data: getDataByUrl(
-          url,
-          baseParams.id,
-          supplierClass,
-          modelYear,
-          complianceObligation,
-        ),
-      });
-    });
+    mockAxios(supplierClass, modelYear, complianceObligation);
 
     // Render component
     await act(async () => {
@@ -671,17 +557,7 @@ describe("Compliance Obligation Container", () => {
     );
 
     // Mock Axios
-    jest.spyOn(axios, "get").mockImplementation((url) => {
-      return Promise.resolve({
-        data: getDataByUrl(
-          url,
-          baseParams.id,
-          supplierClass,
-          modelYear,
-          complianceObligation,
-        ),
-      });
-    });
+    mockAxios(supplierClass, modelYear, complianceObligation);
 
     // Render component
     await act(async () => {
@@ -800,17 +676,7 @@ describe("Compliance Obligation Container", () => {
     );
 
     // Mock Axios
-    jest.spyOn(axios, "get").mockImplementation((url) => {
-      return Promise.resolve({
-        data: getDataByUrl(
-          url,
-          baseParams.id,
-          supplierClass,
-          modelYear,
-          complianceObligation,
-        ),
-      });
-    });
+    mockAxios(supplierClass, modelYear, complianceObligation);
 
     // Render component
     await act(async () => {
@@ -979,17 +845,7 @@ describe("Compliance Obligation Container", () => {
     );
 
     // Mock Axios
-    jest.spyOn(axios, "get").mockImplementation((url) => {
-      return Promise.resolve({
-        data: getDataByUrl(
-          url,
-          baseParams.id,
-          supplierClass,
-          modelYear,
-          complianceObligation,
-        ),
-      });
-    });
+    mockAxios(supplierClass, modelYear, complianceObligation);
 
     // Render component
     await act(async () => {
@@ -1184,17 +1040,7 @@ describe("Compliance Obligation Container", () => {
     );
 
     // Mock Axios
-    jest.spyOn(axios, "get").mockImplementation((url) => {
-      return Promise.resolve({
-        data: getDataByUrl(
-          url,
-          baseParams.id,
-          supplierClass,
-          modelYear,
-          complianceObligation,
-        ),
-      });
-    });
+    mockAxios(supplierClass, modelYear, complianceObligation);
 
     // Render component
     await act(async () => {
@@ -1386,17 +1232,7 @@ describe("Compliance Obligation Container", () => {
     );
 
     // Mock Axios
-    jest.spyOn(axios, "get").mockImplementation((url) => {
-      return Promise.resolve({
-        data: getDataByUrl(
-          url,
-          baseParams.id,
-          supplierClass,
-          modelYear,
-          complianceObligation,
-        ),
-      });
-    });
+    mockAxios(supplierClass, modelYear, complianceObligation);
 
     // Render component
     await act(async () => {
@@ -1589,17 +1425,7 @@ describe("Compliance Obligation Container", () => {
     );
 
     // Mock Axios
-    jest.spyOn(axios, "get").mockImplementation((url) => {
-      return Promise.resolve({
-        data: getDataByUrl(
-          url,
-          baseParams.id,
-          supplierClass,
-          modelYear,
-          complianceObligation,
-        ),
-      });
-    });
+    mockAxios(supplierClass, modelYear, complianceObligation);
 
     // Render component
     await act(async () => {
@@ -1791,17 +1617,7 @@ describe("Compliance Obligation Container", () => {
     );
 
     // Mock Axios
-    jest.spyOn(axios, "get").mockImplementation((url) => {
-      return Promise.resolve({
-        data: getDataByUrl(
-          url,
-          baseParams.id,
-          supplierClass,
-          modelYear,
-          complianceObligation,
-        ),
-      });
-    });
+    mockAxios(supplierClass, modelYear, complianceObligation);
 
     // Render component
     await act(async () => {
@@ -1998,17 +1814,7 @@ describe("Compliance Obligation Container", () => {
     );
 
     // Mock Axios
-    jest.spyOn(axios, "get").mockImplementation((url) => {
-      return Promise.resolve({
-        data: getDataByUrl(
-          url,
-          baseParams.id,
-          supplierClass,
-          modelYear,
-          complianceObligation,
-        ),
-      });
-    });
+    mockAxios(supplierClass, modelYear, complianceObligation);
 
     // Render component
     await act(async () => {
