@@ -93,7 +93,6 @@ const getDataByUrl = (url, id, supplierClass, modelYear, complianceObligation) =
           expirationDate: modelYear + "-12-31",
         },
         confirmations: [],
-        creditReductionSelection: null,
       };
 
     case ROUTES_COMPLIANCE.RATIOS:
@@ -119,20 +118,6 @@ const getDataByUrl = (url, id, supplierClass, modelYear, complianceObligation) =
       return {};
   }
 };
-
-const mockAxios = (supplierClass, modelYear, complianceObligation) => {
-  jest.spyOn(axios, "get").mockImplementation((url) => {
-    return Promise.resolve({
-      data: getDataByUrl(
-        url,
-        baseParams.id,
-        supplierClass,
-        modelYear,
-        complianceObligation ?? [],
-      ),
-    });
-  });
-}
 
 let detailsPageProps;
 
@@ -160,36 +145,128 @@ const assertProps = (actualProps, expectedProps) => {
   expect(deepRound(_actualProps)).toEqual(deepRound(expectedProps));
 };
 
-const toTransactionArray = (data, categoryName) => {
-  const array = [];
-  for (const year in data) {
-    array.push(categoryName ? {
-      category: categoryName,
-      modelYear: { name: year },
-      creditAValue: data[year].A,
-      creditBValue: data[year].B
-    } : {
-      modelYear: year,
-      A: data[year].A,
-      B: data[year].B
+class TestHelper {
+  constructor(supplierClass, modelYear, creditTransactions) {
+    this.supplierClass = supplierClass;
+    this.modelYear = modelYear;
+    this.creditTransactions = creditTransactions ?? {};
+
+    // Setup compliance obligation
+    this.complianceObligation = [];
+    for (const category in this.creditTransactions) {
+      const data = this.creditTransactions[category];
+      for (const year in data) {
+        this.complianceObligation.push({
+          category: category,
+          modelYear: { name: year },
+          creditAValue: data[year].A,
+          creditBValue: data[year].B
+        });
+      }
+    }
+
+    // Mock Axios
+    jest.spyOn(axios, "get").mockImplementation((url) => {
+      return Promise.resolve({
+        data: getDataByUrl(
+          url,
+          baseParams.id,
+          this.supplierClass,
+          this.modelYear,
+          this.complianceObligation,
+        ),
+      });
+    });
+
+    // Setup transactions
+    this.transactions = {
+      creditsIssuedSales: this.toTransactionArray(this.creditTransactions.creditsIssuedSales),
+      transfersIn: this.toTransactionArray(this.creditTransactions.transfersIn),
+      transfersOut: this.toTransactionArray(this.creditTransactions.transfersOut),
+      initiativeAgreement: this.toTransactionArray(this.creditTransactions.initiativeAgreement),
+      purchaseAgreement: this.toTransactionArray(this.creditTransactions.purchaseAgreement),
+      administrativeAllocation: this.toTransactionArray(
+        this.creditTransactions.administrativeAllocation
+      ),
+      administrativeReduction: this.toTransactionArray(
+        this.creditTransactions.administrativeReduction
+      ),
+      automaticAdministrativePenalty: this.toTransactionArray(
+        this.creditTransactions.automaticAdministrativePenalty
+      ),
+    }
+  }
+
+  toTransactionArray(data) {
+    if (!data) {
+      return [];
+    }
+    const array = [];
+    for (const year in data) {
+      array.push({
+        modelYear: year,
+        A: data[year].A,
+        B: data[year].B
+      });
+    }
+    return array;
+  };
+
+  negCredits(credits) {
+    const result = {};
+    for (const year in credits) {
+      result[year] = { A: -credits[year].A, B: -credits[year].B };
+    }
+    return result;
+  }
+
+  addCredits(item1, item2) {
+    return {
+      A: (item1?.A ?? 0) + (item2?.A ?? 0),
+      B: (item1?.B ?? 0) + (item2?.B ?? 0)
+    };
+  }
+
+  getCreditBalance(year) {
+    let balance = { A: 0, B: 0 };
+    const items = [
+      this.creditTransactions.creditBalanceStart,
+      this.creditTransactions.creditsIssuedSales,
+      this.creditTransactions.transfersIn,
+      this.creditTransactions.initiativeAgreement,
+      this.creditTransactions.purchaseAgreement,
+      this.creditTransactions.administrativeAllocation,
+      this.creditTransactions.automaticAdministrativePenalty,
+      this.negCredits(this.creditTransactions.deficit),
+      this.negCredits(this.creditTransactions.transfersOut),
+      this.negCredits(this.creditTransactions.administrativeReduction),
+    ];
+    items.forEach(item => {
+      if (item && item[year]) {
+        balance = this.addCredits(balance, item[year]);
+      }
+    });
+    return balance;
+  };
+
+  getCreditBalances(years) {
+    const balances = {};
+    for (const year of years) {
+      balances[year] = this.getCreditBalance(year.toString());
+    }
+    return balances;
+  }
+
+  async renderContainer() {
+    await act(async () => {
+      render(
+        <Router>
+          <ComplianceObligationContainer {...baseProps} />
+        </Router>,
+      );
     });
   }
-  return array;
-};
-
-const getNetCredits = (year, ItemsAdded, ItemsSubtracted) => {
-  let valueA = 0;
-  let valueB = 0;
-  ItemsAdded.forEach((item) => {
-    valueA += item[year]?.A ?? 0;
-    valueB += item[year]?.B ?? 0;
-  });
-  ItemsSubtracted.forEach((item) => {
-    valueA -= item[year]?.A ?? 0;
-    valueB -= item[year]?.B ?? 0;
-  });
-  return { A: valueA, B: valueB };
-};
+}
 
 beforeEach(() => {
   jest.spyOn(ReactRouter, "useParams").mockReturnValue(baseParams);
@@ -218,15 +295,8 @@ afterEach(() => {
 
 describe("Compliance Obligation Container", () => {
   test("renders without crashing", async () => {
-    mockAxios("L", 2020);
-
-    await act(async () => {
-      render(
-        <Router>
-          <ComplianceObligationContainer {...baseProps} />
-        </Router>,
-      );
-    });
+    const testHelper = new TestHelper("L", 2020);
+    await testHelper.renderContainer();
   });
 
 
@@ -234,15 +304,8 @@ describe("Compliance Obligation Container", () => {
     test(`gets credit reduction with zero, empty, or non-numeric sales input for supplier-class ${supplierClass}`, async () => {
       const modelYear = 2021;
 
-      mockAxios(supplierClass, modelYear);
-
-      await act(async () => {
-        render(
-          <Router>
-            <ComplianceObligationContainer {...baseProps} />
-          </Router>,
-        );
-      });
+      const testHelper = new TestHelper(supplierClass, modelYear);
+      await testHelper.renderContainer();
 
       const expectedProps = {
         assertions: [assertionComplianceObligation],
@@ -280,15 +343,8 @@ describe("Compliance Obligation Container", () => {
         const complianceRatio = supplierClass !== "S" ? complianceInfo.complianceRatio : 0;
         const zevClassA = supplierClass === "L" ? complianceInfo.zevClassA : 0;
 
-        mockAxios(supplierClass, modelYear);
-
-        await act(async () => {
-          render(
-            <Router>
-              <ComplianceObligationContainer {...baseProps} />
-            </Router>,
-          );
-        });
+        const testHelper = new TestHelper(supplierClass, modelYear);
+        await testHelper.renderContainer();
 
         const expectedTotalReduction = (testSales / 100) * complianceRatio;
         const expectedClassAReduction = (testSales / 100) * zevClassA;
@@ -324,31 +380,18 @@ describe("Compliance Obligation Container", () => {
     const modelYear = 2025;
     const complianceRatio = 22.0;
     const zevClassA = 16.0;
-    const creditBalanceStart = {
-      2020: { A: 200, B: 100 },
-      2021: { A: 0, B: 50 },
-      2022: { A: 0, B: 0 },
-      2023: { A: 652.4, B: 418.9 },
-      2024: { A: 702.5, B: 0 },
+    const creditTransactions = {
+      "creditBalanceStart": {
+        2020: { A: 200, B: 100 },
+        2021: { A: 0, B: 50 },
+        2022: { A: 0, B: 0 },
+        2023: { A: 652.4, B: 418.9 },
+        2024: { A: 702.5, B: 0 },
+      }
     };
 
-    // Create report items
-    const complianceObligation = [];
-    complianceObligation.push(
-      ...toTransactionArray(creditBalanceStart, "creditBalanceStart"),
-    );
-
-    // Mock Axios
-    mockAxios(supplierClass, modelYear, complianceObligation);
-
-    // Render component
-    await act(async () => {
-      render(
-        <Router>
-          <ComplianceObligationContainer {...baseProps} />
-        </Router>,
-      );
-    });
+    const testHelper = new TestHelper(supplierClass, modelYear, creditTransactions);
+    await testHelper.renderContainer();
 
     // Set up expected values and assert
     const testSales = 6000;
@@ -390,22 +433,13 @@ describe("Compliance Obligation Container", () => {
     };
 
     const expectedReportDetails = {
-      creditBalanceStart: creditBalanceStart,
-      creditBalanceEnd: creditBalanceStart,
+      creditBalanceStart: creditTransactions.creditBalanceStart,
+      creditBalanceEnd: creditTransactions.creditBalanceStart,
       deficitCollection: {},
       carryOverDeficits: {},
       pendingBalance: [],
-      provisionalBalance: creditBalanceStart,
-      transactions: {
-        creditsIssuedSales: [],
-        transfersIn: [],
-        transfersOut: [],
-        initiativeAgreement: [],
-        purchaseAgreement: [],
-        administrativeAllocation: [],
-        administrativeReduction: [],
-        automaticAdministrativePenalty: [],
-      },
+      provisionalBalance: creditTransactions.creditBalanceStart,
+      transactions: testHelper.transactions,
     };
 
     const salesInput = screen.getByTestId(salesTestId);
@@ -423,38 +457,18 @@ describe("Compliance Obligation Container", () => {
     const modelYear = 2025;
     const complianceRatio = 22.0;
     const zevClassA = 16.0;
-    const deficit = {
-      2020: { A: 200, B: 100 },
-      2021: { A: 10, B: 50 },
-      2022: { A: 32, B: 60.4 },
-      2023: { A: 652.4, B: 418.9 },
-      2024: { A: 702.5, B: 82 },
+    const creditTransactions = {
+      deficit: {
+        2020: { A: 200, B: 100 },
+        2021: { A: 10, B: 50 },
+        2022: { A: 32, B: 60.4 },
+        2023: { A: 652.4, B: 418.9 },
+        2024: { A: 702.5, B: 82 },
+      }
     };
-    const creditBalanceStart = {};
-    const deficitCollection = {};
-    for (const year in deficit) {
-      creditBalanceStart[year] = { A: -deficit[year].A, B: -deficit[year].B };
-      deficitCollection[year] = {
-        A: deficit[year].A,
-        unspecified: deficit[year].B,
-      };
-    }
 
-    // Create report items
-    const complianceObligation = [];
-    complianceObligation.push(...toTransactionArray(deficit, "deficit"));
-
-    // Mock Axios
-    mockAxios(supplierClass, modelYear, complianceObligation);
-
-    // Render component
-    await act(async () => {
-      render(
-        <Router>
-          <ComplianceObligationContainer {...baseProps} />
-        </Router>,
-      );
-    });
+    const testHelper = new TestHelper(supplierClass, modelYear, creditTransactions);
+    await testHelper.renderContainer();
 
     // Set up expected values and assert
     const testSales = 6000;
@@ -462,6 +476,14 @@ describe("Compliance Obligation Container", () => {
     const expectedClassAReduction = (testSales / 100) * zevClassA;
     const expectedUnspecifiedReduction =
       expectedTotalReduction - expectedClassAReduction;
+
+    const expectedDeficitCollection = {};
+    for (const year in creditTransactions.deficit) {
+      expectedDeficitCollection[year] = {
+        A: creditTransactions.deficit[year].A,
+        unspecified: creditTransactions.deficit[year].B,
+      };
+    }
 
     const expectedProps = {
       assertions: [assertionComplianceObligation],
@@ -489,7 +511,7 @@ describe("Compliance Obligation Container", () => {
             creditA: expectedClassAReduction,
             creditB: expectedUnspecifiedReduction,
           },
-          ...toTransactionArray(deficit).map((x) => ({
+          ...testHelper.toTransactionArray(creditTransactions.deficit).map((x) => ({
             modelYear: x.modelYear,
             creditA: x.A,
             creditB: x.B,
@@ -499,10 +521,10 @@ describe("Compliance Obligation Container", () => {
     };
 
     const expectedReportDetails = {
-      creditBalanceStart: creditBalanceStart,
-      creditBalanceEnd: creditBalanceStart,
-      deficitCollection: deficitCollection,
-      carryOverDeficits: deficitCollection,
+      creditBalanceStart: testHelper.negCredits(creditTransactions.deficit),
+      creditBalanceEnd: testHelper.negCredits(creditTransactions.deficit),
+      deficitCollection: expectedDeficitCollection,
+      carryOverDeficits: expectedDeficitCollection,
       pendingBalance: [],
       provisionalBalance: {
         2020: { A: 0, B: 0 },
@@ -511,16 +533,7 @@ describe("Compliance Obligation Container", () => {
         2023: { A: 0, B: 0 },
         2024: { A: 0, B: 0 },
       },
-      transactions: {
-        creditsIssuedSales: [],
-        transfersIn: [],
-        transfersOut: [],
-        initiativeAgreement: [],
-        purchaseAgreement: [],
-        administrativeAllocation: [],
-        administrativeReduction: [],
-        automaticAdministrativePenalty: [],
-      },
+      transactions: testHelper.transactions,
     };
 
     const salesInput = screen.getByTestId(salesTestId);
@@ -538,35 +551,19 @@ describe("Compliance Obligation Container", () => {
     const modelYear = 2021;
     const complianceRatio = 12.0;
     const zevClassA = 8.0;
-    const creditBalanceStart = {
-      2019: { A: 120, B: 30 },
-      2020: { A: 25, B: 175 },
+    const creditTransactions = {
+      creditBalanceStart: {
+        2019: { A: 120, B: 30 },
+        2020: { A: 25, B: 175 },
+      },
+      creditsIssuedSales: {
+        2020: { A: 50, B: 33 },
+        2021: { A: 300, B: 55 },
+      },
     };
-    const creditsIssuedSales = {
-      2020: { A: 50, B: 33 },
-      2021: { A: 300, B: 55 },
-    };
 
-    // Create report items
-    const complianceObligation = [];
-    complianceObligation.push(
-      ...toTransactionArray(creditBalanceStart, "creditBalanceStart"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(creditsIssuedSales, "creditsIssuedSales"),
-    );
-
-    // Mock Axios
-    mockAxios(supplierClass, modelYear, complianceObligation);
-
-    // Render component
-    await act(async () => {
-      render(
-        <Router>
-          <ComplianceObligationContainer {...baseProps} />
-        </Router>,
-      );
-    });
+    const testHelper = new TestHelper(supplierClass, modelYear, creditTransactions);
+    await testHelper.renderContainer();
 
     // Set up expected values and assert
     const testSales = 6000;
@@ -574,14 +571,7 @@ describe("Compliance Obligation Container", () => {
     const expectedClassAReduction = (testSales / 100) * zevClassA;
     const expectedUnspecifiedReduction =
       expectedTotalReduction - expectedClassAReduction;
-
-    const addingTransactions = [creditBalanceStart, creditsIssuedSales];
-
-    const expectedCreditBalanceEnd = {
-      2019: getNetCredits("2019", addingTransactions, []),
-      2020: getNetCredits("2020", addingTransactions, []),
-      2021: getNetCredits("2021", addingTransactions, []),
-    };
+    const expectedCreditBalanceEnd = testHelper.getCreditBalances([2019, 2020, 2021]);
     const expectedProvisionalBalance = expectedCreditBalanceEnd;
 
     const expectedProps = {
@@ -626,20 +616,11 @@ describe("Compliance Obligation Container", () => {
       },
     };
     const expectedReportDetails = {
-      creditBalanceStart: creditBalanceStart,
+      creditBalanceStart: creditTransactions.creditBalanceStart,
       creditBalanceEnd: expectedCreditBalanceEnd,
       pendingBalance: [],
       provisionalBalance: expectedProvisionalBalance,
-      transactions: {
-        creditsIssuedSales: toTransactionArray(creditsIssuedSales),
-        transfersIn: [],
-        transfersOut: [],
-        initiativeAgreement: [],
-        purchaseAgreement: [],
-        administrativeAllocation: [],
-        administrativeReduction: [],
-        automaticAdministrativePenalty: [],
-      },
+      transactions: testHelper.transactions,
     };
 
     const salesInput = screen.getByTestId(salesTestId);
@@ -657,35 +638,19 @@ describe("Compliance Obligation Container", () => {
     const modelYear = 2021;
     const complianceRatio = 12.0;
     const zevClassA = 8.0;
-    const creditBalanceStart = {
-      2019: { A: 120, B: 30 },
-      2020: { A: 25, B: 175 },
+    const creditTransactions = {
+      creditBalanceStart: {
+        2019: { A: 120, B: 30 },
+        2020: { A: 25, B: 175 },
+      },
+      creditsIssuedSales: {
+        2020: { A: 50, B: 33 },
+        2021: { A: 300, B: 55 },
+      },
     };
-    const creditsIssuedSales = {
-      2020: { A: 50, B: 33 },
-      2021: { A: 300, B: 55 },
-    };
-
-    // Create report items
-    const complianceObligation = [];
-    complianceObligation.push(
-      ...toTransactionArray(creditBalanceStart, "creditBalanceStart"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(creditsIssuedSales, "creditsIssuedSales"),
-    );
-
-    // Mock Axios
-    mockAxios(supplierClass, modelYear, complianceObligation);
-
-    // Render component
-    await act(async () => {
-      render(
-        <Router>
-          <ComplianceObligationContainer {...baseProps} />
-        </Router>,
-      );
-    });
+    
+    const testHelper = new TestHelper(supplierClass, modelYear, creditTransactions);
+    await testHelper.renderContainer();
 
     // Set up expected values and assert
     const testSales = 6000;
@@ -693,14 +658,7 @@ describe("Compliance Obligation Container", () => {
     const expectedClassAReduction = (testSales / 100) * zevClassA;
     const expectedUnspecifiedReduction =
       expectedTotalReduction - expectedClassAReduction;
-
-    const addingTransactions = [creditBalanceStart, creditsIssuedSales];
-
-    const expectedCreditBalanceEnd = {
-      2019: getNetCredits("2019", addingTransactions, []),
-      2020: getNetCredits("2020", addingTransactions, []),
-      2021: getNetCredits("2021", addingTransactions, []),
-    };
+    const expectedCreditBalanceEnd = testHelper.getCreditBalances([2019, 2020, 2021]);
     const expectedProvisionalBalance = expectedCreditBalanceEnd;
 
     const expectedProps = {
@@ -743,20 +701,11 @@ describe("Compliance Obligation Container", () => {
       },
     };
     const expectedReportDetails = {
-      creditBalanceStart: creditBalanceStart,
+      creditBalanceStart: creditTransactions.creditBalanceStart,
       creditBalanceEnd: expectedCreditBalanceEnd,
       pendingBalance: [],
       provisionalBalance: expectedProvisionalBalance,
-      transactions: {
-        creditsIssuedSales: toTransactionArray(creditsIssuedSales),
-        transfersIn: [],
-        transfersOut: [],
-        initiativeAgreement: [],
-        purchaseAgreement: [],
-        administrativeAllocation: [],
-        administrativeReduction: [],
-        automaticAdministrativePenalty: [],
-      },
+      transactions: testHelper.transactions,
     };
 
     const salesInput = screen.getByTestId(salesTestId);
@@ -774,87 +723,47 @@ describe("Compliance Obligation Container", () => {
     const modelYear = 2021;
     const complianceRatio = 12.0;
     const zevClassA = 8.0;
-    const creditBalanceStart = {
-      2020: { A: 250, B: 75 },
-    };
-    const pendingBalance = {
-      2021: { A: 141, B: 145 },
-    };
-    const creditsIssuedSales = {
-      2019: { A: 145.6, B: 73.5 },
-      2020: { A: 119.8, B: 33.6 },
-      2021: { A: 165.7, B: 55.6 },
-    };
-    const transfersIn = {
-      2020: { A: 55, B: 60 },
-      2021: { A: 50, B: 12 },
-    };
-    const transfersOut = {
-      2020: { A: 30, B: 10.5 },
-      2021: { A: 40, B: 21 },
-    };
-    const initiativeAgreement = {
-      2021: { A: 30, B: 32 },
-    };
-    const purchaseAgreement = {
-      2021: { A: 97, B: 89 },
-    };
-    const administrativeAllocation = {
-      2021: { A: 110, B: 115 },
-    };
-    const administrativeReduction = {
-      2019: { A: 34.5, B: 25.5 },
-      2021: { A: 121, B: 125 },
-    };
-    const automaticAdministrativePenalty = {
-      2019: { A: 131.2, B: 105.4 },
-      2020: { A: 141.2, B: 115.4 },
+    const creditTransactions = {
+      creditBalanceStart: {
+        2020: { A: 250, B: 75 },
+      },
+      pendingBalance: {
+        2021: { A: 141, B: 145 },
+      },
+      creditsIssuedSales: {
+        2019: { A: 145.6, B: 73.5 },
+        2020: { A: 119.8, B: 33.6 },
+        2021: { A: 165.7, B: 55.6 },
+      },
+      transfersIn: {
+        2020: { A: 55, B: 60 },
+        2021: { A: 50, B: 12 },
+      },
+      transfersOut: {
+        2020: { A: 30, B: 10.5 },
+        2021: { A: 40, B: 21 },
+      },
+      initiativeAgreement: {
+        2021: { A: 30, B: 32 },
+      },
+      purchaseAgreement: {
+        2021: { A: 97, B: 89 },
+      },
+      administrativeAllocation: {
+        2021: { A: 110, B: 115 },
+      },
+      administrativeReduction: {
+        2019: { A: 34.5, B: 25.5 },
+        2021: { A: 121, B: 125 },
+      },
+      automaticAdministrativePenalty: {
+        2019: { A: 131.2, B: 105.4 },
+        2020: { A: 141.2, B: 115.4 },
+      },
     };
 
-    // Create report items
-    const complianceObligation = [];
-    complianceObligation.push(
-      ...toTransactionArray(creditBalanceStart, "creditBalanceStart"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(pendingBalance, "pendingBalance"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(creditsIssuedSales, "creditsIssuedSales"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(transfersIn, "transfersIn"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(transfersOut, "transfersOut"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(initiativeAgreement, "initiativeAgreement"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(purchaseAgreement, "purchaseAgreement"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(administrativeAllocation, "administrativeAllocation"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(administrativeReduction, "administrativeReduction"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(automaticAdministrativePenalty, "automaticAdministrativePenalty"),
-    );
-
-    // Mock Axios
-    mockAxios(supplierClass, modelYear, complianceObligation);
-
-    // Render component
-    await act(async () => {
-      render(
-        <Router>
-          <ComplianceObligationContainer {...baseProps} />
-        </Router>,
-      );
-    });
+    const testHelper = new TestHelper(supplierClass, modelYear, creditTransactions);
+    await testHelper.renderContainer();
 
     // Set up expected values and assert
     const testSales = 6000;
@@ -862,38 +771,11 @@ describe("Compliance Obligation Container", () => {
     const expectedClassAReduction = (testSales / 100) * zevClassA;
     const expectedUnspecifiedReduction =
       expectedTotalReduction - expectedClassAReduction;
-
-    const addingTransactions = [
-      creditBalanceStart,
-      creditsIssuedSales,
-      transfersIn,
-      initiativeAgreement,
-      purchaseAgreement,
-      administrativeAllocation,
-      automaticAdministrativePenalty,
-    ];
-    const subtractingTransactions = [transfersOut, administrativeReduction];
-    const expectedCreditBalanceEnd = {
-      2019: getNetCredits("2019", addingTransactions, subtractingTransactions),
-      2020: getNetCredits("2020", addingTransactions, subtractingTransactions),
-      2021: getNetCredits("2021", addingTransactions, subtractingTransactions),
-    };
+    const expectedCreditBalanceEnd = testHelper.getCreditBalances([2019, 2020, 2021]);
     const expectedProvisionalBalance = {
-      2019: getNetCredits(
-        "2019",
-        [...addingTransactions, pendingBalance],
-        subtractingTransactions,
-      ),
-      2020: getNetCredits(
-        "2020",
-        [...addingTransactions, pendingBalance],
-        subtractingTransactions,
-      ),
-      2021: getNetCredits(
-        "2021",
-        [...addingTransactions, pendingBalance],
-        subtractingTransactions,
-      ),
+      2019: testHelper.addCredits(expectedCreditBalanceEnd[2019], creditTransactions.pendingBalance[2019]),
+      2020: testHelper.addCredits(expectedCreditBalanceEnd[2020], creditTransactions.pendingBalance[2020]),
+      2021: testHelper.addCredits(expectedCreditBalanceEnd[2021], creditTransactions.pendingBalance[2021]),
     };
 
     const expectedProps = {
@@ -936,22 +818,11 @@ describe("Compliance Obligation Container", () => {
       },
     };
     const expectedReportDetails = {
-      creditBalanceStart: creditBalanceStart,
+      creditBalanceStart: creditTransactions.creditBalanceStart,
       creditBalanceEnd: expectedCreditBalanceEnd,
-      pendingBalance: toTransactionArray(pendingBalance),
+      pendingBalance: testHelper.toTransactionArray(creditTransactions.pendingBalance),
       provisionalBalance: expectedProvisionalBalance,
-      transactions: {
-        creditsIssuedSales: toTransactionArray(creditsIssuedSales),
-        transfersIn: toTransactionArray(transfersIn),
-        transfersOut: toTransactionArray(transfersOut),
-        initiativeAgreement: toTransactionArray(initiativeAgreement),
-        purchaseAgreement: toTransactionArray(purchaseAgreement),
-        administrativeAllocation: toTransactionArray(administrativeAllocation),
-        administrativeReduction: toTransactionArray(administrativeReduction),
-        automaticAdministrativePenalty: toTransactionArray(
-          automaticAdministrativePenalty,
-        ),
-      },
+      transactions: testHelper.transactions,
     };
 
     const salesInput = screen.getByTestId(salesTestId);
@@ -969,87 +840,47 @@ describe("Compliance Obligation Container", () => {
     const modelYear = 2021;
     const complianceRatio = 12.0;
     const zevClassA = 8.0;
-    const creditBalanceStart = {
-      2020: { A: 250, B: 75 },
-    };
-    const pendingBalance = {
-      2021: { A: 141, B: 145 },
-    };
-    const creditsIssuedSales = {
-      2019: { A: 145.6, B: 73.5 },
-      2020: { A: 119.8, B: 33.6 },
-      2021: { A: 165.7, B: 55.6 },
-    };
-    const transfersIn = {
-      2020: { A: 55, B: 60 },
-      2021: { A: 50, B: 12 },
-    };
-    const transfersOut = {
-      2020: { A: 30, B: 10.5 },
-      2021: { A: 40, B: 21 },
-    };
-    const initiativeAgreement = {
-      2021: { A: 30, B: 32 },
-    };
-    const purchaseAgreement = {
-      2021: { A: 97, B: 89 },
-    };
-    const administrativeAllocation = {
-      2021: { A: 110, B: 115 },
-    };
-    const administrativeReduction = {
-      2019: { A: 34.5, B: 25.5 },
-      2021: { A: 121, B: 125 },
-    };
-    const automaticAdministrativePenalty = {
-      2019: { A: 131.2, B: 105.4 },
-      2020: { A: 141.2, B: 115.4 },
+    const creditTransactions = {
+      creditBalanceStart: {
+        2020: { A: 250, B: 75 },
+      },
+      pendingBalance: {
+        2021: { A: 141, B: 145 },
+      },
+      creditsIssuedSales: {
+        2019: { A: 145.6, B: 73.5 },
+        2020: { A: 119.8, B: 33.6 },
+        2021: { A: 165.7, B: 55.6 },
+      },
+      transfersIn: {
+        2020: { A: 55, B: 60 },
+        2021: { A: 50, B: 12 },
+      },
+      transfersOut: {
+        2020: { A: 30, B: 10.5 },
+        2021: { A: 40, B: 21 },
+      },
+      initiativeAgreement: {
+        2021: { A: 30, B: 32 },
+      },
+      purchaseAgreement: {
+        2021: { A: 97, B: 89 },
+      },
+      administrativeAllocation: {
+        2021: { A: 110, B: 115 },
+      },
+      administrativeReduction: {
+        2019: { A: 34.5, B: 25.5 },
+        2021: { A: 121, B: 125 },
+      },
+      automaticAdministrativePenalty: {
+        2019: { A: 131.2, B: 105.4 },
+        2020: { A: 141.2, B: 115.4 },
+      },
     };
 
-    // Create report items
-    const complianceObligation = [];
-    complianceObligation.push(
-      ...toTransactionArray(creditBalanceStart, "creditBalanceStart"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(pendingBalance, "pendingBalance"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(creditsIssuedSales, "creditsIssuedSales"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(transfersIn, "transfersIn"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(transfersOut, "transfersOut"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(initiativeAgreement, "initiativeAgreement"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(purchaseAgreement, "purchaseAgreement"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(administrativeAllocation, "administrativeAllocation"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(administrativeReduction, "administrativeReduction"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(automaticAdministrativePenalty, "automaticAdministrativePenalty"),
-    );
-
-    // Mock Axios
-    mockAxios(supplierClass, modelYear, complianceObligation);
-
-    // Render component
-    await act(async () => {
-      render(
-        <Router>
-          <ComplianceObligationContainer {...baseProps} />
-        </Router>,
-      );
-    });
+    const testHelper = new TestHelper(supplierClass, modelYear, creditTransactions);
+    await testHelper.renderContainer();
 
     // Set up expected values and assert
     const testSales = 6000;
@@ -1057,38 +888,11 @@ describe("Compliance Obligation Container", () => {
     const expectedClassAReduction = (testSales / 100) * zevClassA;
     const expectedUnspecifiedReduction =
       expectedTotalReduction - expectedClassAReduction;
-
-    const addingTransactions = [
-      creditBalanceStart,
-      creditsIssuedSales,
-      transfersIn,
-      initiativeAgreement,
-      purchaseAgreement,
-      administrativeAllocation,
-      automaticAdministrativePenalty,
-    ];
-    const subtractingTransactions = [transfersOut, administrativeReduction];
-    const expectedCreditBalanceEnd = {
-      2019: getNetCredits("2019", addingTransactions, subtractingTransactions),
-      2020: getNetCredits("2020", addingTransactions, subtractingTransactions),
-      2021: getNetCredits("2021", addingTransactions, subtractingTransactions),
-    };
+    const expectedCreditBalanceEnd = testHelper.getCreditBalances([2019, 2020, 2021]);
     const expectedProvisionalBalance = {
-      2019: getNetCredits(
-        "2019",
-        [...addingTransactions, pendingBalance],
-        subtractingTransactions,
-      ),
-      2020: getNetCredits(
-        "2020",
-        [...addingTransactions, pendingBalance],
-        subtractingTransactions,
-      ),
-      2021: getNetCredits(
-        "2021",
-        [...addingTransactions, pendingBalance],
-        subtractingTransactions,
-      ),
+      2019: testHelper.addCredits(expectedCreditBalanceEnd[2019], creditTransactions.pendingBalance[2019]),
+      2020: testHelper.addCredits(expectedCreditBalanceEnd[2020], creditTransactions.pendingBalance[2020]),
+      2021: testHelper.addCredits(expectedCreditBalanceEnd[2021], creditTransactions.pendingBalance[2021]),
     };
 
     const expectedProps = {
@@ -1128,22 +932,11 @@ describe("Compliance Obligation Container", () => {
       },
     };
     const expectedReportDetails = {
-      creditBalanceStart: creditBalanceStart,
+      creditBalanceStart: creditTransactions.creditBalanceStart,
       creditBalanceEnd: expectedCreditBalanceEnd,
-      pendingBalance: toTransactionArray(pendingBalance),
+      pendingBalance: testHelper.toTransactionArray(creditTransactions.pendingBalance),
       provisionalBalance: expectedProvisionalBalance,
-      transactions: {
-        creditsIssuedSales: toTransactionArray(creditsIssuedSales),
-        transfersIn: toTransactionArray(transfersIn),
-        transfersOut: toTransactionArray(transfersOut),
-        initiativeAgreement: toTransactionArray(initiativeAgreement),
-        purchaseAgreement: toTransactionArray(purchaseAgreement),
-        administrativeAllocation: toTransactionArray(administrativeAllocation),
-        administrativeReduction: toTransactionArray(administrativeReduction),
-        automaticAdministrativePenalty: toTransactionArray(
-          automaticAdministrativePenalty,
-        ),
-      },
+      transactions: testHelper.transactions,
     };
 
     const salesInput = screen.getByTestId(salesTestId);
@@ -1161,87 +954,47 @@ describe("Compliance Obligation Container", () => {
     const modelYear = 2021;
     const complianceRatio = 12.0;
     const zevClassA = 0;
-    const creditBalanceStart = {
-      2020: { A: 250, B: 75 },
-    };
-    const pendingBalance = {
-      2021: { A: 141, B: 145 },
-    };
-    const creditsIssuedSales = {
-      2019: { A: 145.6, B: 73.5 },
-      2020: { A: 119.8, B: 33.6 },
-      2021: { A: 165.7, B: 55.6 },
-    };
-    const transfersIn = {
-      2020: { A: 55, B: 60 },
-      2021: { A: 50, B: 12 },
-    };
-    const transfersOut = {
-      2020: { A: 30, B: 10.5 },
-      2021: { A: 40, B: 21 },
-    };
-    const initiativeAgreement = {
-      2021: { A: 30, B: 32 },
-    };
-    const purchaseAgreement = {
-      2021: { A: 97, B: 89 },
-    };
-    const administrativeAllocation = {
-      2021: { A: 110, B: 115 },
-    };
-    const administrativeReduction = {
-      2019: { A: 34.5, B: 25.5 },
-      2021: { A: 121, B: 125 },
-    };
-    const automaticAdministrativePenalty = {
-      2019: { A: 131.2, B: 105.4 },
-      2020: { A: 141.2, B: 115.4 },
+    const creditTransactions = {
+      creditBalanceStart: {
+        2020: { A: 250, B: 75 },
+      },
+      pendingBalance: {
+        2021: { A: 141, B: 145 },
+      },
+      creditsIssuedSales: {
+        2019: { A: 145.6, B: 73.5 },
+        2020: { A: 119.8, B: 33.6 },
+        2021: { A: 165.7, B: 55.6 },
+      },
+      transfersIn: {
+        2020: { A: 55, B: 60 },
+        2021: { A: 50, B: 12 },
+      },
+      transfersOut: {
+        2020: { A: 30, B: 10.5 },
+        2021: { A: 40, B: 21 },
+      },
+      initiativeAgreement: {
+        2021: { A: 30, B: 32 },
+      },
+      purchaseAgreement: {
+        2021: { A: 97, B: 89 },
+      },
+      administrativeAllocation: {
+        2021: { A: 110, B: 115 },
+      },
+      administrativeReduction: {
+        2019: { A: 34.5, B: 25.5 },
+        2021: { A: 121, B: 125 },
+      },
+      automaticAdministrativePenalty: {
+        2019: { A: 131.2, B: 105.4 },
+        2020: { A: 141.2, B: 115.4 },
+      },
     };
 
-    // Create report items
-    const complianceObligation = [];
-    complianceObligation.push(
-      ...toTransactionArray(creditBalanceStart, "creditBalanceStart"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(pendingBalance, "pendingBalance"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(creditsIssuedSales, "creditsIssuedSales"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(transfersIn, "transfersIn"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(transfersOut, "transfersOut"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(initiativeAgreement, "initiativeAgreement"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(purchaseAgreement, "purchaseAgreement"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(administrativeAllocation, "administrativeAllocation"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(administrativeReduction, "administrativeReduction"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(automaticAdministrativePenalty, "automaticAdministrativePenalty"),
-    );
-
-    // Mock Axios
-    mockAxios(supplierClass, modelYear, complianceObligation);
-
-    // Render component
-    await act(async () => {
-      render(
-        <Router>
-          <ComplianceObligationContainer {...baseProps} />
-        </Router>,
-      );
-    });
+    const testHelper = new TestHelper(supplierClass, modelYear, creditTransactions);
+    await testHelper.renderContainer();
 
     // Set up expected values and assert
     const testSales = 4800;
@@ -1249,38 +1002,11 @@ describe("Compliance Obligation Container", () => {
     const expectedClassAReduction = (testSales / 100) * zevClassA;
     const expectedUnspecifiedReduction =
       expectedTotalReduction - expectedClassAReduction;
-
-    const addingTransactions = [
-      creditBalanceStart,
-      creditsIssuedSales,
-      transfersIn,
-      initiativeAgreement,
-      purchaseAgreement,
-      administrativeAllocation,
-      automaticAdministrativePenalty,
-    ];
-    const subtractingTransactions = [transfersOut, administrativeReduction];
-    const expectedCreditBalanceEnd = {
-      2019: getNetCredits("2019", addingTransactions, subtractingTransactions),
-      2020: getNetCredits("2020", addingTransactions, subtractingTransactions),
-      2021: getNetCredits("2021", addingTransactions, subtractingTransactions),
-    };
+    const expectedCreditBalanceEnd = testHelper.getCreditBalances([2019, 2020, 2021]);
     const expectedProvisionalBalance = {
-      2019: getNetCredits(
-        "2019",
-        [...addingTransactions, pendingBalance],
-        subtractingTransactions,
-      ),
-      2020: getNetCredits(
-        "2020",
-        [...addingTransactions, pendingBalance],
-        subtractingTransactions,
-      ),
-      2021: getNetCredits(
-        "2021",
-        [...addingTransactions, pendingBalance],
-        subtractingTransactions,
-      ),
+      2019: testHelper.addCredits(expectedCreditBalanceEnd[2019], creditTransactions.pendingBalance[2019]),
+      2020: testHelper.addCredits(expectedCreditBalanceEnd[2020], creditTransactions.pendingBalance[2020]),
+      2021: testHelper.addCredits(expectedCreditBalanceEnd[2021], creditTransactions.pendingBalance[2021]),
     };
 
     const expectedProps = {
@@ -1321,22 +1047,11 @@ describe("Compliance Obligation Container", () => {
       },
     };
     const expectedReportDetails = {
-      creditBalanceStart: creditBalanceStart,
+      creditBalanceStart: creditTransactions.creditBalanceStart,
       creditBalanceEnd: expectedCreditBalanceEnd,
-      pendingBalance: toTransactionArray(pendingBalance),
+      pendingBalance: testHelper.toTransactionArray(creditTransactions.pendingBalance),
       provisionalBalance: expectedProvisionalBalance,
-      transactions: {
-        creditsIssuedSales: toTransactionArray(creditsIssuedSales),
-        transfersIn: toTransactionArray(transfersIn),
-        transfersOut: toTransactionArray(transfersOut),
-        initiativeAgreement: toTransactionArray(initiativeAgreement),
-        purchaseAgreement: toTransactionArray(purchaseAgreement),
-        administrativeAllocation: toTransactionArray(administrativeAllocation),
-        administrativeReduction: toTransactionArray(administrativeReduction),
-        automaticAdministrativePenalty: toTransactionArray(
-          automaticAdministrativePenalty,
-        ),
-      },
+      transactions: testHelper.transactions,
     };
 
     const salesInput = screen.getByTestId(salesTestId);
@@ -1354,87 +1069,47 @@ describe("Compliance Obligation Container", () => {
     const modelYear = 2021;
     const complianceRatio = 12.0;
     const zevClassA = 0;
-    const creditBalanceStart = {
-      2020: { A: 250, B: 75 },
-    };
-    const pendingBalance = {
-      2021: { A: 141, B: 145 },
-    };
-    const creditsIssuedSales = {
-      2019: { A: 145.6, B: 73.5 },
-      2020: { A: 119.8, B: 33.6 },
-      2021: { A: 165.7, B: 55.6 },
-    };
-    const transfersIn = {
-      2020: { A: 55, B: 60 },
-      2021: { A: 50, B: 12 },
-    };
-    const transfersOut = {
-      2020: { A: 30, B: 10.5 },
-      2021: { A: 40, B: 21 },
-    };
-    const initiativeAgreement = {
-      2021: { A: 30, B: 32 },
-    };
-    const purchaseAgreement = {
-      2021: { A: 97, B: 89 },
-    };
-    const administrativeAllocation = {
-      2021: { A: 110, B: 115 },
-    };
-    const administrativeReduction = {
-      2019: { A: 34.5, B: 25.5 },
-      2021: { A: 121, B: 125 },
-    };
-    const automaticAdministrativePenalty = {
-      2019: { A: 131.2, B: 105.4 },
-      2020: { A: 141.2, B: 115.4 },
+    const creditTransactions = {
+      creditBalanceStart: {
+        2020: { A: 250, B: 75 },
+      },
+      pendingBalance: {
+        2021: { A: 141, B: 145 },
+      },
+      creditsIssuedSales: {
+        2019: { A: 145.6, B: 73.5 },
+        2020: { A: 119.8, B: 33.6 },
+        2021: { A: 165.7, B: 55.6 },
+      },
+      transfersIn: {
+        2020: { A: 55, B: 60 },
+        2021: { A: 50, B: 12 },
+      },
+      transfersOut: {
+        2020: { A: 30, B: 10.5 },
+        2021: { A: 40, B: 21 },
+      },
+      initiativeAgreement: {
+        2021: { A: 30, B: 32 },
+      },
+      purchaseAgreement: {
+        2021: { A: 97, B: 89 },
+      },
+      administrativeAllocation: {
+        2021: { A: 110, B: 115 },
+      },
+      administrativeReduction: {
+        2019: { A: 34.5, B: 25.5 },
+        2021: { A: 121, B: 125 },
+      },
+      automaticAdministrativePenalty: {
+        2019: { A: 131.2, B: 105.4 },
+        2020: { A: 141.2, B: 115.4 },
+      },
     };
 
-    // Create report items
-    const complianceObligation = [];
-    complianceObligation.push(
-      ...toTransactionArray(creditBalanceStart, "creditBalanceStart"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(pendingBalance, "pendingBalance"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(creditsIssuedSales, "creditsIssuedSales"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(transfersIn, "transfersIn"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(transfersOut, "transfersOut"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(initiativeAgreement, "initiativeAgreement"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(purchaseAgreement, "purchaseAgreement"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(administrativeAllocation, "administrativeAllocation"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(administrativeReduction, "administrativeReduction"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(automaticAdministrativePenalty, "automaticAdministrativePenalty"),
-    );
-
-    // Mock Axios
-    mockAxios(supplierClass, modelYear, complianceObligation);
-
-    // Render component
-    await act(async () => {
-      render(
-        <Router>
-          <ComplianceObligationContainer {...baseProps} />
-        </Router>,
-      );
-    });
+    const testHelper = new TestHelper(supplierClass, modelYear, creditTransactions);
+    await testHelper.renderContainer();
 
     // Set up expected values and assert
     const testSales = 4800;
@@ -1442,38 +1117,11 @@ describe("Compliance Obligation Container", () => {
     const expectedClassAReduction = (testSales / 100) * zevClassA;
     const expectedUnspecifiedReduction =
       expectedTotalReduction - expectedClassAReduction;
-
-    const addingTransactions = [
-      creditBalanceStart,
-      creditsIssuedSales,
-      transfersIn,
-      initiativeAgreement,
-      purchaseAgreement,
-      administrativeAllocation,
-      automaticAdministrativePenalty,
-    ];
-    const subtractingTransactions = [transfersOut, administrativeReduction];
-    const expectedCreditBalanceEnd = {
-      2019: getNetCredits("2019", addingTransactions, subtractingTransactions),
-      2020: getNetCredits("2020", addingTransactions, subtractingTransactions),
-      2021: getNetCredits("2021", addingTransactions, subtractingTransactions),
-    };
+    const expectedCreditBalanceEnd = testHelper.getCreditBalances([2019, 2020, 2021]);
     const expectedProvisionalBalance = {
-      2019: getNetCredits(
-        "2019",
-        [...addingTransactions, pendingBalance],
-        subtractingTransactions,
-      ),
-      2020: getNetCredits(
-        "2020",
-        [...addingTransactions, pendingBalance],
-        subtractingTransactions,
-      ),
-      2021: getNetCredits(
-        "2021",
-        [...addingTransactions, pendingBalance],
-        subtractingTransactions,
-      ),
+      2019: testHelper.addCredits(expectedCreditBalanceEnd[2019], creditTransactions.pendingBalance[2019]),
+      2020: testHelper.addCredits(expectedCreditBalanceEnd[2020], creditTransactions.pendingBalance[2020]),
+      2021: testHelper.addCredits(expectedCreditBalanceEnd[2021], creditTransactions.pendingBalance[2021]),
     };
 
     const expectedProps = {
@@ -1513,22 +1161,11 @@ describe("Compliance Obligation Container", () => {
       },
     };
     const expectedReportDetails = {
-      creditBalanceStart: creditBalanceStart,
+      creditBalanceStart: creditTransactions.creditBalanceStart,
       creditBalanceEnd: expectedCreditBalanceEnd,
-      pendingBalance: toTransactionArray(pendingBalance),
+      pendingBalance: testHelper.toTransactionArray(creditTransactions.pendingBalance),
       provisionalBalance: expectedProvisionalBalance,
-      transactions: {
-        creditsIssuedSales: toTransactionArray(creditsIssuedSales),
-        transfersIn: toTransactionArray(transfersIn),
-        transfersOut: toTransactionArray(transfersOut),
-        initiativeAgreement: toTransactionArray(initiativeAgreement),
-        purchaseAgreement: toTransactionArray(purchaseAgreement),
-        administrativeAllocation: toTransactionArray(administrativeAllocation),
-        administrativeReduction: toTransactionArray(administrativeReduction),
-        automaticAdministrativePenalty: toTransactionArray(
-          automaticAdministrativePenalty,
-        ),
-      },
+      transactions: testHelper.transactions,
     };
 
     const salesInput = screen.getByTestId(salesTestId);
@@ -1546,87 +1183,47 @@ describe("Compliance Obligation Container", () => {
     const modelYear = 2021;
     const complianceRatio = 12.0;
     const zevClassA = 8.0;
-    const creditBalanceStart = {
-      2020: { A: 70, B: 15 },
-    };
-    const pendingBalance = {
-      2021: { A: 34, B: 12 },
-    };
-    const creditsIssuedSales = {
-      2020: { A: 79.8, B: 33.6 },
-      2021: { A: 65.7, B: 45.6 },
-    };
-    const transfersIn = {
-      2020: { A: 55, B: 60 },
-      2021: { A: 50, B: 0 },
-    };
-    const transfersOut = {
-      2020: { A: 100, B: 80.5 },
-      2021: { A: 40, B: 21 },
-    };
-    const initiativeAgreement = {
-      2021: { A: 30, B: 32 },
-    };
-    const purchaseAgreement = {
-      2020: { A: 20, B: 20 },
-      2021: { A: 37, B: 24 },
-    };
-    const administrativeAllocation = {
-      2019: { A: 35.4, B: 62.8 },
-      2021: { A: 10, B: 15 },
-    };
-    const administrativeReduction = {
-      2019: { A: 34.5, B: 25.5 },
-      2021: { A: 121, B: 125 },
-    };
-    const automaticAdministrativePenalty = {
-      2021: { A: 15, B: 20 },
+    const creditTransactions = {
+      creditBalanceStart: {
+        2020: { A: 70, B: 15 },
+      },
+      pendingBalance: {
+        2021: { A: 34, B: 12 },
+      },
+      creditsIssuedSales: {
+        2020: { A: 79.8, B: 33.6 },
+        2021: { A: 65.7, B: 45.6 },
+      },
+      transfersIn: {
+        2020: { A: 55, B: 60 },
+        2021: { A: 50, B: 0 },
+      },
+      transfersOut: {
+        2020: { A: 100, B: 80.5 },
+        2021: { A: 40, B: 21 },
+      },
+      initiativeAgreement: {
+        2021: { A: 30, B: 32 },
+      },
+      purchaseAgreement: {
+        2020: { A: 20, B: 20 },
+        2021: { A: 37, B: 24 },
+      },
+      administrativeAllocation: {
+        2019: { A: 35.4, B: 62.8 },
+        2021: { A: 10, B: 15 },
+      },
+      administrativeReduction: {
+        2019: { A: 34.5, B: 25.5 },
+        2021: { A: 121, B: 125 },
+      },
+      automaticAdministrativePenalty: {
+        2021: { A: 15, B: 20 },
+      },
     };
 
-    // Create report items
-    const complianceObligation = [];
-    complianceObligation.push(
-      ...toTransactionArray(creditBalanceStart, "creditBalanceStart"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(pendingBalance, "pendingBalance"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(creditsIssuedSales, "creditsIssuedSales"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(transfersIn, "transfersIn"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(transfersOut, "transfersOut"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(initiativeAgreement, "initiativeAgreement"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(purchaseAgreement, "purchaseAgreement"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(administrativeAllocation, "administrativeAllocation"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(administrativeReduction, "administrativeReduction"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(automaticAdministrativePenalty, "automaticAdministrativePenalty"),
-    );
-
-    // Mock Axios
-    mockAxios(supplierClass, modelYear, complianceObligation);
-
-    // Render component
-    await act(async () => {
-      render(
-        <Router>
-          <ComplianceObligationContainer {...baseProps} />
-        </Router>,
-      );
-    });
+    const testHelper = new TestHelper(supplierClass, modelYear, creditTransactions);
+    await testHelper.renderContainer();
 
     // Set up expected values and assert
     const testSales = 6000;
@@ -1634,38 +1231,11 @@ describe("Compliance Obligation Container", () => {
     const expectedClassAReduction = (testSales / 100) * zevClassA;
     const expectedUnspecifiedReduction =
       expectedTotalReduction - expectedClassAReduction;
-
-    const addingTransactions = [
-      creditBalanceStart,
-      creditsIssuedSales,
-      transfersIn,
-      initiativeAgreement,
-      purchaseAgreement,
-      administrativeAllocation,
-      automaticAdministrativePenalty,
-    ];
-    const subtractingTransactions = [transfersOut, administrativeReduction];
-    const expectedCreditBalanceEnd = {
-      2019: getNetCredits("2019", addingTransactions, subtractingTransactions),
-      2020: getNetCredits("2020", addingTransactions, subtractingTransactions),
-      2021: getNetCredits("2021", addingTransactions, subtractingTransactions),
-    };
+    const expectedCreditBalanceEnd = testHelper.getCreditBalances([2019, 2020, 2021]);
     const expectedProvisionalBalance = {
-      2019: getNetCredits(
-        "2019",
-        [...addingTransactions, pendingBalance],
-        subtractingTransactions,
-      ),
-      2020: getNetCredits(
-        "2020",
-        [...addingTransactions, pendingBalance],
-        subtractingTransactions,
-      ),
-      2021: getNetCredits(
-        "2021",
-        [...addingTransactions, pendingBalance],
-        subtractingTransactions,
-      ),
+      2019: testHelper.addCredits(expectedCreditBalanceEnd[2019], creditTransactions.pendingBalance[2019]),
+      2020: testHelper.addCredits(expectedCreditBalanceEnd[2020], creditTransactions.pendingBalance[2020]),
+      2021: testHelper.addCredits(expectedCreditBalanceEnd[2021], creditTransactions.pendingBalance[2021]),
     };
 
     const expectedProps = {
@@ -1704,22 +1274,11 @@ describe("Compliance Obligation Container", () => {
       },
     };
     const expectedReportDetails = {
-      creditBalanceStart: creditBalanceStart,
+      creditBalanceStart: creditTransactions.creditBalanceStart,
       creditBalanceEnd: expectedCreditBalanceEnd,
-      pendingBalance: toTransactionArray(pendingBalance),
+      pendingBalance: testHelper.toTransactionArray(creditTransactions.pendingBalance),
       provisionalBalance: expectedProvisionalBalance,
-      transactions: {
-        creditsIssuedSales: toTransactionArray(creditsIssuedSales),
-        transfersIn: toTransactionArray(transfersIn),
-        transfersOut: toTransactionArray(transfersOut),
-        initiativeAgreement: toTransactionArray(initiativeAgreement),
-        purchaseAgreement: toTransactionArray(purchaseAgreement),
-        administrativeAllocation: toTransactionArray(administrativeAllocation),
-        administrativeReduction: toTransactionArray(administrativeReduction),
-        automaticAdministrativePenalty: toTransactionArray(
-          automaticAdministrativePenalty,
-        ),
-      },
+      transactions: testHelper.transactions,
     };
 
     const salesInput = screen.getByTestId(salesTestId);
@@ -1743,87 +1302,47 @@ describe("Compliance Obligation Container", () => {
     const modelYear = 2021;
     const complianceRatio = 12.0;
     const zevClassA = 0;
-    const creditBalanceStart = {
-      2020: { A: 70, B: 15 },
-    };
-    const pendingBalance = {
-      2021: { A: 34, B: 12 },
-    };
-    const creditsIssuedSales = {
-      2020: { A: 79.8, B: 33.6 },
-      2021: { A: 65.7, B: 45.6 },
-    };
-    const transfersIn = {
-      2020: { A: 55, B: 60 },
-      2021: { A: 50, B: 0 },
-    };
-    const transfersOut = {
-      2020: { A: 100, B: 80.5 },
-      2021: { A: 40, B: 21 },
-    };
-    const initiativeAgreement = {
-      2021: { A: 30, B: 32 },
-    };
-    const purchaseAgreement = {
-      2020: { A: 20, B: 20 },
-      2021: { A: 37, B: 24 },
-    };
-    const administrativeAllocation = {
-      2019: { A: 35.4, B: 62.8 },
-      2021: { A: 10, B: 15 },
-    };
-    const administrativeReduction = {
-      2019: { A: 34.5, B: 25.5 },
-      2021: { A: 121, B: 125 },
-    };
-    const automaticAdministrativePenalty = {
-      2021: { A: 15, B: 20 },
+    const creditTransactions = {
+      creditBalanceStart: {
+        2020: { A: 70, B: 15 },
+      },
+      pendingBalance: {
+        2021: { A: 34, B: 12 },
+      },
+      creditsIssuedSales: {
+        2020: { A: 79.8, B: 33.6 },
+        2021: { A: 65.7, B: 45.6 },
+      },
+      transfersIn: {
+        2020: { A: 55, B: 60 },
+        2021: { A: 50, B: 0 },
+      },
+      transfersOut: {
+        2020: { A: 100, B: 80.5 },
+        2021: { A: 40, B: 21 },
+      },
+      initiativeAgreement: {
+        2021: { A: 30, B: 32 },
+      },
+      purchaseAgreement: {
+        2020: { A: 20, B: 20 },
+        2021: { A: 37, B: 24 },
+      },
+      administrativeAllocation: {
+        2019: { A: 35.4, B: 62.8 },
+        2021: { A: 10, B: 15 },
+      },
+      administrativeReduction: {
+        2019: { A: 34.5, B: 25.5 },
+        2021: { A: 121, B: 125 },
+      },
+      automaticAdministrativePenalty: {
+        2021: { A: 15, B: 20 },
+      },
     };
 
-    // Create report items
-    const complianceObligation = [];
-    complianceObligation.push(
-      ...toTransactionArray(creditBalanceStart, "creditBalanceStart"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(pendingBalance, "pendingBalance"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(creditsIssuedSales, "creditsIssuedSales"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(transfersIn, "transfersIn"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(transfersOut, "transfersOut"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(initiativeAgreement, "initiativeAgreement"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(purchaseAgreement, "purchaseAgreement"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(administrativeAllocation, "administrativeAllocation"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(administrativeReduction, "administrativeReduction"),
-    );
-    complianceObligation.push(
-      ...toTransactionArray(automaticAdministrativePenalty, "automaticAdministrativePenalty"),
-    );
-
-    // Mock Axios
-    mockAxios(supplierClass, modelYear, complianceObligation);
-
-    // Render component
-    await act(async () => {
-      render(
-        <Router>
-          <ComplianceObligationContainer {...baseProps} />
-        </Router>,
-      );
-    });
+    const testHelper = new TestHelper(supplierClass, modelYear, creditTransactions);
+    await testHelper.renderContainer();
 
     // Set up expected values and assert
     const testSales = 4800;
@@ -1831,38 +1350,11 @@ describe("Compliance Obligation Container", () => {
     const expectedClassAReduction = (testSales / 100) * zevClassA;
     const expectedUnspecifiedReduction =
       expectedTotalReduction - expectedClassAReduction;
-
-    const addingTransactions = [
-      creditBalanceStart,
-      creditsIssuedSales,
-      transfersIn,
-      initiativeAgreement,
-      purchaseAgreement,
-      administrativeAllocation,
-      automaticAdministrativePenalty,
-    ];
-    const subtractingTransactions = [transfersOut, administrativeReduction];
-    const expectedCreditBalanceEnd = {
-      2019: getNetCredits("2019", addingTransactions, subtractingTransactions),
-      2020: getNetCredits("2020", addingTransactions, subtractingTransactions),
-      2021: getNetCredits("2021", addingTransactions, subtractingTransactions),
-    };
+    const expectedCreditBalanceEnd = testHelper.getCreditBalances([2019, 2020, 2021]);
     const expectedProvisionalBalance = {
-      2019: getNetCredits(
-        "2019",
-        [...addingTransactions, pendingBalance],
-        subtractingTransactions,
-      ),
-      2020: getNetCredits(
-        "2020",
-        [...addingTransactions, pendingBalance],
-        subtractingTransactions,
-      ),
-      2021: getNetCredits(
-        "2021",
-        [...addingTransactions, pendingBalance],
-        subtractingTransactions,
-      ),
+      2019: testHelper.addCredits(expectedCreditBalanceEnd[2019], creditTransactions.pendingBalance[2019]),
+      2020: testHelper.addCredits(expectedCreditBalanceEnd[2020], creditTransactions.pendingBalance[2020]),
+      2021: testHelper.addCredits(expectedCreditBalanceEnd[2021], creditTransactions.pendingBalance[2021]),
     };
 
     const expectedProps = {
@@ -1899,22 +1391,11 @@ describe("Compliance Obligation Container", () => {
       },
     };
     const expectedReportDetails = {
-      creditBalanceStart: creditBalanceStart,
+      creditBalanceStart: creditTransactions.creditBalanceStart,
       creditBalanceEnd: expectedCreditBalanceEnd,
-      pendingBalance: toTransactionArray(pendingBalance),
+      pendingBalance: testHelper.toTransactionArray(creditTransactions.pendingBalance),
       provisionalBalance: expectedProvisionalBalance,
-      transactions: {
-        creditsIssuedSales: toTransactionArray(creditsIssuedSales),
-        transfersIn: toTransactionArray(transfersIn),
-        transfersOut: toTransactionArray(transfersOut),
-        initiativeAgreement: toTransactionArray(initiativeAgreement),
-        purchaseAgreement: toTransactionArray(purchaseAgreement),
-        administrativeAllocation: toTransactionArray(administrativeAllocation),
-        administrativeReduction: toTransactionArray(administrativeReduction),
-        automaticAdministrativePenalty: toTransactionArray(
-          automaticAdministrativePenalty,
-        ),
-      },
+      transactions: testHelper.transactions,
     };
 
     const salesInput = screen.getByTestId(salesTestId);
