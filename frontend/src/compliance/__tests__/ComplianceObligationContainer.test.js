@@ -119,8 +119,6 @@ const getDataByUrl = (url, id, supplierClass, modelYear, complianceObligation) =
   }
 };
 
-let detailsPageProps;
-
 const deepRound = (obj) => {
   if (Array.isArray(obj)) {
     return obj.map(deepRound);
@@ -145,11 +143,14 @@ const assertProps = (actualProps, expectedProps) => {
   expect(deepRound(_actualProps)).toEqual(deepRound(expectedProps));
 };
 
-class TestHelper {
+class TestData {
   constructor(supplierClass, modelYear, creditTransactions) {
     this.supplierClass = supplierClass;
     this.modelYear = modelYear;
     this.creditTransactions = creditTransactions ?? {};
+    this.complianceInfo = complianceRatios.find((x) => x.modelYear == modelYear);
+    this.complianceRatio = this.complianceInfo.complianceRatio;
+    this.zevClassA = this.complianceInfo.zevClassA;
 
     // Setup compliance obligation
     this.complianceObligation = [];
@@ -176,6 +177,24 @@ class TestHelper {
           this.complianceObligation,
         ),
       });
+    });
+
+    // Mock ComplianceObligationDetailsPage
+    jest.spyOn(ComplianceObligationDetailsPage, "default").mockImplementation((props) => {
+      this.detailsPageProps = props;
+      return (
+        <div>
+          <input data-testid={salesTestId} onChange={props.handleChangeSales} />
+          <input
+            data-testid={optionATestId}
+            onClick={() => props.handleUnspecifiedCreditReduction("A")}
+          />
+          <input
+            data-testid={optionBTestId}
+            onClick={() => props.handleUnspecifiedCreditReduction("B")}
+          />
+        </div>
+      );
     });
 
     // Setup transactions
@@ -266,26 +285,45 @@ class TestHelper {
       );
     });
   }
+
+  inputSales(sales) {
+    const salesInput = screen.getByTestId(salesTestId);
+    fireEvent.change(salesInput, { target: { value: sales } });
+    this.expectedTotalReduction =
+      this.supplierClass !== "S" ? Math.round(sales * this.complianceRatio) / 100 : 0;
+    this.expectedClassAReduction =
+      this.supplierClass == "L" ? Math.round(sales * this.zevClassA) / 100 : 0;
+    this.expectedUnspecifiedReduction =
+      this.expectedTotalReduction - this.expectedClassAReduction;
+
+    // Return base expected props
+    return {
+      assertions: [assertionComplianceObligation],
+      ratios: this.complianceInfo,
+      classAReductions: [
+        { modelYear: this.modelYear, value: this.expectedClassAReduction },
+      ],
+      unspecifiedReductions: [
+        { modelYear: this.modelYear, value: this.expectedUnspecifiedReduction },
+      ],
+      reportYear: this.modelYear,
+      sales: sales,
+      supplierClass: this.supplierClass,
+      totalReduction: this.expectedTotalReduction,
+    }
+  }
+
+  selectCreditOptionA() {
+    fireEvent.click(screen.getByTestId(optionATestId));
+  }
+
+  selectCreditOptionB() {
+    fireEvent.click(screen.getByTestId(optionBTestId));
+  }
 }
 
 beforeEach(() => {
   jest.spyOn(ReactRouter, "useParams").mockReturnValue(baseParams);
-  jest.spyOn(ComplianceObligationDetailsPage, "default").mockImplementation((props) => {
-    detailsPageProps = props;
-    return (
-      <div>
-        <input data-testid={salesTestId} onChange={props.handleChangeSales} />
-        <button
-          data-testid={optionATestId}
-          onClick={() => props.handleUnspecifiedCreditReduction("A")}
-        />
-        <button
-          data-testid={optionBTestId}
-          onClick={() => props.handleUnspecifiedCreditReduction("B")}
-        />
-      </div>
-    );
-  });
 });
 
 afterEach(() => {
@@ -295,17 +333,16 @@ afterEach(() => {
 
 describe("Compliance Obligation Container", () => {
   test("renders without crashing", async () => {
-    const testHelper = new TestHelper("L", 2020);
-    await testHelper.renderContainer();
+    const testData = new TestData("L", 2020);
+    await testData.renderContainer();
   });
 
 
   for (const supplierClass of ["L", "M", "S"]) {
     test(`gets credit reduction with zero, empty, or non-numeric sales input for supplier-class ${supplierClass}`, async () => {
       const modelYear = 2021;
-
-      const testHelper = new TestHelper(supplierClass, modelYear);
-      await testHelper.renderContainer();
+      const testData = new TestData(supplierClass, modelYear);
+      await testData.renderContainer();
 
       const expectedProps = {
         assertions: [assertionComplianceObligation],
@@ -315,59 +352,36 @@ describe("Compliance Obligation Container", () => {
         totalReduction: 0,
       };
 
-      assertProps(detailsPageProps, expectedProps); // assert for initial empty input
+      assertProps(testData.detailsPageProps, expectedProps); // assert for initial empty input
 
       expectedProps.sales = 0;
       const salesInput = screen.getByTestId(salesTestId);
 
       fireEvent.change(salesInput, { target: { value: 0 } });
-      assertProps(detailsPageProps, expectedProps);
+      assertProps(testData.detailsPageProps, expectedProps);
 
       fireEvent.change(salesInput, { target: { value: "abc" } });
-      assertProps(detailsPageProps, expectedProps);
+      assertProps(testData.detailsPageProps, expectedProps);
 
       fireEvent.change(salesInput, { target: { value: "" } });
-      assertProps(detailsPageProps, expectedProps);
+      assertProps(testData.detailsPageProps, expectedProps);
     });
   }
 
 
-  for (const testData of [
+  for (const testCase of [
     { supplierClass: "L", testSales: 6000 },
     { supplierClass: "M", testSales: 4000 }
   ]) {
-    test(`gets credit reduction with multiple compliance-ratios for supplier-class ${testData.supplierClass}`, async () => {
-      const { supplierClass, testSales } = testData;
+    test(`gets credit reduction with multiple compliance-ratios for supplier-class ${testCase.supplierClass}`, async () => {
+      const { supplierClass, testSales } = testCase;
       for (const complianceInfo of complianceRatios) {
         const modelYear = Number(complianceInfo.modelYear);
-        const complianceRatio = supplierClass !== "S" ? complianceInfo.complianceRatio : 0;
-        const zevClassA = supplierClass === "L" ? complianceInfo.zevClassA : 0;
+        const testData = new TestData(supplierClass, modelYear);
+        await testData.renderContainer();
 
-        const testHelper = new TestHelper(supplierClass, modelYear);
-        await testHelper.renderContainer();
-
-        const expectedTotalReduction = (testSales / 100) * complianceRatio;
-        const expectedClassAReduction = (testSales / 100) * zevClassA;
-        const expectedUnspecifiedReduction =
-          expectedTotalReduction - expectedClassAReduction;
-        const expectedProps = {
-          assertions: [assertionComplianceObligation],
-          ratios: complianceInfo,
-          classAReductions: [
-            { modelYear: modelYear, value: expectedClassAReduction },
-          ],
-          unspecifiedReductions: [
-            { modelYear: modelYear, value: expectedUnspecifiedReduction },
-          ],
-          reportYear: modelYear,
-          sales: testSales,
-          supplierClass,
-          totalReduction: expectedTotalReduction,
-        };
-
-        const salesInput = screen.getByTestId(salesTestId);
-        fireEvent.change(salesInput, { target: { value: testSales } });
-        assertProps(detailsPageProps, expectedProps);
+        const expectedProps = testData.inputSales(testSales); // input a test sales value in the text field
+        assertProps(testData.detailsPageProps, expectedProps);
         document.body.innerHTML = "";
       }
     });
@@ -378,10 +392,8 @@ describe("Compliance Obligation Container", () => {
     // Set up test data
     const supplierClass = "L";
     const modelYear = 2025;
-    const complianceRatio = 22.0;
-    const zevClassA = 16.0;
     const creditTransactions = {
-      "creditBalanceStart": {
+      creditBalanceStart: {
         2020: { A: 200, B: 100 },
         2021: { A: 0, B: 50 },
         2022: { A: 0, B: 0 },
@@ -390,28 +402,13 @@ describe("Compliance Obligation Container", () => {
       }
     };
 
-    const testHelper = new TestHelper(supplierClass, modelYear, creditTransactions);
-    await testHelper.renderContainer();
+    const testData = new TestData(supplierClass, modelYear, creditTransactions);
+    await testData.renderContainer();
 
     // Set up expected values and assert
-    const testSales = 6000;
-    const expectedTotalReduction = (testSales / 100) * complianceRatio;
-    const expectedClassAReduction = (testSales / 100) * zevClassA;
-    const expectedUnspecifiedReduction =
-      expectedTotalReduction - expectedClassAReduction;
-
+    const baseExpectedProps = testData.inputSales(6000); // input a test sales value in the text field
     const expectedProps = {
-      assertions: [assertionComplianceObligation],
-      classAReductions: [
-        { modelYear: modelYear, value: expectedClassAReduction },
-      ],
-      unspecifiedReductions: [
-        { modelYear: modelYear, value: expectedUnspecifiedReduction },
-      ],
-      reportYear: modelYear,
-      sales: testSales,
-      supplierClass,
-      totalReduction: expectedTotalReduction,
+      ...baseExpectedProps,
       updatedBalances: {
         balances: [
           { modelYear: 2020, creditA: 0, creditB: 0 },
@@ -420,11 +417,11 @@ describe("Compliance Obligation Container", () => {
           {
             modelYear: 2023,
             creditA: 0,
-            creditB: 100 + 50 + 418.9 - expectedUnspecifiedReduction,
+            creditB: 100 + 50 + 418.9 - testData.expectedUnspecifiedReduction,
           },
           {
             modelYear: 2024,
-            creditA: 200 + 652.4 + 702.5 - expectedClassAReduction,
+            creditA: 200 + 652.4 + 702.5 - testData.expectedClassAReduction,
             creditB: 0,
           },
         ],
@@ -439,15 +436,12 @@ describe("Compliance Obligation Container", () => {
       carryOverDeficits: {},
       pendingBalance: [],
       provisionalBalance: creditTransactions.creditBalanceStart,
-      transactions: testHelper.transactions,
+      transactions: testData.transactions,
     };
 
-    const salesInput = screen.getByTestId(salesTestId);
-    const optionBInput = screen.getByTestId(optionBTestId);
-    fireEvent.change(salesInput, { target: { value: testSales } });
-    fireEvent.click(optionBInput, { target: { id: "B" } });
-    assertProps(detailsPageProps, expectedProps);
-    assertProps(detailsPageProps.reportDetails, expectedReportDetails);
+    testData.selectCreditOptionB();
+    assertProps(testData.detailsPageProps, expectedProps);
+    assertProps(testData.detailsPageProps.reportDetails, expectedReportDetails);
   });
 
 
@@ -455,8 +449,6 @@ describe("Compliance Obligation Container", () => {
     // Set up test data
     const supplierClass = "L";
     const modelYear = 2025;
-    const complianceRatio = 22.0;
-    const zevClassA = 16.0;
     const creditTransactions = {
       deficit: {
         2020: { A: 200, B: 100 },
@@ -467,36 +459,13 @@ describe("Compliance Obligation Container", () => {
       }
     };
 
-    const testHelper = new TestHelper(supplierClass, modelYear, creditTransactions);
-    await testHelper.renderContainer();
+    const testData = new TestData(supplierClass, modelYear, creditTransactions);
+    await testData.renderContainer();
 
     // Set up expected values and assert
-    const testSales = 6000;
-    const expectedTotalReduction = (testSales / 100) * complianceRatio;
-    const expectedClassAReduction = (testSales / 100) * zevClassA;
-    const expectedUnspecifiedReduction =
-      expectedTotalReduction - expectedClassAReduction;
-
-    const expectedDeficitCollection = {};
-    for (const year in creditTransactions.deficit) {
-      expectedDeficitCollection[year] = {
-        A: creditTransactions.deficit[year].A,
-        unspecified: creditTransactions.deficit[year].B,
-      };
-    }
-
+    const baseExpectedProps = testData.inputSales(6000); // input a test sales value in the text field
     const expectedProps = {
-      assertions: [assertionComplianceObligation],
-      classAReductions: [
-        { modelYear: modelYear, value: expectedClassAReduction },
-      ],
-      unspecifiedReductions: [
-        { modelYear: modelYear, value: expectedUnspecifiedReduction },
-      ],
-      reportYear: modelYear,
-      sales: testSales,
-      supplierClass,
-      totalReduction: expectedTotalReduction,
+      ...baseExpectedProps,
       updatedBalances: {
         balances: [
           { modelYear: 2020, creditA: 0, creditB: 0 },
@@ -508,10 +477,10 @@ describe("Compliance Obligation Container", () => {
         deficits: [
           {
             modelYear: modelYear,
-            creditA: expectedClassAReduction,
-            creditB: expectedUnspecifiedReduction,
+            creditA: testData.expectedClassAReduction,
+            creditB: testData.expectedUnspecifiedReduction,
           },
-          ...testHelper.toTransactionArray(creditTransactions.deficit).map((x) => ({
+          ...testData.toTransactionArray(creditTransactions.deficit).map((x) => ({
             modelYear: x.modelYear,
             creditA: x.A,
             creditB: x.B,
@@ -520,9 +489,17 @@ describe("Compliance Obligation Container", () => {
       },
     };
 
+    const expectedDeficitCollection = {};
+    for (const year in creditTransactions.deficit) {
+      expectedDeficitCollection[year] = {
+        A: creditTransactions.deficit[year].A,
+        unspecified: creditTransactions.deficit[year].B,
+      };
+    }
+
     const expectedReportDetails = {
-      creditBalanceStart: testHelper.negCredits(creditTransactions.deficit),
-      creditBalanceEnd: testHelper.negCredits(creditTransactions.deficit),
+      creditBalanceStart: testData.negCredits(creditTransactions.deficit),
+      creditBalanceEnd: testData.negCredits(creditTransactions.deficit),
       deficitCollection: expectedDeficitCollection,
       carryOverDeficits: expectedDeficitCollection,
       pendingBalance: [],
@@ -533,15 +510,12 @@ describe("Compliance Obligation Container", () => {
         2023: { A: 0, B: 0 },
         2024: { A: 0, B: 0 },
       },
-      transactions: testHelper.transactions,
+      transactions: testData.transactions,
     };
 
-    const salesInput = screen.getByTestId(salesTestId);
-    const optionBInput = screen.getByTestId(optionBTestId);
-    fireEvent.change(salesInput, { target: { value: testSales } });
-    fireEvent.click(optionBInput, { target: { id: "B" } });
-    assertProps(detailsPageProps, expectedProps);
-    assertProps(detailsPageProps.reportDetails, expectedReportDetails);
+    testData.selectCreditOptionB();
+    assertProps(testData.detailsPageProps, expectedProps);
+    assertProps(testData.detailsPageProps.reportDetails, expectedReportDetails);
   });
 
 
@@ -549,8 +523,6 @@ describe("Compliance Obligation Container", () => {
     // Set up test data
     const supplierClass = "L";
     const modelYear = 2021;
-    const complianceRatio = 12.0;
-    const zevClassA = 8.0;
     const creditTransactions = {
       creditBalanceStart: {
         2019: { A: 120, B: 30 },
@@ -562,30 +534,16 @@ describe("Compliance Obligation Container", () => {
       },
     };
 
-    const testHelper = new TestHelper(supplierClass, modelYear, creditTransactions);
-    await testHelper.renderContainer();
+    const testData = new TestData(supplierClass, modelYear, creditTransactions);
+    await testData.renderContainer();
 
     // Set up expected values and assert
-    const testSales = 6000;
-    const expectedTotalReduction = (testSales / 100) * complianceRatio;
-    const expectedClassAReduction = (testSales / 100) * zevClassA;
-    const expectedUnspecifiedReduction =
-      expectedTotalReduction - expectedClassAReduction;
-    const expectedCreditBalanceEnd = testHelper.getCreditBalances([2019, 2020, 2021]);
+    const baseExpectedProps = testData.inputSales(6000); // input a test sales value in the text field
+    const expectedCreditBalanceEnd = testData.getCreditBalances([2019, 2020, 2021]);
     const expectedProvisionalBalance = expectedCreditBalanceEnd;
 
     const expectedProps = {
-      assertions: [assertionComplianceObligation],
-      classAReductions: [
-        { modelYear: modelYear, value: expectedClassAReduction },
-      ],
-      unspecifiedReductions: [
-        { modelYear: modelYear, value: expectedUnspecifiedReduction },
-      ],
-      reportYear: modelYear,
-      sales: testSales,
-      supplierClass,
-      totalReduction: expectedTotalReduction,
+      ...baseExpectedProps,
       updatedBalances: {
         balances: [
           {
@@ -604,31 +562,29 @@ describe("Compliance Obligation Container", () => {
               expectedProvisionalBalance["2019"].A +
               expectedProvisionalBalance["2020"].A +
               expectedProvisionalBalance["2021"].A -
-              expectedClassAReduction,
+              testData.expectedClassAReduction,
             creditB:
               expectedProvisionalBalance["2019"].B +
               expectedProvisionalBalance["2020"].B +
               expectedProvisionalBalance["2021"].B -
-              expectedUnspecifiedReduction,
+              testData.expectedUnspecifiedReduction,
           },
         ],
         deficits: [],
       },
     };
+
     const expectedReportDetails = {
       creditBalanceStart: creditTransactions.creditBalanceStart,
       creditBalanceEnd: expectedCreditBalanceEnd,
       pendingBalance: [],
       provisionalBalance: expectedProvisionalBalance,
-      transactions: testHelper.transactions,
+      transactions: testData.transactions,
     };
 
-    const salesInput = screen.getByTestId(salesTestId);
-    const creditOptionInput = screen.getByTestId(optionBTestId);
-    fireEvent.change(salesInput, { target: { value: testSales } });
-    fireEvent.click(creditOptionInput);
-    assertProps(detailsPageProps, expectedProps);
-    assertProps(detailsPageProps.reportDetails, expectedReportDetails);
+    testData.selectCreditOptionB();
+    assertProps(testData.detailsPageProps, expectedProps);
+    assertProps(testData.detailsPageProps.reportDetails, expectedReportDetails);
   });
 
 
@@ -636,8 +592,6 @@ describe("Compliance Obligation Container", () => {
     // Set up test data
     const supplierClass = "L";
     const modelYear = 2021;
-    const complianceRatio = 12.0;
-    const zevClassA = 8.0;
     const creditTransactions = {
       creditBalanceStart: {
         2019: { A: 120, B: 30 },
@@ -649,30 +603,16 @@ describe("Compliance Obligation Container", () => {
       },
     };
     
-    const testHelper = new TestHelper(supplierClass, modelYear, creditTransactions);
-    await testHelper.renderContainer();
+    const testData = new TestData(supplierClass, modelYear, creditTransactions);
+    await testData.renderContainer();
 
     // Set up expected values and assert
-    const testSales = 6000;
-    const expectedTotalReduction = (testSales / 100) * complianceRatio;
-    const expectedClassAReduction = (testSales / 100) * zevClassA;
-    const expectedUnspecifiedReduction =
-      expectedTotalReduction - expectedClassAReduction;
-    const expectedCreditBalanceEnd = testHelper.getCreditBalances([2019, 2020, 2021]);
+    const baseExpectedProps = testData.inputSales(6000); // input a test sales value in the text field
+    const expectedCreditBalanceEnd = testData.getCreditBalances([2019, 2020, 2021]);
     const expectedProvisionalBalance = expectedCreditBalanceEnd;
 
     const expectedProps = {
-      assertions: [assertionComplianceObligation],
-      classAReductions: [
-        { modelYear: modelYear, value: expectedClassAReduction },
-      ],
-      unspecifiedReductions: [
-        { modelYear: modelYear, value: expectedUnspecifiedReduction },
-      ],
-      reportYear: modelYear,
-      sales: testSales,
-      supplierClass,
-      totalReduction: expectedTotalReduction,
+      ...baseExpectedProps,
       updatedBalances: {
         balances: [
           {
@@ -689,7 +629,7 @@ describe("Compliance Obligation Container", () => {
               expectedProvisionalBalance["2021"].A +
               expectedProvisionalBalance["2019"].B +
               expectedProvisionalBalance["2020"].B -
-              expectedTotalReduction,
+              testData.expectedTotalReduction,
           },
           {
             modelYear: 2021,
@@ -705,15 +645,12 @@ describe("Compliance Obligation Container", () => {
       creditBalanceEnd: expectedCreditBalanceEnd,
       pendingBalance: [],
       provisionalBalance: expectedProvisionalBalance,
-      transactions: testHelper.transactions,
+      transactions: testData.transactions,
     };
 
-    const salesInput = screen.getByTestId(salesTestId);
-    const creditOptionInput = screen.getByTestId(optionATestId);
-    fireEvent.change(salesInput, { target: { value: testSales } });
-    fireEvent.click(creditOptionInput);
-    assertProps(detailsPageProps, expectedProps);
-    assertProps(detailsPageProps.reportDetails, expectedReportDetails);
+    testData.selectCreditOptionA();
+    assertProps(testData.detailsPageProps, expectedProps);
+    assertProps(testData.detailsPageProps.reportDetails, expectedReportDetails);
   });
 
 
@@ -721,8 +658,6 @@ describe("Compliance Obligation Container", () => {
     // Set up test data
     const supplierClass = "L";
     const modelYear = 2021;
-    const complianceRatio = 12.0;
-    const zevClassA = 8.0;
     const creditTransactions = {
       creditBalanceStart: {
         2020: { A: 250, B: 75 },
@@ -762,34 +697,20 @@ describe("Compliance Obligation Container", () => {
       },
     };
 
-    const testHelper = new TestHelper(supplierClass, modelYear, creditTransactions);
-    await testHelper.renderContainer();
+    const testData = new TestData(supplierClass, modelYear, creditTransactions);
+    await testData.renderContainer();
 
     // Set up expected values and assert
-    const testSales = 6000;
-    const expectedTotalReduction = (testSales / 100) * complianceRatio;
-    const expectedClassAReduction = (testSales / 100) * zevClassA;
-    const expectedUnspecifiedReduction =
-      expectedTotalReduction - expectedClassAReduction;
-    const expectedCreditBalanceEnd = testHelper.getCreditBalances([2019, 2020, 2021]);
+    const baseExpectedProps = testData.inputSales(6000); // input a test sales value in the text field
+    const expectedCreditBalanceEnd = testData.getCreditBalances([2019, 2020, 2021]);
     const expectedProvisionalBalance = {
-      2019: testHelper.addCredits(expectedCreditBalanceEnd[2019], creditTransactions.pendingBalance[2019]),
-      2020: testHelper.addCredits(expectedCreditBalanceEnd[2020], creditTransactions.pendingBalance[2020]),
-      2021: testHelper.addCredits(expectedCreditBalanceEnd[2021], creditTransactions.pendingBalance[2021]),
+      2019: testData.addCredits(expectedCreditBalanceEnd[2019], creditTransactions.pendingBalance[2019]),
+      2020: testData.addCredits(expectedCreditBalanceEnd[2020], creditTransactions.pendingBalance[2020]),
+      2021: testData.addCredits(expectedCreditBalanceEnd[2021], creditTransactions.pendingBalance[2021]),
     };
 
     const expectedProps = {
-      assertions: [assertionComplianceObligation],
-      classAReductions: [
-        { modelYear: modelYear, value: expectedClassAReduction },
-      ],
-      unspecifiedReductions: [
-        { modelYear: modelYear, value: expectedUnspecifiedReduction },
-      ],
-      reportYear: modelYear,
-      sales: testSales,
-      supplierClass,
-      totalReduction: expectedTotalReduction,
+      ...baseExpectedProps,
       updatedBalances: {
         balances: [
           {
@@ -802,11 +723,11 @@ describe("Compliance Obligation Container", () => {
             creditA:
               expectedProvisionalBalance["2019"].A +
               expectedProvisionalBalance["2020"].A -
-              expectedClassAReduction,
+              testData.expectedClassAReduction,
             creditB:
               expectedProvisionalBalance["2019"].B +
               expectedProvisionalBalance["2020"].B -
-              expectedUnspecifiedReduction,
+              testData.expectedUnspecifiedReduction,
           },
           {
             modelYear: 2021,
@@ -820,17 +741,14 @@ describe("Compliance Obligation Container", () => {
     const expectedReportDetails = {
       creditBalanceStart: creditTransactions.creditBalanceStart,
       creditBalanceEnd: expectedCreditBalanceEnd,
-      pendingBalance: testHelper.toTransactionArray(creditTransactions.pendingBalance),
+      pendingBalance: testData.toTransactionArray(creditTransactions.pendingBalance),
       provisionalBalance: expectedProvisionalBalance,
-      transactions: testHelper.transactions,
+      transactions: testData.transactions,
     };
 
-    const salesInput = screen.getByTestId(salesTestId);
-    const creditOptionInput = screen.getByTestId(optionBTestId);
-    fireEvent.change(salesInput, { target: { value: testSales } });
-    fireEvent.click(creditOptionInput);
-    assertProps(detailsPageProps, expectedProps);
-    assertProps(detailsPageProps.reportDetails, expectedReportDetails);
+    testData.selectCreditOptionB();
+    assertProps(testData.detailsPageProps, expectedProps);
+    assertProps(testData.detailsPageProps.reportDetails, expectedReportDetails);
   });
 
 
@@ -838,8 +756,6 @@ describe("Compliance Obligation Container", () => {
     // Set up test data
     const supplierClass = "L";
     const modelYear = 2021;
-    const complianceRatio = 12.0;
-    const zevClassA = 8.0;
     const creditTransactions = {
       creditBalanceStart: {
         2020: { A: 250, B: 75 },
@@ -879,34 +795,20 @@ describe("Compliance Obligation Container", () => {
       },
     };
 
-    const testHelper = new TestHelper(supplierClass, modelYear, creditTransactions);
-    await testHelper.renderContainer();
+    const testData = new TestData(supplierClass, modelYear, creditTransactions);
+    await testData.renderContainer();
 
     // Set up expected values and assert
-    const testSales = 6000;
-    const expectedTotalReduction = (testSales / 100) * complianceRatio;
-    const expectedClassAReduction = (testSales / 100) * zevClassA;
-    const expectedUnspecifiedReduction =
-      expectedTotalReduction - expectedClassAReduction;
-    const expectedCreditBalanceEnd = testHelper.getCreditBalances([2019, 2020, 2021]);
+    const baseExpectedProps = testData.inputSales(6000); // input a test sales value in the text field
+    const expectedCreditBalanceEnd = testData.getCreditBalances([2019, 2020, 2021]);
     const expectedProvisionalBalance = {
-      2019: testHelper.addCredits(expectedCreditBalanceEnd[2019], creditTransactions.pendingBalance[2019]),
-      2020: testHelper.addCredits(expectedCreditBalanceEnd[2020], creditTransactions.pendingBalance[2020]),
-      2021: testHelper.addCredits(expectedCreditBalanceEnd[2021], creditTransactions.pendingBalance[2021]),
+      2019: testData.addCredits(expectedCreditBalanceEnd[2019], creditTransactions.pendingBalance[2019]),
+      2020: testData.addCredits(expectedCreditBalanceEnd[2020], creditTransactions.pendingBalance[2020]),
+      2021: testData.addCredits(expectedCreditBalanceEnd[2021], creditTransactions.pendingBalance[2021]),
     };
 
     const expectedProps = {
-      assertions: [assertionComplianceObligation],
-      classAReductions: [
-        { modelYear: modelYear, value: expectedClassAReduction },
-      ],
-      unspecifiedReductions: [
-        { modelYear: modelYear, value: expectedUnspecifiedReduction },
-      ],
-      reportYear: modelYear,
-      sales: testSales,
-      supplierClass,
-      totalReduction: expectedTotalReduction,
+      ...baseExpectedProps,
       updatedBalances: {
         balances: [
           {
@@ -919,7 +821,7 @@ describe("Compliance Obligation Container", () => {
             creditA:
               expectedProvisionalBalance["2019"].A +
               expectedProvisionalBalance["2020"].A -
-              expectedTotalReduction,
+              testData.expectedTotalReduction,
             creditB: expectedProvisionalBalance["2020"].B,
           },
           {
@@ -934,17 +836,14 @@ describe("Compliance Obligation Container", () => {
     const expectedReportDetails = {
       creditBalanceStart: creditTransactions.creditBalanceStart,
       creditBalanceEnd: expectedCreditBalanceEnd,
-      pendingBalance: testHelper.toTransactionArray(creditTransactions.pendingBalance),
+      pendingBalance: testData.toTransactionArray(creditTransactions.pendingBalance),
       provisionalBalance: expectedProvisionalBalance,
-      transactions: testHelper.transactions,
+      transactions: testData.transactions,
     };
 
-    const salesInput = screen.getByTestId(salesTestId);
-    const creditOptionInput = screen.getByTestId(optionATestId);
-    fireEvent.change(salesInput, { target: { value: testSales } });
-    fireEvent.click(creditOptionInput);
-    assertProps(detailsPageProps, expectedProps);
-    assertProps(detailsPageProps.reportDetails, expectedReportDetails);
+    testData.selectCreditOptionA();
+    assertProps(testData.detailsPageProps, expectedProps);
+    assertProps(testData.detailsPageProps.reportDetails, expectedReportDetails);
   });
 
 
@@ -952,8 +851,6 @@ describe("Compliance Obligation Container", () => {
     // Set up test data
     const supplierClass = "M";
     const modelYear = 2021;
-    const complianceRatio = 12.0;
-    const zevClassA = 0;
     const creditTransactions = {
       creditBalanceStart: {
         2020: { A: 250, B: 75 },
@@ -993,34 +890,20 @@ describe("Compliance Obligation Container", () => {
       },
     };
 
-    const testHelper = new TestHelper(supplierClass, modelYear, creditTransactions);
-    await testHelper.renderContainer();
+    const testData = new TestData(supplierClass, modelYear, creditTransactions);
+    await testData.renderContainer();
 
     // Set up expected values and assert
-    const testSales = 4800;
-    const expectedTotalReduction = (testSales / 100) * complianceRatio;
-    const expectedClassAReduction = (testSales / 100) * zevClassA;
-    const expectedUnspecifiedReduction =
-      expectedTotalReduction - expectedClassAReduction;
-    const expectedCreditBalanceEnd = testHelper.getCreditBalances([2019, 2020, 2021]);
+    const baseExpectedProps = testData.inputSales(4800); // input a test sales value in the text field
+    const expectedCreditBalanceEnd = testData.getCreditBalances([2019, 2020, 2021]);
     const expectedProvisionalBalance = {
-      2019: testHelper.addCredits(expectedCreditBalanceEnd[2019], creditTransactions.pendingBalance[2019]),
-      2020: testHelper.addCredits(expectedCreditBalanceEnd[2020], creditTransactions.pendingBalance[2020]),
-      2021: testHelper.addCredits(expectedCreditBalanceEnd[2021], creditTransactions.pendingBalance[2021]),
+      2019: testData.addCredits(expectedCreditBalanceEnd[2019], creditTransactions.pendingBalance[2019]),
+      2020: testData.addCredits(expectedCreditBalanceEnd[2020], creditTransactions.pendingBalance[2020]),
+      2021: testData.addCredits(expectedCreditBalanceEnd[2021], creditTransactions.pendingBalance[2021]),
     };
 
     const expectedProps = {
-      assertions: [assertionComplianceObligation],
-      classAReductions: [
-        { modelYear: modelYear, value: expectedClassAReduction },
-      ],
-      unspecifiedReductions: [
-        { modelYear: modelYear, value: expectedUnspecifiedReduction },
-      ],
-      reportYear: modelYear,
-      sales: testSales,
-      supplierClass,
-      totalReduction: expectedTotalReduction,
+      ...baseExpectedProps,
       updatedBalances: {
         balances: [
           {
@@ -1040,7 +923,7 @@ describe("Compliance Obligation Container", () => {
               expectedProvisionalBalance["2019"].B +
               expectedProvisionalBalance["2020"].B +
               expectedProvisionalBalance["2021"].B -
-              expectedTotalReduction,
+              testData.expectedTotalReduction,
           },
         ],
         deficits: [],
@@ -1049,17 +932,14 @@ describe("Compliance Obligation Container", () => {
     const expectedReportDetails = {
       creditBalanceStart: creditTransactions.creditBalanceStart,
       creditBalanceEnd: expectedCreditBalanceEnd,
-      pendingBalance: testHelper.toTransactionArray(creditTransactions.pendingBalance),
+      pendingBalance: testData.toTransactionArray(creditTransactions.pendingBalance),
       provisionalBalance: expectedProvisionalBalance,
-      transactions: testHelper.transactions,
+      transactions: testData.transactions,
     };
 
-    const salesInput = screen.getByTestId(salesTestId);
-    const creditOptionInput = screen.getByTestId(optionBTestId);
-    fireEvent.change(salesInput, { target: { value: testSales } });
-    fireEvent.click(creditOptionInput);
-    assertProps(detailsPageProps, expectedProps);
-    assertProps(detailsPageProps.reportDetails, expectedReportDetails);
+    testData.selectCreditOptionB();
+    assertProps(testData.detailsPageProps, expectedProps);
+    assertProps(testData.detailsPageProps.reportDetails, expectedReportDetails);
   });
 
 
@@ -1067,8 +947,6 @@ describe("Compliance Obligation Container", () => {
     // Set up test data
     const supplierClass = "M";
     const modelYear = 2021;
-    const complianceRatio = 12.0;
-    const zevClassA = 0;
     const creditTransactions = {
       creditBalanceStart: {
         2020: { A: 250, B: 75 },
@@ -1108,34 +986,20 @@ describe("Compliance Obligation Container", () => {
       },
     };
 
-    const testHelper = new TestHelper(supplierClass, modelYear, creditTransactions);
-    await testHelper.renderContainer();
+    const testData = new TestData(supplierClass, modelYear, creditTransactions);
+    await testData.renderContainer();
 
     // Set up expected values and assert
-    const testSales = 4800;
-    const expectedTotalReduction = (testSales / 100) * complianceRatio;
-    const expectedClassAReduction = (testSales / 100) * zevClassA;
-    const expectedUnspecifiedReduction =
-      expectedTotalReduction - expectedClassAReduction;
-    const expectedCreditBalanceEnd = testHelper.getCreditBalances([2019, 2020, 2021]);
+    const baseExpectedProps = testData.inputSales(4800); // input a test sales value in the text field
+    const expectedCreditBalanceEnd = testData.getCreditBalances([2019, 2020, 2021]);
     const expectedProvisionalBalance = {
-      2019: testHelper.addCredits(expectedCreditBalanceEnd[2019], creditTransactions.pendingBalance[2019]),
-      2020: testHelper.addCredits(expectedCreditBalanceEnd[2020], creditTransactions.pendingBalance[2020]),
-      2021: testHelper.addCredits(expectedCreditBalanceEnd[2021], creditTransactions.pendingBalance[2021]),
+      2019: testData.addCredits(expectedCreditBalanceEnd[2019], creditTransactions.pendingBalance[2019]),
+      2020: testData.addCredits(expectedCreditBalanceEnd[2020], creditTransactions.pendingBalance[2020]),
+      2021: testData.addCredits(expectedCreditBalanceEnd[2021], creditTransactions.pendingBalance[2021]),
     };
 
     const expectedProps = {
-      assertions: [assertionComplianceObligation],
-      classAReductions: [
-        { modelYear: modelYear, value: expectedClassAReduction },
-      ],
-      unspecifiedReductions: [
-        { modelYear: modelYear, value: expectedUnspecifiedReduction },
-      ],
-      reportYear: modelYear,
-      sales: testSales,
-      supplierClass,
-      totalReduction: expectedTotalReduction,
+      ...baseExpectedProps,
       updatedBalances: {
         balances: [
           {
@@ -1148,7 +1012,7 @@ describe("Compliance Obligation Container", () => {
             creditA:
               expectedProvisionalBalance["2019"].A +
               expectedProvisionalBalance["2020"].A -
-              expectedTotalReduction,
+              testData.expectedTotalReduction,
             creditB: expectedProvisionalBalance["2020"].B,
           },
           {
@@ -1163,17 +1027,14 @@ describe("Compliance Obligation Container", () => {
     const expectedReportDetails = {
       creditBalanceStart: creditTransactions.creditBalanceStart,
       creditBalanceEnd: expectedCreditBalanceEnd,
-      pendingBalance: testHelper.toTransactionArray(creditTransactions.pendingBalance),
+      pendingBalance: testData.toTransactionArray(creditTransactions.pendingBalance),
       provisionalBalance: expectedProvisionalBalance,
-      transactions: testHelper.transactions,
+      transactions: testData.transactions,
     };
 
-    const salesInput = screen.getByTestId(salesTestId);
-    const creditOptionInput = screen.getByTestId(optionATestId);
-    fireEvent.change(salesInput, { target: { value: testSales } });
-    fireEvent.click(creditOptionInput);
-    assertProps(detailsPageProps, expectedProps);
-    assertProps(detailsPageProps.reportDetails, expectedReportDetails);
+    testData.selectCreditOptionA();
+    assertProps(testData.detailsPageProps, expectedProps);
+    assertProps(testData.detailsPageProps.reportDetails, expectedReportDetails);
   });
 
 
@@ -1181,8 +1042,6 @@ describe("Compliance Obligation Container", () => {
     // Set up test data
     const supplierClass = "L";
     const modelYear = 2021;
-    const complianceRatio = 12.0;
-    const zevClassA = 8.0;
     const creditTransactions = {
       creditBalanceStart: {
         2020: { A: 70, B: 15 },
@@ -1222,34 +1081,20 @@ describe("Compliance Obligation Container", () => {
       },
     };
 
-    const testHelper = new TestHelper(supplierClass, modelYear, creditTransactions);
-    await testHelper.renderContainer();
+    const testData = new TestData(supplierClass, modelYear, creditTransactions);
+    await testData.renderContainer();
 
     // Set up expected values and assert
-    const testSales = 6000;
-    const expectedTotalReduction = (testSales / 100) * complianceRatio;
-    const expectedClassAReduction = (testSales / 100) * zevClassA;
-    const expectedUnspecifiedReduction =
-      expectedTotalReduction - expectedClassAReduction;
-    const expectedCreditBalanceEnd = testHelper.getCreditBalances([2019, 2020, 2021]);
+    const baseExpectedProps = testData.inputSales(6000); // input a test sales value in the text field
+    const expectedCreditBalanceEnd = testData.getCreditBalances([2019, 2020, 2021]);
     const expectedProvisionalBalance = {
-      2019: testHelper.addCredits(expectedCreditBalanceEnd[2019], creditTransactions.pendingBalance[2019]),
-      2020: testHelper.addCredits(expectedCreditBalanceEnd[2020], creditTransactions.pendingBalance[2020]),
-      2021: testHelper.addCredits(expectedCreditBalanceEnd[2021], creditTransactions.pendingBalance[2021]),
+      2019: testData.addCredits(expectedCreditBalanceEnd[2019], creditTransactions.pendingBalance[2019]),
+      2020: testData.addCredits(expectedCreditBalanceEnd[2020], creditTransactions.pendingBalance[2020]),
+      2021: testData.addCredits(expectedCreditBalanceEnd[2021], creditTransactions.pendingBalance[2021]),
     };
 
     const expectedProps = {
-      assertions: [assertionComplianceObligation],
-      classAReductions: [
-        { modelYear: modelYear, value: expectedClassAReduction },
-      ],
-      unspecifiedReductions: [
-        { modelYear: modelYear, value: expectedUnspecifiedReduction },
-      ],
-      reportYear: modelYear,
-      sales: testSales,
-      supplierClass,
-      totalReduction: expectedTotalReduction,
+      ...baseExpectedProps,
       updatedBalances: {
         balances: [
           { modelYear: 2019, creditA: 0, creditB: 0 },
@@ -1260,12 +1105,12 @@ describe("Compliance Obligation Container", () => {
           {
             modelYear: 2021,
             creditA:
-              expectedClassAReduction -
+              testData.expectedClassAReduction -
               (expectedProvisionalBalance["2019"].A +
                 expectedProvisionalBalance["2020"].A +
                 expectedProvisionalBalance["2021"].A),
             creditB:
-              expectedUnspecifiedReduction -
+              testData.expectedUnspecifiedReduction -
               (expectedProvisionalBalance["2019"].B +
                 expectedProvisionalBalance["2020"].B +
                 expectedProvisionalBalance["2021"].B),
@@ -1276,23 +1121,18 @@ describe("Compliance Obligation Container", () => {
     const expectedReportDetails = {
       creditBalanceStart: creditTransactions.creditBalanceStart,
       creditBalanceEnd: expectedCreditBalanceEnd,
-      pendingBalance: testHelper.toTransactionArray(creditTransactions.pendingBalance),
+      pendingBalance: testData.toTransactionArray(creditTransactions.pendingBalance),
       provisionalBalance: expectedProvisionalBalance,
-      transactions: testHelper.transactions,
+      transactions: testData.transactions,
     };
 
-    const salesInput = screen.getByTestId(salesTestId);
-    fireEvent.change(salesInput, { target: { value: testSales } });
+    testData.selectCreditOptionB();
+    assertProps(testData.detailsPageProps, expectedProps);
+    assertProps(testData.detailsPageProps.reportDetails, expectedReportDetails);
 
-    let creditOptionInput = screen.getByTestId(optionBTestId);
-    fireEvent.click(creditOptionInput);
-    assertProps(detailsPageProps, expectedProps);
-    assertProps(detailsPageProps.reportDetails, expectedReportDetails);
-
-    creditOptionInput = screen.getByTestId(optionATestId);
-    fireEvent.click(creditOptionInput);
-    assertProps(detailsPageProps, expectedProps);
-    assertProps(detailsPageProps.reportDetails, expectedReportDetails);
+    testData.selectCreditOptionA();
+    assertProps(testData.detailsPageProps, expectedProps);
+    assertProps(testData.detailsPageProps.reportDetails, expectedReportDetails);
   });
 
 
@@ -1300,8 +1140,6 @@ describe("Compliance Obligation Container", () => {
     // Set up test data
     const supplierClass = "M";
     const modelYear = 2021;
-    const complianceRatio = 12.0;
-    const zevClassA = 0;
     const creditTransactions = {
       creditBalanceStart: {
         2020: { A: 70, B: 15 },
@@ -1341,34 +1179,20 @@ describe("Compliance Obligation Container", () => {
       },
     };
 
-    const testHelper = new TestHelper(supplierClass, modelYear, creditTransactions);
-    await testHelper.renderContainer();
+    const testData = new TestData(supplierClass, modelYear, creditTransactions);
+    await testData.renderContainer();
 
     // Set up expected values and assert
-    const testSales = 4800;
-    const expectedTotalReduction = (testSales / 100) * complianceRatio;
-    const expectedClassAReduction = (testSales / 100) * zevClassA;
-    const expectedUnspecifiedReduction =
-      expectedTotalReduction - expectedClassAReduction;
-    const expectedCreditBalanceEnd = testHelper.getCreditBalances([2019, 2020, 2021]);
+    const baseExpectedProps = testData.inputSales(4800); // input a test sales value in the text field
+    const expectedCreditBalanceEnd = testData.getCreditBalances([2019, 2020, 2021]);
     const expectedProvisionalBalance = {
-      2019: testHelper.addCredits(expectedCreditBalanceEnd[2019], creditTransactions.pendingBalance[2019]),
-      2020: testHelper.addCredits(expectedCreditBalanceEnd[2020], creditTransactions.pendingBalance[2020]),
-      2021: testHelper.addCredits(expectedCreditBalanceEnd[2021], creditTransactions.pendingBalance[2021]),
+      2019: testData.addCredits(expectedCreditBalanceEnd[2019], creditTransactions.pendingBalance[2019]),
+      2020: testData.addCredits(expectedCreditBalanceEnd[2020], creditTransactions.pendingBalance[2020]),
+      2021: testData.addCredits(expectedCreditBalanceEnd[2021], creditTransactions.pendingBalance[2021]),
     };
 
     const expectedProps = {
-      assertions: [assertionComplianceObligation],
-      classAReductions: [
-        { modelYear: modelYear, value: expectedClassAReduction },
-      ],
-      unspecifiedReductions: [
-        { modelYear: modelYear, value: expectedUnspecifiedReduction },
-      ],
-      reportYear: modelYear,
-      sales: testSales,
-      supplierClass,
-      totalReduction: expectedTotalReduction,
+      ...baseExpectedProps,
       updatedBalances: {
         balances: [
           { modelYear: 2019, creditA: 0, creditB: 0 },
@@ -1379,7 +1203,7 @@ describe("Compliance Obligation Container", () => {
           {
             modelYear: 2021,
             creditB:
-              expectedTotalReduction -
+              testData.expectedTotalReduction -
               (expectedProvisionalBalance["2019"].A +
                 expectedProvisionalBalance["2020"].A +
                 expectedProvisionalBalance["2021"].A +
@@ -1393,22 +1217,17 @@ describe("Compliance Obligation Container", () => {
     const expectedReportDetails = {
       creditBalanceStart: creditTransactions.creditBalanceStart,
       creditBalanceEnd: expectedCreditBalanceEnd,
-      pendingBalance: testHelper.toTransactionArray(creditTransactions.pendingBalance),
+      pendingBalance: testData.toTransactionArray(creditTransactions.pendingBalance),
       provisionalBalance: expectedProvisionalBalance,
-      transactions: testHelper.transactions,
+      transactions: testData.transactions,
     };
 
-    const salesInput = screen.getByTestId(salesTestId);
-    fireEvent.change(salesInput, { target: { value: testSales } });
+    testData.selectCreditOptionB();
+    assertProps(testData.detailsPageProps, expectedProps);
+    assertProps(testData.detailsPageProps.reportDetails, expectedReportDetails);
 
-    let creditOptionInput = screen.getByTestId(optionBTestId);
-    fireEvent.click(creditOptionInput);
-    assertProps(detailsPageProps, expectedProps);
-    assertProps(detailsPageProps.reportDetails, expectedReportDetails);
-
-    creditOptionInput = screen.getByTestId(optionATestId);
-    fireEvent.click(creditOptionInput);
-    assertProps(detailsPageProps, expectedProps);
-    assertProps(detailsPageProps.reportDetails, expectedReportDetails);
+    testData.selectCreditOptionA();
+    assertProps(testData.detailsPageProps, expectedProps);
+    assertProps(testData.detailsPageProps.reportDetails, expectedReportDetails);
   });
 });
