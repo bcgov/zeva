@@ -34,6 +34,97 @@ const baseProps = {
   user: baseUser,
 };
 
+const testCreditTransactions = {
+  startBalanceAndSalesOnly: {
+    creditBalanceStart: {
+      2019: { A: 120, B: 30 },
+      2020: { A: 25, B: 175 },
+    },
+    creditsIssuedSales: {
+      2020: { A: 50, B: 33 },
+      2021: { A: 300, B: 55 },
+    },
+  },
+
+  balances_pending_positiveStart_positiveEnd: {
+    creditBalanceStart: {
+      2020: { A: 250, B: 75 },
+    },
+    pendingBalance: {
+      2021: { A: 141, B: 145 },
+    },
+    creditsIssuedSales: {
+      2019: { A: 145.6, B: 73.5 },
+      2020: { A: 119.8, B: 33.6 },
+      2021: { A: 165.7, B: 55.6 },
+    },
+    transfersIn: {
+      2020: { A: 55, B: 60 },
+      2021: { A: 50, B: 12 },
+    },
+    transfersOut: {
+      2020: { A: 30, B: 10.5 },
+      2021: { A: 40, B: 21 },
+    },
+    initiativeAgreement: {
+      2021: { A: 30, B: 32 },
+    },
+    purchaseAgreement: {
+      2021: { A: 97, B: 89 },
+    },
+    administrativeAllocation: {
+      2021: { A: 110, B: 115 },
+    },
+    administrativeReduction: {
+      2019: { A: 34.5, B: 25.5 },
+      2021: { A: 121, B: 125 },
+    },
+    automaticAdministrativePenalty: {
+      2019: { A: 131.2, B: 105.4 },
+      2020: { A: 141.2, B: 115.4 },
+    },
+  },
+
+  balances_pending_positiveStart_negativeEnd: {
+    creditBalanceStart: {
+      2020: { A: 70, B: 15 },
+    },
+    pendingBalance: {
+      2021: { A: 34, B: 12 },
+    },
+    creditsIssuedSales: {
+      2020: { A: 79.8, B: 33.6 },
+      2021: { A: 65.7, B: 45.6 },
+    },
+    transfersIn: {
+      2020: { A: 55, B: 60 },
+      2021: { A: 50, B: 0 },
+    },
+    transfersOut: {
+      2020: { A: 100, B: 80.5 },
+      2021: { A: 40, B: 21 },
+    },
+    initiativeAgreement: {
+      2021: { A: 30, B: 32 },
+    },
+    purchaseAgreement: {
+      2020: { A: 20, B: 20 },
+      2021: { A: 37, B: 24 },
+    },
+    administrativeAllocation: {
+      2019: { A: 35.4, B: 62.8 },
+      2021: { A: 10, B: 15 },
+    },
+    administrativeReduction: {
+      2019: { A: 34.5, B: 25.5 },
+      2021: { A: 121, B: 125 },
+    },
+    automaticAdministrativePenalty: {
+      2021: { A: 15, B: 20 },
+    },
+  }
+}
+
 const complianceRatios = [
   { id: 1, modelYear: "2019", complianceRatio: "0.00", zevClassA: "0.00" },
   { id: 2, modelYear: "2020", complianceRatio: "9.50", zevClassA: "6.00" },
@@ -142,6 +233,16 @@ const assertProps = (actualProps, expectedProps) => {
   }
   expect(deepRound(_actualProps)).toEqual(deepRound(expectedProps));
 };
+
+const getAccumulatedBalance = (balances, endYear, creditType) => {
+  let sum = 0;
+  for (const year in balances) {
+    if (year <= endYear) {
+      sum += balances[year][creditType];
+    }
+  }
+  return sum;
+}
 
 class TestData {
   constructor(supplierClass, modelYear, creditTransactions) {
@@ -390,8 +491,6 @@ describe("Compliance Obligation Container", () => {
 
   test("gets credit balance for large supplier, positive start balances, no transactions", async () => {
     // Set up test data
-    const supplierClass = "L";
-    const modelYear = 2025;
     const creditTransactions = {
       creditBalanceStart: {
         2020: { A: 200, B: 100 },
@@ -401,8 +500,7 @@ describe("Compliance Obligation Container", () => {
         2024: { A: 702.5, B: 0 },
       }
     };
-
-    const testData = new TestData(supplierClass, modelYear, creditTransactions);
+    const testData = new TestData("L", 2025, creditTransactions);
     await testData.renderContainer();
 
     // Set up expected values and assert
@@ -447,19 +545,17 @@ describe("Compliance Obligation Container", () => {
 
   test("gets credit balance for large supplier, deficit start balances, no transactions", async () => {
     // Set up test data
-    const supplierClass = "L";
-    const modelYear = 2025;
     const creditTransactions = {
       deficit: {
-        2020: { A: 200, B: 100 },
-        2021: { A: 10, B: 50 },
-        2022: { A: 32, B: 60.4 },
-        2023: { A: 652.4, B: 418.9 },
-        2024: { A: 702.5, B: 82 },
+        2021: { A: 18, B: 50.75 },
+        2022: { A: 82, B: 2 },
+        2023: { A: 253.2, B: 420.12 },
+        2024: { A: 102.5, B: 40 },
+        2025: { A: 310, B: 104 },
       }
     };
-
-    const testData = new TestData(supplierClass, modelYear, creditTransactions);
+    const modelYear = 2026;
+    const testData = new TestData("L", modelYear, creditTransactions);
     await testData.renderContainer();
 
     // Set up expected values and assert
@@ -468,11 +564,11 @@ describe("Compliance Obligation Container", () => {
       ...baseExpectedProps,
       updatedBalances: {
         balances: [
-          { modelYear: 2020, creditA: 0, creditB: 0 },
           { modelYear: 2021, creditA: 0, creditB: 0 },
           { modelYear: 2022, creditA: 0, creditB: 0 },
           { modelYear: 2023, creditA: 0, creditB: 0 },
           { modelYear: 2024, creditA: 0, creditB: 0 },
+          { modelYear: 2025, creditA: 0, creditB: 0 },
         ],
         deficits: [
           {
@@ -504,11 +600,11 @@ describe("Compliance Obligation Container", () => {
       carryOverDeficits: expectedDeficitCollection,
       pendingBalance: [],
       provisionalBalance: {
-        2020: { A: 0, B: 0 },
         2021: { A: 0, B: 0 },
         2022: { A: 0, B: 0 },
         2023: { A: 0, B: 0 },
         2024: { A: 0, B: 0 },
+        2025: { A: 0, B: 0 },
       },
       transactions: testData.transactions,
     };
@@ -521,20 +617,8 @@ describe("Compliance Obligation Container", () => {
 
   test("gets credit balance for large supplier, sale transactions, option B", async () => {
     // Set up test data
-    const supplierClass = "L";
-    const modelYear = 2021;
-    const creditTransactions = {
-      creditBalanceStart: {
-        2019: { A: 120, B: 30 },
-        2020: { A: 25, B: 175 },
-      },
-      creditsIssuedSales: {
-        2020: { A: 50, B: 33 },
-        2021: { A: 300, B: 55 },
-      },
-    };
-
-    const testData = new TestData(supplierClass, modelYear, creditTransactions);
+    const creditTransactions = testCreditTransactions.startBalanceAndSalesOnly;
+    const testData = new TestData("L", 2021, creditTransactions);
     await testData.renderContainer();
 
     // Set up expected values and assert
@@ -559,14 +643,10 @@ describe("Compliance Obligation Container", () => {
           {
             modelYear: 2021,
             creditA:
-              expectedProvisionalBalance["2019"].A +
-              expectedProvisionalBalance["2020"].A +
-              expectedProvisionalBalance["2021"].A -
+              getAccumulatedBalance(expectedProvisionalBalance, 2021, "A") -
               testData.expectedClassAReduction,
             creditB:
-              expectedProvisionalBalance["2019"].B +
-              expectedProvisionalBalance["2020"].B +
-              expectedProvisionalBalance["2021"].B -
+              getAccumulatedBalance(expectedProvisionalBalance, 2021, "B") -
               testData.expectedUnspecifiedReduction,
           },
         ],
@@ -590,20 +670,8 @@ describe("Compliance Obligation Container", () => {
 
   test("gets credit balance for large supplier, sale transactions, option A", async () => {
     // Set up test data
-    const supplierClass = "L";
-    const modelYear = 2021;
-    const creditTransactions = {
-      creditBalanceStart: {
-        2019: { A: 120, B: 30 },
-        2020: { A: 25, B: 175 },
-      },
-      creditsIssuedSales: {
-        2020: { A: 50, B: 33 },
-        2021: { A: 300, B: 55 },
-      },
-    };
-    
-    const testData = new TestData(supplierClass, modelYear, creditTransactions);
+    const creditTransactions = testCreditTransactions.startBalanceAndSalesOnly;
+    const testData = new TestData("L", 2021, creditTransactions);
     await testData.renderContainer();
 
     // Set up expected values and assert
@@ -624,11 +692,8 @@ describe("Compliance Obligation Container", () => {
             modelYear: 2020,
             creditA: 0,
             creditB:
-              expectedProvisionalBalance["2019"].A +
-              expectedProvisionalBalance["2020"].A +
-              expectedProvisionalBalance["2021"].A +
-              expectedProvisionalBalance["2019"].B +
-              expectedProvisionalBalance["2020"].B -
+              getAccumulatedBalance(expectedProvisionalBalance, 2021, "A") +
+              getAccumulatedBalance(expectedProvisionalBalance, 2020, "B") -
               testData.expectedTotalReduction,
           },
           {
@@ -656,48 +721,8 @@ describe("Compliance Obligation Container", () => {
 
   test("gets credit balance for large supplier, multiple transactions, pending balance, option B, positive start & end balances", async () => {
     // Set up test data
-    const supplierClass = "L";
-    const modelYear = 2021;
-    const creditTransactions = {
-      creditBalanceStart: {
-        2020: { A: 250, B: 75 },
-      },
-      pendingBalance: {
-        2021: { A: 141, B: 145 },
-      },
-      creditsIssuedSales: {
-        2019: { A: 145.6, B: 73.5 },
-        2020: { A: 119.8, B: 33.6 },
-        2021: { A: 165.7, B: 55.6 },
-      },
-      transfersIn: {
-        2020: { A: 55, B: 60 },
-        2021: { A: 50, B: 12 },
-      },
-      transfersOut: {
-        2020: { A: 30, B: 10.5 },
-        2021: { A: 40, B: 21 },
-      },
-      initiativeAgreement: {
-        2021: { A: 30, B: 32 },
-      },
-      purchaseAgreement: {
-        2021: { A: 97, B: 89 },
-      },
-      administrativeAllocation: {
-        2021: { A: 110, B: 115 },
-      },
-      administrativeReduction: {
-        2019: { A: 34.5, B: 25.5 },
-        2021: { A: 121, B: 125 },
-      },
-      automaticAdministrativePenalty: {
-        2019: { A: 131.2, B: 105.4 },
-        2020: { A: 141.2, B: 115.4 },
-      },
-    };
-
-    const testData = new TestData(supplierClass, modelYear, creditTransactions);
+    const creditTransactions = testCreditTransactions.balances_pending_positiveStart_positiveEnd;
+    const testData = new TestData("L", 2021, creditTransactions);
     await testData.renderContainer();
 
     // Set up expected values and assert
@@ -721,12 +746,10 @@ describe("Compliance Obligation Container", () => {
           {
             modelYear: 2020,
             creditA:
-              expectedProvisionalBalance["2019"].A +
-              expectedProvisionalBalance["2020"].A -
+              getAccumulatedBalance(expectedProvisionalBalance, 2020, "A") -
               testData.expectedClassAReduction,
             creditB:
-              expectedProvisionalBalance["2019"].B +
-              expectedProvisionalBalance["2020"].B -
+              getAccumulatedBalance(expectedProvisionalBalance, 2020, "B") -
               testData.expectedUnspecifiedReduction,
           },
           {
@@ -754,48 +777,8 @@ describe("Compliance Obligation Container", () => {
 
   test("gets credit balance for large supplier, multiple transactions, pending balance, option A, positive start & end balances", async () => {
     // Set up test data
-    const supplierClass = "L";
-    const modelYear = 2021;
-    const creditTransactions = {
-      creditBalanceStart: {
-        2020: { A: 250, B: 75 },
-      },
-      pendingBalance: {
-        2021: { A: 141, B: 145 },
-      },
-      creditsIssuedSales: {
-        2019: { A: 145.6, B: 73.5 },
-        2020: { A: 119.8, B: 33.6 },
-        2021: { A: 165.7, B: 55.6 },
-      },
-      transfersIn: {
-        2020: { A: 55, B: 60 },
-        2021: { A: 50, B: 12 },
-      },
-      transfersOut: {
-        2020: { A: 30, B: 10.5 },
-        2021: { A: 40, B: 21 },
-      },
-      initiativeAgreement: {
-        2021: { A: 30, B: 32 },
-      },
-      purchaseAgreement: {
-        2021: { A: 97, B: 89 },
-      },
-      administrativeAllocation: {
-        2021: { A: 110, B: 115 },
-      },
-      administrativeReduction: {
-        2019: { A: 34.5, B: 25.5 },
-        2021: { A: 121, B: 125 },
-      },
-      automaticAdministrativePenalty: {
-        2019: { A: 131.2, B: 105.4 },
-        2020: { A: 141.2, B: 115.4 },
-      },
-    };
-
-    const testData = new TestData(supplierClass, modelYear, creditTransactions);
+    const creditTransactions = testCreditTransactions.balances_pending_positiveStart_positiveEnd;
+    const testData = new TestData("L", 2021, creditTransactions);
     await testData.renderContainer();
 
     // Set up expected values and assert
@@ -819,8 +802,7 @@ describe("Compliance Obligation Container", () => {
           {
             modelYear: 2020,
             creditA:
-              expectedProvisionalBalance["2019"].A +
-              expectedProvisionalBalance["2020"].A -
+              getAccumulatedBalance(expectedProvisionalBalance, 2020, "A") -
               testData.expectedTotalReduction,
             creditB: expectedProvisionalBalance["2020"].B,
           },
@@ -849,48 +831,8 @@ describe("Compliance Obligation Container", () => {
 
   test("gets credit balance for medium supplier, multiple transactions, pending balance, option B, positive start & end balances", async () => {
     // Set up test data
-    const supplierClass = "M";
-    const modelYear = 2021;
-    const creditTransactions = {
-      creditBalanceStart: {
-        2020: { A: 250, B: 75 },
-      },
-      pendingBalance: {
-        2021: { A: 141, B: 145 },
-      },
-      creditsIssuedSales: {
-        2019: { A: 145.6, B: 73.5 },
-        2020: { A: 119.8, B: 33.6 },
-        2021: { A: 165.7, B: 55.6 },
-      },
-      transfersIn: {
-        2020: { A: 55, B: 60 },
-        2021: { A: 50, B: 12 },
-      },
-      transfersOut: {
-        2020: { A: 30, B: 10.5 },
-        2021: { A: 40, B: 21 },
-      },
-      initiativeAgreement: {
-        2021: { A: 30, B: 32 },
-      },
-      purchaseAgreement: {
-        2021: { A: 97, B: 89 },
-      },
-      administrativeAllocation: {
-        2021: { A: 110, B: 115 },
-      },
-      administrativeReduction: {
-        2019: { A: 34.5, B: 25.5 },
-        2021: { A: 121, B: 125 },
-      },
-      automaticAdministrativePenalty: {
-        2019: { A: 131.2, B: 105.4 },
-        2020: { A: 141.2, B: 115.4 },
-      },
-    };
-
-    const testData = new TestData(supplierClass, modelYear, creditTransactions);
+    const creditTransactions = testCreditTransactions.balances_pending_positiveStart_positiveEnd;
+    const testData = new TestData("M", 2021, creditTransactions);
     await testData.renderContainer();
 
     // Set up expected values and assert
@@ -920,9 +862,7 @@ describe("Compliance Obligation Container", () => {
             modelYear: 2021,
             creditA: expectedProvisionalBalance["2021"].A,
             creditB:
-              expectedProvisionalBalance["2019"].B +
-              expectedProvisionalBalance["2020"].B +
-              expectedProvisionalBalance["2021"].B -
+              getAccumulatedBalance(expectedProvisionalBalance, 2021, "B") -
               testData.expectedTotalReduction,
           },
         ],
@@ -945,48 +885,8 @@ describe("Compliance Obligation Container", () => {
 
   test("gets credit balance for medium supplier, multiple transactions, pending balance, option A, positive start & end balances", async () => {
     // Set up test data
-    const supplierClass = "M";
-    const modelYear = 2021;
-    const creditTransactions = {
-      creditBalanceStart: {
-        2020: { A: 250, B: 75 },
-      },
-      pendingBalance: {
-        2021: { A: 141, B: 145 },
-      },
-      creditsIssuedSales: {
-        2019: { A: 145.6, B: 73.5 },
-        2020: { A: 119.8, B: 33.6 },
-        2021: { A: 165.7, B: 55.6 },
-      },
-      transfersIn: {
-        2020: { A: 55, B: 60 },
-        2021: { A: 50, B: 12 },
-      },
-      transfersOut: {
-        2020: { A: 30, B: 10.5 },
-        2021: { A: 40, B: 21 },
-      },
-      initiativeAgreement: {
-        2021: { A: 30, B: 32 },
-      },
-      purchaseAgreement: {
-        2021: { A: 97, B: 89 },
-      },
-      administrativeAllocation: {
-        2021: { A: 110, B: 115 },
-      },
-      administrativeReduction: {
-        2019: { A: 34.5, B: 25.5 },
-        2021: { A: 121, B: 125 },
-      },
-      automaticAdministrativePenalty: {
-        2019: { A: 131.2, B: 105.4 },
-        2020: { A: 141.2, B: 115.4 },
-      },
-    };
-
-    const testData = new TestData(supplierClass, modelYear, creditTransactions);
+    const creditTransactions = testCreditTransactions.balances_pending_positiveStart_positiveEnd;
+    const testData = new TestData("M", 2021, creditTransactions);
     await testData.renderContainer();
 
     // Set up expected values and assert
@@ -1010,8 +910,7 @@ describe("Compliance Obligation Container", () => {
           {
             modelYear: 2020,
             creditA:
-              expectedProvisionalBalance["2019"].A +
-              expectedProvisionalBalance["2020"].A -
+              getAccumulatedBalance(expectedProvisionalBalance, 2020, "A") -
               testData.expectedTotalReduction,
             creditB: expectedProvisionalBalance["2020"].B,
           },
@@ -1040,48 +939,8 @@ describe("Compliance Obligation Container", () => {
 
   test("gets credit balance for large supplier, multiple transactions, pending balance, options A & B, positive start & negative end balances", async () => {
     // Set up test data
-    const supplierClass = "L";
-    const modelYear = 2021;
-    const creditTransactions = {
-      creditBalanceStart: {
-        2020: { A: 70, B: 15 },
-      },
-      pendingBalance: {
-        2021: { A: 34, B: 12 },
-      },
-      creditsIssuedSales: {
-        2020: { A: 79.8, B: 33.6 },
-        2021: { A: 65.7, B: 45.6 },
-      },
-      transfersIn: {
-        2020: { A: 55, B: 60 },
-        2021: { A: 50, B: 0 },
-      },
-      transfersOut: {
-        2020: { A: 100, B: 80.5 },
-        2021: { A: 40, B: 21 },
-      },
-      initiativeAgreement: {
-        2021: { A: 30, B: 32 },
-      },
-      purchaseAgreement: {
-        2020: { A: 20, B: 20 },
-        2021: { A: 37, B: 24 },
-      },
-      administrativeAllocation: {
-        2019: { A: 35.4, B: 62.8 },
-        2021: { A: 10, B: 15 },
-      },
-      administrativeReduction: {
-        2019: { A: 34.5, B: 25.5 },
-        2021: { A: 121, B: 125 },
-      },
-      automaticAdministrativePenalty: {
-        2021: { A: 15, B: 20 },
-      },
-    };
-
-    const testData = new TestData(supplierClass, modelYear, creditTransactions);
+    const creditTransactions = testCreditTransactions.balances_pending_positiveStart_negativeEnd;
+    const testData = new TestData("L", 2021, creditTransactions);
     await testData.renderContainer();
 
     // Set up expected values and assert
@@ -1106,14 +965,10 @@ describe("Compliance Obligation Container", () => {
             modelYear: 2021,
             creditA:
               testData.expectedClassAReduction -
-              (expectedProvisionalBalance["2019"].A +
-                expectedProvisionalBalance["2020"].A +
-                expectedProvisionalBalance["2021"].A),
+              getAccumulatedBalance(expectedProvisionalBalance, 2021, "A"),
             creditB:
               testData.expectedUnspecifiedReduction -
-              (expectedProvisionalBalance["2019"].B +
-                expectedProvisionalBalance["2020"].B +
-                expectedProvisionalBalance["2021"].B),
+              getAccumulatedBalance(expectedProvisionalBalance, 2021, "B"),
           },
         ],
       },
@@ -1138,48 +993,8 @@ describe("Compliance Obligation Container", () => {
 
   test("gets credit balance for medium supplier, multiple transactions, pending balance, option A & B, positive start & negative end balances", async () => {
     // Set up test data
-    const supplierClass = "M";
-    const modelYear = 2021;
-    const creditTransactions = {
-      creditBalanceStart: {
-        2020: { A: 70, B: 15 },
-      },
-      pendingBalance: {
-        2021: { A: 34, B: 12 },
-      },
-      creditsIssuedSales: {
-        2020: { A: 79.8, B: 33.6 },
-        2021: { A: 65.7, B: 45.6 },
-      },
-      transfersIn: {
-        2020: { A: 55, B: 60 },
-        2021: { A: 50, B: 0 },
-      },
-      transfersOut: {
-        2020: { A: 100, B: 80.5 },
-        2021: { A: 40, B: 21 },
-      },
-      initiativeAgreement: {
-        2021: { A: 30, B: 32 },
-      },
-      purchaseAgreement: {
-        2020: { A: 20, B: 20 },
-        2021: { A: 37, B: 24 },
-      },
-      administrativeAllocation: {
-        2019: { A: 35.4, B: 62.8 },
-        2021: { A: 10, B: 15 },
-      },
-      administrativeReduction: {
-        2019: { A: 34.5, B: 25.5 },
-        2021: { A: 121, B: 125 },
-      },
-      automaticAdministrativePenalty: {
-        2021: { A: 15, B: 20 },
-      },
-    };
-
-    const testData = new TestData(supplierClass, modelYear, creditTransactions);
+    const creditTransactions = testCreditTransactions.balances_pending_positiveStart_negativeEnd;
+    const testData = new TestData("M", 2021, creditTransactions);
     await testData.renderContainer();
 
     // Set up expected values and assert
@@ -1204,12 +1019,8 @@ describe("Compliance Obligation Container", () => {
             modelYear: 2021,
             creditB:
               testData.expectedTotalReduction -
-              (expectedProvisionalBalance["2019"].A +
-                expectedProvisionalBalance["2020"].A +
-                expectedProvisionalBalance["2021"].A +
-                expectedProvisionalBalance["2019"].B +
-                expectedProvisionalBalance["2020"].B +
-                expectedProvisionalBalance["2021"].B),
+              getAccumulatedBalance(expectedProvisionalBalance, 2021, "A")-
+              getAccumulatedBalance(expectedProvisionalBalance, 2021, "B"),
           },
         ],
       },
