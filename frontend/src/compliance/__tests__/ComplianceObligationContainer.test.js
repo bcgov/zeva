@@ -234,15 +234,17 @@ const assertProps = (actualProps, expectedProps) => {
   expect(deepRound(_actualProps)).toEqual(deepRound(expectedProps));
 };
 
-const getAccumulatedBalance = (balances, endYear, creditType) => {
-  let sum = 0;
-  for (const year in balances) {
-    if (year <= endYear) {
-      sum += balances[year][creditType];
-    }
-  }
-  return sum;
-}
+const zeroBalances = (years) => years.map((year) => ({ modelYear: year, creditA: 0, creditB: 0 }));
+
+const renderContainer = async () => {
+  await act(async () => {
+    render(
+      <Router>
+        <ComplianceObligationContainer {...baseProps} />
+      </Router>,
+    );
+  });
+};
 
 class TestData {
   constructor(supplierClass, modelYear, creditTransactions) {
@@ -315,6 +317,39 @@ class TestData {
         this.creditTransactions.automaticAdministrativePenalty
       ),
     }
+
+    // Calculate Expected Credit Start Balances
+    this.expectedCreditBalanceStart = {};
+    this.addCredits(this.expectedCreditBalanceStart, this.creditTransactions.creditBalanceStart);
+    this.addCredits(this.expectedCreditBalanceStart, this.creditTransactions.deficit, -1);
+
+    // Calculate Expected Credit End Balances
+    this.expectedCreditBalanceEnd = {};
+    this.addCredits(this.expectedCreditBalanceEnd, this.expectedCreditBalanceStart);
+    this.addCredits(this.expectedCreditBalanceEnd, this.creditTransactions.creditsIssuedSales);
+    this.addCredits(this.expectedCreditBalanceEnd, this.creditTransactions.transfersIn);
+    this.addCredits(this.expectedCreditBalanceEnd, this.creditTransactions.initiativeAgreement);
+    this.addCredits(this.expectedCreditBalanceEnd, this.creditTransactions.purchaseAgreement);
+    this.addCredits(this.expectedCreditBalanceEnd, this.creditTransactions.administrativeAllocation);
+    this.addCredits(this.expectedCreditBalanceEnd, this.creditTransactions.automaticAdministrativePenalty);
+    this.addCredits(this.expectedCreditBalanceEnd, this.creditTransactions.transfersOut, -1);
+    this.addCredits(this.expectedCreditBalanceEnd, this.creditTransactions.administrativeReduction, -1);
+
+    // Calculate Expected Provisional Balance
+    this.expectedProvisionalBalance = {};
+    this.addCredits(this.expectedProvisionalBalance, this.expectedCreditBalanceEnd);
+    this.addCredits(this.expectedProvisionalBalance, this.creditTransactions.pendingBalance ?? {});
+
+    // Get Expected Report Details
+    this.expectedReportDetails = {
+      creditBalanceStart: this.expectedCreditBalanceStart,
+      creditBalanceEnd: this.expectedCreditBalanceEnd,
+      deficitCollection: {},
+      carryOverDeficits: {},
+      pendingBalance: this.toTransactionArray(this.creditTransactions.pendingBalance),
+      provisionalBalance: this.expectedProvisionalBalance,
+      transactions: this.transactions,
+    };
   }
 
   toTransactionArray(data) {
@@ -332,59 +367,27 @@ class TestData {
     return array;
   };
 
-  negCredits(credits) {
-    const result = {};
-    for (const year in credits) {
-      result[year] = { A: -credits[year].A, B: -credits[year].B };
+  addCredits(sum, itemToBeAdded, sign) {
+    if (!itemToBeAdded) {
+      return;
     }
-    return result;
-  }
-
-  addCredits(item1, item2) {
-    return {
-      A: (item1?.A ?? 0) + (item2?.A ?? 0),
-      B: (item1?.B ?? 0) + (item2?.B ?? 0)
-    };
-  }
-
-  getCreditBalance(year) {
-    let balance = { A: 0, B: 0 };
-    const items = [
-      this.creditTransactions.creditBalanceStart,
-      this.creditTransactions.creditsIssuedSales,
-      this.creditTransactions.transfersIn,
-      this.creditTransactions.initiativeAgreement,
-      this.creditTransactions.purchaseAgreement,
-      this.creditTransactions.administrativeAllocation,
-      this.creditTransactions.automaticAdministrativePenalty,
-      this.negCredits(this.creditTransactions.deficit),
-      this.negCredits(this.creditTransactions.transfersOut),
-      this.negCredits(this.creditTransactions.administrativeReduction),
-    ];
-    items.forEach(item => {
-      if (item && item[year]) {
-        balance = this.addCredits(balance, item[year]);
+    for (const year in itemToBeAdded) {
+      if (!sum[year]) {
+        sum[year] = { A: 0, B: 0 };
       }
-    });
-    return balance;
-  };
-
-  getCreditBalances(years) {
-    const balances = {};
-    for (const year of years) {
-      balances[year] = this.getCreditBalance(year.toString());
+      sum[year].A += itemToBeAdded[year].A * (sign ?? 1);
+      sum[year].B += itemToBeAdded[year].B * (sign ?? 1);
     }
-    return balances;
   }
 
-  async renderContainer() {
-    await act(async () => {
-      render(
-        <Router>
-          <ComplianceObligationContainer {...baseProps} />
-        </Router>,
-      );
-    });
+  sumProvisionalBalance(endYear, creditType) {
+    let sum = 0;
+    for (const year in this.expectedProvisionalBalance) {
+      if (year <= endYear) {
+        sum += this.expectedProvisionalBalance[year][creditType];
+      }
+    }
+    return sum;
   }
 
   inputSales(sales) {
@@ -414,12 +417,10 @@ class TestData {
     }
   }
 
-  selectCreditOptionA() {
-    fireEvent.click(screen.getByTestId(optionATestId));
-  }
-
-  selectCreditOptionB() {
-    fireEvent.click(screen.getByTestId(optionBTestId));
+  assertPropsWithCreditOption(optionTestId, expectedProps, expectedReportDetails) {
+    fireEvent.click(screen.getByTestId(optionTestId));
+    assertProps(this.detailsPageProps, expectedProps);
+    assertProps(this.detailsPageProps.reportDetails, expectedReportDetails);
   }
 }
 
@@ -435,7 +436,7 @@ afterEach(() => {
 describe("Compliance Obligation Container", () => {
   test("renders without crashing", async () => {
     const testData = new TestData("L", 2020);
-    await testData.renderContainer();
+    await renderContainer();
   });
 
 
@@ -443,7 +444,7 @@ describe("Compliance Obligation Container", () => {
     test(`gets credit reduction with zero, empty, or non-numeric sales input for supplier-class ${supplierClass}`, async () => {
       const modelYear = 2021;
       const testData = new TestData(supplierClass, modelYear);
-      await testData.renderContainer();
+      await renderContainer();
 
       const expectedProps = {
         assertions: [assertionComplianceObligation],
@@ -479,7 +480,7 @@ describe("Compliance Obligation Container", () => {
       for (const complianceInfo of complianceRatios) {
         const modelYear = Number(complianceInfo.modelYear);
         const testData = new TestData(supplierClass, modelYear);
-        await testData.renderContainer();
+        await renderContainer();
 
         const expectedProps = testData.inputSales(testSales); // input a test sales value in the text field
         assertProps(testData.detailsPageProps, expectedProps);
@@ -501,7 +502,7 @@ describe("Compliance Obligation Container", () => {
       }
     };
     const testData = new TestData("L", 2025, creditTransactions);
-    await testData.renderContainer();
+    await renderContainer();
 
     // Set up expected values and assert
     const baseExpectedProps = testData.inputSales(6000); // input a test sales value in the text field
@@ -509,9 +510,7 @@ describe("Compliance Obligation Container", () => {
       ...baseExpectedProps,
       updatedBalances: {
         balances: [
-          { modelYear: 2020, creditA: 0, creditB: 0 },
-          { modelYear: 2021, creditA: 0, creditB: 0 },
-          { modelYear: 2022, creditA: 0, creditB: 0 },
+          ...zeroBalances([2020, 2021, 2022]),
           {
             modelYear: 2023,
             creditA: 0,
@@ -527,19 +526,7 @@ describe("Compliance Obligation Container", () => {
       },
     };
 
-    const expectedReportDetails = {
-      creditBalanceStart: creditTransactions.creditBalanceStart,
-      creditBalanceEnd: creditTransactions.creditBalanceStart,
-      deficitCollection: {},
-      carryOverDeficits: {},
-      pendingBalance: [],
-      provisionalBalance: creditTransactions.creditBalanceStart,
-      transactions: testData.transactions,
-    };
-
-    testData.selectCreditOptionB();
-    assertProps(testData.detailsPageProps, expectedProps);
-    assertProps(testData.detailsPageProps.reportDetails, expectedReportDetails);
+    testData.assertPropsWithCreditOption(optionBTestId, expectedProps, testData.expectedReportDetails);
   });
 
 
@@ -556,20 +543,14 @@ describe("Compliance Obligation Container", () => {
     };
     const modelYear = 2026;
     const testData = new TestData("L", modelYear, creditTransactions);
-    await testData.renderContainer();
+    await renderContainer();
 
     // Set up expected values and assert
     const baseExpectedProps = testData.inputSales(6000); // input a test sales value in the text field
     const expectedProps = {
       ...baseExpectedProps,
       updatedBalances: {
-        balances: [
-          { modelYear: 2021, creditA: 0, creditB: 0 },
-          { modelYear: 2022, creditA: 0, creditB: 0 },
-          { modelYear: 2023, creditA: 0, creditB: 0 },
-          { modelYear: 2024, creditA: 0, creditB: 0 },
-          { modelYear: 2025, creditA: 0, creditB: 0 },
-        ],
+        balances: zeroBalances([2021, 2022, 2023, 2024, 2025]),
         deficits: [
           {
             modelYear: modelYear,
@@ -594,8 +575,7 @@ describe("Compliance Obligation Container", () => {
     }
 
     const expectedReportDetails = {
-      creditBalanceStart: testData.negCredits(creditTransactions.deficit),
-      creditBalanceEnd: testData.negCredits(creditTransactions.deficit),
+      ...testData.expectedReportDetails,
       deficitCollection: expectedDeficitCollection,
       carryOverDeficits: expectedDeficitCollection,
       pendingBalance: [],
@@ -606,12 +586,9 @@ describe("Compliance Obligation Container", () => {
         2024: { A: 0, B: 0 },
         2025: { A: 0, B: 0 },
       },
-      transactions: testData.transactions,
-    };
+    }
 
-    testData.selectCreditOptionB();
-    assertProps(testData.detailsPageProps, expectedProps);
-    assertProps(testData.detailsPageProps.reportDetails, expectedReportDetails);
+    testData.assertPropsWithCreditOption(optionBTestId, expectedProps, expectedReportDetails);
   });
 
 
@@ -619,34 +596,22 @@ describe("Compliance Obligation Container", () => {
     // Set up test data
     const creditTransactions = testCreditTransactions.startBalanceAndSalesOnly;
     const testData = new TestData("L", 2021, creditTransactions);
-    await testData.renderContainer();
+    await renderContainer();
 
     // Set up expected values and assert
     const baseExpectedProps = testData.inputSales(6000); // input a test sales value in the text field
-    const expectedCreditBalanceEnd = testData.getCreditBalances([2019, 2020, 2021]);
-    const expectedProvisionalBalance = expectedCreditBalanceEnd;
-
     const expectedProps = {
       ...baseExpectedProps,
       updatedBalances: {
         balances: [
-          {
-            modelYear: 2019,
-            creditA: 0,
-            creditB: 0,
-          },
-          {
-            modelYear: 2020,
-            creditA: 0,
-            creditB: 0,
-          },
+          ...zeroBalances([2019, 2020]),
           {
             modelYear: 2021,
             creditA:
-              getAccumulatedBalance(expectedProvisionalBalance, 2021, "A") -
+              testData.sumProvisionalBalance(2021, "A") -
               testData.expectedClassAReduction,
             creditB:
-              getAccumulatedBalance(expectedProvisionalBalance, 2021, "B") -
+              testData.sumProvisionalBalance(2021, "B") -
               testData.expectedUnspecifiedReduction,
           },
         ],
@@ -654,17 +619,7 @@ describe("Compliance Obligation Container", () => {
       },
     };
 
-    const expectedReportDetails = {
-      creditBalanceStart: creditTransactions.creditBalanceStart,
-      creditBalanceEnd: expectedCreditBalanceEnd,
-      pendingBalance: [],
-      provisionalBalance: expectedProvisionalBalance,
-      transactions: testData.transactions,
-    };
-
-    testData.selectCreditOptionB();
-    assertProps(testData.detailsPageProps, expectedProps);
-    assertProps(testData.detailsPageProps.reportDetails, expectedReportDetails);
+    testData.assertPropsWithCreditOption(optionBTestId, expectedProps, testData.expectedReportDetails);
   });
 
 
@@ -672,50 +627,35 @@ describe("Compliance Obligation Container", () => {
     // Set up test data
     const creditTransactions = testCreditTransactions.startBalanceAndSalesOnly;
     const testData = new TestData("L", 2021, creditTransactions);
-    await testData.renderContainer();
+    await renderContainer();
 
     // Set up expected values and assert
     const baseExpectedProps = testData.inputSales(6000); // input a test sales value in the text field
-    const expectedCreditBalanceEnd = testData.getCreditBalances([2019, 2020, 2021]);
-    const expectedProvisionalBalance = expectedCreditBalanceEnd;
 
     const expectedProps = {
       ...baseExpectedProps,
       updatedBalances: {
         balances: [
-          {
-            modelYear: 2019,
-            creditA: 0,
-            creditB: 0,
-          },
+          ...zeroBalances([2019]),
           {
             modelYear: 2020,
             creditA: 0,
             creditB:
-              getAccumulatedBalance(expectedProvisionalBalance, 2021, "A") +
-              getAccumulatedBalance(expectedProvisionalBalance, 2020, "B") -
+              testData.sumProvisionalBalance(2021, "A") +
+              testData.sumProvisionalBalance(2020, "B") -
               testData.expectedTotalReduction,
           },
           {
             modelYear: 2021,
             creditA: 0,
-            creditB: expectedProvisionalBalance["2021"].B,
+            creditB: testData.expectedProvisionalBalance["2021"].B,
           },
         ],
         deficits: [],
       },
     };
-    const expectedReportDetails = {
-      creditBalanceStart: creditTransactions.creditBalanceStart,
-      creditBalanceEnd: expectedCreditBalanceEnd,
-      pendingBalance: [],
-      provisionalBalance: expectedProvisionalBalance,
-      transactions: testData.transactions,
-    };
 
-    testData.selectCreditOptionA();
-    assertProps(testData.detailsPageProps, expectedProps);
-    assertProps(testData.detailsPageProps.reportDetails, expectedReportDetails);
+    testData.assertPropsWithCreditOption(optionATestId, expectedProps, testData.expectedReportDetails);
   });
 
 
@@ -723,55 +663,35 @@ describe("Compliance Obligation Container", () => {
     // Set up test data
     const creditTransactions = testCreditTransactions.balances_pending_positiveStart_positiveEnd;
     const testData = new TestData("L", 2021, creditTransactions);
-    await testData.renderContainer();
+    await renderContainer();
 
     // Set up expected values and assert
     const baseExpectedProps = testData.inputSales(6000); // input a test sales value in the text field
-    const expectedCreditBalanceEnd = testData.getCreditBalances([2019, 2020, 2021]);
-    const expectedProvisionalBalance = {
-      2019: testData.addCredits(expectedCreditBalanceEnd[2019], creditTransactions.pendingBalance[2019]),
-      2020: testData.addCredits(expectedCreditBalanceEnd[2020], creditTransactions.pendingBalance[2020]),
-      2021: testData.addCredits(expectedCreditBalanceEnd[2021], creditTransactions.pendingBalance[2021]),
-    };
-
     const expectedProps = {
       ...baseExpectedProps,
       updatedBalances: {
         balances: [
-          {
-            modelYear: 2019,
-            creditA: 0,
-            creditB: 0,
-          },
+          ...zeroBalances([2019]),
           {
             modelYear: 2020,
             creditA:
-              getAccumulatedBalance(expectedProvisionalBalance, 2020, "A") -
+              testData.sumProvisionalBalance(2020, "A") -
               testData.expectedClassAReduction,
             creditB:
-              getAccumulatedBalance(expectedProvisionalBalance, 2020, "B") -
+              testData.sumProvisionalBalance(2020, "B") -
               testData.expectedUnspecifiedReduction,
           },
           {
             modelYear: 2021,
-            creditA: expectedProvisionalBalance["2021"].A,
-            creditB: expectedProvisionalBalance["2021"].B,
+            creditA: testData.expectedProvisionalBalance["2021"].A,
+            creditB: testData.expectedProvisionalBalance["2021"].B,
           },
         ],
         deficits: [],
       },
     };
-    const expectedReportDetails = {
-      creditBalanceStart: creditTransactions.creditBalanceStart,
-      creditBalanceEnd: expectedCreditBalanceEnd,
-      pendingBalance: testData.toTransactionArray(creditTransactions.pendingBalance),
-      provisionalBalance: expectedProvisionalBalance,
-      transactions: testData.transactions,
-    };
 
-    testData.selectCreditOptionB();
-    assertProps(testData.detailsPageProps, expectedProps);
-    assertProps(testData.detailsPageProps.reportDetails, expectedReportDetails);
+    testData.assertPropsWithCreditOption(optionBTestId, expectedProps, testData.expectedReportDetails);
   });
 
 
@@ -779,17 +699,10 @@ describe("Compliance Obligation Container", () => {
     // Set up test data
     const creditTransactions = testCreditTransactions.balances_pending_positiveStart_positiveEnd;
     const testData = new TestData("L", 2021, creditTransactions);
-    await testData.renderContainer();
+    await renderContainer();
 
     // Set up expected values and assert
     const baseExpectedProps = testData.inputSales(6000); // input a test sales value in the text field
-    const expectedCreditBalanceEnd = testData.getCreditBalances([2019, 2020, 2021]);
-    const expectedProvisionalBalance = {
-      2019: testData.addCredits(expectedCreditBalanceEnd[2019], creditTransactions.pendingBalance[2019]),
-      2020: testData.addCredits(expectedCreditBalanceEnd[2020], creditTransactions.pendingBalance[2020]),
-      2021: testData.addCredits(expectedCreditBalanceEnd[2021], creditTransactions.pendingBalance[2021]),
-    };
-
     const expectedProps = {
       ...baseExpectedProps,
       updatedBalances: {
@@ -797,35 +710,25 @@ describe("Compliance Obligation Container", () => {
           {
             modelYear: 2019,
             creditA: 0,
-            creditB: expectedProvisionalBalance["2019"].B,
+            creditB: testData.expectedProvisionalBalance["2019"].B,
           },
           {
             modelYear: 2020,
             creditA:
-              getAccumulatedBalance(expectedProvisionalBalance, 2020, "A") -
+              testData.sumProvisionalBalance(2020, "A") -
               testData.expectedTotalReduction,
-            creditB: expectedProvisionalBalance["2020"].B,
+            creditB: testData.expectedProvisionalBalance["2020"].B,
           },
           {
             modelYear: 2021,
-            creditA: expectedProvisionalBalance["2021"].A,
-            creditB: expectedProvisionalBalance["2021"].B,
+            creditA: testData.expectedProvisionalBalance["2021"].A,
+            creditB: testData.expectedProvisionalBalance["2021"].B,
           },
         ],
         deficits: [],
       },
     };
-    const expectedReportDetails = {
-      creditBalanceStart: creditTransactions.creditBalanceStart,
-      creditBalanceEnd: expectedCreditBalanceEnd,
-      pendingBalance: testData.toTransactionArray(creditTransactions.pendingBalance),
-      provisionalBalance: expectedProvisionalBalance,
-      transactions: testData.transactions,
-    };
-
-    testData.selectCreditOptionA();
-    assertProps(testData.detailsPageProps, expectedProps);
-    assertProps(testData.detailsPageProps.reportDetails, expectedReportDetails);
+    testData.assertPropsWithCreditOption(optionATestId, expectedProps, testData.expectedReportDetails);
   });
 
 
@@ -833,53 +736,37 @@ describe("Compliance Obligation Container", () => {
     // Set up test data
     const creditTransactions = testCreditTransactions.balances_pending_positiveStart_positiveEnd;
     const testData = new TestData("M", 2021, creditTransactions);
-    await testData.renderContainer();
+    await renderContainer();
 
     // Set up expected values and assert
     const baseExpectedProps = testData.inputSales(4800); // input a test sales value in the text field
-    const expectedCreditBalanceEnd = testData.getCreditBalances([2019, 2020, 2021]);
-    const expectedProvisionalBalance = {
-      2019: testData.addCredits(expectedCreditBalanceEnd[2019], creditTransactions.pendingBalance[2019]),
-      2020: testData.addCredits(expectedCreditBalanceEnd[2020], creditTransactions.pendingBalance[2020]),
-      2021: testData.addCredits(expectedCreditBalanceEnd[2021], creditTransactions.pendingBalance[2021]),
-    };
-
     const expectedProps = {
       ...baseExpectedProps,
       updatedBalances: {
         balances: [
           {
             modelYear: 2019,
-            creditA: expectedProvisionalBalance["2019"].A,
+            creditA: testData.expectedProvisionalBalance["2019"].A,
             creditB: 0,
           },
           {
             modelYear: 2020,
-            creditA: expectedProvisionalBalance["2020"].A,
+            creditA: testData.expectedProvisionalBalance["2020"].A,
             creditB: 0,
           },
           {
             modelYear: 2021,
-            creditA: expectedProvisionalBalance["2021"].A,
+            creditA: testData.expectedProvisionalBalance["2021"].A,
             creditB:
-              getAccumulatedBalance(expectedProvisionalBalance, 2021, "B") -
+              testData.sumProvisionalBalance(2021, "B") -
               testData.expectedTotalReduction,
           },
         ],
         deficits: [],
       },
     };
-    const expectedReportDetails = {
-      creditBalanceStart: creditTransactions.creditBalanceStart,
-      creditBalanceEnd: expectedCreditBalanceEnd,
-      pendingBalance: testData.toTransactionArray(creditTransactions.pendingBalance),
-      provisionalBalance: expectedProvisionalBalance,
-      transactions: testData.transactions,
-    };
 
-    testData.selectCreditOptionB();
-    assertProps(testData.detailsPageProps, expectedProps);
-    assertProps(testData.detailsPageProps.reportDetails, expectedReportDetails);
+    testData.assertPropsWithCreditOption(optionBTestId, expectedProps, testData.expectedReportDetails);
   });
 
 
@@ -887,17 +774,10 @@ describe("Compliance Obligation Container", () => {
     // Set up test data
     const creditTransactions = testCreditTransactions.balances_pending_positiveStart_positiveEnd;
     const testData = new TestData("M", 2021, creditTransactions);
-    await testData.renderContainer();
+    await renderContainer();
 
     // Set up expected values and assert
     const baseExpectedProps = testData.inputSales(4800); // input a test sales value in the text field
-    const expectedCreditBalanceEnd = testData.getCreditBalances([2019, 2020, 2021]);
-    const expectedProvisionalBalance = {
-      2019: testData.addCredits(expectedCreditBalanceEnd[2019], creditTransactions.pendingBalance[2019]),
-      2020: testData.addCredits(expectedCreditBalanceEnd[2020], creditTransactions.pendingBalance[2020]),
-      2021: testData.addCredits(expectedCreditBalanceEnd[2021], creditTransactions.pendingBalance[2021]),
-    };
-
     const expectedProps = {
       ...baseExpectedProps,
       updatedBalances: {
@@ -905,35 +785,26 @@ describe("Compliance Obligation Container", () => {
           {
             modelYear: 2019,
             creditA: 0,
-            creditB: expectedProvisionalBalance["2019"].B,
+            creditB: testData.expectedProvisionalBalance["2019"].B,
           },
           {
             modelYear: 2020,
             creditA:
-              getAccumulatedBalance(expectedProvisionalBalance, 2020, "A") -
+              testData.sumProvisionalBalance(2020, "A") -
               testData.expectedTotalReduction,
-            creditB: expectedProvisionalBalance["2020"].B,
+            creditB: testData.expectedProvisionalBalance["2020"].B,
           },
           {
             modelYear: 2021,
-            creditA: expectedProvisionalBalance["2021"].A,
-            creditB: expectedProvisionalBalance["2021"].B,
+            creditA: testData.expectedProvisionalBalance["2021"].A,
+            creditB: testData.expectedProvisionalBalance["2021"].B,
           },
         ],
         deficits: [],
       },
     };
-    const expectedReportDetails = {
-      creditBalanceStart: creditTransactions.creditBalanceStart,
-      creditBalanceEnd: expectedCreditBalanceEnd,
-      pendingBalance: testData.toTransactionArray(creditTransactions.pendingBalance),
-      provisionalBalance: expectedProvisionalBalance,
-      transactions: testData.transactions,
-    };
 
-    testData.selectCreditOptionA();
-    assertProps(testData.detailsPageProps, expectedProps);
-    assertProps(testData.detailsPageProps.reportDetails, expectedReportDetails);
+    testData.assertPropsWithCreditOption(optionATestId, expectedProps, testData.expectedReportDetails);
   });
 
 
@@ -941,53 +812,30 @@ describe("Compliance Obligation Container", () => {
     // Set up test data
     const creditTransactions = testCreditTransactions.balances_pending_positiveStart_negativeEnd;
     const testData = new TestData("L", 2021, creditTransactions);
-    await testData.renderContainer();
+    await renderContainer();
 
     // Set up expected values and assert
     const baseExpectedProps = testData.inputSales(6000); // input a test sales value in the text field
-    const expectedCreditBalanceEnd = testData.getCreditBalances([2019, 2020, 2021]);
-    const expectedProvisionalBalance = {
-      2019: testData.addCredits(expectedCreditBalanceEnd[2019], creditTransactions.pendingBalance[2019]),
-      2020: testData.addCredits(expectedCreditBalanceEnd[2020], creditTransactions.pendingBalance[2020]),
-      2021: testData.addCredits(expectedCreditBalanceEnd[2021], creditTransactions.pendingBalance[2021]),
-    };
-
     const expectedProps = {
       ...baseExpectedProps,
       updatedBalances: {
-        balances: [
-          { modelYear: 2019, creditA: 0, creditB: 0 },
-          { modelYear: 2020, creditA: 0, creditB: 0 },
-          { modelYear: 2021, creditA: 0, creditB: 0 },
-        ],
+        balances: zeroBalances([2019, 2020, 2021]),
         deficits: [
           {
             modelYear: 2021,
             creditA:
               testData.expectedClassAReduction -
-              getAccumulatedBalance(expectedProvisionalBalance, 2021, "A"),
+              testData.sumProvisionalBalance(2021, "A"),
             creditB:
               testData.expectedUnspecifiedReduction -
-              getAccumulatedBalance(expectedProvisionalBalance, 2021, "B"),
+              testData.sumProvisionalBalance(2021, "B"),
           },
         ],
       },
     };
-    const expectedReportDetails = {
-      creditBalanceStart: creditTransactions.creditBalanceStart,
-      creditBalanceEnd: expectedCreditBalanceEnd,
-      pendingBalance: testData.toTransactionArray(creditTransactions.pendingBalance),
-      provisionalBalance: expectedProvisionalBalance,
-      transactions: testData.transactions,
-    };
 
-    testData.selectCreditOptionB();
-    assertProps(testData.detailsPageProps, expectedProps);
-    assertProps(testData.detailsPageProps.reportDetails, expectedReportDetails);
-
-    testData.selectCreditOptionA();
-    assertProps(testData.detailsPageProps, expectedProps);
-    assertProps(testData.detailsPageProps.reportDetails, expectedReportDetails);
+    testData.assertPropsWithCreditOption(optionBTestId, expectedProps, testData.expectedReportDetails);
+    testData.assertPropsWithCreditOption(optionATestId, expectedProps, testData.expectedReportDetails);
   });
 
 
@@ -995,50 +843,27 @@ describe("Compliance Obligation Container", () => {
     // Set up test data
     const creditTransactions = testCreditTransactions.balances_pending_positiveStart_negativeEnd;
     const testData = new TestData("M", 2021, creditTransactions);
-    await testData.renderContainer();
+    await renderContainer();
 
     // Set up expected values and assert
     const baseExpectedProps = testData.inputSales(4800); // input a test sales value in the text field
-    const expectedCreditBalanceEnd = testData.getCreditBalances([2019, 2020, 2021]);
-    const expectedProvisionalBalance = {
-      2019: testData.addCredits(expectedCreditBalanceEnd[2019], creditTransactions.pendingBalance[2019]),
-      2020: testData.addCredits(expectedCreditBalanceEnd[2020], creditTransactions.pendingBalance[2020]),
-      2021: testData.addCredits(expectedCreditBalanceEnd[2021], creditTransactions.pendingBalance[2021]),
-    };
-
     const expectedProps = {
       ...baseExpectedProps,
       updatedBalances: {
-        balances: [
-          { modelYear: 2019, creditA: 0, creditB: 0 },
-          { modelYear: 2020, creditA: 0, creditB: 0 },
-          { modelYear: 2021, creditA: 0, creditB: 0 },
-        ],
+        balances: zeroBalances([2019, 2020, 2021]),
         deficits: [
           {
             modelYear: 2021,
             creditB:
               testData.expectedTotalReduction -
-              getAccumulatedBalance(expectedProvisionalBalance, 2021, "A")-
-              getAccumulatedBalance(expectedProvisionalBalance, 2021, "B"),
+              testData.sumProvisionalBalance(2021, "A")-
+              testData.sumProvisionalBalance(2021, "B"),
           },
         ],
       },
     };
-    const expectedReportDetails = {
-      creditBalanceStart: creditTransactions.creditBalanceStart,
-      creditBalanceEnd: expectedCreditBalanceEnd,
-      pendingBalance: testData.toTransactionArray(creditTransactions.pendingBalance),
-      provisionalBalance: expectedProvisionalBalance,
-      transactions: testData.transactions,
-    };
 
-    testData.selectCreditOptionB();
-    assertProps(testData.detailsPageProps, expectedProps);
-    assertProps(testData.detailsPageProps.reportDetails, expectedReportDetails);
-
-    testData.selectCreditOptionA();
-    assertProps(testData.detailsPageProps, expectedProps);
-    assertProps(testData.detailsPageProps.reportDetails, expectedReportDetails);
+    testData.assertPropsWithCreditOption(optionBTestId, expectedProps, testData.expectedReportDetails);
+    testData.assertPropsWithCreditOption(optionATestId, expectedProps, testData.expectedReportDetails);
   });
 });
