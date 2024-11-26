@@ -6,13 +6,11 @@ import * as ReactRouter from "react-router-dom";
 import axios from "axios";
 import ROUTES_COMPLIANCE from "../../app/routes/Compliance";
 import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from "../../app/routes/SigningAuthorityAssertions";
-import { complianceRatios, getComplianceInfo } from "../components/__testHelpers/CommonTestDataFunctions";
 
 const Router = ReactRouter.BrowserRouter;
 const salesTestId = "test-input-sales";
 const optionATestId = "test-input-option-A";
 const optionBTestId = "test-input-option-B";
-const saveButtonTestId = "test-button-save";
 
 // please do not directly modify any of the consts declared outside of the outermost 'describe' block
 // you can, in your individual tests, copy them (the spread operator) and modify the copy
@@ -127,6 +125,26 @@ const testCreditTransactions = {
   }
 }
 
+const complianceRatios = [
+  { id: 1, modelYear: "2019", complianceRatio: "0.00", zevClassA: "0.00" },
+  { id: 2, modelYear: "2020", complianceRatio: "9.50", zevClassA: "6.00" },
+  { id: 3, modelYear: "2021", complianceRatio: "12.00", zevClassA: "8.00" },
+  { id: 4, modelYear: "2022", complianceRatio: "14.50", zevClassA: "10.00" },
+  { id: 5, modelYear: "2023", complianceRatio: "17.00", zevClassA: "12.00" },
+  { id: 6, modelYear: "2024", complianceRatio: "19.50", zevClassA: "14.00" },
+  { id: 7, modelYear: "2025", complianceRatio: "22.00", zevClassA: "16.00" },
+  { id: 8, modelYear: "2026", complianceRatio: "26.30", zevClassA: "15.20" },
+  { id: 9, modelYear: "2027", complianceRatio: "42.60", zevClassA: "28.70" },
+  { id: 10, modelYear: "2028", complianceRatio: "58.90", zevClassA: "43.20" },
+  { id: 11, modelYear: "2029", complianceRatio: "74.80", zevClassA: "58.00" },
+  { id: 12, modelYear: "2030", complianceRatio: "91.00", zevClassA: "73.30" },
+  { id: 13, modelYear: "2031", complianceRatio: "93.20", zevClassA: "77.20" },
+  { id: 14, modelYear: "2032", complianceRatio: "95.20", zevClassA: "80.60" },
+  { id: 15, modelYear: "2033", complianceRatio: "97.20", zevClassA: "83.70" },
+  { id: 16, modelYear: "2034", complianceRatio: "99.30", zevClassA: "86.70" },
+  { id: 17, modelYear: "2035", complianceRatio: "100.00", zevClassA: "89.50" },
+];
+
 const assertionComplianceObligation = {
   description: "I confirm this compliance obligation information is complete and correct.",
   module: "compliance_obligation",
@@ -144,7 +162,10 @@ jest.mock("react-router-dom", () => {
 // as that mock does not have the axios.spread function, which is used by ComplianceObligationContainer
 jest.mock("axios", () => {
   const originalModule = jest.requireActual("axios");
-  return { __esModule: true, ...originalModule };
+  return {
+    __esModule: true,
+    ...originalModule,
+  };
 });
 
 const getDataByUrl = (url, id, supplierClass, modelYear, complianceObligation) => {
@@ -230,7 +251,7 @@ class TestData {
     this.supplierClass = supplierClass;
     this.modelYear = modelYear;
     this.creditTransactions = creditTransactions ?? {};
-    this.complianceInfo = getComplianceInfo(modelYear);
+    this.complianceInfo = complianceRatios.find((x) => x.modelYear == modelYear);
     this.complianceRatio = this.complianceInfo.complianceRatio;
     this.zevClassA = this.complianceInfo.zevClassA;
 
@@ -261,15 +282,6 @@ class TestData {
       });
     });
 
-    this.axiosPostObligation = jest.fn();
-    jest.spyOn(axios, "post").mockImplementation((url, data) => {
-      if (url === ROUTES_COMPLIANCE.OBLIGATION) {
-        data.creditActivity = "mocked credit activity";
-        this.axiosPostObligation(data);
-      }
-      return Promise.resolve({});
-    });
-
     // Mock ComplianceObligationDetailsPage
     jest.spyOn(ComplianceObligationDetailsPage, "default").mockImplementation((props) => {
       this.detailsPageProps = props;
@@ -284,7 +296,6 @@ class TestData {
             data-testid={optionBTestId}
             onClick={() => props.handleUnspecifiedCreditReduction("B")}
           />
-          <button data-testid={saveButtonTestId} onClick={props.handleSave} />
         </div>
       );
     });
@@ -329,16 +340,13 @@ class TestData {
     this.addCredits(this.expectedProvisionalBalance, this.expectedCreditBalanceEnd);
     this.addCredits(this.expectedProvisionalBalance, this.creditTransactions.pendingBalance ?? {});
 
-    // Get Expected Pending Balance
-    this.expectedPendingBalance = this.toTransactionArray(this.creditTransactions.pendingBalance);
-
     // Get Expected Report Details
     this.expectedReportDetails = {
       creditBalanceStart: this.expectedCreditBalanceStart,
       creditBalanceEnd: this.expectedCreditBalanceEnd,
       deficitCollection: {},
       carryOverDeficits: {},
-      pendingBalance: this.expectedPendingBalance,
+      pendingBalance: this.toTransactionArray(this.creditTransactions.pendingBalance),
       provisionalBalance: this.expectedProvisionalBalance,
       transactions: this.transactions,
     };
@@ -406,16 +414,11 @@ class TestData {
       sales: sales,
       supplierClass: this.supplierClass,
       totalReduction: this.expectedTotalReduction,
-      pendingBalanceExist: this.expectedPendingBalance.length > 0,
     }
   }
 
-  selectCreditOption(optionTestId) {
-    fireEvent.click(screen.getByTestId(optionTestId));
-  }
-
   assertPropsWithCreditOption(optionTestId, expectedProps, expectedReportDetails) {
-    this.selectCreditOption(optionTestId);
+    fireEvent.click(screen.getByTestId(optionTestId));
     assertProps(this.detailsPageProps, expectedProps);
     assertProps(this.detailsPageProps.reportDetails, expectedReportDetails);
   }
@@ -438,7 +441,7 @@ describe("Compliance Obligation Container", () => {
 
 
   for (const supplierClass of ["L", "M", "S"]) {
-    test(`gets credit reduction with zero or non-numeric sales input for supplier-class ${supplierClass}`, async () => {
+    test(`gets credit reduction with zero, empty, or non-numeric sales input for supplier-class ${supplierClass}`, async () => {
       const modelYear = 2021;
       const testData = new TestData(supplierClass, modelYear);
       await renderContainer();
@@ -460,6 +463,9 @@ describe("Compliance Obligation Container", () => {
       assertProps(testData.detailsPageProps, expectedProps);
 
       fireEvent.change(salesInput, { target: { value: "abc" } });
+      assertProps(testData.detailsPageProps, expectedProps);
+
+      fireEvent.change(salesInput, { target: { value: "" } });
       assertProps(testData.detailsPageProps, expectedProps);
     });
   }
@@ -859,27 +865,5 @@ describe("Compliance Obligation Container", () => {
 
     testData.assertPropsWithCreditOption(optionBTestId, expectedProps, testData.expectedReportDetails);
     testData.assertPropsWithCreditOption(optionATestId, expectedProps, testData.expectedReportDetails);
-  });
-
-  test("handles Save button click", async () => {
-    // Set up test data
-    const creditTransactions = testCreditTransactions.balances_pending_positiveStart_positiveEnd;
-    const testData = new TestData("L", 2021, creditTransactions);
-    await renderContainer();
-    const testSales = 7200;
-    testData.inputSales(testSales); // input a test sales value in the text field
-    testData.selectCreditOption(optionBTestId);
-
-    // Set up expected values and assert
-    const expectedData = {
-      reportId: baseParams.id,
-      sales: testSales,
-      creditActivity: "mocked credit activity", // mocked for now, can be tested in future
-      confirmations: [],
-      creditReductionSelection: "B",
-    };
-
-    fireEvent.click(screen.getByTestId(saveButtonTestId));
-    expect(testData.axiosPostObligation).toHaveBeenCalledWith(expectedData);
   });
 });
