@@ -1,4 +1,8 @@
+import React from 'react'
 import isLegacySubmission from "../../app/utilities/isLegacySubmission"
+import ReactTooltip from 'react-tooltip'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { tooltipText } from '../constants/creditRequest'
 
 const analystRecommendationColumns = (props) => {
   const { submission, user } = props
@@ -35,7 +39,20 @@ const analystRecommendationColumns = (props) => {
 
         return sum
       },
-      Header: isLegacySubmission(submission) ? 'Eligible Sales' : 'Eligible ZEVs Supplied',
+      Header: () => {
+        if (isLegacySubmission(submission)) {
+          return 'Eligible Sales'
+        }
+        return (
+          <div>
+            <ReactTooltip html={true} />
+            <span>
+              <FontAwesomeIcon data-tip={tooltipText} icon="info-circle" />
+            </span>
+            Eligible ZEVs Supplied
+          </div>
+        )
+      },
       headerClassName: ' eligible-sales',
       id: 'eligible-sales',
       show: user.isGovernment,
