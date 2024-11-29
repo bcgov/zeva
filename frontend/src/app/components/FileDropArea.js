@@ -31,7 +31,9 @@ const FileDropArea = (props) => {
       }
     }
   }
-
+  const formattedErrorMessage = errorMessage ? errorMessage.split('|').map((msg, index) => (
+    <div key={index}>{msg}</div>
+  )) : null;
   return (
     <div className="row">
       <div
@@ -40,7 +42,7 @@ const FileDropArea = (props) => {
         <div className="bordered">
           {errorMessage && (
             <div className="alert alert-danger mb-2" role="alert">
-              {errorMessage}
+              {formattedErrorMessage}
             </div>
           )}
           <div className="panel panel-default">

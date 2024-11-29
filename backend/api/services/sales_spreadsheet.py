@@ -347,18 +347,26 @@ def validate_spreadsheet(data, user_organization=None, skip_authorization=False)
         )
 
     row = start_row
+    vin_dict = {}
+    duplicates = {}
 
     while row < min((MAX_READ_ROWS + start_row), sheet.nrows):
         row_contents = sheet.row(row)
         model_year = str(row_contents[0].value).strip()
         make = str(row_contents[1].value).strip()
         model_name = str(row_contents[2].value).strip()
-        vin = str(row_contents[3].value)
+        vin = str(row_contents[3].value).strip()
         date = str(row_contents[4].value).strip()
         row_contains_content = False
         if len(model_year) > 0 or len(make) > 0 or len(model_name) > 0 or \
                 len(date) > 0:
             row_contains_content = True
+        if row_contains_content:
+            if vin in vin_dict:
+                vin_dict[vin].append(row + 1)
+            else:
+                vin_dict[vin] = [row + 1]
+        duplicates = {vin: rows for vin, rows in vin_dict.items() if len(rows) > 1}
 
         if row_contains_content and row_contents[4].ctype != xlrd.XL_CELL_DATE:
             raise ValidationError(
@@ -371,7 +379,13 @@ def validate_spreadsheet(data, user_organization=None, skip_authorization=False)
                 'the row and try again.'
             )
         row += 1
-
+    if duplicates:
+            error_message = 'Spreadsheet contains duplicate VINs.|'
+            for vin, rows in duplicates.items():
+                row_list = ', '.join(map(str, rows))
+                error_message += f'VIN {vin}: rows {row_list}|'
+            error_message += 'Please make changes to the spreadsheet and try again.'
+            raise ValidationError(error_message)
     return True
 
 
