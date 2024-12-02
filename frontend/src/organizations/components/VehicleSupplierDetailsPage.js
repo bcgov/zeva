@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
+import ReactTooltip from "react-tooltip";
 import Button from "../../app/components/Button";
 import Loading from "../../app/components/Loading";
 import CustomPropTypes from "../../app/utilities/props";
@@ -7,7 +8,6 @@ import ROUTES_ORGANIZATIONS from "../../app/routes/Organizations";
 import VehicleSupplierClass from "./VehicleSupplierClass";
 import formatNumeric from "../../app/utilities/formatNumeric";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Tooltip from "../../app/components/Tooltip";
 
 const VehicleSupplierDetailsPage = (props) => {
   const {
@@ -28,8 +28,8 @@ const VehicleSupplierDetailsPage = (props) => {
   const { organizationAddress } = details;
   const [showAllSales, setShowAllSales] = useState(false);
   const [showAllSupplied, setShowAllSupplied] = useState(false);
-  const filteredSales = ldvSales.filter((sale) => sale.isSupplied === false);
-  const filteredSupplied = ldvSales.filter((sale) => sale.isSupplied === true);
+  const filteredSales = ldvSales.filter((sale) => sale.modelYear <= "2023");
+  const filteredSupplied = ldvSales.filter((sale) => sale.modelYear >= "2024");
   const salesToShow = showAllSales ? filteredSales : filteredSales.slice(0, 3);
   const suppliedToShow = showAllSupplied
     ? filteredSupplied
@@ -38,11 +38,9 @@ const VehicleSupplierDetailsPage = (props) => {
     return <Loading />;
   }
 
-  const salesTooltip = `Supplier's total vehicle sales for each reportable model year's
+  const tooltip = `Supplier's total vehicle sales for each reportable model year's
      compliance period (October 1st - September 30th). Read-only historical record.`;
-  const suppliedTooltip = `Average supply volume is defined in section 8
-     of the ZEV Regulation. Motor vehicles supplied before October 1, 2024, that 
-     have a gross vehicle weight rating of more than 3,856 kg are not included.`;
+
   const renderAddressType = (type) => {
     if (organizationAddress) {
       const addresses = organizationAddress.filter(
@@ -241,17 +239,14 @@ const VehicleSupplierDetailsPage = (props) => {
                 )}
                 {salesToShow.length > 0 && (
                   <ul>
-                    <Tooltip
-                      tooltipId="sales-tooltip"
-                      placement="top"
-                      tooltipText={salesTooltip}
-                    >
+                    <ReactTooltip />
+                    <span data-tip={tooltip}>
                       <FontAwesomeIcon
+                        id="sales-by-year-info"
                         icon="info-circle"
-                        className="info-icon"
                       />
-                      <b>Previous Years Vehicle Sales</b>
-                    </Tooltip>
+                    </span>
+                    <b> Previous Years Vehicle Sales</b>
                     {salesToShow.length > 0 &&
                       salesToShow.map((sale) => (
                         <li className="form-row my-2" key={sale.id}>
@@ -260,6 +255,18 @@ const VehicleSupplierDetailsPage = (props) => {
                           </div>
                           <div className="col-4 sales">
                             {formatNumeric(sale.ldvSales, 0)}
+                          </div>
+                          <div className="col-3 delete">
+                            {isEditable && (
+                              <button
+                                onClick={() => {
+                                  handleDeleteSale(sale);
+                                }}
+                                type="button"
+                              >
+                                x
+                              </button>
+                            )}
                           </div>
                         </li>
                       ))}
