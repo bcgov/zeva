@@ -50,7 +50,7 @@ const ModelListTable = (props) => {
 
             return sum
           },
-          Header: isLegacySubmission(submission) ? 'Sales Submitted' : 'Vehicles Submitted',
+          Header: isLegacySubmission(submission) ? 'Sales Submitted' : 'ZEVs Submitted',
           headerClassName: 'gap-left',
           id: 'sales',
           width: 150
