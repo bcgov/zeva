@@ -137,7 +137,7 @@ afterEach(() => {
 
 describe("Compliance Calculator Container", () => {
   test("renders without crashing", async () => {
-    const _ = new MockedDetailsPage();
+    new MockedDetailsPage();
     await renderComplianceCalculatorContainer(baseProps);
   });
 

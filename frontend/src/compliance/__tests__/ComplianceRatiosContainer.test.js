@@ -36,12 +36,10 @@ jest.mock("axios", () => {
 
 beforeEach(() => {
   jest.spyOn(axios, "get").mockImplementation((url) => {
-    switch (url) {
-      case ROUTES_COMPLIANCE.RATIOS:
-        return Promise.resolve({ data: complianceRatios });
-      default:
-        return Promise.resolve({ data: [] });
+    if (url === ROUTES_COMPLIANCE.RATIOS) {
+      return Promise.resolve({ data: complianceRatios });
     }
+    return Promise.resolve({ data: [] });
   });
 });
 
