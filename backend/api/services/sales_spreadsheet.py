@@ -366,7 +366,6 @@ def validate_spreadsheet(data, user_organization=None, skip_authorization=False)
                 vin_dict[vin].append(row + 1)
             else:
                 vin_dict[vin] = [row + 1]
-        duplicates = {vin: rows for vin, rows in vin_dict.items() if len(rows) > 1}
 
         if row_contains_content and row_contents[4].ctype != xlrd.XL_CELL_DATE:
             raise ValidationError(
@@ -379,6 +378,7 @@ def validate_spreadsheet(data, user_organization=None, skip_authorization=False)
                 'the row and try again.'
             )
         row += 1
+    duplicates = {vin: rows for vin, rows in vin_dict.items() if len(rows) > 1}
     if duplicates:
             error_message = 'Spreadsheet contains duplicate VINs.|'
             for vin, rows in duplicates.items():
