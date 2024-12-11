@@ -1,5 +1,66 @@
 // Supplimentary Components Test Data
 
+export const SupplimentaryAlertsTestData = {
+  testCases: [
+    {
+      status: "DRAFT",
+      expected: {
+        title: "Draft",
+        icon: "exclamation-circle",
+        classname: "alert-warning",
+        message: "saved, 2024-12-10 by John Doe.",
+      },
+    },
+    {
+      status: "RECOMMENDED",
+      expected: {
+        title: "Recommended",
+        icon: "exclamation-circle",
+        classname: "alert-primary",
+        message: "recommended for reassessment, 2024-12-10 by John Doe.",
+      },
+    },
+    {
+      status: "RETURNED",
+      expected: {
+        title: "Returned",
+        icon: "exclamation-circle",
+        classname: "alert-primary",
+        message:
+          "Supplementary report returned 2024-12-10 by the Government of B.C.",
+      },
+    },
+    {
+      status: "SUBMITTED",
+      expected: {
+        title: "Submitted",
+        icon: "exclamation-circle",
+        classname: "alert-warning",
+        message:
+          "Supplementary report signed and submitted 2024-12-10 by John Doe. Pending analyst review and Director reassessment.",
+      },
+    },
+    {
+      status: "ASSESSED",
+      expected: {
+        title: "Assessed",
+        icon: "exclamation-circle",
+        classname: "alert-success",
+        message: "Supplementary report assessed 2024-12-10 by John Doe.",
+      },
+    },
+    {
+      status: "UNKNOWN",
+      expected: {
+        title: "",
+        icon: "exclamation-circle",
+        classname: "",
+        message: "",
+      },
+    },
+  ],
+};
+
 export const UploadEvidenceTestData = {
   mockFiles: [
     { name: "file1.xlsx", size: 1024 },
