@@ -3,7 +3,7 @@ import axios from 'axios'
 import moment from 'moment-timezone'
 import PropTypes from 'prop-types'
 import parse from 'html-react-parser'
-
+import CreditTransactionTabs from '../../app/components/CreditTransactionTabs'
 import Button from '../../app/components/Button'
 import CreditAgreementsAlert from './CreditAgreementsAlert'
 import CreditAgreementsDetailsTable from './CreditAgreementsDetailsTable'
@@ -66,7 +66,8 @@ const CreditAgreementsDetailsPage = (props) => {
     </Modal>
   )
 
-  return (
+  return ([
+    <CreditTransactionTabs active="credit-agreements" key="tabs" user={user} />,
     <div id="credit-agreements-detail-page" className="page">
       <div className="row mt-3 mb-2">
         <div className="col-sm-12">
@@ -321,6 +322,7 @@ const CreditAgreementsDetailsPage = (props) => {
       </div>
       {modal}
     </div>
+    ]
   )
 }
 
