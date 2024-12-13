@@ -76,12 +76,14 @@ describe("getFileUploadPromises", () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
+    // Mock FileReader
     jest.spyOn(global, "FileReader").mockImplementation(function () {
       this.readAsArrayBuffer = jest.fn(() => {
         this.onload({ target: { result: "mocked-file-content" } });
       });
     });
 
+    // Mock axios
     axios.get.mockResolvedValue(mockPresignedUrlResponse);
     axios.put.mockResolvedValue({});
   });
