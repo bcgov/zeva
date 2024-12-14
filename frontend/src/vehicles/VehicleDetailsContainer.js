@@ -15,7 +15,7 @@ import VehicleDetailsPage from './components/VehicleDetailsPage'
 const VehicleDetailsContainer = (props) => {
   const [vehicle, setVehicle] = useState({})
   const [loading, setLoading] = useState(true)
-  const [comments, setComments] = useState({ vehicleComment: { comment: '' } })
+  const [comments, setComments] = useState({ vehicleComment: { request: '', reject: '' } })
   const { id } = useParams()
   const { keycloak, user, location } = props
   const { state: locationState } = location
@@ -37,11 +37,21 @@ const VehicleDetailsContainer = (props) => {
 
   const postComment = (newState) => {
     setLoading(true)
+    const { request, reject } = comments.vehicleComment;
+    const commentToSend = request || reject;
+    const transformedComments = {
+      vehicleComment: {
+        comment: commentToSend,
+      },
+    };
     axios
-      .patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id), comments)
+      .patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id), transformedComments)
       .then(() => {
         stateChange(newState)
       })
+      .catch((error) => {
+      console.error('Error posting comments:', error);
+    })
   }
 
   const refreshList = () => {

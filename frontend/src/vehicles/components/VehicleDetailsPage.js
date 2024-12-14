@@ -31,29 +31,45 @@ const VehicleDetailsPage = (props) => {
   const [showModal, setShowModal] = useState(false)
   const [modalType, setModalType] = useState('')
   const [isChecked, setIsChecked] = useState(false)
+  const [tooltip, setTooltip] = useState({
+    reject: 'Please add a comment to the vehicle supplier to activate \
+    the rejection option.',
+    request: 'Select the checkbox and add a comment for the vehicle \
+    supplier to activate the request option.'
+  })
   const validWeight = details.weightKg <= 4536
   if (loading) {
     return <Loading />
   }
   const { id } = details
+
   const handleChange = (event) => {
+    const commentType = event.target.id
     setComments({
       ...comments,
-      vehicleComment: { comment: event.target.value }
+      vehicleComment: { [commentType]: event.target.value }
     })
   }
 
-  const handleCheckboxClick = (event) => {
-    const { checked } = event.target
-    if (checked) {
-      setRequestChangeCheck(true)
-      setComments({
-        ...comments,
-        vehicleComment: { comment: 'Please provide range test results.' }
-      })
-    } else {
-      setRequestChangeCheck(false)
+  const updateTooltip = (isChecked) => {
+    const tooltip = isChecked
+      ? {
+          reject: 'Please uncheck the request checkbox and add a comment to activate the rejection option.',
+          request: 'Please add a comment for the vehicle supplier to activate the request option.'
+        }
+      : {
+          reject: 'Please add a comment to the vehicle supplier to activate the rejection option.',
+          request: 'Select the checkbox and add a comment for the vehicle supplier to activate the request option.'
+        };
+    setTooltip(tooltip);
     }
+
+
+  const handleCheckboxClick = (event) => {
+    const { checked } = event.target;
+    setRequestChangeCheck(checked);
+    updateTooltip(checked);
+    setComments({ ...comments, vehicleComment: { request: '', reject: '' } });
   }
   let modalProps
   switch (modalType) {
@@ -149,7 +165,7 @@ const VehicleDetailsPage = (props) => {
   } else {
     alertUser = details.updateUser
   }
-  return (
+  return (      
     <div id="vehicle-validation" className="page">
       <div className="row mb-2">
         <div className="col-sm-12">
@@ -288,41 +304,62 @@ const VehicleDetailsPage = (props) => {
         user.isGovernment &&
         typeof user.hasPermission === 'function' &&
         user.hasPermission('REQUEST_ZEV_CHANGES') && (
+          <>
           <div className="row">
             <div className="col-md-12 col-lg-9 col-xl-7 pt-4 pb-2">
               <div className="form">
+                <h3>Request</h3>
                 <div className="request-changes-check">
                   <input type="checkbox" onChange={handleCheckboxClick} />
-                  Request range results and/or a change to the range value from
-                  the vehicle supplier, specify below.
+                  Request proof of range and range test results and/or a change
+                  to the range value from vehicle supplier, specify below.
                 </div>
                 <div>
-                  Add a comment to the vehicle supplier for request or
-                  rejection.
+                  Add a comment to the vehicle supplier for request.
                 </div>
                 <textarea
+                  disabled={!requestChangeCheck}
                   className="form-control"
                   rows="3"
                   onChange={handleChange}
-                  defaultValue={comments.vehicleComment.comment}
+                  id="request"
+                  value={comments.vehicleComment.request}
                 />
                 <div className="text-right">
-                  <button
-                    className="button primary"
-                    disabled={!requestChangeCheck || !comments.vehicleComment}
-                    type="button"
-                    key="REQUEST"
-                    onClick={() => {
+                  <Button
+                    action={() => {
                       setModalType('request')
                       setShowModal(true)
                     }}
-                  >
-                    Request Range Change/Test Results
-                  </button>
+                    buttonType='approve'
+                    buttonTooltip={tooltip.request}
+                    disabled={!requestChangeCheck || comments.vehicleComment.reject || !comments.vehicleComment.request}
+                    optionalClassname="Button primary"
+                    optionalText="Request"
+                  />
                 </div>
               </div>
             </div>
           </div>
+          <div className="row">
+            <div className="col-md-12 col-lg-9 col-xl-7 pt-4 pb-2">
+              <div className="form">
+                <h3>Reject</h3>
+                <div>
+                 Add a comment to the vehicle supplier for reject.
+                </div>
+                <textarea
+                  className="form-control"
+                  disabled={requestChangeCheck}
+                  rows="3"
+                  onChange={handleChange}
+                  id="reject"
+                  value={comments.vehicleComment.reject}
+                />
+              </div>
+            </div>
+          </div>
+          </>
       )}
 
       <div className="row">
@@ -408,34 +445,32 @@ const VehicleDetailsPage = (props) => {
                 user.isGovernment &&
                 typeof user.hasPermission === 'function' &&
                 user.hasPermission('VALIDATE_ZEV') && [
-                  <button
-                    className="btn btn-outline-danger"
-                    disabled={
-                      !comments.vehicleComment.comment || requestChangeCheck
-                    }
-                    type="button"
-                    key="REJECTED"
-                    onClick={() => {
+                  <Button
+                    key='REJECT'
+                    action={() => {
                       setModalType('reject')
                       setShowModal(true)
                     }}
-                  >
-                    Reject
-                  </button>,
-                  <button
-                    className="button primary"
+                    buttonType='reject'
+                    buttonTooltip={tooltip.reject}
                     disabled={
-                      comments.vehicleComment.comment || requestChangeCheck
+                      !comments.vehicleComment.reject || requestChangeCheck
                     }
-                    type="button"
-                    key="VALIDATED"
-                    onClick={() => {
+                    optionalText="Reject"
+                    
+                  />,
+                  <Button
+                    action={() => {
                       setModalType('accept')
                       setShowModal(true)
                     }}
-                  >
-                    Validate
-                  </button>
+                    buttonType="approve"
+                    disabled={
+                      !!comments.vehicleComment.reject || requestChangeCheck
+                    }
+                    key="VALIDATED"
+                    optionalText='Validate'
+                  />
               ]}
             </span>
           </div>
@@ -470,17 +505,22 @@ const VehicleDetailsPage = (props) => {
 }
 
 VehicleDetailsPage.defaultProps = {
-  comments: undefined,
   postComment: undefined,
   setComments: undefined,
   title: 'Vehicle Details',
-  locationState: undefined
+  locationState: undefined,
+  comments: {
+    vehicleComment: {
+      request: '',
+      reject: ''
+    }
+  }
 }
 
 VehicleDetailsPage.propTypes = {
   comments: PropTypes.shape({
     vehicleComment: PropTypes.shape({
-      comment: PropTypes.string.isRequired
+      comment: PropTypes.shape({})
     })
   }),
   details: PropTypes.shape({
