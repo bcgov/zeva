@@ -122,25 +122,6 @@ jobs:
           minimum-approvals: 1
           issue-title: "ZEVA ${{ env.VERSION }}-${{ env.PRE_RELEASE }} Test Deployment"
 
-      - name: Restore oc command from Cache
-        uses: actions/cache@v4.2.0
-        with:
-          path: /usr/local/bin/oc
-          key: oc-cli-${{ runner.os }}
-
-      - name: Log in to Openshift
-        uses: redhat-actions/oc-login@v1.3
-        with:
-          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
-          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
-          insecure_skip_tls_verify: true
-          namespace: ${{ env.TOOLS_NAMESPACE }}
-
-      - name: Tag Image from tools to Test
-        run: |
-          oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.TEST_NAMESPACE }}/zeva-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
-          oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.TEST_NAMESPACE }}/zeva-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
-
       - name: Checkout Manifest repository
         uses: actions/checkout@v4.1.1
         with:
@@ -155,13 +136,26 @@ jobs:
             yq -i '.frontend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-test.yaml
             yq -i '.backend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-test.yaml
 
-      - name: Deploy on Zeva Test
+      - name: Restore oc command from Cache
+        uses: actions/cache@v4.2.0
+        with:
+          path: /usr/local/bin/oc
+          key: oc-cli-${{ runner.os }}
+
+      - name: Log in to Openshift
+        uses: redhat-actions/oc-login@v1.3
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          insecure_skip_tls_verify: true
+          namespace: ${{ env.TOOLS_NAMESPACE }}
+
+      - name: Tag and deploy to Test
         run: |
-          pwd
-          ls
           helm -n ${{ env.TEST_NAMESPACE }} list
-          cd zeva
-          helm -n ${{ env.TEST_NAMESPACE }} -f ./values-test.yaml upgrade --install zeva-test .
+          oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.TEST_NAMESPACE }}/zeva-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
+          oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.TEST_NAMESPACE }}/zeva-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
+          helm -n ${{ env.TEST_NAMESPACE }} list
 
   deploy-on-prod:
     name: Deploy ZEVA on Prod
