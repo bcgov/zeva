@@ -39,7 +39,7 @@ jobs:
         run: |
           curl -LO https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/openshift-client-linux.tar.gz
           tar -xvf openshift-client-linux.tar.gz
-          sudo mv oc /usr/local/bin/
+          sudo mv oc kubectl /usr/local/bin/
           oc version --client
 
       - name: Confirm OpenShift CLI is Available
@@ -85,6 +85,10 @@ jobs:
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           insecure_skip_tls_verify: true
           namespace: ${{ env.TOOLS_NAMESPACE }}
+
+      - name: List ZEVA deployments on Test
+        run: |
+          helm -n ${{ env.TEST_NAMESPACE }} list
 
       - name: Build ZEVA Backend
         run: |
@@ -149,7 +153,7 @@ jobs:
             yq -i '.frontend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-test.yaml
             yq -i '.backend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-test.yaml
 
-      - name: Tag ZEVA images to Test
+      - name: Deploy on Zeva Test
         run: |
           helm -n ${{ env.TEST_NAMESPACE }} list
           cd zeva
@@ -205,7 +209,7 @@ jobs:
             yq -i '.frontend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-prod.yaml
             yq -i '.backend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-prod.yaml
 
-      - name: Tag ZEVA images to Prod
+      - name: Deploy Zeva on Prod
         run: |
           helm -n ${{ env.PROD_NAMESPACE }} list
           cd zeva
