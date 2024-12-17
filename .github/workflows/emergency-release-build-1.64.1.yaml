@@ -169,20 +169,6 @@ jobs:
           approvers: emi-hi,tim738745,kuanfandevops,rogerlcleung,JulianForeman
           minimum-approvals: 1
           issue-title: "ZEVA ${{ env.VERSION }}-${{ env.PRE_RELEASE }} Prod Deployment"
-
-      - name: Checkout Manifest repository
-        uses: actions/checkout@v4.1.1
-        with:
-          repository: bcgov-c/tenant-gitops-e52f12
-          ref: main
-          ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
-
-      - name: Update frontend and backend image tags
-        uses: mikefarah/yq@v4.40.5
-        with:
-          cmd: |
-            yq -i '.frontend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-prod.yaml
-            yq -i '.backend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-prod.yaml
   
       - name: Restore oc command from Cache
         uses: actions/cache@v4.2.0
@@ -200,14 +186,28 @@ jobs:
 
       - name: Tag and Deploy to Prod
         run: |
-          helm -n ${{ env.PROD_NAMESPACE }} list
           oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.PROD_NAMESPACE }}/zeva-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
           oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.PROD_NAMESPACE }}/zeva-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
 
-      - name: Deploy Zeva on Prod
+      - name: Checkout Manifest repository
+        uses: actions/checkout@v4.1.1
+        with:
+          repository: bcgov-c/tenant-gitops-e52f12
+          ref: main
+          ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
+
+      - name: Update frontend and backend image tags
+        uses: mikefarah/yq@v4.40.5
+        with:
+          cmd: |
+            yq -i '.frontend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-prod.yaml
+            yq -i '.backend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-prod.yaml
+
+      - name: GitHub Commit & Push
+        shell: bash {0}
         run: |
-          pwd
-          ls
-          helm -n ${{ env.PROD_NAMESPACE }} list
-          cd zeva
-          helm -n ${{ env.PROD_NAMESPACE }} -f ./values-prod.yaml upgrade --install zeva-prod .
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git add zeva/values-prod.yaml
+          git commit -m "Update the image tag to ${{ env.VERSION }}-${{ env.PRE_RELEASE }} on Zeva Prod Environment"
+          git push
