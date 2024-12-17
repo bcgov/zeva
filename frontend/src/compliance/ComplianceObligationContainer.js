@@ -72,60 +72,59 @@ const ComplianceObligationContainer = (props) => {
       return false
     }
 
-    setSales(Number(value))
+    const salesValue = isNaN(Number(value)) ? 0 : Number(value)
+    setSales(salesValue)
 
-    if (!isNaN(Number(value))) {
-      const tempTotalReduction = getTotalReduction(
-        Number(value),
-        ratios.complianceRatio
-      )
-      const classAReduction = getClassAReduction(
-        Number(value),
-        ratios.zevClassA,
-        supplierClass
-      )
-      const leftoverReduction = getUnspecifiedClassReduction(
-        Number(tempTotalReduction),
-        Number(classAReduction)
-      )
+    const tempTotalReduction = getTotalReduction(
+      salesValue,
+      ratios.complianceRatio
+    )
+    const classAReduction = getClassAReduction(
+      salesValue,
+      ratios.zevClassA,
+      supplierClass
+    )
+    const leftoverReduction = getUnspecifiedClassReduction(
+      tempTotalReduction,
+      classAReduction
+    )
 
-      setTotalReduction(tempTotalReduction)
+    setTotalReduction(tempTotalReduction)
 
-      const tempClassAReductions = [
-        ...existingADeductions,
-        {
-          modelYear: Number(reportYear),
-          value: Number(classAReduction)
-        }
-      ]
-
-      setClassAReductions(tempClassAReductions)
-
-      const tempUnspecifiedReductions = [
-        ...existingUnspecifiedDeductions,
-        {
-          modelYear: Number(reportYear),
-          value: Number(leftoverReduction)
-        }
-      ]
-
-      setUnspecifiedReductions(tempUnspecifiedReductions)
-
-      const creditReduction = calculateCreditReduction(
-        balances,
-        tempClassAReductions,
-        tempUnspecifiedReductions,
-        creditReductionSelection,
-        reportDetails.carryOverDeficits
-      )
-
-      if (supplierClass !== 'S') {
-        setDeductions(creditReduction.deductions)
-        setUpdatedBalances({
-          balances: creditReduction.balances,
-          deficits: creditReduction.deficits
-        })
+    const tempClassAReductions = [
+      ...existingADeductions,
+      {
+        modelYear: Number(reportYear),
+        value: classAReduction
       }
+    ]
+
+    setClassAReductions(tempClassAReductions)
+
+    const tempUnspecifiedReductions = [
+      ...existingUnspecifiedDeductions,
+      {
+        modelYear: Number(reportYear),
+        value: leftoverReduction
+      }
+    ]
+
+    setUnspecifiedReductions(tempUnspecifiedReductions)
+
+    const creditReduction = calculateCreditReduction(
+      balances,
+      tempClassAReductions,
+      tempUnspecifiedReductions,
+      creditReductionSelection,
+      reportDetails.carryOverDeficits
+    )
+
+    if (supplierClass !== 'S') {
+      setDeductions(creditReduction.deductions)
+      setUpdatedBalances({
+        balances: creditReduction.balances,
+        deficits: creditReduction.deficits
+      })
     }
   }
 

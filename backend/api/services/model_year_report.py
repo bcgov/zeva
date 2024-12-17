@@ -363,6 +363,8 @@ def adjust_credits(id, request):
                         credit_transaction_id=added_transaction.id
                     )
 
+    OrganizationDeficits.objects.filter(organization_id=organization_id).delete()
+
     deficits = ModelYearReportComplianceObligation.objects.filter(
         model_year_report_id=id,
         category='CreditDeficit',
@@ -370,41 +372,30 @@ def adjust_credits(id, request):
     )
 
     for deficit in deficits:
+        deficit_model_year_id = deficit.model_year_id
         if deficit.credit_a_value > 0:
             OrganizationDeficits.objects.update_or_create(
                 credit_class=credit_class_a,
                 organization_id=organization_id,
-                model_year_id=model_year_id,
+                model_year_id=deficit_model_year_id,
                 defaults={
                     'credit_value': deficit.credit_a_value,
                     'create_user': request.user.username,
                     'update_user': request.user.username
                 }
             )
-        else:
-            OrganizationDeficits.objects.filter(
-                credit_class=credit_class_a,
-                organization_id=organization_id,
-                model_year_id=model_year_id
-            ).delete()
-
         if deficit.credit_b_value > 0:
             OrganizationDeficits.objects.update_or_create(
                 credit_class=credit_class_b,
                 organization_id=organization_id,
-                model_year_id=model_year_id,
+                model_year_id=deficit_model_year_id,
                 defaults={
                     'credit_value': deficit.credit_b_value,
                     'create_user': request.user.username,
                     'update_user': request.user.username
                 }
             )
-        else:
-            OrganizationDeficits.objects.filter(
-                credit_class=credit_class_b,
-                organization_id=organization_id,
-                model_year_id=model_year_id
-            ).delete()
+
 
 def check_validation_status_change(old_status, updated_model_year_report):
         new_status = updated_model_year_report.validation_status
