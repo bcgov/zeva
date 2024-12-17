@@ -98,128 +98,125 @@ jobs:
           oc process -f ./frontend-bc-docker.yaml NAME=zeva SUFFIX=-${{ env.VERSION }}-${{ env.PRE_RELEASE }} VERSION=${{ env.VERSION }}-${{ env.PRE_RELEASE }} GIT_URL=${{ env.GIT_URL }} GIT_REF=release-${{ env.VERSION }} | oc apply --wait=true -f - -n ${{ env.TOOLS_NAMESPACE }}
           oc start-build --wait=true zeva-frontend-${{ env.VERSION }}-${{ env.PRE_RELEASE }}
 
-  # deploy-on-test:
-  #   name: Deploy ZEVA on Test
-  #   runs-on: ubuntu-latest
-  #   timeout-minutes: 60
-  #   needs: build
+  deploy-on-test:
+    name: Deploy ZEVA on Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs: [set-pre-release, build]
 
-  #   steps:
-  #     - name: Check out repository
-  #       uses: actions/checkout@v4.1.1
-  #       with:
-  #         ref: refs/pull/${{ env.PRE_RELEASE }}/head
+    env:
+      PRE_RELEASE: ${{ needs.set-pre-release.outputs.PRE_RELEASE }}
 
-  #     - name: Log in to Openshift
-  #       uses: redhat-actions/oc-login@v1.3
-  #       with:
-  #         openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
-  #         openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
-  #         insecure_skip_tls_verify: true
-  #         namespace: ${{ env.TOOLS_NAMESPACE }}
+    steps:
+      - name: Ask for approval for ZEVA Test deployment
+        uses: trstringer/manual-approval@v1.6.0
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: emi-hi,tim738745,kuanfandevops,rogerlcleung,JulianForeman
+          minimum-approvals: 1
+          issue-title: "ZEVA ${{ env.VERSION }}-${{ env.PRE_RELEASE }} Test Deployment"
 
-  #     - name: Ask for approval for ZEVA Test deployment
-  #       uses: trstringer/manual-approval@v1.6.0
-  #       with:
-  #         secret: ${{ github.TOKEN }}
-  #         approvers: AlexZorkin,emi-hi,tim738745,kuanfandevops,prv-proton
-  #         minimum-approvals: 1
-  #         issue-title: "ZEVA ${{ env.VERSION }} Test Deployment"
+      - name: Check out repository
+        uses: actions/checkout@v4.1.1
+        with:
+          ref: release-${{ ENV.VERSION }}
 
-  #     - name: Tag Backend Image from tools to Test
-  #       run: |
-  #         oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-backend:build-${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.TEST_NAMESPACE }}/zeva-backend:test-${{ env.VERSION }}
+      - name: Restore oc command from Cache
+        uses: actions/cache@v4.2.0
+        with:
+          path: /usr/local/bin/oc
+          key: oc-cli-${{ runner.os }}
 
-  #     - name: Tag Frontend Image from tools to Test
-  #       run: |
-  #         oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-frontend:build-${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.TEST_NAMESPACE }}/zeva-frontend:test-${{ env.VERSION }}
+      - name: Log in to Openshift
+        uses: redhat-actions/oc-login@v1.3
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          insecure_skip_tls_verify: true
+          namespace: ${{ env.TOOLS_NAMESPACE }}
 
-  #     # helm status will show an error if the helm release doesn't exist. The error will be ignored.
-  #     - name: Deploy zeva-frontend on Test
-  #       shell: bash {0}
-  #       run: |
-  #         cd charts/zeva-apps/charts/zeva-frontend
-  #         helm status -n ${{ env.TEST_NAMESPACE }} zeva-frontend-test
-  #         if [ $? -eq 0 ]; then
-  #           echo "zeva-frontend-test release exists already"
-  #           helm upgrade --install --set frontendImageTagname=test-${{ env.VERSION }},openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }} -n ${{ env.TEST_NAMESPACE }} -f ./values-test.yaml zeva-frontend-test .
-  #         else
-  #           echo "zeva-frontend-test release does not exist"
-  #           helm install --set frontendImageTagname=test-${{ env.VERSION }},openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }} -n ${{ env.TEST_NAMESPACE }} -f ./values-test.yaml zeva-frontend-test .
-  #         fi
+      - name: Tag Image from tools to Test
+        run: |
+          oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.TEST_NAMESPACE }}/zeva-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
+          oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.TEST_NAMESPACE }}/zeva-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
 
-  #     # helm status will show an error if the helm release doesn't exist. The error will be ignored.
-  #     - name: Deply zeva-backend on Test
-  #       shell: bash {0}
-  #       run: |
-  #         cd charts/zeva-apps/charts/zeva-backend
-  #         helm status -n ${{ env.TEST_NAMESPACE }} zeva-backend-test
-  #         if [ $? -eq 0 ]; then
-  #           echo "zeva-backend-test release exists already"
-  #           helm upgrade --set backendImageTagname=test-${{ env.VERSION }} -n ${{ env.TEST_NAMESPACE }} -f ./values-test.yaml zeva-backend-test .
-  #         else
-  #           echo "zeva-backend-test release does not exist"
-  #           helm install --set backendImageTagname=test-${{ env.VERSION }} -n ${{ env.TEST_NAMESPACE }} -f ./values-test.yaml zeva-backend-test .
-  #         fi
+      - name: Checkout Manifest repository
+        uses: actions/checkout@v4.1.1
+        with:
+          repository: bcgov-c/tenant-gitops-e52f12
+          ref: main
+          ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
 
-  # deploy-on-prod:
-  #   name: Deploy ZEVA on Prod
-  #   runs-on: ubuntu-latest
-  #   timeout-minutes: 60
-  #   needs: deploy-on-test
+      - name: Update frontend and backend image tags
+        uses: mikefarah/yq@v4.40.5
+        with:
+          cmd: |
+            yq -i '.frontend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-test.yaml
+            yq -i '.backend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-test.yaml
 
-  #   steps:
-  #     - name: Check out repository
-  #       uses: actions/checkout@v4.1.1
-  #       with:
-  #         ref: refs/pull/${{ env.PRE_RELEASE }}/head
+      - name: Tag ZEVA images to Test
+        run: |
+          helm -n ${{ env.TEST_NAMESPACE }} list
+          cd zeva
+          helm -n ${{ env.TEST_NAMESPACE }} -f ./values-test.yaml upgrade --install zeva-test .
 
-  #     - name: Log in to Openshift
-  #       uses: redhat-actions/oc-login@v1.3
-  #       with:
-  #         openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
-  #         openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
-  #         insecure_skip_tls_verify: true
-  #         namespace: ${{ env.TOOLS_NAMESPACE }}
+  deploy-on-prod:
+    name: Deploy ZEVA on Prod
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs: [set-pre-release, deploy-on-test]
+    env:
+      PRE_RELEASE: ${{ needs.set-pre-release.outputs.PRE_RELEASE }}
+    steps:
 
-  #     - name: Ask for approval for ZEVA Prod deployment
-  #       uses: trstringer/manual-approval@v1.6.0
-  #       with:
-  #         secret: ${{ github.TOKEN }}
-  #         approvers: AlexZorkin,kuanfandevops,tim738745,emi-hi
-  #         minimum-approvals: 1
-  #         issue-title: "ZEVA ${{ env.VERSION }} Prod Deployment"
+      - name: Ask for approval for ZEVA Prod deployment
+        uses: trstringer/manual-approval@v1.6.0
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: emi-hi,tim738745,kuanfandevops,rogerlcleung,JulianForeman
+          minimum-approvals: 1
+          issue-title: "ZEVA ${{ env.VERSION }}-${{ env.PRE_RELEASE }} Prod Deployment"
 
-  #     - name: Tag Frontend Image from tools to Prod
-  #       run: |
-  #         oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-frontend:build-${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.PROD_NAMESPACE }}/zeva-frontend:prod-${{ env.VERSION }}
+      - name: Check out repository
+        uses: actions/checkout@v4.1.1
+        with:
+          ref: release-${{ ENV.VERSION }}
 
-  #     - name: Tag Backend Image from tools to Prod
-  #       run: |
-  #         oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-backend:build-${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.PROD_NAMESPACE }}/zeva-backend:prod-${{ env.VERSION }}
+      - name: Restore oc command from Cache
+        uses: actions/cache@v4.2.0
+        with:
+          path: /usr/local/bin/oc
+          key: oc-cli-${{ runner.os }}
 
-  #     - name: Deply zeva-frontend on Prod
-  #       shell: bash {0}
-  #       run: |
-  #         cd charts/zeva-apps/charts/zeva-frontend
-  #         helm status -n ${{ env.PROD_NAMESPACE }} zeva-frontend-prod
-  #         if [ $? -eq 0 ]; then
-  #           echo "zeva-frontend-prod release exists already"
-  #           helm upgrade --set frontendImageTagname=prod-${{ env.VERSION }},openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }} -n ${{ env.PROD_NAMESPACE }} -f ./values-prod.yaml zeva-frontend-prod .
-  #         else
-  #           echo "zeva-frontend-prod release does not exist"
-  #           helm install --set frontendImageTagname=prod-${{ env.VERSION }},openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }} -n ${{ env.PROD_NAMESPACE }} -f ./values-prod.yaml zeva-frontend-prod .
-  #         fi
+      - name: Log in to Openshift
+        uses: redhat-actions/oc-login@v1.3
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          insecure_skip_tls_verify: true
+          namespace: ${{ env.TOOLS_NAMESPACE }}
 
-  #     - name: Deply zeva-backend on Prod
-  #       shell: bash {0}
-  #       run: |
-  #         cd charts/zeva-apps/charts/zeva-backend
-  #         helm status -n ${{ env.PROD_NAMESPACE }} zeva-backend-prod
-  #         if [ $? -eq 0 ]; then
-  #           echo "zeva-backend-prod release exists already"
-  #           helm upgrade --set backendImageTagname=prod-${{ env.VERSION }} -n ${{ env.PROD_NAMESPACE }} -f ./values-prod.yaml zeva-backend-prod .
-  #         else
-  #           echo "zeva-backend-prod release does not exist"
-  #           helm install --set backendImageTagname=prod-${{ env.VERSION }} -n ${{ env.PROD_NAMESPACE }} -f ./values-prod.yaml zeva-backend-prod .
-  #         fi
+      - name: Tag Images from tools to Prod
+        run: |
+          oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.PROD_NAMESPACE }}/zeva-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
+          oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.PROD_NAMESPACE }}/zeva-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
+
+      - name: Checkout Manifest repository
+        uses: actions/checkout@v4.1.1
+        with:
+          repository: bcgov-c/tenant-gitops-e52f12
+          ref: main
+          ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
+
+      - name: Update frontend and backend image tags
+        uses: mikefarah/yq@v4.40.5
+        with:
+          cmd: |
+            yq -i '.frontend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-prod.yaml
+            yq -i '.backend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-prod.yaml
+
+      - name: Tag ZEVA images to Prod
+        run: |
+          helm -n ${{ env.PROD_NAMESPACE }} list
+          cd zeva
+          helm -n ${{ env.PROD_NAMESPACE }} -f ./values-prod.yaml upgrade --install zeva-prod .
