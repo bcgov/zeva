@@ -13,6 +13,32 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  install-oc:
+    runs-on: ubuntu-latest
+    outputs:
+      cache-hit: ${{ steps.cache.outputs.cache-hit }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4.1.1
+
+      - name: Set up cache for OpenShift CLI
+        id: cache
+        uses: actions/cache@v4.2.0
+        with:
+          path: /usr/local/bin/oc  # Path where the `oc` binary will be installed
+          key: oc-cli-${{ runner.os }}
+
+      - name: Install OpenShift CLI (if not cached)
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          curl -LO https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/openshift-client-linux.tar.gz
+          tar -xvf openshift-client-linux.tar.gz
+          sudo mv oc /usr/local/bin/
+          oc version --client
+
+      - name: Confirm OpenShift CLI is Available
+        run: oc version --client
+
   teardown:
     if: >
       (github.event.action == 'unlabeled' && github.event.label.name == 'build') || 
@@ -20,8 +46,15 @@ jobs:
     name: PR Teardown
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    needs: [install-oc]
 
     steps:
+      - name: Restore oc command from Cache
+        uses: actions/cache@v4.2.0
+        with:
+          path: /usr/local/bin/oc
+          key: oc-cli-${{ runner.os }}
+          
       - name: Log in to Openshift
         uses: redhat-actions/oc-login@v1.3
         with:
