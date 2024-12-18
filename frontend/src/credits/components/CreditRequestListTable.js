@@ -13,6 +13,9 @@ import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests'
 import calculateNumberOfPages from '../../app/utilities/calculateNumberOfPages'
 import CustomFilterComponent from '../../app/components/CustomFilterComponent'
 import moment from 'moment-timezone'
+import ReactTooltip from 'react-tooltip'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { tooltipText } from '../constants/creditRequest'
 
 const CreditRequestListTable = (props) => {
   const {
@@ -88,8 +91,16 @@ const CreditRequestListTable = (props) => {
         return item.totals.vins > 0 ? item.totals.vins : '-'
       },
       className: 'text-right',
-      Header: 'Total Eligible ZEVs Supplied',
-      maxWidth: 150,
+      Header: () => (
+        <div>
+          <ReactTooltip html={true} />
+          <span>
+            <FontAwesomeIcon data-tip={tooltipText} icon="info-circle" />
+          </span>
+          Total Eligible ZEVs Supplied
+        </div>
+      ),
+      maxWidth: 250,
       id: 'total-sales',
       filterable: false,
       sortable: false

@@ -8,12 +8,28 @@ import ReactTable from '../../app/components/ReactTable'
 import formatNumeric from '../../app/utilities/formatNumeric'
 import CustomPropTypes from '../../app/utilities/props'
 import isLegacySubmission from '../../app/utilities/isLegacySubmission'
+import ReactTooltip from 'react-tooltip'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { tooltipText } from '../constants/creditRequest'
 
 const CreditRequestSummaryTable = (props) => {
   const columns = [
     {
       headerClassName: 'header-group font-weight-bold',
-      Header: isLegacySubmission(props.submission) ? 'Consumer ZEV Sales' : 'ZEVs Supplied',
+      Header: () => {
+        if (isLegacySubmission(props.submission)) {
+          return 'Consumer ZEV Sales'
+        }
+        return (
+          <div>
+            <ReactTooltip html={true} />
+            <span>
+              <FontAwesomeIcon data-tip={tooltipText} icon="info-circle" />
+            </span>
+            ZEVs Supplied
+          </div>
+        )
+      },
       columns: [
         {
           headerClassName: 'd-none',

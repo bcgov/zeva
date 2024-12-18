@@ -31,7 +31,9 @@ const CreditAgreementsDetailsPage = (props) => {
   } = props
 
   const [showModal, setShowModal] = useState(false)
-
+  const showComments = details?.filteredIdirComments &&
+          details?.filteredIdirComments.length > 0
+  const showCommentInput = details?.status !== 'ISSUED'
   const modal = (
     <Modal
       confirmLabel={(analystAction ? 'Submit' : 'Issue')}
@@ -81,15 +83,14 @@ const CreditAgreementsDetailsPage = (props) => {
           />
         </div>
       </div>
-      {user && user.isGovernment && details && (
+      {user && user.isGovernment && (showComments || showCommentInput) && (
         <div className="row mt-3 mb-2">
           <div className="col-sm-12">
             <div
               className="grey-border-area p-3 comment-box mt-2"
               id="comment-input"
             >
-              { details?.filteredIdirComments &&
-                details?.filteredIdirComments.length > 0 && (
+              { showComments && (
                   <EditableCommentList 
                     comments={details.filteredIdirComments} 
                     user={user}
@@ -97,7 +98,7 @@ const CreditAgreementsDetailsPage = (props) => {
                     handleCommentDelete={handleInternalCommentDelete}
                   />
               )}
-              {details?.status !== 'ISSUED' && (
+              {showCommentInput && (
                 <div>
                 <CommentInput
                   handleAddComment={handleAddComment}
