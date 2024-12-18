@@ -1,19 +1,19 @@
-import React, { useState } from 'react'
-import axios from 'axios'
-import moment from 'moment-timezone'
-import PropTypes from 'prop-types'
-import parse from 'html-react-parser'
-
-import Button from '../../app/components/Button'
-import CreditAgreementsAlert from './CreditAgreementsAlert'
-import CreditAgreementsDetailsTable from './CreditAgreementsDetailsTable'
-import EditableCommentList from '../../app/components/EditableCommentList'
-import CommentInput from '../../app/components/CommentInput'
-import history from '../../app/History'
-import ROUTES_CREDIT_AGREEMENTS from '../../app/routes/CreditAgreements'
-import CustomPropTypes from '../../app/utilities/props'
-import Modal from '../../app/components/Modal'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import React, { useState } from "react";
+import axios from "axios";
+import moment from "moment-timezone";
+import PropTypes from "prop-types";
+import parse from "html-react-parser";
+import Button from "../../app/components/Button";
+import CreditAgreementsAlert from "./CreditAgreementsAlert";
+import CreditAgreementsDetailsTable from "./CreditAgreementsDetailsTable";
+import CreditTransactionTabs from "../../app/components/CreditTransactionTabs";
+import EditableCommentList from "../../app/components/EditableCommentList";
+import CommentInput from "../../app/components/CommentInput";
+import history from "../../app/History";
+import ROUTES_CREDIT_AGREEMENTS from "../../app/routes/CreditAgreements";
+import CustomPropTypes from "../../app/utilities/props";
+import Modal from "../../app/components/Modal";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const CreditAgreementsDetailsPage = (props) => {
   const {
@@ -27,22 +27,22 @@ const CreditAgreementsDetailsPage = (props) => {
     handleInternalCommentDelete,
     handleSubmit,
     id,
-    user
-  } = props
+    user,
+  } = props;
 
-  const [showModal, setShowModal] = useState(false)
-  const showComments = details?.filteredIdirComments &&
-          details?.filteredIdirComments.length > 0
-  const showCommentInput = details?.status !== 'ISSUED'
+  const [showModal, setShowModal] = useState(false);
+  const showComments =
+    details?.filteredIdirComments && details?.filteredIdirComments.length > 0;
+  const showCommentInput = details?.status !== "ISSUED";
   const modal = (
     <Modal
-      confirmLabel={(analystAction ? 'Submit' : 'Issue')}
+      confirmLabel={analystAction ? "Submit" : "Issue"}
       handleCancel={() => {
-        setShowModal(false)
+        setShowModal(false);
       }}
       handleSubmit={() => {
-        setShowModal(false)
-        handleSubmit((analystAction ? 'RECOMMENDED' : 'ISSUED'))
+        setShowModal(false);
+        handleSubmit(analystAction ? "RECOMMENDED" : "ISSUED");
       }}
       modalClass="w-75"
       showModal={showModal}
@@ -55,8 +55,9 @@ const CreditAgreementsDetailsPage = (props) => {
           <br />
         </div>
         <h3 className="d-inline">
-          {(analystAction ? 'Submit this to the director?' : 
-          'Issue credits to the supplier?')}
+          {analystAction
+            ? "Submit this to the director?"
+            : "Issue credits to the supplier?"}
         </h3>
         <div>
           <br />
@@ -64,9 +65,10 @@ const CreditAgreementsDetailsPage = (props) => {
         </div>
       </div>
     </Modal>
-  )
+  );
 
-  return (
+  return [
+    <CreditTransactionTabs active="credit-agreements" key="tabs" user={user} />,
     <div id="credit-agreements-detail-page" className="page">
       <div className="row mt-3 mb-2">
         <div className="col-sm-12">
@@ -76,7 +78,7 @@ const CreditAgreementsDetailsPage = (props) => {
           <CreditAgreementsAlert
             id={id}
             isGovernment={user.isGovernment}
-            date={moment(details.updateTimestamp).format('MMM D, YYYY')}
+            date={moment(details.updateTimestamp).format("MMM D, YYYY")}
             status={details.status}
             transactionType={details.transactionType}
             updateUser={details.updateUser}
@@ -90,27 +92,27 @@ const CreditAgreementsDetailsPage = (props) => {
               className="grey-border-area p-3 comment-box mt-2"
               id="comment-input"
             >
-              { showComments && (
-                  <EditableCommentList 
-                    comments={details.filteredIdirComments} 
-                    user={user}
-                    handleCommentEdit={handleInternalCommentEdit}
-                    handleCommentDelete={handleInternalCommentDelete}
-                  />
+              {showComments && (
+                <EditableCommentList
+                  comments={details.filteredIdirComments}
+                  user={user}
+                  handleCommentEdit={handleInternalCommentEdit}
+                  handleCommentDelete={handleInternalCommentDelete}
+                />
               )}
               {showCommentInput && (
                 <div>
-                <CommentInput
-                  handleAddComment={handleAddComment}
-                  handleCommentChange={handleCommentChangeIdir}
-                  title={
-                    analystAction
-                      ? 'Add comment to director: '
-                      : 'Add comment to the analyst'
-                  }
-                  buttonText="Add Comment"
-                />
-              </div>
+                  <CommentInput
+                    handleAddComment={handleAddComment}
+                    handleCommentChange={handleCommentChangeIdir}
+                    title={
+                      analystAction
+                        ? "Add comment to director: "
+                        : "Add comment to the analyst"
+                    }
+                    buttonText="Add Comment"
+                  />
+                </div>
               )}
             </div>
           </div>
@@ -130,7 +132,7 @@ const CreditAgreementsDetailsPage = (props) => {
             <h4 className="d-inline">Agreement ID: </h4>
           </span>
           <span className="col-5">
-            {details.optionalAgreementId ? details.optionalAgreementId : 'N/A'}
+            {details.optionalAgreementId ? details.optionalAgreementId : "N/A"}
           </span>
         </div>
         <div className="row mt-2">
@@ -153,24 +155,24 @@ const CreditAgreementsDetailsPage = (props) => {
                         onClick={() => {
                           axios
                             .get(attachment.url, {
-                              responseType: 'blob',
+                              responseType: "blob",
                               headers: {
-                                Authorization: null
-                              }
+                                Authorization: null,
+                              },
                             })
                             .then((response) => {
                               const objectURL = window.URL.createObjectURL(
-                                new Blob([response.data])
-                              )
-                              const link = document.createElement('a')
-                              link.href = objectURL
+                                new Blob([response.data]),
+                              );
+                              const link = document.createElement("a");
+                              link.href = objectURL;
                               link.setAttribute(
-                                'download',
-                                attachment.filename
-                              )
-                              document.body.appendChild(link)
-                              link.click()
-                            })
+                                "download",
+                                attachment.filename,
+                              );
+                              document.body.appendChild(link);
+                              link.click();
+                            });
                         }}
                         type="button"
                       >
@@ -178,12 +180,13 @@ const CreditAgreementsDetailsPage = (props) => {
                       </button>
                     </div>
                   </div>
-              ))
-              : ' - '}
+                ))
+              : " - "}
           </div>
         </div>
-        {details && details.filteredBceidComments && 
-          details.filteredBceidComments.length > 0 &&
+        {details &&
+          details.filteredBceidComments &&
+          details.filteredBceidComments.length > 0 && (
             <div className="row mt-2">
               <span className="col-3">
                 <h4 className="d-inline">Message from the Director: </h4>
@@ -192,7 +195,7 @@ const CreditAgreementsDetailsPage = (props) => {
                 {parse(details.filteredBceidComments[0].comment)}
               </span>
             </div>
-        }
+          )}
         <div className="row mt-2">
           <span className="col-3" />
           <span className="col-5">
@@ -202,11 +205,11 @@ const CreditAgreementsDetailsPage = (props) => {
                 <CreditAgreementsDetailsTable
                   items={details.creditAgreementContent}
                 />
-            )}
+              )}
           </span>
         </div>
       </div>
-      {directorAction && details && details.status === 'RECOMMENDED' && (
+      {directorAction && details && details.status === "RECOMMENDED" && (
         <div
           className="grey-border-area p-3 comment-box mt-4"
           id="comment-input"
@@ -229,7 +232,7 @@ const CreditAgreementsDetailsPage = (props) => {
       <div className="row">
         <div className="col-sm-12">
           <div className="action-bar mt-3">
-            {directorAction && details.status === 'RECOMMENDED' && (
+            {directorAction && details.status === "RECOMMENDED" && (
               <>
                 <span className="left-content">
                   <Button
@@ -240,7 +243,7 @@ const CreditAgreementsDetailsPage = (props) => {
                   <button
                     className="button text-danger"
                     onClick={() => {
-                      handleSubmit('RETURNED')
+                      handleSubmit("RETURNED");
                     }}
                     type="button"
                   >
@@ -254,7 +257,7 @@ const CreditAgreementsDetailsPage = (props) => {
                     optionalClassname="button"
                     optionalText="Save"
                     action={() => {
-                      handleAddComment('bceidComment')
+                      handleAddComment("bceidComment");
                     }}
                   />
                   <Button
@@ -262,14 +265,14 @@ const CreditAgreementsDetailsPage = (props) => {
                     optionalClassname="button primary"
                     optionalText="Issue Transaction"
                     action={() => {
-                      setShowModal(true)
+                      setShowModal(true);
                     }}
                   />
                 </span>
               </>
             )}
             {analystAction &&
-              (details.status === 'DRAFT' || details.status === 'RETURNED') && (
+              (details.status === "DRAFT" || details.status === "RETURNED") && (
                 <>
                   <span className="left-content">
                     <Button
@@ -280,7 +283,7 @@ const CreditAgreementsDetailsPage = (props) => {
                       buttonType="delete"
                       optionalText="Delete"
                       action={() => {
-                        handleSubmit('DELETED')
+                        handleSubmit("DELETED");
                       }}
                     />
                   </span>
@@ -290,8 +293,8 @@ const CreditAgreementsDetailsPage = (props) => {
                       optionalText="Edit"
                       action={() => {
                         history.push(
-                          ROUTES_CREDIT_AGREEMENTS.EDIT.replace(/:id/g, id)
-                        )
+                          ROUTES_CREDIT_AGREEMENTS.EDIT.replace(/:id/g, id),
+                        );
                       }}
                     />
                     <Button
@@ -299,13 +302,13 @@ const CreditAgreementsDetailsPage = (props) => {
                       optionalClassname="button primary"
                       optionalText="Submit to Director"
                       action={() => {
-                        setShowModal(true)
+                        setShowModal(true);
                       }}
                     />
                   </span>
                 </>
-            )}
-            {details.status === 'ISSUED' && (
+              )}
+            {details.status === "ISSUED" && (
               <>
                 <span className="left-content">
                   <Button
@@ -320,9 +323,9 @@ const CreditAgreementsDetailsPage = (props) => {
         </div>
       </div>
       {modal}
-    </div>
-  )
-}
+    </div>,
+  ];
+};
 
 CreditAgreementsDetailsPage.propTypes = {
   details: PropTypes.shape({
@@ -335,7 +338,7 @@ CreditAgreementsDetailsPage.propTypes = {
     organization: PropTypes.shape(),
     status: PropTypes.string,
     transactionType: PropTypes.string,
-    updateTimestamp: PropTypes.string
+    updateTimestamp: PropTypes.string,
   }).isRequired,
   analystAction: PropTypes.bool.isRequired,
   directorAction: PropTypes.bool.isRequired,
@@ -346,7 +349,7 @@ CreditAgreementsDetailsPage.propTypes = {
   handleInternalCommentDelete: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   id: PropTypes.string.isRequired,
-  user: CustomPropTypes.user.isRequired
-}
+  user: CustomPropTypes.user.isRequired,
+};
 
-export default CreditAgreementsDetailsPage
+export default CreditAgreementsDetailsPage;
