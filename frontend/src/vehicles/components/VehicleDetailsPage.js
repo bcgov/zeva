@@ -30,14 +30,13 @@ const VehicleDetailsPage = (props) => {
   const [requestChangeCheck, setRequestChangeCheck] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState("");
-  const [isChecked, setIsChecked] = useState(false);
+  const rejectStartingValue =
+    "Please add a comment to the vehicle supplier to activate.";
+  const requestStartingValue =
+    "Select the checkbox and add a comment for the vehicle supplier to activate the request option.";
   const [tooltip, setTooltip] = useState({
-    reject:
-      "Please add a comment to the vehicle supplier to activate \
-    the rejection option.",
-    request:
-      "Select the checkbox and add a comment for the vehicle \
-    supplier to activate the request option.",
+    request: requestStartingValue,
+    reject: rejectStartingValue,
   });
   const validWeight = details.weightKg <= 4536;
   if (loading) {
@@ -53,115 +52,98 @@ const VehicleDetailsPage = (props) => {
     });
   };
 
-  const updateTooltip = (isChecked) => {
-    const tooltip = isChecked
+  const updateTooltip = (checked) => {
+    const newTooltip = checked
       ? {
           reject:
-            "Please uncheck the request checkbox and add a comment to activate the rejection option.",
+            "Please uncheck the request checkbox and add a comment to activate.",
           request:
             "Please add a comment for the vehicle supplier to activate the request option.",
         }
       : {
-          reject:
-            "Please add a comment to the vehicle supplier to activate the rejection option.",
-          request:
-            "Select the checkbox and add a comment for the vehicle supplier to activate the request option.",
+          reject: rejectStartingValue,
+          request: requestStartingValue,
         };
-    setTooltip(tooltip);
+    setTooltip(newTooltip);
   };
 
-  const handleCheckboxClick = (event) => {
-    const { checked } = event.target;
+  const handleCheckboxClick = ({ target: { checked } }) => {
     setRequestChangeCheck(checked);
     updateTooltip(checked);
     setComments({ ...comments, vehicleComment: { request: "", reject: "" } });
   };
-  let modalProps;
-  switch (modalType) {
-    case "makeInactive":
-      modalProps = {
-        confirmLabel: "Make Inactive",
-        modalText:
-          "Making a ZEV model inactive will remove it from various areas of the system including the Credit Application Excel template and the compliance calculator. Inactive ZEV models can be re-activated if required.",
-        title: "Make ZEV Model Inactive?",
-        handleSubmit: () => {
-          setShowModal(false);
-          isActiveChange(false);
-        },
-      };
-      break;
-    case "makeActive":
-      modalProps = {
-        confirmLabel: "Make Active",
-        modalText: "Make ZEV model active for submitting consumer sales?",
-        handleSubmit: () => {
-          setShowModal(false);
-          isActiveChange(true);
-        },
-      };
-      break;
-    case "submit":
-      modalProps = {
-        confirmLabel: " Submit",
-        handleSubmit: () => {
-          requestStateChange("SUBMITTED");
-        },
-        buttonClass: "button primary",
-        modalText:
-          details.attachments.length > 0
-            ? "Submit vehicle model and range test results to Government of B.C.?"
-            : "Submit ZEV model to Government of B.C.?",
-      };
-      break;
-    case "accept":
-      modalProps = {
-        confirmLabel: "Validate",
-        handleSubmit: () => {
-          requestStateChange("VALIDATED");
-        },
-        buttonClass: "button primary",
-        modalText: "Validate ZEV model",
-      };
-      break;
-    case "reject":
-      modalProps = {
-        handleSubmit: () => {
-          postComment("REJECTED");
-        },
-        confirmLabel: "Reject",
-        buttonClass: "btn-outline-danger",
-        modalText: "Reject ZEV model",
-      };
-      break;
-    case "request":
-      modalProps = {
-        confirmLabel: "Request",
-        buttonClass: "button primary",
-        modalText: "Request range change/test results",
-        handleSubmit: () => {
-          postComment("CHANGES_REQUESTED");
-        },
-      };
-      break;
-    case "delete":
-      modalProps = {
-        confirmLabel: "Delete",
-        modalText: "Delete the ZEV model?",
-        handleSubmit: () => {
-          requestStateChange("DELETED");
-        },
-        buttonClass: "btn-outline-danger",
-      };
-      break;
-    default:
-      modalProps = {
-        confirmLabel: "",
-        buttonClass: "",
-        modalText: "",
-        handleSubmit: () => {},
-      };
-      break;
-  }
+
+  const modalConfig = {
+    makeInactive: {
+      confirmLabel: "Make Inactive",
+      modalText:
+        "Making a ZEV model inactive will remove it from various areas of the system including the Credit Application Excel template and the compliance calculator. Inactive ZEV models can be re-activated if required.",
+      title: "Make ZEV Model Inactive?",
+      handleSubmit: () => {
+        setShowModal(false);
+        isActiveChange(false);
+      },
+    },
+    makeActive: {
+      confirmLabel: "Make Active",
+      modalText: "Make ZEV model active for submitting consumer sales?",
+      handleSubmit: () => {
+        setShowModal(false);
+        isActiveChange(true);
+      },
+    },
+    submit: {
+      confirmLabel: "Submit",
+      handleSubmit: () => {
+        requestStateChange("SUBMITTED");
+      },
+      buttonClass: "button primary",
+      modalText:
+        details.attachments.length > 0
+          ? "Submit vehicle model and range test results to Government of B.C.?"
+          : "Submit ZEV model to Government of B.C.?",
+    },
+    accept: {
+      confirmLabel: "Validate",
+      handleSubmit: () => {
+        requestStateChange("VALIDATED");
+      },
+      buttonClass: "button primary",
+      modalText: "Validate ZEV model",
+    },
+    reject: {
+      confirmLabel: "Reject",
+      buttonClass: "btn-outline-danger",
+      modalText: "Reject ZEV model",
+      handleSubmit: () => {
+        postComment("REJECTED");
+      },
+    },
+    request: {
+      confirmLabel: "Request",
+      buttonClass: "button primary",
+      modalText: "Request range change/test results",
+      handleSubmit: () => {
+        postComment("CHANGES_REQUESTED");
+      },
+    },
+    delete: {
+      confirmLabel: "Delete",
+      modalText: "Delete the ZEV model?",
+      handleSubmit: () => {
+        requestStateChange("DELETED");
+      },
+      buttonClass: "btn-outline-danger",
+    },
+  };
+
+  const getModalProps = (type) => ({
+    confirmLabel: modalConfig[type]?.confirmLabel || "",
+    buttonClass: modalConfig[type]?.buttonClass || "",
+    modalText: modalConfig[type]?.modalText || "",
+    handleSubmit: modalConfig[type]?.handleSubmit || (() => {}),
+  });
+  const modalProps = getModalProps(modalType);
 
   let alertUser;
 
