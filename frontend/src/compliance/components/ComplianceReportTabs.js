@@ -1,9 +1,7 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-import { Link, useParams } from 'react-router-dom'
-
-import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
-import { insertIdAndYear } from "../../app/routes/Compliance";
+import PropTypes from "prop-types";
+import React from "react";
+import { Link, useParams } from "react-router-dom";
+import ROUTES_COMPLIANCE, { insertIdAndYear } from "../../app/routes/Compliance";
 
 const ComplianceReportTabs = (props) => {
   const { active, reportStatuses, user, modelYear } = props

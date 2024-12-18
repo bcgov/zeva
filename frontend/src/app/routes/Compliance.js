@@ -38,5 +38,6 @@ const COMPLIANCE = {
 export default COMPLIANCE
 
 export const insertIdAndYear = (route, id, modelYear) => {
-  return `${route.replace(":id", id)}?year=${modelYear}`;
+  const encode = (str) => encodeURIComponent(str);
+  return `${route.replace(":id", encode(id))}?year=${encode(modelYear)}`;
 }

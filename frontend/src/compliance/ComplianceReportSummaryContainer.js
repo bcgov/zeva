@@ -1,16 +1,14 @@
-import axios from 'axios'
-import React, { useEffect, useState } from 'react'
-import { useParams, useLocation } from 'react-router-dom'
-import CONFIG from '../app/config'
-import history from '../app/History'
-import Loading from '../app/components/Loading'
-import ROUTES_COMPLIANCE from '../app/routes/Compliance'
-import { insertIdAndYear } from '../app/routes/Compliance'
-import CustomPropTypes from '../app/utilities/props'
-import ComplianceReportTabs from './components/ComplianceReportTabs'
-import ComplianceReportSummaryDetailsPage from './components/ComplianceReportSummaryDetailsPage'
-import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions'
-import deleteModelYearReport from '../app/utilities/deleteModelYearReport'
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useParams, useLocation } from "react-router-dom";
+import CONFIG from "../app/config";
+import history from "../app/History";
+import ROUTES_COMPLIANCE, { insertIdAndYear } from "../app/routes/Compliance";
+import CustomPropTypes from "../app/utilities/props";
+import ComplianceReportTabs from "./components/ComplianceReportTabs";
+import ComplianceReportSummaryDetailsPage from "./components/ComplianceReportSummaryDetailsPage";
+import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from "../app/routes/SigningAuthorityAssertions";
+import deleteModelYearReport from "../app/utilities/deleteModelYearReport";
 import qs from "qs";
 
 const ComplianceReportSummaryContainer = (props) => {

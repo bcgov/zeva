@@ -13,8 +13,7 @@ import ComplianceReportDeleteModal from "./ComplianceReportDeleteModal";
 
 import Modal from "../../app/components/Modal";
 import history from "../../app/History";
-import ROUTES_COMPLIANCE from "../../app/routes/Compliance";
-import { insertIdAndYear } from "../../app/routes/Compliance";
+import ROUTES_COMPLIANCE, { insertIdAndYear } from "../../app/routes/Compliance";
 
 const ComplianceObligationDetailsPage = (props) => {
   const {
