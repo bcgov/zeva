@@ -1,18 +1,21 @@
-import React, { useEffect, useState } from 'react'
-import axios from 'axios'
-import { useParams } from 'react-router-dom'
-
-import CONFIG from '../app/config'
-import history from '../app/History'
-import CustomPropTypes from '../app/utilities/props'
-import ComplianceReportTabs from './components/ComplianceReportTabs'
-import ConsumerSalesDetailsPage from './components/ConsumerSalesDetailsPage'
-import ROUTES_COMPLIANCE from '../app/routes/Compliance'
-import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions'
-import deleteModelYearReport from '../app/utilities/deleteModelYearReport'
-import FORECAST_ROUTES from '../salesforecast/constants/routes'
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useParams, useLocation } from "react-router-dom";
+import CONFIG from "../app/config";
+import history from "../app/History";
+import CustomPropTypes from "../app/utilities/props";
+import ComplianceReportTabs from "./components/ComplianceReportTabs";
+import ConsumerSalesDetailsPage from "./components/ConsumerSalesDetailsPage";
+import ROUTES_COMPLIANCE from "../app/routes/Compliance";
+import { insertIdAndYear } from "../app/routes/Compliance";
+import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from "../app/routes/SigningAuthorityAssertions";
+import deleteModelYearReport from "../app/utilities/deleteModelYearReport";
+import FORECAST_ROUTES from "../salesforecast/constants/routes";
+import qs from "qs";
 
 const ConsumerSalesContainer = (props) => {
+  const location = useLocation();
+  const query = qs.parse(location.search, { ignoreQueryPrefix: true });
   const { keycloak, user } = props
   const [loading, setLoading] = useState(true)
   const [vehicles, setVehicles] = useState([])
@@ -21,7 +24,7 @@ const ConsumerSalesContainer = (props) => {
   const [checked, setChecked] = useState(false)
   const [checkboxes, setCheckboxes] = useState([])
   const [modelYear, setModelYear] = useState(
-    CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR
+    isNaN(query.year) ? CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR : parseInt(query.year)
   )
   const [disabledCheckboxes, setDisabledCheckboxes] = useState(false);
   const [details, setDetails] = useState({})
@@ -104,10 +107,7 @@ const ConsumerSalesContainer = (props) => {
       .then((response) => {
         history.push(ROUTES_COMPLIANCE.REPORTS)
         history.replace(
-          ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(
-            ':id',
-            response.data.id
-          )
+          insertIdAndYear(ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES, id, modelYear)
         )
       })
   }
@@ -143,7 +143,7 @@ const ConsumerSalesContainer = (props) => {
         setDisabledCheckboxes(true)
         history.push(ROUTES_COMPLIANCE.REPORTS)
         history.replace(
-          ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(/:id/g, id)
+          insertIdAndYear(ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES, id, modelYear)
         )
       })
     }

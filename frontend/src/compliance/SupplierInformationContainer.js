@@ -1,29 +1,29 @@
-import axios from 'axios'
-import React, { useEffect, useState } from 'react'
-import PropTypes from 'prop-types'
-import { useParams } from 'react-router-dom'
-import { withRouter } from 'react-router'
-
-import CONFIG from '../app/config'
-import history from '../app/History'
-import ROUTES_COMPLIANCE from '../app/routes/Compliance'
-import ROUTES_VEHICLES from '../app/routes/Vehicles'
-import CustomPropTypes from '../app/utilities/props'
-import ComplianceReportTabs from './components/ComplianceReportTabs'
-import SupplierInformationDetailsPage from './components/SupplierInformationDetailsPage'
-import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions'
-import deleteModelYearReport from '../app/utilities/deleteModelYearReport'
-
-const qs = require('qs')
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
+import { useParams } from "react-router-dom";
+import { withRouter } from "react-router";
+import CONFIG from "../app/config";
+import history from "../app/History";
+import ROUTES_COMPLIANCE from "../app/routes/Compliance";
+import { insertIdAndYear } from "../app/routes/Compliance";
+import ROUTES_VEHICLES from "../app/routes/Vehicles";
+import CustomPropTypes from "../app/utilities/props";
+import ComplianceReportTabs from "./components/ComplianceReportTabs";
+import SupplierInformationDetailsPage from "./components/SupplierInformationDetailsPage";
+import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from "../app/routes/SigningAuthorityAssertions";
+import deleteModelYearReport from "../app/utilities/deleteModelYearReport";
+import qs from "qs";
 
 const SupplierInformationContainer = (props) => {
   const { location, keycloak, user } = props
+  const query = qs.parse(location.search, { ignoreQueryPrefix: true });
   const { id } = useParams()
   const [assertions, setAssertions] = useState([])
   const [checkboxes, setCheckboxes] = useState([])
   const [details, setDetails] = useState({})
   const [modelYear, setModelYear] = useState(
-    CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR
+    isNaN(query.year) ? CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR : parseInt(query.year)
   )
   const [statuses, setStatuses] = useState({
     supplierInformation: {
@@ -31,8 +31,6 @@ const SupplierInformationContainer = (props) => {
       confirmedBy: null
     }
   })
-
-  const query = qs.parse(location.search, { ignoreQueryPrefix: true })
 
   const [loading, setLoading] = useState(true)
   const [makes, setMakes] = useState([])
@@ -72,22 +70,20 @@ const SupplierInformationContainer = (props) => {
         .patch(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id), data)
         .then((response) => {
           history.push(ROUTES_COMPLIANCE.REPORTS)
-          history.replace(
-            ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(
-              ':id',
-              response.data.id
-            )
-          )
+          history.replace(insertIdAndYear(
+            ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION,
+            response.data.id,
+            modelYear
+          ))
         })
     } else {
       axios.post(ROUTES_COMPLIANCE.REPORTS, data).then((response) => {
         history.push(ROUTES_COMPLIANCE.REPORTS)
-        history.replace(
-          ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(
-            ':id',
-            response.data.id
-          )
-        )
+        history.replace(insertIdAndYear(
+          ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION,
+          response.data.id,
+          modelYear
+        ))
       })
     }
   }
@@ -137,12 +133,11 @@ const SupplierInformationContainer = (props) => {
       .patch(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id), data)
       .then((response) => {
         history.push(ROUTES_COMPLIANCE.REPORTS)
-        history.replace(
-          ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(
-            ':id',
-            response.data.id
-          )
-        )
+        history.replace(insertIdAndYear(
+          ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION,
+          response.data.id,
+          modelYear
+        ))
       })
   }
 

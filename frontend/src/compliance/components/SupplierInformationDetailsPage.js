@@ -1,17 +1,18 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useState } from 'react'
-import PropTypes from 'prop-types'
+import React, { useState } from "react";
+import PropTypes from "prop-types";
 
-import Button from '../../app/components/Button'
-import Loading from '../../app/components/Loading'
-import Modal from '../../app/components/Modal'
-import history from '../../app/History'
-import CustomPropTypes from '../../app/utilities/props'
-import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
-import FormatNumeric from '../../app/utilities/formatNumeric'
-import ComplianceReportAlert from './ComplianceReportAlert'
-import ComplianceReportSignOff from './ComplianceReportSignOff'
-import ComplianceReportDeleteModal from './ComplianceReportDeleteModal'
+import Button from "../../app/components/Button";
+import Loading from "../../app/components/Loading";
+import Modal from "../../app/components/Modal";
+import history from "../../app/History";
+import CustomPropTypes from "../../app/utilities/props";
+import ROUTES_COMPLIANCE from "../../app/routes/Compliance";
+import { insertIdAndYear } from "../../app/routes/Compliance";
+import FormatNumeric from "../../app/utilities/formatNumeric";
+import ComplianceReportAlert from "./ComplianceReportAlert";
+import ComplianceReportSignOff from "./ComplianceReportSignOff";
+import ComplianceReportDeleteModal from "./ComplianceReportDeleteModal";
 
 const SupplierInformationDetailsPage = (props) => {
   const {
@@ -354,10 +355,7 @@ const SupplierInformationDetailsPage = (props) => {
                     optionalText="Next"
                     action={() => {
                       history.push(
-                        ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(
-                          ':id',
-                          id
-                        )
+                        insertIdAndYear(ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES, id, modelYear)
                       )
                     }}
                   />

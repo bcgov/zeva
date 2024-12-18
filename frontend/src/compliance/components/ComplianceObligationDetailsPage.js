@@ -1,19 +1,20 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useState } from 'react'
-import PropTypes from 'prop-types'
-import Button from '../../app/components/Button'
-import Loading from '../../app/components/Loading'
-import CustomPropTypes from '../../app/utilities/props'
-import ComplianceReportAlert from './ComplianceReportAlert'
-import ComplianceObligationAmountsTable from './ComplianceObligationAmountsTable'
-import ComplianceObligationReductionOffsetTable from './ComplianceObligationReductionOffsetTable'
-import ComplianceObligationTableCreditsIssued from './ComplianceObligationTableCreditsIssued'
-import ComplianceReportSignoff from './ComplianceReportSignOff'
-import ComplianceReportDeleteModal from './ComplianceReportDeleteModal'
+import React, { useState } from "react";
+import PropTypes from "prop-types";
+import Button from "../../app/components/Button";
+import Loading from "../../app/components/Loading";
+import CustomPropTypes from "../../app/utilities/props";
+import ComplianceReportAlert from "./ComplianceReportAlert";
+import ComplianceObligationAmountsTable from "./ComplianceObligationAmountsTable";
+import ComplianceObligationReductionOffsetTable from "./ComplianceObligationReductionOffsetTable";
+import ComplianceObligationTableCreditsIssued from "./ComplianceObligationTableCreditsIssued";
+import ComplianceReportSignoff from "./ComplianceReportSignOff";
+import ComplianceReportDeleteModal from "./ComplianceReportDeleteModal";
 
-import Modal from '../../app/components/Modal'
-import history from '../../app/History'
-import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
+import Modal from "../../app/components/Modal";
+import history from "../../app/History";
+import ROUTES_COMPLIANCE from "../../app/routes/Compliance";
+import { insertIdAndYear } from "../../app/routes/Compliance";
 
 const ComplianceObligationDetailsPage = (props) => {
   const {
@@ -224,7 +225,7 @@ const ComplianceObligationDetailsPage = (props) => {
                     optionalText="Next"
                     action={() => {
                       history.push(
-                        ROUTES_COMPLIANCE.REPORT_SUMMARY.replace(':id', id)
+                        insertIdAndYear(ROUTES_COMPLIANCE.REPORT_SUMMARY, id, reportYear)
                       )
                     }}
                   />

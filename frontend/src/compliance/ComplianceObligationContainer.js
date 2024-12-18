@@ -1,23 +1,27 @@
-import axios from 'axios'
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import CustomPropTypes from '../app/utilities/props'
-import ComplianceReportTabs from './components/ComplianceReportTabs'
-import ComplianceObligationDetailsPage from './components/ComplianceObligationDetailsPage'
-import history from '../app/History'
-import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions'
-import ROUTES_COMPLIANCE from '../app/routes/Compliance'
-import CONFIG from '../app/config'
-import calculateCreditReduction from '../app/utilities/calculateCreditReduction'
-import getClassAReduction from '../app/utilities/getClassAReduction'
-import getTotalReduction from '../app/utilities/getTotalReduction'
-import getUnspecifiedClassReduction from '../app/utilities/getUnspecifiedClassReduction'
-import getComplianceObligationDetails from '../app/utilities/getComplianceObligationDetails'
-import deleteModelYearReport from '../app/utilities/deleteModelYearReport'
-import getNewProvisionalBalance from '../app/utilities/getNewProvisionalBalance'
-import { getNewBalancesStructure, getNewDeficitsStructure } from '../app/utilities/getNewStructures'
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useParams, useLocation } from "react-router-dom";
+import CustomPropTypes from "../app/utilities/props";
+import ComplianceReportTabs from "./components/ComplianceReportTabs";
+import ComplianceObligationDetailsPage from "./components/ComplianceObligationDetailsPage";
+import history from "../app/History";
+import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from "../app/routes/SigningAuthorityAssertions";
+import ROUTES_COMPLIANCE from "../app/routes/Compliance";
+import { insertIdAndYear } from "../app/routes/Compliance";
+import CONFIG from "../app/config";
+import calculateCreditReduction from "../app/utilities/calculateCreditReduction";
+import getClassAReduction from "../app/utilities/getClassAReduction";
+import getTotalReduction from "../app/utilities/getTotalReduction";
+import getUnspecifiedClassReduction from "../app/utilities/getUnspecifiedClassReduction";
+import getComplianceObligationDetails from "../app/utilities/getComplianceObligationDetails";
+import deleteModelYearReport from "../app/utilities/deleteModelYearReport";
+import getNewProvisionalBalance from "../app/utilities/getNewProvisionalBalance";
+import { getNewBalancesStructure, getNewDeficitsStructure } from "../app/utilities/getNewStructures";
+import qs from "qs";
 
 const ComplianceObligationContainer = (props) => {
+  const location = useLocation();
+  const query = qs.parse(location.search, { ignoreQueryPrefix: true });
   const { user } = props
 
   const [assertions, setAssertions] = useState([])
@@ -36,7 +40,7 @@ const ComplianceObligationContainer = (props) => {
   const [ratios, setRatios] = useState({})
   const [reportDetails, setReportDetails] = useState({})
   const [reportYear, setReportYear] = useState(
-    CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR
+    isNaN(query.year) ? CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR : parseInt(query.year)
   )
   const [sales, setSales] = useState('')
   const [statuses, setStatuses] = useState({})
@@ -56,12 +60,11 @@ const ComplianceObligationContainer = (props) => {
       .patch(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id), data)
       .then((response) => {
         history.push(ROUTES_COMPLIANCE.REPORTS)
-        history.replace(
-          ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY.replace(
-            ':id',
-            response.data.id
-          )
-        )
+        history.replace(insertIdAndYear(
+          ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY,
+          response.data.id,
+          reportYear
+        ))
       })
   }
 
@@ -293,8 +296,8 @@ const ComplianceObligationContainer = (props) => {
     }
     axios.post(ROUTES_COMPLIANCE.OBLIGATION, data).then(() => {
       history.push(ROUTES_COMPLIANCE.REPORTS)
-      history.replace(
-        ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY.replace(':id', id)
+      history.replace(insertIdAndYear(
+        ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY, id, reportYear)
       )
     })
   }

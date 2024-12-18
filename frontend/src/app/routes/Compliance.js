@@ -36,3 +36,7 @@ const COMPLIANCE = {
 }
 
 export default COMPLIANCE
+
+export const insertIdAndYear = (route, id, modelYear) => {
+  return `${route.replace(":id", id)}?year=${modelYear}`;
+}

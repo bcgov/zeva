@@ -3,6 +3,7 @@ import React from 'react'
 import { Link, useParams } from 'react-router-dom'
 
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
+import { insertIdAndYear } from "../../app/routes/Compliance";
 
 const ComplianceReportTabs = (props) => {
   const { active, reportStatuses, user, modelYear } = props
@@ -35,7 +36,7 @@ const ComplianceReportTabs = (props) => {
         role="presentation"
       >
         <Link
-          to={ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(':id', id)}
+          to={insertIdAndYear(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION, id, modelYear)}
         >
           Supplier Information
         </Link>
@@ -51,9 +52,9 @@ const ComplianceReportTabs = (props) => {
           `}
         role="presentation"
       >
-        {disableOtherTabs && <span className="disabled">{modelYear < 2024 ? "Consumer Sales" : "ZEVs Supplied and Registered"}</span>}
+        {disableOtherTabs && <span className="disabled">{modelYear < 2024 ? "Consumer ZEV Sales" : "ZEVs Supplied and Registered"}</span>}
         {!disableOtherTabs && (
-          <Link to={ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', id)}>
+          <Link to={insertIdAndYear(ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES, id, modelYear)}>
             {modelYear < 2024 ? "Consumer ZEV Sales" : "ZEVs Supplied and Registered"}
           </Link>
         )}
@@ -74,7 +75,7 @@ const ComplianceReportTabs = (props) => {
         )}
         {!disableOtherTabs && (
           <Link
-            to={ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY.replace(':id', id)}
+            to={insertIdAndYear(ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY, id, modelYear)}
           >
             Compliance Obligation
           </Link>
@@ -94,7 +95,7 @@ const ComplianceReportTabs = (props) => {
       >
         {disableOtherTabs && <span className="disabled">Summary</span>}
         {!disableOtherTabs && (
-          <Link to={ROUTES_COMPLIANCE.REPORT_SUMMARY.replace(':id', id)}>
+          <Link to={insertIdAndYear(ROUTES_COMPLIANCE.REPORT_SUMMARY, id, modelYear)}>
             Summary
           </Link>
         )}
