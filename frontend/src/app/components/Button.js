@@ -1,8 +1,8 @@
-import React from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import PropTypes from 'prop-types'
-import ReactTooltip from 'react-tooltip'
-import history from '../History'
+import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import PropTypes from "prop-types";
+import ReactTooltip from "react-tooltip";
+import history from "../History";
 
 const Button = (props) => {
   const {
@@ -15,96 +15,96 @@ const Button = (props) => {
     disabled,
     optionalClassname,
     buttonTooltip,
-    testid
-  } = props
+    testid,
+  } = props;
   const getRoute = () => {
     if (locationRoute && locationState) {
-      return history.push(locationRoute, locationState)
+      return history.push(locationRoute, locationState);
     }
 
     if (locationRoute) {
-      return history.push(locationRoute)
+      return history.push(locationRoute);
     }
 
-    return history.goBack()
-  }
-  let text
+    return history.goBack();
+  };
+  let text;
 
-  let icon
-  let classname = 'button'
-  let onclick = () => {}
-  let tooltip
+  let icon;
+  let classname = "button";
+  let onclick = () => {};
+  let tooltip;
   if (buttonTooltip && !disabled) {
-    tooltip = ''
+    tooltip = "";
   } else if (disabled) {
-    tooltip = buttonTooltip
+    tooltip = buttonTooltip;
   }
   switch (buttonType) {
-    case 'approve':
-      text = optionalText
-      classname += ' primary'
-      onclick = action
-      break
-    case 'back':
+    case "approve":
+      text = optionalText;
+      classname += " primary";
+      onclick = action;
+      break;
+    case "back":
       onclick = () => {
-        getRoute()
-      }
-      text = 'Back'
-      icon = 'arrow-left'
-      break
-    case 'delete':
-      icon = 'trash'
-      text = 'Delete'
-      classname += ' text-danger'
-      onclick = action
-      break
-    case 'edit':
-      icon = 'edit'
-      text = 'Edit'
-      onclick = action
-      break
-    case 'download':
-      text = 'Download'
-      icon = 'download'
-      onclick = action
-      break
-    case 'reject':
-      text = optionalText
-      classname += ' text-danger'
-      onclick = action
-      break
-    case 'rescind':
-      text = 'Rescind Notice'
-      classname += ' text-danger'
-      onclick = action
-      break
-    case 'save':
-      text = 'Save'
-      icon = 'save'
+        getRoute();
+      };
+      text = "Back";
+      icon = "arrow-left";
+      break;
+    case "delete":
+      icon = "trash";
+      text = "Delete";
+      classname += " text-danger";
+      onclick = action;
+      break;
+    case "edit":
+      icon = "edit";
+      text = "Edit";
+      onclick = action;
+      break;
+    case "download":
+      text = "Download";
+      icon = "download";
+      onclick = action;
+      break;
+    case "reject":
+      text = optionalText;
+      classname += " text-danger";
+      onclick = action;
+      break;
+    case "rescind":
+      text = "Rescind Notice";
+      classname += " text-danger";
+      onclick = action;
+      break;
+    case "save":
+      text = "Save";
+      icon = "save";
       if (action) {
-        onclick = action
+        onclick = action;
       }
-      break
-    case 'submit':
-      text = 'Submit'
-      icon = 'paper-plane'
-      classname += ' primary'
-      onclick = action
-      break
+      break;
+    case "submit":
+      text = "Submit";
+      icon = "paper-plane";
+      classname += " primary";
+      onclick = action;
+      break;
 
     default:
-      text = optionalText
-      onclick = action
-      break
+      text = optionalText;
+      onclick = action;
+      break;
   }
   if (optionalText) {
-    text = optionalText
+    text = optionalText;
   }
   if (optionalIcon) {
-    icon = optionalIcon
+    icon = optionalIcon;
   }
   if (optionalClassname) {
-    classname = optionalClassname
+    classname = optionalClassname;
   }
 
   return (
@@ -116,7 +116,7 @@ const Button = (props) => {
           className={classname}
           disabled={disabled}
           onClick={(e) => {
-            onclick(e)
+            onclick(e);
           }}
           type="button"
         >
@@ -125,8 +125,8 @@ const Button = (props) => {
         </button>
       </span>
     </>
-  )
-}
+  );
+};
 
 Button.defaultProps = {
   optionalText: null,
@@ -136,15 +136,15 @@ Button.defaultProps = {
   action: null,
   optionalClassname: null,
   disabled: false,
-  buttonTooltip: '',
-  testid: ''
-}
+  buttonTooltip: "",
+  testid: "",
+};
 Button.propTypes = {
   buttonType: PropTypes.string.isRequired,
   locationRoute: PropTypes.string,
   locationState: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.shape()),
-    PropTypes.shape()
+    PropTypes.shape(),
   ]),
   optionalText: PropTypes.string,
   optionalIcon: PropTypes.string,
@@ -152,6 +152,6 @@ Button.propTypes = {
   action: PropTypes.func,
   disabled: PropTypes.bool,
   buttonTooltip: PropTypes.string,
-  testid: PropTypes.string
-}
-export default Button
+  testid: PropTypes.string,
+};
+export default Button;
