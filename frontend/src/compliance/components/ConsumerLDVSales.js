@@ -38,7 +38,7 @@ const ConsumerLDVSales = (props) => {
         <div className="col-3 text-right">
           <input
             className="text-right"
-            type="text"
+            type="number"
             onChange={(event) => {
               handleChangeSale(modelYear, event.target.value)
             }}
