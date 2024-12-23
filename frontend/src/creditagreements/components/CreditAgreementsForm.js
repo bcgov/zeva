@@ -405,6 +405,14 @@ const CreditAgreementsForm = (props) => {
                   buttonType="save"
                   optionalClassname="button primary"
                   optionalText="Save"
+                  disabled={
+                    !agreementDetails.vehicleSupplier ||
+                    !agreementDetails.transactionType ||
+                    !agreementDetails.effectiveDate
+                  }
+                  buttonTooltip={
+                    `Please fill in all the required fields to enable the "Save" button.`
+                  }
                   action={() => {
                     handleSubmit('')
                   }}
