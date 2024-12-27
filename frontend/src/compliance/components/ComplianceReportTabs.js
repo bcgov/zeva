@@ -6,9 +6,10 @@ import ROUTES_COMPLIANCE, { insertIdAndYear } from "../../app/routes/Compliance"
 const ComplianceReportTabs = (props) => {
   const { active, reportStatuses, user, modelYear } = props
   const { id } = useParams()
-  const disableOtherTabs =
+  const disableOtherTabs = Object.keys(reportStatuses ?? {}).length === 0 || (
     reportStatuses.supplierInformation &&
     reportStatuses.supplierInformation.status === 'UNSAVED'
+  );
   const disableAssessment =
     (reportStatuses.reportSummary &&
       ['DRAFT'].indexOf(reportStatuses.reportSummary.status) >= 0 &&
