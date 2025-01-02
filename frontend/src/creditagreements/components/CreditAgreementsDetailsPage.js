@@ -30,6 +30,10 @@ const CreditAgreementsDetailsPage = (props) => {
     user,
   } = props;
 
+  const typesExemptFromCreditContent = [
+    "Automatic Administrative Penalty"
+  ];
+
   const [showModal, setShowModal] = useState(false);
   const showComments =
     details?.filteredIdirComments && details?.filteredIdirComments.length > 0;
@@ -301,6 +305,15 @@ const CreditAgreementsDetailsPage = (props) => {
                       buttonType="submit"
                       optionalClassname="button primary"
                       optionalText="Submit to Director"
+                      disabled={
+                        !typesExemptFromCreditContent.includes(details.transactionType) && (
+                          details.creditAgreementContent.length === 0 ||
+                          details.creditAgreementContent.some(content => content.numberOfCredits == 0)
+                        )
+                      }
+                      buttonTooltip={
+                        `Please fill in all quantities of credits to enable the "Submit to Director" button.`
+                      }
                       action={() => {
                         setShowModal(true);
                       }}
