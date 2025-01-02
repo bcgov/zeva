@@ -20,8 +20,7 @@ class ModelYearReportAssessmentComment(Auditable):
         default=False,
         db_comment="determines if comment is meant for director"
     )
-    comment = models.CharField(
-        max_length=4000,
+    comment = models.TextField(
         blank=True,
         null=True,
         db_column='assessment_comment',
