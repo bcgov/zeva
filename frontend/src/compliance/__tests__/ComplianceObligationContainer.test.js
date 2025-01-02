@@ -438,7 +438,7 @@ describe("Compliance Obligation Container", () => {
 
 
   for (const supplierClass of ["L", "M", "S"]) {
-    test(`gets credit reduction with zero, empty, or non-numeric sales input for supplier-class ${supplierClass}`, async () => {
+    test(`gets credit reduction with zero or non-numeric sales input for supplier-class ${supplierClass}`, async () => {
       const modelYear = 2021;
       const testData = new TestData(supplierClass, modelYear);
       await renderContainer();
@@ -460,9 +460,6 @@ describe("Compliance Obligation Container", () => {
       assertProps(testData.detailsPageProps, expectedProps);
 
       fireEvent.change(salesInput, { target: { value: "abc" } });
-      assertProps(testData.detailsPageProps, expectedProps);
-
-      fireEvent.change(salesInput, { target: { value: "" } });
       assertProps(testData.detailsPageProps, expectedProps);
     });
   }

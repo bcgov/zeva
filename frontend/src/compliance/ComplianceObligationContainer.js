@@ -73,7 +73,7 @@ const ComplianceObligationContainer = (props) => {
     }
 
     const salesValue = isNaN(Number(value)) ? 0 : Number(value)
-    setSales(salesValue)
+    setSales(value.length === 0 ? "" : salesValue)
 
     const tempTotalReduction = getTotalReduction(
       salesValue,
