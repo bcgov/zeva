@@ -8,7 +8,8 @@ import Modal from "../../app/components/Modal";
 import history from "../../app/History";
 import ComplianceReportSignOff from "./ComplianceReportSignOff";
 import ConsumerSalesLDVModalTable from "./ConsumerSalesLDVModelTable";
-import ROUTES_COMPLIANCE, { insertIdAndYear } from "../../app/routes/Compliance";
+import ROUTES_COMPLIANCE from "../../app/routes/Compliance";
+import urlInsertIdAndYear from "../../app/utilities/urlInsertIdAndYear";
 import ComplianceReportDeleteModal from "./ComplianceReportDeleteModal";
 import RecordsUpload from "../../salesforecast/components/RecordsUpload";
 import RecordsTable from "../../salesforecast/components/RecordsTable";
@@ -257,7 +258,7 @@ const ConsumerSalesDetailsPage = (props) => {
                     optionalClassname="button"
                     optionalText="Next"
                     action={() => {
-                      history.push(insertIdAndYear(
+                      history.push(urlInsertIdAndYear(
                         ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY,
                         id,
                         modelYear

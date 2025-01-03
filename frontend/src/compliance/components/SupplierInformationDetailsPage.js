@@ -7,7 +7,8 @@ import Loading from "../../app/components/Loading";
 import Modal from "../../app/components/Modal";
 import history from "../../app/History";
 import CustomPropTypes from "../../app/utilities/props";
-import ROUTES_COMPLIANCE, { insertIdAndYear } from "../../app/routes/Compliance";
+import ROUTES_COMPLIANCE from "../../app/routes/Compliance";
+import urlInsertIdAndYear from "../../app/utilities/urlInsertIdAndYear";
 import FormatNumeric from "../../app/utilities/formatNumeric";
 import ComplianceReportAlert from "./ComplianceReportAlert";
 import ComplianceReportSignOff from "./ComplianceReportSignOff";
@@ -354,7 +355,7 @@ const SupplierInformationDetailsPage = (props) => {
                     optionalText="Next"
                     action={() => {
                       history.push(
-                        insertIdAndYear(ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES, id, modelYear)
+                        urlInsertIdAndYear(ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES, id, modelYear)
                       )
                     }}
                   />

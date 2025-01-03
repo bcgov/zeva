@@ -4,7 +4,8 @@ import React from "react";
 import ReactTable from "../../app/components/ReactTable";
 import CustomPropTypes from "../../app/utilities/props";
 import history from "../../app/History";
-import ROUTES_COMPLIANCE, { insertIdAndYear } from "../../app/routes/Compliance";
+import ROUTES_COMPLIANCE from "../../app/routes/Compliance";
+import urlInsertIdAndYear from "../../app/utilities/urlInsertIdAndYear";
 import ROUTES_SUPPLEMENTARY from "../../app/routes/SupplementaryReport";
 import formatNumeric from "../../app/utilities/formatNumeric";
 import getClassAReduction from "../../app/utilities/getClassAReduction";
@@ -233,7 +234,7 @@ const ComplianceReportsTable = (props) => {
                 )
               } else {
                 // Default show the supplier information page
-                history.push(insertIdAndYear(
+                history.push(urlInsertIdAndYear(
                   ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION,
                   id,
                   modelYear.name

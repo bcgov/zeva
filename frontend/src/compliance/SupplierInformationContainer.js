@@ -5,7 +5,8 @@ import { useParams } from "react-router-dom";
 import { withRouter } from "react-router";
 import CONFIG from "../app/config";
 import history from "../app/History";
-import ROUTES_COMPLIANCE, { insertIdAndYear } from "../app/routes/Compliance";
+import ROUTES_COMPLIANCE from "../app/routes/Compliance";
+import urlInsertIdAndYear from "../app/utilities/urlInsertIdAndYear";
 import ROUTES_VEHICLES from "../app/routes/Vehicles";
 import CustomPropTypes from "../app/utilities/props";
 import ComplianceReportTabs from "./components/ComplianceReportTabs";
@@ -69,7 +70,7 @@ const SupplierInformationContainer = (props) => {
         .patch(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id), data)
         .then((response) => {
           history.push(ROUTES_COMPLIANCE.REPORTS)
-          history.replace(insertIdAndYear(
+          history.replace(urlInsertIdAndYear(
             ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION,
             response.data.id,
             modelYear
@@ -78,7 +79,7 @@ const SupplierInformationContainer = (props) => {
     } else {
       axios.post(ROUTES_COMPLIANCE.REPORTS, data).then((response) => {
         history.push(ROUTES_COMPLIANCE.REPORTS)
-        history.replace(insertIdAndYear(
+        history.replace(urlInsertIdAndYear(
           ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION,
           response.data.id,
           modelYear
@@ -132,7 +133,7 @@ const SupplierInformationContainer = (props) => {
       .patch(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id), data)
       .then((response) => {
         history.push(ROUTES_COMPLIANCE.REPORTS)
-        history.replace(insertIdAndYear(
+        history.replace(urlInsertIdAndYear(
           ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION,
           response.data.id,
           modelYear

@@ -3,7 +3,8 @@ import React, { useEffect, useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import CONFIG from "../app/config";
 import history from "../app/History";
-import ROUTES_COMPLIANCE, { insertIdAndYear } from "../app/routes/Compliance";
+import ROUTES_COMPLIANCE from "../app/routes/Compliance";
+import urlInsertIdAndYear from "../app/utilities/urlInsertIdAndYear";
 import CustomPropTypes from "../app/utilities/props";
 import ComplianceReportTabs from "./components/ComplianceReportTabs";
 import ComplianceReportSummaryDetailsPage from "./components/ComplianceReportSummaryDetailsPage";
@@ -51,7 +52,7 @@ const ComplianceReportSummaryContainer = (props) => {
 
     axios.patch(ROUTES_COMPLIANCE.REPORT_SUBMISSION.replace(':id', id), data).then(() => {
       history.push(ROUTES_COMPLIANCE.REPORTS)
-      history.replace(insertIdAndYear(ROUTES_COMPLIANCE.REPORT_SUMMARY, id, modelYear))
+      history.replace(urlInsertIdAndYear(ROUTES_COMPLIANCE.REPORT_SUMMARY, id, modelYear))
     })
   }
 

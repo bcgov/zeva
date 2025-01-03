@@ -6,7 +6,8 @@ import ComplianceReportTabs from "./components/ComplianceReportTabs";
 import ComplianceObligationDetailsPage from "./components/ComplianceObligationDetailsPage";
 import history from "../app/History";
 import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from "../app/routes/SigningAuthorityAssertions";
-import ROUTES_COMPLIANCE, { insertIdAndYear } from "../app/routes/Compliance";
+import ROUTES_COMPLIANCE from "../app/routes/Compliance";
+import urlInsertIdAndYear from "../app/utilities/urlInsertIdAndYear";
 import CONFIG from "../app/config";
 import calculateCreditReduction from "../app/utilities/calculateCreditReduction";
 import getClassAReduction from "../app/utilities/getClassAReduction";
@@ -59,7 +60,7 @@ const ComplianceObligationContainer = (props) => {
       .patch(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id), data)
       .then((response) => {
         history.push(ROUTES_COMPLIANCE.REPORTS)
-        history.replace(insertIdAndYear(
+        history.replace(urlInsertIdAndYear(
           ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY,
           response.data.id,
           reportYear
@@ -295,7 +296,7 @@ const ComplianceObligationContainer = (props) => {
     }
     axios.post(ROUTES_COMPLIANCE.OBLIGATION, data).then(() => {
       history.push(ROUTES_COMPLIANCE.REPORTS)
-      history.replace(insertIdAndYear(
+      history.replace(urlInsertIdAndYear(
         ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY, id, reportYear)
       )
     })

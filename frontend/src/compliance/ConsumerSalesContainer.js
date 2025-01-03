@@ -6,7 +6,8 @@ import history from "../app/History";
 import CustomPropTypes from "../app/utilities/props";
 import ComplianceReportTabs from "./components/ComplianceReportTabs";
 import ConsumerSalesDetailsPage from "./components/ConsumerSalesDetailsPage";
-import ROUTES_COMPLIANCE, { insertIdAndYear } from "../app/routes/Compliance";
+import ROUTES_COMPLIANCE from "../app/routes/Compliance";
+import urlInsertIdAndYear from "../app/utilities/urlInsertIdAndYear";
 import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from "../app/routes/SigningAuthorityAssertions";
 import deleteModelYearReport from "../app/utilities/deleteModelYearReport";
 import FORECAST_ROUTES from "../salesforecast/constants/routes";
@@ -106,7 +107,7 @@ const ConsumerSalesContainer = (props) => {
       .then((response) => {
         history.push(ROUTES_COMPLIANCE.REPORTS)
         history.replace(
-          insertIdAndYear(ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES, id, modelYear)
+          urlInsertIdAndYear(ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES, id, modelYear)
         )
       })
   }
@@ -142,7 +143,7 @@ const ConsumerSalesContainer = (props) => {
         setDisabledCheckboxes(true)
         history.push(ROUTES_COMPLIANCE.REPORTS)
         history.replace(
-          insertIdAndYear(ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES, id, modelYear)
+          urlInsertIdAndYear(ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES, id, modelYear)
         )
       })
     }
