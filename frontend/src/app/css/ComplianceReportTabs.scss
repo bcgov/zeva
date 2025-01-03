@@ -1,5 +1,6 @@
 .compliance-report-tabs {
   .nav-item {
+    align-self: end;
     padding: 1rem 1.5rem;
 
     &.SAVED {
@@ -38,7 +39,7 @@
       }
     }
 
-    a {
+    a,span {
       border-bottom: 1rem transparent solid;
       color: $default-text-black;
       display: block;

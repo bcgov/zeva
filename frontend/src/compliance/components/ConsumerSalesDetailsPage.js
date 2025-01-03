@@ -1,18 +1,19 @@
-import React, { useState } from 'react'
-import PropTypes from 'prop-types'
-import CustomPropTypes from '../../app/utilities/props'
-import Loading from '../../app/components/Loading'
-import ComplianceReportAlert from './ComplianceReportAlert'
-import Button from '../../app/components/Button'
-import Modal from '../../app/components/Modal'
-import history from '../../app/History'
-import ComplianceReportSignOff from './ComplianceReportSignOff'
-import ConsumerSalesLDVModalTable from './ConsumerSalesLDVModelTable'
-import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
-import ComplianceReportDeleteModal from './ComplianceReportDeleteModal'
-import RecordsUpload from '../../salesforecast/components/RecordsUpload'
-import RecordsTable from '../../salesforecast/components/RecordsTable'
-import TotalsTable from '../../salesforecast/components/TotalsTable'
+import React, { useState } from "react";
+import PropTypes from "prop-types";
+import CustomPropTypes from "../../app/utilities/props";
+import Loading from "../../app/components/Loading";
+import ComplianceReportAlert from "./ComplianceReportAlert";
+import Button from "../../app/components/Button";
+import Modal from "../../app/components/Modal";
+import history from "../../app/History";
+import ComplianceReportSignOff from "./ComplianceReportSignOff";
+import ConsumerSalesLDVModalTable from "./ConsumerSalesLDVModelTable";
+import ROUTES_COMPLIANCE from "../../app/routes/Compliance";
+import urlInsertIdAndYear from "../../app/utilities/urlInsertIdAndYear";
+import ComplianceReportDeleteModal from "./ComplianceReportDeleteModal";
+import RecordsUpload from "../../salesforecast/components/RecordsUpload";
+import RecordsTable from "../../salesforecast/components/RecordsTable";
+import TotalsTable from "../../salesforecast/components/TotalsTable";
 
 const ConsumerSalesDetailsPage = (props) => {
   const {
@@ -257,12 +258,11 @@ const ConsumerSalesDetailsPage = (props) => {
                     optionalClassname="button"
                     optionalText="Next"
                     action={() => {
-                      history.push(
-                        ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY.replace(
-                          ':id',
-                          id
-                        )
-                      )
+                      history.push(urlInsertIdAndYear(
+                        ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY,
+                        id,
+                        modelYear
+                      ))
                     }}
                   />
                   {!user.isGovernment && (

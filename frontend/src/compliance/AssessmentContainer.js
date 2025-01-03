@@ -1,23 +1,24 @@
-import axios from 'axios'
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { withRouter } from 'react-router'
-import Big from 'big.js'
-import Loading from '../app/components/Loading'
-import CONFIG from '../app/config'
-import history from '../app/History'
-import ROUTES_COMPLIANCE from '../app/routes/Compliance'
-import CustomPropTypes from '../app/utilities/props'
-import AssessmentDetailsPage from './components/AssessmentDetailsPage'
-import calculateCreditReductionBig from '../app/utilities/calculateCreditReductionBig'
-import getComplianceObligationDetails from '../app/utilities/getComplianceObligationDetails'
-import ROUTES_SUPPLEMENTARY from '../app/routes/SupplementaryReport'
-import { getNewBalancesStructure, getNewDeficitsStructure } from '../app/utilities/getNewStructures'
-import getTotalReductionBig from '../app/utilities/getTotalReductionBig'
-import getClassAReductionBig from '../app/utilities/getClassAReductionBig'
-import getUnspecifiedClassReductionBig from '../app/utilities/getUnspecifiedClassReductionBig'
-import { convertBalances, convertCarryOverDeficits } from '../app/utilities/convertToBig'
-import getSnapshottedComplianceRatioReductions from '../app/utilities/getSnapshottedReductions'
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { withRouter } from "react-router";
+import Big from "big.js";
+import Loading from "../app/components/Loading";
+import CONFIG from "../app/config";
+import history from "../app/History";
+import ROUTES_COMPLIANCE from "../app/routes/Compliance";
+import urlInsertIdAndYear from "../app/utilities/urlInsertIdAndYear";
+import CustomPropTypes from "../app/utilities/props";
+import AssessmentDetailsPage from "./components/AssessmentDetailsPage";
+import calculateCreditReductionBig from "../app/utilities/calculateCreditReductionBig";
+import getComplianceObligationDetails from "../app/utilities/getComplianceObligationDetails";
+import ROUTES_SUPPLEMENTARY from "../app/routes/SupplementaryReport";
+import { getNewBalancesStructure, getNewDeficitsStructure } from "../app/utilities/getNewStructures";
+import getTotalReductionBig from "../app/utilities/getTotalReductionBig";
+import getClassAReductionBig from "../app/utilities/getClassAReductionBig";
+import getUnspecifiedClassReductionBig from "../app/utilities/getUnspecifiedClassReductionBig";
+import { convertBalances, convertCarryOverDeficits } from "../app/utilities/convertToBig";
+import getSnapshottedComplianceRatioReductions from "../app/utilities/getSnapshottedReductions";
 
 const AssessmentContainer = (props) => {
   const { keycloak, user } = props
@@ -74,7 +75,7 @@ const AssessmentContainer = (props) => {
       .patch(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id), data)
       .then((response) => {
         history.push(ROUTES_COMPLIANCE.REPORTS)
-        history.replace(ROUTES_COMPLIANCE.REPORT_SUMMARY.replace(':id', id))
+        history.replace(urlInsertIdAndYear(ROUTES_COMPLIANCE.REPORT_SUMMARY, id, reportYear))
       })
   }
 
