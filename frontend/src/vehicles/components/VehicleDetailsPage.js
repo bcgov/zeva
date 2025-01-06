@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PropTypes from "prop-types";
 import moment from "moment-timezone";
@@ -28,6 +28,13 @@ const VehicleDetailsPage = (props) => {
     isActiveChange,
   } = props;
   const [requestChangeCheck, setRequestChangeCheck] = useState(false);
+  const [modalProps, setModalProps] = useState({
+    confirmLabel: "",
+    buttonClass: "",
+    modalText: "",
+    handleSubmit: () => {},
+  });
+
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState("");
   const rejectStartingValue =
@@ -39,9 +46,6 @@ const VehicleDetailsPage = (props) => {
     reject: rejectStartingValue,
   });
   const validWeight = details.weightKg <= 4536;
-  if (loading) {
-    return <Loading />;
-  }
   const { id } = details;
 
   const handleChange = (event) => {
@@ -99,7 +103,7 @@ const VehicleDetailsPage = (props) => {
       },
       buttonClass: "button primary",
       modalText:
-        details.attachments.length > 0
+        details && details.attachments && details.attachments.length > 0
           ? "Submit vehicle model and range test results to Government of B.C.?"
           : "Submit ZEV model to Government of B.C.?",
     },
@@ -137,14 +141,6 @@ const VehicleDetailsPage = (props) => {
     },
   };
 
-  const getModalProps = (type) => ({
-    confirmLabel: modalConfig[type]?.confirmLabel || "",
-    buttonClass: modalConfig[type]?.buttonClass || "",
-    modalText: modalConfig[type]?.modalText || "",
-    handleSubmit: modalConfig[type]?.handleSubmit || (() => {}),
-  });
-  const modalProps = getModalProps(modalType);
-
   let alertUser;
 
   if (details.validationStatus === "SUBMITTED") {
@@ -152,6 +148,28 @@ const VehicleDetailsPage = (props) => {
   } else {
     alertUser = details.updateUser;
   }
+
+  const getModalProps = (type) => {
+    if (!type || !modalConfig[type]) {
+      return {
+        confirmLabel: "",
+        buttonClass: "",
+        modalText: "",
+        handleSubmit: () => {},
+      };
+    }
+    return modalConfig[type];
+  };
+
+useEffect(() => {
+    const newModalProps = getModalProps(modalType);
+    setModalProps(newModalProps);
+  }, [modalType]); 
+
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <div id="vehicle-validation" className="page">
       <div className="row mb-2">
@@ -236,7 +254,7 @@ const VehicleDetailsPage = (props) => {
               />
             )}
 
-            {details.attachments.length > 0 && (
+            {details && details.attachments && details.attachments.length > 0 && (
               <div className="attachments mt-4">
                 <div className="font-weight-bold label">Range Test Results</div>
                 <div className="row">
