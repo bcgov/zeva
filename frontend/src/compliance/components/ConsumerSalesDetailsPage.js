@@ -35,7 +35,9 @@ const ConsumerSalesDetailsPage = (props) => {
     forecastRecords,
     setForecastRecords,
     forecastTotals,
-    setForecastTotals
+    setForecastTotals,
+    saveTooltip,
+    isSaveDisabled
   } = props
 
   const [showModal, setShowModal] = useState(false)
@@ -88,12 +90,6 @@ const ConsumerSalesDetailsPage = (props) => {
     }
   }
 
-  const disableSave = () => {
-    if (checkboxes.length !== assertions.length) {
-      return true
-    }
-    return false
-  }
 
   return (
     <div id="compliance-consumer-sales-details" className="page">
@@ -267,11 +263,12 @@ const ConsumerSalesDetailsPage = (props) => {
                   />
                   {!user.isGovernment && (
                     <Button
+                      buttonTooltip={saveTooltip}
                       buttonType="save"
                       disabled={ buttonClicked ||
                         ['SAVED', 'UNSAVED'].indexOf(
                           statuses.consumerSales.status
-                        ) < 0 || disableSave()
+                        ) < 0 || isSaveDisabled
                       }
                       optionalClassname="button primary"
                       action={(event) => {
