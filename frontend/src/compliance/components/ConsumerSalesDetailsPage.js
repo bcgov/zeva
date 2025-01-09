@@ -316,5 +316,7 @@ ConsumerSalesDetailsPage.propTypes = {
   modelYear: PropTypes.number.isRequired,
   statuses: PropTypes.shape().isRequired,
   handleDelete: PropTypes.func.isRequired,
+  saveTooltip: PropTypes.string.isRequired,
+  isSaveDisabled: PropTypes.bool.isRequired,
 }
 export default ConsumerSalesDetailsPage
