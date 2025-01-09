@@ -163,12 +163,12 @@ const ConsumerSalesContainer = (props) => {
         return true;
       }
       if (
-        !forecastTotals ||
+        (!forecastTotals ||
         !Object.values(forecastTotals).every(
           (value) =>
             (typeof value === "number" || (!isNaN(value))) && value !== null
         )
-      ) {
+      ) && modelYear >= 2023) {
         setSaveTooltip(
           "Please ensure forecast spreadsheet is uploaded and totals are filled out"
         );
