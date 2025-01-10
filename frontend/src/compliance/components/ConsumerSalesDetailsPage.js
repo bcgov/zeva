@@ -295,7 +295,8 @@ const ConsumerSalesDetailsPage = (props) => {
 }
 ConsumerSalesDetailsPage.defaultProps = {
   assertions: [],
-  checkboxes: []
+  checkboxes: [],
+  salesForecastDisplay: false,
 }
 
 ConsumerSalesDetailsPage.propTypes = {
@@ -320,5 +321,6 @@ ConsumerSalesDetailsPage.propTypes = {
   handleDelete: PropTypes.func.isRequired,
   saveTooltip: PropTypes.string.isRequired,
   isSaveDisabled: PropTypes.bool.isRequired,
+  salesForecastDisplay: PropTypes.bool,
 }
 export default ConsumerSalesDetailsPage
