@@ -33,8 +33,8 @@ const ConsumerSalesContainer = (props) => {
   const [forecastTotals, setForecastTotals] = useState({})
   const [saveTooltip, setSaveTooltip] = useState("");
   const [isSaveDisabled, setIsSaveDisabled] = useState(false);
+  const [salesForecastDisplay, setSalesForecastDisplay] = useState(false)
   const { id } = useParams()
-
   const refreshDetails = (showLoading) => {
     setLoading(showLoading)
 
@@ -79,7 +79,9 @@ const ConsumerSalesContainer = (props) => {
 
           setModelYear(year)
           setStatuses(reportStatuses)
-
+          if (modelYear >= 2023) {
+            setSalesForecastDisplay(true)
+          }
           if (['SAVED', 'UNSAVED'].indexOf(
             reportStatuses.consumerSales.status
           ) < 0){
@@ -168,13 +170,13 @@ const ConsumerSalesContainer = (props) => {
           (value) =>
             (typeof value === "number" || (!isNaN(value))) && value !== null
         )
-      ) && modelYear >= 2023) {
+      ) && salesForecastDisplay) {
         setSaveTooltip(
           "Please ensure forecast spreadsheet is uploaded and totals are filled out"
         );
         return true;
       }
-      setSaveTooltip(""); // Clear tooltip if no issues
+      setSaveTooltip(""); // Clear tooltip if conditions met
       return false;
     };
     setIsSaveDisabled(checkDisableSave());
@@ -216,6 +218,7 @@ const ConsumerSalesContainer = (props) => {
         setForecastTotals={setForecastTotals}
         saveTooltip={saveTooltip}
         isSaveDisabled={isSaveDisabled}
+        salesForecastDisplay={salesForecastDisplay}
       />
     </>
   )
