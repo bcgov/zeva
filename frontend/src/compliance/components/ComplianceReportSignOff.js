@@ -17,12 +17,8 @@ const ComplianceReportSignOff = (props) => {
     <div id="compliance-sign-off" className="my-3">
       <ReactTooltip />
       <div data-tip={hoverText}>
-        {assertions.filter((assertion) => {
-            if (!salesForecastDisplay && /forecast/i.test(assertion.description)) {
-              return false;
-            }
-            return true;
-          })
+        {assertions
+          .filter((assertion) => salesForecastDisplay || !/Forecast/i.test(assertion.description))
           .map((assertion) => (
           <div key={assertion.id}>
             <div className="d-inline-block align-middle my-2 ml-2 mr-1">
