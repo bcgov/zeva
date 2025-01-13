@@ -195,11 +195,14 @@ const RecordsUpload = ({ currentModelYear, setRecords, setTotals }) => {
                     className="report-checkmark"
                   />
                   <b>Your file has been successfully uploaded.</b> Please review
-                  the table below before saving.
+                  the table below before saving. To upload another document,
+                  please delete the existing one by clicking the ‘DELETE’ button
+                  located next to the file name and size.
                 </div>
               )}
               <FileDropArea
                 type="excel"
+                wholePageWidth
                 files={files}
                 setUploadFiles={setFiles}
                 errorMessage={errorMessage}

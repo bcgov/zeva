@@ -1,9 +1,10 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React from 'react'
-import PropTypes from 'prop-types'
-import FileDrop from './FileDrop'
-import FileDropEvidence from './FileDropEvidence'
-import getFileSize from '../utilities/getFileSize'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React from "react";
+import PropTypes from "prop-types";
+import FileDrop from "./FileDrop";
+import FileDropEvidence from "./FileDropEvidence";
+import getFileSize from "../utilities/getFileSize";
+import Modal from "./Modal";
 
 const FileDropArea = (props) => {
   const {
@@ -17,27 +18,29 @@ const FileDropArea = (props) => {
     showProgressBars,
     submission,
     type,
-    wholePageWidth
-  } = props
+    wholePageWidth,
+  } = props;
+  const [showModal, setShowModal] = React.useState(false);
+  const [activeFile, setActiveFile] = React.useState(undefined);
   const removeFile = (removedFile) => {
-    const found = files.findIndex((file) => file === removedFile)
-    files.splice(found, 1)
-    setErrorMessage('')
-    setUploadFiles([...files])
-    if (type === 'pdf') {
-      const uploadedIds = submission.evidence.map((each) => each.id)
+    const found = files.findIndex((file) => file === removedFile);
+    files.splice(found, 1);
+    setErrorMessage("");
+    setUploadFiles([...files]);
+    if (type === "pdf") {
+      const uploadedIds = submission.evidence.map((each) => each.id);
       if (uploadedIds.includes(removedFile.id)) {
-        setEvidenceDeleteList([...evidenceDeleteList, removedFile.id])
+        setEvidenceDeleteList([...evidenceDeleteList, removedFile.id]);
       }
     }
-  }
-  const formattedErrorMessage = errorMessage ? errorMessage.split('|').map((msg, index) => (
-    <div key={index}>{msg}</div>
-  )) : null;
+  };
+  const formattedErrorMessage = errorMessage
+    ? errorMessage.split("|").map((msg, index) => <div key={index}>{msg}</div>)
+    : null;
   return (
     <div className="row">
       <div
-        className={wholePageWidth ? 'col-12' : 'col-md-12 col-lg-9 col-xl-6'}
+        className={wholePageWidth ? "col-12" : "col-md-12 col-lg-9 col-xl-6"}
       >
         <div className="bordered">
           {errorMessage && (
@@ -46,15 +49,16 @@ const FileDropArea = (props) => {
             </div>
           )}
           <div className="panel panel-default">
-            <div className="content p-3">
-              {type === 'excel' && (
+            <div className="content">
+              {type === "excel" && (
                 <FileDrop
                   setErrorMessage={setErrorMessage}
                   setFiles={setUploadFiles}
                   maxFiles={1}
+                  currFileLength={files.length}
                 />
               )}
-              {type === 'pdf' && (
+              {type === "pdf" && (
                 <>
                   <FileDropEvidence
                     getExistingFilesCount={() =>
@@ -80,8 +84,8 @@ const FileDropArea = (props) => {
               )}
             </div>
             {(files.length > 0 ||
-              (type === 'excel' && submission && submission.filename) ||
-              (type === 'pdf' &&
+              (type === "excel" && submission && submission.filename) ||
+              (type === "pdf" &&
                 submission &&
                 submission.evidence &&
                 submission.evidence.length > 0)) && (
@@ -89,18 +93,18 @@ const FileDropArea = (props) => {
                 <div className="row pb-1">
                   <div className="col-8 header">Filename</div>
                   <div className="col-3 size header">Size</div>
-                  <div className="col-1 actions header" />
+                  <div className="col-1 actions header">Delete</div>
                 </div>
-                {type === 'excel' &&
+                {type === "excel" &&
                   submission.filename &&
                   files.length === 0 && <div>{submission.filename}</div>}
-                {type === 'pdf' &&
+                {type === "pdf" &&
                   submission &&
                   submission.evidence &&
                   submission.evidence
                     .filter(
                       (submissionFile) =>
-                        !evidenceDeleteList.includes(submissionFile.id)
+                        !evidenceDeleteList.includes(submissionFile.id),
                     )
                     .map((submissionFile) => (
                       <div
@@ -118,13 +122,13 @@ const FileDropArea = (props) => {
                             <button
                               className="delete"
                               onClick={() => {
-                                removeFile(submissionFile)
+                                removeFile(submissionFile);
                               }}
                               type="button"
                             >
                               <FontAwesomeIcon icon="trash" />
                             </button>
-                          </div>
+                          </div>,
                         ]}
                       </div>
                     ))}
@@ -141,16 +145,15 @@ const FileDropArea = (props) => {
                         {getFileSize(file.size)}
                       </div>,
                       <div className="col-1 actions" key="file-key-delete">
-                        <button
-                          className="delete"
+                        <FontAwesomeIcon
                           onClick={() => {
-                            removeFile(file)
+                            setShowModal(true);
+                            setActiveFile(file);
                           }}
-                          type="button"
-                        >
-                          <FontAwesomeIcon icon="trash" />
-                        </button>
-                      </div>
+                          icon="trash"
+                          className="delete-icon"
+                        />
+                      </div>,
                     ]}
                     {showProgressBars && index in progressBars && (
                       <div className="col-4">
@@ -162,7 +165,7 @@ const FileDropArea = (props) => {
                             className="progress-bar"
                             role="progressbar"
                             style={{
-                              width: `${progressBars[index]}%`
+                              width: `${progressBars[index]}%`,
                             }}
                           >
                             {progressBars[index]}%
@@ -177,20 +180,31 @@ const FileDropArea = (props) => {
           </div>
         </div>
       </div>
+      <Modal
+        handleCancel={() => setShowModal(false)}
+        handleSubmit={() => {
+          removeFile(activeFile);
+          setShowModal(false);
+        }}
+        showModal={showModal}
+        title="Confirm deletion"
+      >
+        Are you sure you want to delete your file?
+      </Modal>
     </div>
-  )
-}
+  );
+};
 
 FileDropArea.defaultProps = {
-  errorMessage: '',
+  errorMessage: "",
   evidenceDeleteList: [],
   files: [],
   progressBars: {},
   showProgressBars: false,
   submission: {},
   setEvidenceDeleteList: () => {},
-  wholePageWidth: false
-}
+  wholePageWidth: false,
+};
 
 FileDropArea.propTypes = {
   errorMessage: PropTypes.string,
@@ -203,7 +217,7 @@ FileDropArea.propTypes = {
   showProgressBars: PropTypes.bool,
   submission: PropTypes.shape(),
   type: PropTypes.string.isRequired,
-  wholePageWidth: PropTypes.bool
-}
+  wholePageWidth: PropTypes.bool,
+};
 
-export default FileDropArea
+export default FileDropArea;

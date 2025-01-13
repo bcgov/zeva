@@ -109,16 +109,16 @@ p {
     background-color: transparent;
   }
 
-  > * {
+  >* {
     align-self: center;
     display: flex;
   }
 
-  .left-content > * {
+  .left-content>* {
     margin-right: 1rem;
   }
 
-  .right-content > * {
+  .right-content>* {
     margin-left: 1rem;
     white-space: nowrap;
     align-self: center;
@@ -134,7 +134,7 @@ p {
   }
 
   @media (max-width: 768px) {
-    .right-content > * {
+    .right-content>* {
       margin-left: 0;
     }
   }
@@ -216,6 +216,15 @@ p {
   background-color: transparent;
   border: none;
   color: $default-link-blue;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  text-decoration: underline;
+}
+
+.link-disabled {
+  background-color: transparent;
+  border: none;
   margin: 0;
   padding: 0;
   text-align: left;
@@ -304,9 +313,11 @@ p {
     padding: 0;
   }
 }
+
 .text-red {
   color: $red;
 }
+
 .text-blue {
   color: $default-text-blue;
 
@@ -315,6 +326,7 @@ p {
     color: rgba(26, 90, 150, 0.5);
   }
 }
+
 .text-black {
   color: $default-text-black;
 }
@@ -330,7 +342,7 @@ p {
     margin-right: 0.5rem;
   }
 
-  > * {
+  >* {
     margin-left: 1rem;
     margin-right: 1rem;
     align-self: center;
@@ -339,11 +351,19 @@ p {
 }
 
 .file-upload {
-  border: 2px dashed $default-link-blue;
-  background: $white;
+  &.disabled {
+    background-color: $default-background-grey;
+    color: #afafaf;
+    border: 2px dashed $border-grey;
+  }
+
+  &:not(.disabled) {
+    border: 2px dashed $default-link-blue;
+    background: $white;
+  }
+
   padding: 1rem;
   text-align: center;
-  flex-direction: column;
 
   svg {
     font-size: 2rem;
