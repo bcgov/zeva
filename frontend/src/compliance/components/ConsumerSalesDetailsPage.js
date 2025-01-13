@@ -37,7 +37,8 @@ const ConsumerSalesDetailsPage = (props) => {
     forecastTotals,
     setForecastTotals,
     saveTooltip,
-    isSaveDisabled
+    isSaveDisabled,
+    salesForecastDisplay
   } = props
 
   const [showModal, setShowModal] = useState(false)
@@ -185,7 +186,7 @@ const ConsumerSalesDetailsPage = (props) => {
               </div>
             </div>
           </div>
-          {modelYear >= 2023 &&
+          {salesForecastDisplay &&
             <div className="p-3 forecast-report">
               <label className="text-blue mr-4 font-weight-bold">
                 Forecast Report
@@ -220,6 +221,7 @@ const ConsumerSalesDetailsPage = (props) => {
           <div className="row">
             <div className="col-12 my-3">
             <ComplianceReportSignOff
+              salesForecastDisplay={salesForecastDisplay}
               assertions={assertions}
               checkboxes={checkboxes}
               handleCheckboxClick={handleCheckboxClick}
@@ -293,7 +295,8 @@ const ConsumerSalesDetailsPage = (props) => {
 }
 ConsumerSalesDetailsPage.defaultProps = {
   assertions: [],
-  checkboxes: []
+  checkboxes: [],
+  salesForecastDisplay: false,
 }
 
 ConsumerSalesDetailsPage.propTypes = {
@@ -318,5 +321,6 @@ ConsumerSalesDetailsPage.propTypes = {
   handleDelete: PropTypes.func.isRequired,
   saveTooltip: PropTypes.string.isRequired,
   isSaveDisabled: PropTypes.bool.isRequired,
+  salesForecastDisplay: PropTypes.bool,
 }
 export default ConsumerSalesDetailsPage
