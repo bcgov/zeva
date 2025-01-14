@@ -1,3 +1,18 @@
+.ldv-zev-models {
+  .files {
+    .header {
+      color: $default-text-blue;
+      font-weight: bold;
+    }
+
+    .delete-icon {
+      color: $red;
+      margin-left: 1.25em;
+      cursor: pointer;
+    }
+  }
+}
+
 .uploader-files {
   padding: 0 0.9rem !important;
 
@@ -36,7 +51,7 @@
       background-color: $white;
     }
 
-    > div {
+    >div {
       padding-bottom: 0.5rem;
       padding-top: 0.5rem;
     }
