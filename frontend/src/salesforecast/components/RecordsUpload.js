@@ -205,6 +205,7 @@ const RecordsUpload = ({ currentModelYear, setRecords, setTotals }) => {
                 wholePageWidth
                 files={files}
                 setUploadFiles={setFiles}
+                confirmDelete
                 errorMessage={errorMessage}
                 setErrorMessage={setErrorMessage}
               />

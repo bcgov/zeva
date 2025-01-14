@@ -19,6 +19,7 @@ const FileDropArea = (props) => {
     submission,
     type,
     wholePageWidth,
+    confirmDelete = false,
   } = props;
   const [showModal, setShowModal] = React.useState(false);
   const [activeFile, setActiveFile] = React.useState(undefined);
@@ -34,6 +35,17 @@ const FileDropArea = (props) => {
       }
     }
   };
+
+  // only want to show modal when confirmDelete is true, otherwise delete without.
+  const handleDelete = (file) => {
+    if (confirmDelete) {
+      setShowModal(true);
+      setActiveFile(file);
+    } else {
+      removeFile(file);
+    }
+  };
+
   const formattedErrorMessage = errorMessage
     ? errorMessage.split("|").map((msg, index) => <div key={index}>{msg}</div>)
     : null;
@@ -146,10 +158,7 @@ const FileDropArea = (props) => {
                       </div>,
                       <div className="col-1 actions" key="file-key-delete">
                         <FontAwesomeIcon
-                          onClick={() => {
-                            setShowModal(true);
-                            setActiveFile(file);
-                          }}
+                          onClick={handleDelete}
                           icon="trash"
                           className="delete-icon"
                         />
