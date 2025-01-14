@@ -1,30 +1,17 @@
 import React from "react";
-import { render, act, cleanup, screen } from "@testing-library/react";
+import { render, act, cleanup } from "@testing-library/react";
 import CreditRequestValidatedDetailsContainer from "../CreditRequestValidatedDetailsContainer";
 import * as CreditRequestValidatedDetailsPage from "../components/CreditRequestValidatedDetailsPage";
 import { MemoryRouter as Router, Route } from "react-router-dom";
 import axios from "axios";
 import ROUTES_CREDIT_REQUESTS from "../../app/routes/CreditRequests";
+import { baseUser, testComments, MockedComponent } from "./test-data/commonTestData";
 
 const creditRequestId = "12";
 
 const baseProps = {
-  user: {
-    username: "TESTER",
-    hasPermission: () => {},
-  }
+  user: baseUser
 };
-
-const testComments = [
-  { id: 3, comment: "Test Comment 3" },
-  { id: 4, comment: "Test Comment 4" },
-  { id: 5, comment: "Test Comment 5" },
-  { id: 6, comment: "Test Comment 6" },
-  { id: 7, comment: "Test Comment 7" },
-  { id: 8, comment: "Test Comment 8" },
-  { id: 9, comment: "Test Comment 9" },
-  { id: 10, comment: "Test Comment 10" },
-];
 
 const unselectedResponseData = [1, 3, 4];
 
@@ -63,12 +50,12 @@ const renderCreditRequestValidatedDetailsContainer = (props) => {
   });
 };
 
-class MockedDetailsPage {
+class MockedDetailsPage extends MockedComponent {
   constructor() {
-    this.props = undefined;
+    super("Mocked Credit Request Validated Details Page");
     jest.spyOn(CreditRequestValidatedDetailsPage, "default").mockImplementation((props) => {
       this.props = props;
-      return <div>Mocked Credit Request Validated Details Page</div>;
+      return <div>{this.mockedComponentText}</div>;
     });
   }
 
@@ -78,19 +65,6 @@ class MockedDetailsPage {
 
   addComment() {
     act(() => this.props.handleAddComment());
-  }
-
-  assertRendered() {
-    const pageElements = screen.queryAllByText("Mocked Credit Request Validated Details Page");
-    expect(pageElements).toHaveLength(1);
-  }
-
-  assertProps(expectedProps) {
-    const actualProps = {};
-    for (const key in expectedProps) {
-      actualProps[key] = this.props[key];
-    }
-    expect(actualProps).toEqual(expectedProps);
   }
 }
 

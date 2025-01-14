@@ -1,16 +1,16 @@
 import React from "react";
-import { render, act, cleanup, screen, fireEvent } from "@testing-library/react";
+import { render, act, cleanup } from "@testing-library/react";
 import CreditRequestListContainer from "../CreditRequestListContainer";
 import * as CreditRequestsPage from "../components/CreditRequestsPage";
 import { MemoryRouter as Router, Route } from "react-router-dom";
 import axios from "axios";
 import ROUTES_CREDIT_REQUESTS from "../../app/routes/CreditRequests";
+import { baseUser, MockedComponent } from "./test-data/commonTestData";
+
+const clearButtonTestId = "clear-button";
 
 const baseProps = {
-  user: {
-    username: "TESTER",
-    hasPermission: () => {},
-  }
+  user: baseUser
 };
 
 const responseDataResults = [
@@ -61,38 +61,18 @@ const renderCreditRequestListContainer = (props, state, query) => {
   });
 };
 
-class MockedDetailsPage {
-  clearButtonTestId = "clear-button";
+class MockedDetailsPage extends MockedComponent {
   constructor() {
-    this.props = undefined;
+    super("Mocked Credit Request Details Page");
     jest.spyOn(CreditRequestsPage, "default").mockImplementation((props) => {
       this.props = props;
       return (
         <div>
-          <div>Mocked Credit Requests Page</div>
-          <button data-testid={this.clearButtonTestId} onClick={this.props.handleClear} />
+          <div>{this.mockedComponentText}</div>
+          <button data-testid={clearButtonTestId} onClick={this.props.handleClear} />
         </div>
       );
     });
-  }
-
-  async clickClearButton() {
-    await act(async () => {
-      await fireEvent.click(screen.getByTestId(this.clearButtonTestId));
-    });
-  }
-
-  assertRendered() {
-    const pageElements = screen.queryAllByText("Mocked Credit Requests Page");
-    expect(pageElements).toHaveLength(1);
-  }
-
-  assertProps(expectedProps) {
-    const actualProps = {};
-    for (const key in expectedProps) {
-      actualProps[key] = this.props[key];
-    }
-    expect(actualProps).toEqual(expectedProps);
   }
 }
 
@@ -162,7 +142,7 @@ describe("Credit Request List Container", () => {
       filters: stateFilters,
       sorts
     });
-    detailsPage.clickClearButton();
+    detailsPage.triggerInput(clearButtonTestId);
     detailsPage.assertProps({ ...baseExpectedDatailsPageProps, pageSize });
   });
 });

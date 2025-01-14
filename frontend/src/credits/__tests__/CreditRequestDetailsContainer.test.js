@@ -1,11 +1,12 @@
 import React from "react";
-import { render, act, cleanup, screen, fireEvent } from "@testing-library/react";
+import { render, act, cleanup } from "@testing-library/react";
 import CreditRequestDetailsContainer from "../CreditRequestDetailsContainer";
 import * as CreditRequestDetailsPage from "../components/CreditRequestDetailsPage";
 import { MemoryRouter as Router, Route } from "react-router-dom";
 import axios from "axios";
 import ROUTES_ICBCVERIFICATION from "../../app/routes/ICBCVerification";
 import ROUTES_CREDIT_REQUESTS from "../../app/routes/CreditRequests";
+import { baseUser, testComments, MockedComponent } from "./test-data/commonTestData";
 
 const testIds = {
   checkbox: "testId-checkbox",
@@ -18,22 +19,8 @@ const creditRequestId = "12";
 const defaultIssueAsMY = true;
 
 const baseProps = {
-  user: {
-    username: "TESTER",
-    hasPermission: () => {},
-  }
+  user: baseUser
 };
-
-const testComments = [
-  { id: 3, comment: "Test Comment 3" },
-  { id: 4, comment: "Test Comment 4" },
-  { id: 5, comment: "Test Comment 5" },
-  { id: 6, comment: "Test Comment 6" },
-  { id: 7, comment: "Test Comment 7" },
-  { id: 8, comment: "Test Comment 8" },
-  { id: 9, comment: "Test Comment 9" },
-  { id: 10, comment: "Test Comment 10" },
-];
 
 const dateResponseData = {
   "uploadDate": "2024-09-01",
@@ -65,14 +52,14 @@ const renderCreditRequestDetailsContainer = (props) => {
   });
 };
 
-class MockedDetailsPage {
+class MockedDetailsPage extends MockedComponent {
   constructor() {
-    this.props = undefined;
+    super("Mocked Credit Request Details Page");
     jest.spyOn(CreditRequestDetailsPage, "default").mockImplementation((props) => {
       this.props = props;
       return (
         <div>
-          <div>Mocked Credit Request Details Page</div>
+          <div>{this.mockedComponentText}</div>
           <input
             data-testid={testIds.checkbox}
             onClick={() => props.handleCheckboxClick({ target: { checked: this.inputParams.checked } })}
@@ -101,27 +88,6 @@ class MockedDetailsPage {
   setShowWarning(value) {
     this.props.setShowWarning(value);
   };
-
-  async triggerInput(testId, inputParams) {
-    this.inputParams = inputParams;
-    await act(async () => {
-      await fireEvent.click(screen.getByTestId(testId));
-    });
-    this.inputParams = undefined;
-  }
-
-  assertRendered() {
-    const pageElements = screen.queryAllByText("Mocked Credit Request Details Page");
-    expect(pageElements).toHaveLength(1);
-  }
-
-  assertProps(expectedProps) {
-    const actualProps = {};
-    for (const key in expectedProps) {
-      actualProps[key] = this.props[key];
-    }
-    expect(actualProps).toEqual(expectedProps);
-  }
 }
 
 // explicitly mock axios here instead of using the mock provided by jest-mock-axios,
