@@ -28,8 +28,8 @@ const VehicleSupplierDetailsPage = (props) => {
   const { organizationAddress } = details;
   const [showAllSales, setShowAllSales] = useState(false);
   const [showAllSupplied, setShowAllSupplied] = useState(false);
-  const filteredSales = ldvSales.filter((sale) => sale.modelYear <= "2023");
-  const filteredSupplied = ldvSales.filter((sale) => sale.modelYear >= "2024");
+  const filteredSales = ldvSales.filter((sale) => sale.isSupplied === false);
+  const filteredSupplied = ldvSales.filter((sale) => sale.isSupplied === true);
   const salesToShow = showAllSales ? filteredSales : filteredSales.slice(0, 3);
   const suppliedToShow = showAllSupplied
     ? filteredSupplied
@@ -248,18 +248,6 @@ const VehicleSupplierDetailsPage = (props) => {
                           </div>
                           <div className="col-4 sales">
                             {formatNumeric(sale.ldvSales, 0)}
-                          </div>
-                          <div className="col-3 delete">
-                            {isEditable && (
-                              <button
-                                onClick={() => {
-                                  handleDeleteSale(sale);
-                                }}
-                                type="button"
-                              >
-                                x
-                              </button>
-                            )}
                           </div>
                         </li>
                       ))}

@@ -19,10 +19,12 @@ class OrganizationLDVSalesSerializer(ModelSerializer):
         organization = self.context.get('organization')
         model_year = self.validated_data.get('model_year')
         ldv_sales = self.validated_data.get('ldv_sales')
+        is_supplied = self.validated_data.get('is_supplied')
 
         organization_ldv_sale = OrganizationLDVSales.objects.update_or_create(
             model_year_id=model_year.id,
             organization_id=organization.id,
+            is_supplied=is_supplied,
             defaults={
                 'ldv_sales': ldv_sales,
                 'create_user': request.user.username,
@@ -35,5 +37,5 @@ class OrganizationLDVSalesSerializer(ModelSerializer):
     class Meta:
         model = OrganizationLDVSales
         fields = (
-            'id', 'ldv_sales', 'model_year'
+            'id', 'ldv_sales', 'model_year', 'is_supplied'
         )
