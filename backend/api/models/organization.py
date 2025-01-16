@@ -122,14 +122,14 @@ class Organization(Auditable):
         return sales
 
     def get_ldv_sales(self, year):
-        supplied_filter = {"is_supplied": False} if year < 2024 else {"is_supplied": True}
+        is_supplied = False if year < 2024 else True
         sales = self.ldv_sales.filter(
             model_year__name__in=[
                 str(year - 1),
                 str(year - 2),
                 str(year - 3)
             ]
-        ).filter(**supplied_filter)
+        ).filter(is_supplied=is_supplied)
         return sales
 
     def get_avg_ldv_sales(self, year=None):
@@ -138,17 +138,17 @@ class Organization(Auditable):
 
             if date.today().month < 10:
                 year -= 1
-        supplied_filter = {"is_supplied": False} if year < 2024 else {"is_supplied": True}
+        is_supplied = False if year < 2024 else True
 
         sales = self.ldv_sales.filter(
             model_year__name__lte=year
-        ).filter(**supplied_filter).values_list(
+        ).filter(is_supplied=is_supplied).values_list(
             'ldv_sales', flat=True
         )[:3]
 
         if sales.count() < 3:
             sales = self.ldv_sales.filter(model_year__name=year).filter(
-                **supplied_filter
+                is_supplied=is_supplied
             ).values_list(
                 'ldv_sales', flat=True
             )[:1]
