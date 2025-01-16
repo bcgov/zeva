@@ -1,15 +1,15 @@
-import axios from 'axios'
-import PropTypes from 'prop-types'
-import React from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import axios from "axios";
+import PropTypes from "prop-types";
+import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import Button from '../../app/components/Button'
-import CommentInput from '../../app/components/CommentInput'
-import ExcelFileDrop from '../../app/components/FileDrop'
-import FormDropdown from '../../credits/components/FormDropdown'
-import TextInput from '../../app/components/TextInput'
-import getFileSize from '../../app/utilities/getFileSize'
-import CustomPropTypes from '../../app/utilities/props'
+import Button from "../../app/components/Button";
+import CommentInput from "../../app/components/CommentInput";
+import ExcelFileDrop from "../../app/components/FileDrop";
+import FormDropdown from "../../credits/components/FormDropdown";
+import TextInput from "../../app/components/TextInput";
+import getFileSize from "../../app/utilities/getFileSize";
+import CustomPropTypes from "../../app/utilities/props";
 
 const CreditAgreementsForm = (props) => {
   const {
@@ -31,37 +31,38 @@ const CreditAgreementsForm = (props) => {
     transactionTypes,
     user,
     years,
-    modelYearReports
-  } = props
+    modelYearReports,
+  } = props;
 
   const removeFile = (removedFile) => {
-    const found = files.findIndex((file) => file === removedFile)
-    files.splice(found, 1)
-    setUploadFiles([...files])
-  }
+    const found = files.findIndex((file) => file === removedFile);
+    files.splice(found, 1);
+    setUploadFiles([...files]);
+  };
 
-  const displayModelYear =
-    !!(agreementDetails.transactionType === 'Reassessment Allocation' ||
-    agreementDetails.transactionType === 'Reassessment Reduction')
+  const displayModelYear = !!(
+    agreementDetails.transactionType === "Reassessment Allocation" ||
+    agreementDetails.transactionType === "Reassessment Reduction"
+  );
 
   const modelYearValues = () => {
-    const supplierReports = []
+    const supplierReports = [];
     if (
       agreementDetails.vehicleSupplier &&
-      (agreementDetails.transactionType === 'Reassessment Allocation' ||
-        agreementDetails.transactionType === 'Reassessment Reduction')
+      (agreementDetails.transactionType === "Reassessment Allocation" ||
+        agreementDetails.transactionType === "Reassessment Reduction")
     ) {
       for (const modelYearReport of modelYearReports) {
         if (
           modelYearReport.organizationId ===
           parseInt(agreementDetails.vehicleSupplier)
         ) {
-          supplierReports.push(modelYearReport)
+          supplierReports.push(modelYearReport);
         }
       }
     }
-    return supplierReports
-  }
+    return supplierReports;
+  };
 
   return (
     <div id="credit-agreements-form" className="page">
@@ -95,7 +96,7 @@ const CreditAgreementsForm = (props) => {
                   {agreementDetails.attachments &&
                     agreementDetails.attachments
                       .filter(
-                        (attachment) => deleteFiles.indexOf(attachment.id) < 0
+                        (attachment) => deleteFiles.indexOf(attachment.id) < 0,
                       )
                       .map((attachment) => (
                         <div className="row" key={attachment.id}>
@@ -105,25 +106,25 @@ const CreditAgreementsForm = (props) => {
                               onClick={() => {
                                 axios
                                   .get(attachment.url, {
-                                    responseType: 'blob',
+                                    responseType: "blob",
                                     headers: {
-                                      Authorization: null
-                                    }
+                                      Authorization: null,
+                                    },
                                   })
                                   .then((response) => {
                                     const objectURL =
                                       window.URL.createObjectURL(
-                                        new Blob([response.data])
-                                      )
-                                    const link = document.createElement('a')
-                                    link.href = objectURL
+                                        new Blob([response.data]),
+                                      );
+                                    const link = document.createElement("a");
+                                    link.href = objectURL;
                                     link.setAttribute(
-                                      'download',
-                                      attachment.filename
-                                    )
-                                    document.body.appendChild(link)
-                                    link.click()
-                                  })
+                                      "download",
+                                      attachment.filename,
+                                    );
+                                    document.body.appendChild(link);
+                                    link.click();
+                                  });
                               }}
                               type="button"
                             >
@@ -137,7 +138,7 @@ const CreditAgreementsForm = (props) => {
                             <button
                               className="delete"
                               onClick={() => {
-                                setDeleteFiles([...deleteFiles, attachment.id])
+                                setDeleteFiles([...deleteFiles, attachment.id]);
                               }}
                               type="button"
                             >
@@ -156,7 +157,7 @@ const CreditAgreementsForm = (props) => {
                         <button
                           className="delete"
                           onClick={() => {
-                            removeFile(file)
+                            removeFile(file);
                           }}
                           type="button"
                         >
@@ -177,13 +178,13 @@ const CreditAgreementsForm = (props) => {
                 handleInputChange={(event) => {
                   handleChangeDetails(
                     event.target.value,
-                    'vehicleSupplier',
-                    true
-                  )
+                    "vehicleSupplier",
+                    true,
+                  );
                 }}
                 fieldName="vehicleSupplier"
                 accessor={(supplier) => supplier.id}
-                selectedOption={agreementDetails.vehicleSupplier || '--'}
+                selectedOption={agreementDetails.vehicleSupplier || "--"}
                 labelClassname="d-inline-block col-2"
                 inputClassname="d-inline-block agreement-input"
                 rowClassname=""
@@ -196,13 +197,13 @@ const CreditAgreementsForm = (props) => {
                 handleInputChange={(event) => {
                   handleChangeDetails(
                     event.target.value,
-                    'transactionType',
-                    true
-                  )
+                    "transactionType",
+                    true,
+                  );
                 }}
                 fieldName="transactionType"
                 accessor={(transactionType) => transactionType.name}
-                selectedOption={agreementDetails.transactionType || '--'}
+                selectedOption={agreementDetails.transactionType || "--"}
                 labelClassname="d-inline-block col-2"
                 inputClassname="d-inline-block agreement-input"
                 rowClassname=""
@@ -216,12 +217,12 @@ const CreditAgreementsForm = (props) => {
                   handleInputChange={(event) => {
                     handleChangeDetails(
                       event.target.value,
-                      'modelYearReportId'
-                    )
+                      "modelYearReportId",
+                    );
                   }}
                   fieldName="modelYear"
                   accessor={(supplierReport) => supplierReport.id}
-                  selectedOption={agreementDetails.modelYearReportId || '--'}
+                  selectedOption={agreementDetails.modelYearReportId || "--"}
                   labelClassname="d-inline-block col-2"
                   inputClassname="d-inline-block agreement-input"
                   rowClassname=""
@@ -238,8 +239,8 @@ const CreditAgreementsForm = (props) => {
                   handleInputChange={(event) => {
                     handleChangeDetails(
                       event.target.value,
-                      'optionalAgreementID'
-                    )
+                      "optionalAgreementID",
+                    );
                   }}
                   labelSize="d-inline-block col-sm-2"
                   inputSize="d-inline-block align-middle agreement-input"
@@ -260,7 +261,7 @@ const CreditAgreementsForm = (props) => {
                 id="transaction-date"
                 name="transaction-date"
                 onChange={(event) => {
-                  handleChangeDetails(event.target.value, 'effectiveDate')
+                  handleChangeDetails(event.target.value, "effectiveDate");
                 }}
                 value={agreementDetails.effectiveDate}
               />
@@ -276,15 +277,15 @@ const CreditAgreementsForm = (props) => {
                     <div className="mb-2 d-flex flex-column">
                       <div>
                         <input
-                          checked={creditRow.creditClass === 'A'}
+                          checked={creditRow.creditClass === "A"}
                           id={`agreement-${index}-credit-type-A`}
                           name={`agreement-${index}`}
                           onChange={(event) => {
                             handleChangeRow(
                               event.target.value,
-                              'creditClass',
-                              index
-                            )
+                              "creditClass",
+                              index,
+                            );
                           }}
                           type="radio"
                           value="A"
@@ -298,15 +299,15 @@ const CreditAgreementsForm = (props) => {
                       </div>
                       <div>
                         <input
-                          checked={creditRow.creditClass === 'B'}
+                          checked={creditRow.creditClass === "B"}
                           id={`agreement-${index}-credit-type-B`}
                           name={`agreement-${index}`}
                           onChange={(event) => {
                             handleChangeRow(
                               event.target.value,
-                              'creditClass',
-                              index
-                            )
+                              "creditClass",
+                              index,
+                            );
                           }}
                           type="radio"
                           value="B"
@@ -326,17 +327,17 @@ const CreditAgreementsForm = (props) => {
                     dropdownName="model year"
                     fieldName="modelYear"
                     handleInputChange={(event) => {
-                      handleChangeRow(event.target.value, 'modelYear', index)
+                      handleChangeRow(event.target.value, "modelYear", index);
                     }}
                     inputClassname="d-inline-block"
                     labelClassname="mr-2 d-inline-block"
                     rowClassname="mr-5 d-inline-block align-middle"
-                    selectedOption={creditRow.modelYear || '--'}
+                    selectedOption={creditRow.modelYear || "--"}
                   />
                   <TextInput
                     defaultValue={creditRow.quantity}
                     handleInputChange={(event) => {
-                      handleChangeRow(event.target.value, 'quantity', index)
+                      handleChangeRow(event.target.value, "quantity", index);
                     }}
                     id="quantityOfCredits"
                     inputSize="d-inline-block align-middle transfer-input-width"
@@ -351,7 +352,7 @@ const CreditAgreementsForm = (props) => {
                     type="button"
                     className="transfer-row-x"
                     onClick={() => {
-                      handleDeleteRow(index)
+                      handleDeleteRow(index);
                     }}
                   >
                     <FontAwesomeIcon icon="times" />
@@ -362,7 +363,7 @@ const CreditAgreementsForm = (props) => {
               type="button"
               className="transfer-add-line my-2"
               onClick={() => {
-                addRow()
+                addRow();
               }}
             >
               <h4>
@@ -378,6 +379,7 @@ const CreditAgreementsForm = (props) => {
               <CommentInput
                 defaultComment={agreementDetails.bceidComment}
                 handleCommentChange={handleCommentChangeBceid}
+                testid="comment-input"
                 title="Message to the Supplier: "
               />
             </div>
@@ -388,16 +390,14 @@ const CreditAgreementsForm = (props) => {
         <div className="col-sm-12">
           <div className="action-bar mt-3">
             <span className="left-content">
-              {id
-                ? (
+              {id ? (
                 <Button
                   buttonType="back"
                   locationRoute={`/credit-agreements/${id}`}
                 />
-                  )
-                : (
+              ) : (
                 <Button buttonType="back" locationRoute="/credit-agreements/" />
-                  )}
+              )}
             </span>
             <span className="right-content">
               {analystAction && (
@@ -410,11 +410,9 @@ const CreditAgreementsForm = (props) => {
                     !agreementDetails.transactionType ||
                     !agreementDetails.effectiveDate
                   }
-                  buttonTooltip={
-                    `Please fill in all the required fields to enable the "Save" button.`
-                  }
+                  buttonTooltip={`Please fill in all the required fields to enable the "Save" button.`}
                   action={() => {
-                    handleSubmit('')
+                    handleSubmit("");
                   }}
                 />
               )}
@@ -423,12 +421,12 @@ const CreditAgreementsForm = (props) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 CreditAgreementsForm.defaultProps = {
-  id: null
-}
+  id: null,
+};
 
 CreditAgreementsForm.propTypes = {
   addRow: PropTypes.func.isRequired,
@@ -436,7 +434,7 @@ CreditAgreementsForm.propTypes = {
   analystAction: PropTypes.bool.isRequired,
   creditRows: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   deleteFiles: PropTypes.arrayOf(
-    PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+    PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   ).isRequired,
   files: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   handleChangeDetails: PropTypes.func.isRequired,
@@ -450,7 +448,7 @@ CreditAgreementsForm.propTypes = {
   suppliers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   transactionTypes: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   user: CustomPropTypes.user.isRequired,
-  years: PropTypes.arrayOf(PropTypes.shape()).isRequired
-}
+  years: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+};
 
-export default CreditAgreementsForm
+export default CreditAgreementsForm;
