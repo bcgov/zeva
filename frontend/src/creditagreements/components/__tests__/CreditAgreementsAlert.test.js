@@ -21,101 +21,78 @@ describe("CreditAgreementsAlert", () => {
     jest.clearAllMocks();
   });
 
-  it("renders with correct props for DRAFT status", () => {
-    const props = { ...mockProps, status: "DRAFT" };
-    render(<CreditAgreementsAlert {...props} />);
-
-    expect(Alert).toHaveBeenCalledWith(
-      expect.objectContaining({
+  const scenarios = [
+    {
+      description: "renders with correct props for DRAFT status",
+      props: { ...mockProps, status: "DRAFT" },
+      expected: {
         title: "Draft",
         icon: "exclamation-circle",
         classname: "alert-warning",
         message: "saved, 2025-01-01 by John Doe.",
-      }),
-      {},
-    );
-  });
-
-  it("renders with correct props for RECOMMENDED status", () => {
-    const props = { ...mockProps, status: "RECOMMENDED" };
-    render(<CreditAgreementsAlert {...props} />);
-
-    expect(Alert).toHaveBeenCalledWith(
-      expect.objectContaining({
+      },
+    },
+    {
+      description: "renders with correct props for RECOMMENDED status",
+      props: { ...mockProps, status: "RECOMMENDED" },
+      expected: {
         title: "Recommended",
         icon: "exclamation-circle",
         classname: "alert-primary",
         message: "recommended for issuance, 2025-01-01 by John Doe.",
-      }),
-      {},
-    );
-  });
-
-  it("renders with correct props for RETURNED status", () => {
-    const props = { ...mockProps, status: "RETURNED" };
-    render(<CreditAgreementsAlert {...props} />);
-
-    expect(Alert).toHaveBeenCalledWith(
-      expect.objectContaining({
+      },
+    },
+    {
+      description: "renders with correct props for RETURNED status",
+      props: { ...mockProps, status: "RETURNED" },
+      expected: {
         title: "Returned",
         icon: "exclamation-circle",
         classname: "alert-primary",
         message: "PA-123 returned 2025-01-01 by the Director",
-      }),
-      {},
-    );
-  });
-
-  it("renders with correct props for ISSUED status (non-government)", () => {
-    render(<CreditAgreementsAlert {...mockProps} />);
-
-    expect(Alert).toHaveBeenCalledWith(
-      expect.objectContaining({
+      },
+    },
+    {
+      description:
+        "renders with correct props for ISSUED status (non-government)",
+      props: mockProps,
+      expected: {
         title: "Issued",
         icon: "check-circle",
         classname: "alert-success",
         message: "PA-123 issued 2025-01-01 by the Government of B.C.",
-      }),
-      {},
-    );
-  });
-
-  it("renders with correct props for ISSUED status (government)", () => {
-    const props = { ...mockProps, isGovernment: true };
-    render(<CreditAgreementsAlert {...props} />);
-
-    expect(Alert).toHaveBeenCalledWith(
-      expect.objectContaining({
+      },
+    },
+    {
+      description: "renders with correct props for ISSUED status (government)",
+      props: { ...mockProps, isGovernment: true },
+      expected: {
         title: "Issued",
         icon: "check-circle",
         classname: "alert-success",
         message: "PA-123 issued 2025-01-01 by the Director",
-      }),
-      {},
-    );
-  });
-
-  it("renders with default transaction type when not matched", () => {
-    const props = { ...mockProps, transactionType: "Unknown Type" };
-    render(<CreditAgreementsAlert {...props} />);
-
-    expect(Alert).toHaveBeenCalledWith(
-      expect.objectContaining({
+      },
+    },
+    {
+      description: "renders with default transaction type when not matched",
+      props: { ...mockProps, transactionType: "Unknown Type" },
+      expected: {
         message: "IA-123 issued 2025-01-01 by the Government of B.C.",
-      }),
-      {},
-    );
-  });
-
-  it("renders with empty title for unknown status", () => {
-    const props = { ...mockProps, status: "UNKNOWN" };
-    render(<CreditAgreementsAlert {...props} />);
-
-    expect(Alert).toHaveBeenCalledWith(
-      expect.objectContaining({
+      },
+    },
+    {
+      description: "renders with empty title for unknown status",
+      props: { ...mockProps, status: "UNKNOWN" },
+      expected: {
         title: "",
-      }),
-      {},
-    );
+      },
+    },
+  ];
+
+  scenarios.forEach(({ description, props, expected }) => {
+    it(description, () => {
+      render(<CreditAgreementsAlert {...props} />);
+      expect(Alert).toHaveBeenCalledWith(expect.objectContaining(expected), {});
+    });
   });
 });
