@@ -195,7 +195,7 @@ class Command(BaseCommand):
         with connection.cursor() as cursor:
             for table_name in tables:
                 print("Deleting all data from " + table_name + "...")
-                cursor.execute("delete from " + table_name)
+                cursor.execute("DELETE FROM %s" % table_name)
 
     def deleteInactiveUsers(self):
         inactive_user_profiles = UserProfile.objects.filter(is_active=False)
