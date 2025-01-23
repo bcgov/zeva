@@ -10,8 +10,13 @@ const CreditTransfersAlert = (props) => {
   let title
   let classname
   let icon = 'exclamation-circle'
-  const statusFilter = (transferStatus) =>
-    history.filter((each) => each.status === transferStatus).reverse()[0]
+  const statusFilter = (transferStatus) => {
+    const filteredStatuses = history.filter((each) => each.status === transferStatus)
+    if (transferStatus === 'APPROVED') {
+      return filteredStatuses[0]
+    }
+    return filteredStatuses.reverse()[0]
+  }
   const date = moment(statusFilter(status).createTimestamp).format(
     'MMM D, YYYY'
   )
