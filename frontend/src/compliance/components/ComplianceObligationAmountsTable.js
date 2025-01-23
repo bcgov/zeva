@@ -1,7 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import formatNumeric from '../../app/utilities/formatNumeric'
+import Tooltip from '../../app/components/Tooltip';
 
 const ComplianceObligationAmountsTable = (props) => {
   const {
@@ -16,7 +17,7 @@ const ComplianceObligationAmountsTable = (props) => {
     totalReduction,
     unspecifiedReductions
   } = props
-
+  const tooltip = "Please do not include motor vehicles with a gross vehicle weight rating of more than 3,856 kg that were supplied before October 1, 2024"
   const filteredClassAReductions = classAReductions.find(
     (reduction) => Number(reduction.modelYear) === Number(reportYear)
   )
@@ -33,24 +34,42 @@ const ComplianceObligationAmountsTable = (props) => {
   return (
     <div>
       <div className="compliance-reduction-table">
+
+        
         <div className="row mb-4 ">
           <div className="col-12">
             <table className="no-border">
               <tbody>
                 <tr className="ldv-sales ">
                   <td className="text-blue" colSpan="3">
-                    {reportYear} {reportYear < 2024 ? "Model Year LDV Sales" : "Model Year Vehicles Supplied"}:
+
+                    <Tooltip
+                    tooltipId="supplied-tooltip"
+                    tooltipText={tooltip}
+                    placement="left"
+                    >
+                      <FontAwesomeIcon icon='info-circle' className="info-icon" />
+                      {reportYear} {reportYear < 2024 ? "Model Year LDV Sales" : "Model Year Vehicles Supplied"}:
+                    </Tooltip>
                   </td>
                   <td>
                     {page === 'obligation' &&
                       statuses.assessment.status !== 'ASSESSED' && (
-                        <input
-                          className="form-control"
-                          disabled={disabledInput}
-                          onChange={handleChangeSales}
-                          type={disabledInput ? "string" : "number"}
-                          value={disabledInput ? formatNumeric(sales, 0) : sales}
-                        />
+                        <Tooltip
+                          tooltipId="supplied-tooltip"
+                          tooltipText={tooltip}
+                          placement="left">
+                        <span id="obligation-sales-input">
+                          <FontAwesomeIcon icon='info-circle' className="info-icon" />
+                          <input
+                            className="form-control"
+                            disabled={disabledInput}
+                            onChange={handleChangeSales}
+                            type={disabledInput ? "string" : "number"}
+                            value={disabledInput ? formatNumeric(sales, 0) : sales}
+                            />
+                            </span>
+                        </Tooltip>
                     )}
                     {(page === 'assessment' ||
                       (page === 'obligation' &&

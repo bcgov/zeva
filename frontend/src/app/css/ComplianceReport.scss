@@ -254,6 +254,9 @@
   }
   .compliance-reduction-table {
     border: 1px solid $border-grey;
+    #obligation-sales-input {
+      display: flex;
+    }
   }
   table {
     width: 100%;

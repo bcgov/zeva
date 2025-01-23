@@ -393,3 +393,14 @@ button {
   flex-direction: row;
   justify-content: center;
 }
+
+.info-icon {
+        color: $default-link-blue;
+        height: inherit;
+        margin-right: 6px;
+      }
+.tooltip {
+      background-color: 2D2D2D !important;
+      opacity: 100% !important;
+      max-width: 500px
+    }
