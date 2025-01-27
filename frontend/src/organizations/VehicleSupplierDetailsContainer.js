@@ -98,7 +98,7 @@ const VehicleSupplierDetailsContainer = (props) => {
 
     axios
       .put(ROUTES_ORGANIZATIONS.LDV_SALES.replace(/:id/gi, id), {
-        ...fields
+        ...fields, isSupplied: true
       })
       .then(() => {
         History.push(ROUTES_ORGANIZATIONS.LIST)

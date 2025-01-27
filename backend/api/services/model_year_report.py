@@ -205,12 +205,15 @@ def adjust_credits_reassessment(id, request):
     organization_id = model_year_report.organization.id
     ldv_sales = reassessment.ldv_sales
     if ldv_sales:
+        model_year_int = int(model_year_report.model_year.name)
+        is_supplied = False if model_year_int < 2024 else True
         OrganizationLDVSales.objects.update_or_create(
             organization_id=organization_id,
             model_year_id=model_year_id,
+            is_supplied=is_supplied,
             defaults={
-            'ldv_sales': ldv_sales,
-            'update_user': request.user.username
+                'ldv_sales': ldv_sales,
+                'update_user': request.user.username
             }
         )
 
@@ -284,9 +287,11 @@ def adjust_credits(id, request):
         model_year_report_id=id
     ).order_by('-update_timestamp').first()
 
+    is_supplied = False if int(model_year) < 2024 else True
     OrganizationLDVSales.objects.update_or_create(
         organization_id=organization_id,
         model_year_id=model_year_id,
+        is_supplied=is_supplied,
         defaults={
             'ldv_sales': ldv_sales,
             'update_user': request.user.username
