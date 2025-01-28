@@ -73,14 +73,18 @@ class TestAgreements(BaseTestCase):
                                               content_type='application/json',
                                               )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertTrue(CreditAgreementComment.objects.filter(comment='New comment').exists())
+        self.assertTrue(CreditAgreementComment.objects
+                        .filter(comment='New comment')
+                        .exists())
 
     def test_get_agreement_details(self):
-        response_bceid = self.clients['RTAN_BCEID'].get('/api/credit-agreements/' + str(self.credit_agreement.id))
+        response_bceid = self.clients['RTAN_BCEID'].get(
+            '/api/credit-agreements/' + str(self.credit_agreement.id))
         #bceid users cannot see unissued agreements
         self.assertEqual(response_bceid.status_code, status.HTTP_404_NOT_FOUND)
         #idir users can get the details
-        response_idir = self.clients['RTAN'].get('/api/credit-agreements/' + str(self.credit_agreement.id))
+        response_idir = self.clients['RTAN'].get(
+            '/api/credit-agreements/' + str(self.credit_agreement.id))
         self.assertEqual(response_idir.status_code, status.HTTP_200_OK)
         comments = response_idir.data['comments']
         self.assertEquals(len(comments), 2)
@@ -137,9 +141,15 @@ class TestAgreements(BaseTestCase):
         data = {
             'comment_id': self.comment_bceid.id,
         }
-        response = self.clients['RTAN'].patch('/api/credit-agreements/{}/delete_comment'.format(self.credit_agreement.id), data, content_type='application/json')
+        response = self.clients['RTAN'].patch(
+            '/api/credit-agreements/{}/delete_comment'
+            .format(self.credit_agreement.id),
+            data,
+            content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertFalse(CreditAgreementComment.objects.filter(id=self.comment_bceid.id).exists())
+        self.assertFalse(CreditAgreementComment.objects
+                         .filter(id=self.comment_bceid.id)
+                         .exists())
         
         #idir cannot delete someone elses comment
         data = {
@@ -151,7 +161,9 @@ class TestAgreements(BaseTestCase):
             data, 
             content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertTrue(CreditAgreementComment.objects.filter(id=self.comment_idir.id).exists())
+        self.assertTrue(CreditAgreementComment.objects
+                        .filter(id=self.comment_idir.id)
+                        .exists())
 
         #bceid cannot delete someone elses comment
         response = self.clients['RTAN_BCEID'].patch(
@@ -160,11 +172,14 @@ class TestAgreements(BaseTestCase):
             data,
             content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertTrue(CreditAgreementComment.objects.filter(id=self.comment_idir.id).exists())
+        self.assertTrue(CreditAgreementComment.objects
+                        .filter(id=self.comment_idir.id)
+                        .exists())
 
     def test_no_comments_on_agreement(self):
         CreditAgreementComment.objects.all().delete()
-        response = self.clients['RTAN'].get('/api/credit-agreements/' + str(self.credit_agreement.id))
+        response = self.clients['RTAN'].get(
+            '/api/credit-agreements/' + str(self.credit_agreement.id))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIsNone(response.data['comments'])
 
@@ -176,7 +191,8 @@ class TestAgreements(BaseTestCase):
         self.assertEqual(len(response.data), 0)
 
     def test_get_invalid_agreement(self):
-        response = self.clients['RTAN'].get('/api/credit-agreements/testagreementdoesntexist')
+        response = self.clients['RTAN'].get(
+            '/api/credit-agreements/testagreementdoesntexist')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_update_invalid_comment(self):
