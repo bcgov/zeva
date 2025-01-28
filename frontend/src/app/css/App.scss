@@ -1,29 +1,29 @@
 /* BC Sans Regular */
 @font-face {
-  font-family: 'BCSans';
-  src: url('./fonts/BCSans-Regular.woff') format('woff');
+  font-family: "BCSans";
+  src: url("./fonts/BCSans-Regular.woff") format("woff");
 }
 
 /* BC Sans Bold */
 @font-face {
-  font-family: 'BCSans';
+  font-family: "BCSans";
   font-weight: bold;
-  src: url('./fonts/BCSans-Bold.woff') format('woff');
+  src: url("./fonts/BCSans-Bold.woff") format("woff");
 }
 
 /* BC Sans Bold + Italic */
 @font-face {
-  font-family: 'BCSans';
+  font-family: "BCSans";
   font-style: italic;
   font-weight: bold;
-  src: url('./fonts/BCSans-BoldItalic.woff') format('woff');
+  src: url("./fonts/BCSans-BoldItalic.woff") format("woff");
 }
 
 /* BC Sans Italic */
 @font-face {
-  font-family: 'BCSans';
+  font-family: "BCSans";
   font-style: italic;
-  src: url('./fonts/BCSans-Italic.woff') format('woff');
+  src: url("./fonts/BCSans-Italic.woff") format("woff");
 }
 
 @mixin shadow {
@@ -71,7 +71,7 @@ html,
 
 body {
   color: $default-text-black;
-  font-family: 'BCSans', sans-serif;
+  font-family: "BCSans", sans-serif;
   margin: 0;
   padding: 0;
 }
@@ -109,16 +109,16 @@ p {
     background-color: transparent;
   }
 
-  >* {
+  > * {
     align-self: center;
     display: flex;
   }
 
-  .left-content>* {
+  .left-content > * {
     margin-right: 1rem;
   }
 
-  .right-content>* {
+  .right-content > * {
     margin-left: 1rem;
     white-space: nowrap;
     align-self: center;
@@ -134,7 +134,7 @@ p {
   }
 
   @media (max-width: 768px) {
-    .right-content>* {
+    .right-content > * {
       margin-left: 0;
     }
   }
@@ -342,7 +342,7 @@ p {
     margin-right: 0.5rem;
   }
 
-  >* {
+  > * {
     margin-left: 1rem;
     margin-right: 1rem;
     align-self: center;
@@ -392,4 +392,15 @@ button {
   display: flex;
   flex-direction: row;
   justify-content: center;
+}
+
+.info-icon {
+  color: $default-link-blue;
+  height: inherit;
+  margin-right: 6px;
+}
+.tooltip {
+  background-color: #2D2D2D !important;
+  opacity: 100% !important;
+  max-width: 500px;
 }
