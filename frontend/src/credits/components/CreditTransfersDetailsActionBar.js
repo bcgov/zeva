@@ -10,6 +10,7 @@ const CreditTransfersDetailsActionBar = (props) => {
     assertions,
     checkboxes,
     comment,
+    existingComments,
     setModalType,
     setShowModal,
     transferRole,
@@ -56,6 +57,8 @@ const CreditTransfersDetailsActionBar = (props) => {
                 data-testid="recommend-reject-transfer"
                 buttonType="reject"
                 optionalText="Recommend Rejection"
+                disabled={existingComments.length === 0}
+                buttonTooltip="Please provide a comment for the director to enable this button."
                 action={() => {
                   setModalType('recommend-reject')
                   setShowModal(true)
@@ -97,7 +100,9 @@ const CreditTransfersDetailsActionBar = (props) => {
               <Button
                 testid="recommend-approve-transfer"
                 buttonType="approve"
-                optionalText="Recommend transfer"
+                optionalText="Recommend Transfer"
+                disabled={existingComments.length === 0}
+                buttonTooltip="Please provide a comment for the director to enable this button."
                 action={() => {
                   setModalType('recommend-transfer')
                   setShowModal(true)

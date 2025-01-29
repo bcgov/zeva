@@ -529,6 +529,7 @@ const CreditTransfersDetailsPage = (props) => {
                   assertions={assertions}
                   checkboxes={checkboxes}
                   comment={comment}
+                  existingComments={transferCommentsIDIR}
                   transferRole={transferRole}
                   setModalType={setModalType}
                   setShowModal={setShowModal}
