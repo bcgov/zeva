@@ -167,6 +167,7 @@ CreditTransfersDetailsActionBar.propTypes = {
     PropTypes.oneOfType([PropTypes.string, PropTypes.number])
   ).isRequired,
   comment: PropTypes.string,
+  existingComments: PropTypes.arrayOf(PropTypes.shape()),
   transferRole: PropTypes.shape().isRequired,
   setModalType: PropTypes.func.isRequired,
   setShowModal: PropTypes.func.isRequired,
