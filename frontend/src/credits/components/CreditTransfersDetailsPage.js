@@ -19,6 +19,7 @@ import CreditTransfersAlert from './CreditTransfersAlert'
 import Alert from '../../app/components/Alert'
 import formatNumeric from '../../app/utilities/formatNumeric'
 import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers'
+import Button from '../../app/components/Button'
 import 'react-quill/dist/quill.snow.css'
 
 const CreditTransfersDetailsPage = (props) => {
@@ -105,7 +106,7 @@ const CreditTransfersDetailsPage = (props) => {
     .map((item) => item.comment)
 
   const handleCommentChange = (content) => {
-    setComment(content)
+    setComment(content === "<p><br></p>" ? "" : content)
   }
 
   const handleAddComment = () => {
@@ -401,15 +402,16 @@ const CreditTransfersDetailsPage = (props) => {
         formats={['bold', 'italic', 'list', 'bullet']}
         onChange={handleCommentChange}
       />
-      <button
-        className="button mt-2"
-        onClick={() => {
-          handleAddComment()
-        }}
-        type="button"
-      >
-        Add Comment
-      </button>
+      <div className="mt-2">
+        <Button
+          optionalText="Add Comment"
+          disabled={comment.length === 0}
+          buttonTooltip="Please type a comment to enable this button."
+          action={() => {
+            handleAddComment()
+          }}
+        />
+      </div>
     </div>
   )
   const tradePartnerSignoff = (
