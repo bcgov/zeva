@@ -126,7 +126,7 @@ const CreditRequestDetailsPage = (props) => {
         className="col-sm-11"
         rows="3"
         onChange={(event) => {
-          const commentValue = `<p>${event.target.value}</p>`
+          const commentValue = event.target.value.length === 0 ? "" : `<p>${event.target.value}</p>`
           setComment(commentValue)
         }}
       />
