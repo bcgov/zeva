@@ -216,8 +216,9 @@ const SupplierInformationContainer = (props) => {
           (yearTemp - 2).toString(),
           (yearTemp - 3).toString()
         ]
+        let isSupplied = yearTemp < 2024 ? false : true
         const previousSales = user.organization.ldvSales.filter(
-          sales => yearsArray.includes(sales.modelYear.toString())
+          sales => yearsArray.includes(sales.modelYear.toString()) && sales.isSupplied === isSupplied
         )
         previousSales.sort((a, b) => (a.modelYear > b.modelYear ? 1 : -1))
         const newOrg = {

@@ -10,15 +10,17 @@ const ComplianceReportSignOff = (props) => {
     handleCheckboxClick,
     disabledCheckboxes,
     hoverText,
-    user
+    user,
+    salesForecastDisplay,
   } = props
-
   return (
     <div id="compliance-sign-off" className="my-3">
       <ReactTooltip />
       <div data-tip={hoverText}>
-        {assertions.map((assertion) => (
-            <div key={assertion.id}>
+        {assertions
+          .filter((assertion) => salesForecastDisplay || !/Forecast/i.test(assertion.description))
+          .map((assertion) => (
+          <div key={assertion.id}>
             <div className="d-inline-block align-middle my-2 ml-2 mr-1">
               <input
                 checked={
@@ -59,7 +61,8 @@ ComplianceReportSignOff.defaultProps = {
   assertions: [],
   checkboxes: [],
   disabledCheckboxes: '',
-  hoverText: ''
+  hoverText: '',
+  salesForecastDisplay: false,
 }
 ComplianceReportSignOff.propTypes = {
   assertions: PropTypes.arrayOf(PropTypes.shape()),
@@ -69,7 +72,8 @@ ComplianceReportSignOff.propTypes = {
   ),
   handleCheckboxClick: PropTypes.func.isRequired,
   hoverText: PropTypes.string,
-  disabledCheckboxes: PropTypes.oneOfType([PropTypes.bool, PropTypes.string])
+  disabledCheckboxes: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
+  salesForecastDisplay: PropTypes.bool
 }
 
 export default ComplianceReportSignOff

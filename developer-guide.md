@@ -138,9 +138,16 @@ Here are a few examples of branch names:
 to view the database via docker use:
 docker-compose exec db psql -U postgres zeva
 
+#### Copy down dev data from local
+
+if you want to have a database full of fake data for testing without logging into openshift, there is a file called zeva-dev.tar in teams under Zeva>Database Files
+
+move that file into the openshift/scripts folder then rename the file to 'zeva.tar'. Run import-data-from-local.sh in terminal with your local postgres container as the only argument. Ensure that the tar file is deleted after running. Now you will have data locally and just need to assign userIds to the new users that have been imported in.
+
 #### Copy down Test/Prod data from Openshift
 
-Copy test/prod data into your local database using the /openshift/import-data.sh script
+Copy test/prod data into your local database using the
+/openshift/scripts/import-data.sh script
 This is a bash script that creates a pg_dump .tar file from and openshift postgres container
 and imports it into a local postgres container
 
@@ -175,3 +182,10 @@ DROP SCHEMA public cascade;
 CREATE SCHEMA public AUTHORIZATION postgres;
 
 then the script can be run.
+
+## Assign keycloak ids to users in local database
+
+if you have grabbed data from dev or test but can't log into any users, you can run the update_users.sql script to assign keycloak logins to users. The file is located in teams under Database Files. Save that to your local and then run the following lines of code to 1. copy it into your postres container on docker 2. go into that container 3. run the script within that container
+cp update_users.sql _containerID_:/update_users.sql
+docker exec -it _containerID_ bash
+psql -U postgres -d zeva -f /update_users.sql

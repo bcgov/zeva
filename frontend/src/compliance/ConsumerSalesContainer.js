@@ -31,8 +31,10 @@ const ConsumerSalesContainer = (props) => {
   const [statuses, setStatuses] = useState({})
   const [forecastRecords, setForecastRecords] = useState([])
   const [forecastTotals, setForecastTotals] = useState({})
+  const [saveTooltip, setSaveTooltip] = useState("");
+  const [isSaveDisabled, setIsSaveDisabled] = useState(false);
+  const [salesForecastDisplay, setSalesForecastDisplay] = useState(false)
   const { id } = useParams()
-
   const refreshDetails = (showLoading) => {
     setLoading(showLoading)
 
@@ -77,7 +79,9 @@ const ConsumerSalesContainer = (props) => {
 
           setModelYear(year)
           setStatuses(reportStatuses)
-
+          if (modelYear >= 2023) {
+            setSalesForecastDisplay(true)
+          }
           if (['SAVED', 'UNSAVED'].indexOf(
             reportStatuses.consumerSales.status
           ) < 0){
@@ -153,6 +157,32 @@ const ConsumerSalesContainer = (props) => {
     deleteModelYearReport(id, setLoading)
   }
 
+
+  useEffect(() => {
+    const checkDisableSave = () => {
+      if (checkboxes.length !== assertions.length) {
+        setSaveTooltip("Please ensure all confirmations checkboxes are checked");
+        return true;
+      }
+      if (
+        (!forecastTotals ||
+        !Object.values(forecastTotals).every(
+          (value) =>
+            (typeof value === "number" || (!isNaN(value))) && value !== null
+        )
+      ) && salesForecastDisplay) {
+        setSaveTooltip(
+          "Please ensure forecast spreadsheet is uploaded and totals are filled out"
+        );
+        return true;
+      }
+      setSaveTooltip(""); // Clear tooltip if conditions met
+      return false;
+    };
+    setIsSaveDisabled(checkDisableSave());
+  }, [checkboxes, forecastTotals]);
+
+
   useEffect(() => {
     refreshDetails(true)
   }, [keycloak.authenticated, modelYear])
@@ -186,6 +216,9 @@ const ConsumerSalesContainer = (props) => {
         setForecastRecords={setForecastRecords}
         forecastTotals={forecastTotals}
         setForecastTotals={setForecastTotals}
+        saveTooltip={saveTooltip}
+        isSaveDisabled={isSaveDisabled}
+        salesForecastDisplay={salesForecastDisplay}
       />
     </>
   )

@@ -27,6 +27,9 @@ class OrganizationLDVSales(Auditable):
         on_delete=models.PROTECT,
         null=False
     )
+    is_supplied = models.BooleanField(
+        default=False
+    )
 
     class Meta:
         db_table = "organization_ldv_sales"
