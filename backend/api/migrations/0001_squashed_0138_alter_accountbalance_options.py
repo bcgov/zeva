@@ -1810,7 +1810,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'account_balance',
-                'managed': False,
+                'managed': True,
             },
             bases=(models.Model, db_comments.model_mixins.DBComments),
         ),

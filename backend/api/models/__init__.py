@@ -15,7 +15,6 @@ from . import role, permission, role_permission, user_role
 from . import vehicle_class
 from . import fixture_migration
 from . import vehicle_attachment
-from . import account_balance
 from . import weight_class
 from . import sales_submission_content
 from . import address_type
