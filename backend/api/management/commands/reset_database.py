@@ -1,6 +1,7 @@
 from django.core.management import BaseCommand
 from django.db import connection
 from django.db import transaction
+from django.conf import settings
 from api.models.user_profile import UserProfile
 from api.models.organization import Organization
 
@@ -138,6 +139,10 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        if settings.ENV_NAME == "prod":
+            print("ERROR: This command is not allowed in the production environment.")
+            return
+
         is_removing_inactive_users = options["inactive_users"]
         is_removing_users_without_orgs = options["users_without_orgs"]
         is_removing_orgs_without_users = options["orgs_without_users"]
