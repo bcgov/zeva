@@ -74,12 +74,10 @@ class TestTransfers(BaseTestCase):
             dollar_value=dollar_value
         )
     def test_list_transfer(self):
-        def check_response():
-            response = self.clients['RTAN_BCEID'].get("/api/credit-transfers")
-            self.assertEqual(response.status_code, 200)
-            result = response.data
-            self.assertEqual(len(result), 2)
-        transaction.on_commit(check_response)
+        response = self.clients['RTAN_BCEID'].get("/api/credit-transfers")
+        self.assertEqual(response.status_code, 200)
+        result = response.data
+        self.assertEqual(len(result), 2)
 
     def test_list_transfer_as_partner(self):
         response = self.clients['EMHILLIE_BCEID'].get("/api/credit-transfers")
@@ -119,18 +117,26 @@ class TestTransfers(BaseTestCase):
 
 
     def test_transfer_pass(self):
-        """test that:
-         - a transfer is validated if supplier has enough credits,,
-         - organization balances are calculated correctly """
-        model_year=ModelYear.objects.get(name='2020')
-        credit_class=CreditClass.objects.get(credit_class="A")
-        give_org_credits(self.users['EMHILLIE_BCEID'].organization, 100, 4, model_year, credit_class)
+        """Test that:
+           - a transfer is validated if supplier has enough credits,
+           - organization balances are calculated correctly."""
+        model_year = ModelYear.objects.get(name='2020')
+        credit_class = CreditClass.objects.get(credit_class="A")
+        
+        give_org_credits(
+            self.users['EMHILLIE_BCEID'].organization, 
+            100, 
+            4, 
+            model_year, 
+            credit_class
+        )
+        
         transfer_enough = self.create_credit_transfer(
             self.users['RTAN_BCEID'].organization, 
             self.users['EMHILLIE_BCEID'].organization,
             'RECOMMEND_APPROVAL'
         )
-
+        
         self.create_credit_transfer_content(
             transfer_enough,
             model_year,
@@ -138,23 +144,19 @@ class TestTransfers(BaseTestCase):
             10,
             10
         )
-
+        
         validate_transfer(transfer_enough)
-
-        def check_balances():
-            seller_balance = Organization.objects.filter(
-                id=self.users['EMHILLIE_BCEID'].organization.id
-            ).first().balance['A']
-
-            buyer_balance = Organization.objects.filter(
-                id=self.users['RTAN_BCEID'].organization.id
-            ).first().balance['A']
-
-            self.assertEqual(seller_balance, 390)
-            self.assertEqual(buyer_balance, 10)
-
-        transaction.on_commit(check_balances)
-
+        
+        seller_balance = Organization.objects.get(
+            id=self.users['EMHILLIE_BCEID'].organization.id
+        ).balance['A']
+        
+        buyer_balance = Organization.objects.get(
+            id=self.users['RTAN_BCEID'].organization.id
+        ).balance['A']
+        
+        self.assertEqual(seller_balance, 390)
+        self.assertEqual(buyer_balance, 10)
 
     def test_credit_transfer_create(self):
         """tets that transfer can be created and email sent"""
