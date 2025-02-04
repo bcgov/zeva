@@ -72,18 +72,28 @@ class AddBCEIDUsers(OperationalDataScript):
 
     @transaction.atomic
     def run(self):
-
-        organizations = Organization.objects.filter(
+        organizations = list(Organization.objects.filter(
             is_government=False,
             is_active=True
-        )
+        ))
 
+        num_users = len(self.list_of_users)
+        if len(organizations) < num_users:
+            num_to_create = num_users - len(organizations)
+            for i in range(num_to_create):
+                new_org = Organization.objects.create(
+                    name=f"Random Organization {i}-{random.randint(1, 10000)}",
+                    is_government=False,
+                    is_active=True,
+                )
+                organizations.append(new_org)
+
+        random.shuffle(organizations)
         users_added = 0
 
-        for user in self.list_of_users:
-            organization = random.choice(organizations)
-
-            (_, created) = UserProfile.objects.get_or_create(
+        for i, user in enumerate(self.list_of_users):
+            organization = organizations[i]
+            _, created = UserProfile.objects.get_or_create(
                 first_name=user.get("first_name"),
                 last_name=user.get("last_name"),
                 organization=organization,
@@ -99,6 +109,5 @@ class AddBCEIDUsers(OperationalDataScript):
                 users_added += 1
 
         print("Added {} BCEID Users.".format(users_added))
-
 
 script_class = AddBCEIDUsers

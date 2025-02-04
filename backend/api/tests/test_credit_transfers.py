@@ -2,6 +2,7 @@ import json
 from rest_framework.serializers import ValidationError
 from django.utils import timezone
 from django.db import transaction
+from unittest import skip
 from .base_test_case import BaseTestCase
 from ..models.credit_transfer import CreditTransfer
 from ..models.credit_transaction import CreditTransaction
@@ -11,6 +12,7 @@ from ..models.model_year import ModelYear
 from ..models.weight_class import WeightClass
 from ..models.credit_transaction_type import CreditTransactionType
 from ..services.credit_transaction import validate_transfer
+from ..services.credit_transaction import aggregate_credit_transfer_details
 from ..models.organization import Organization
 from ..models.signing_authority_confirmation import SigningAuthorityConfirmation
 from ..models.signing_authority_assertion import SigningAuthorityAssertion
@@ -72,12 +74,10 @@ class TestTransfers(BaseTestCase):
             dollar_value=dollar_value
         )
     def test_list_transfer(self):
-        def check_response():
-            response = self.clients['RTAN_BCEID'].get("/api/credit-transfers")
-            self.assertEqual(response.status_code, 200)
-            result = response.data
-            self.assertEqual(len(result), 2)
-        transaction.on_commit(check_response)
+        response = self.clients['RTAN_BCEID'].get("/api/credit-transfers")
+        self.assertEqual(response.status_code, 200)
+        result = response.data
+        self.assertEqual(len(result), 2)
 
     def test_list_transfer_as_partner(self):
         response = self.clients['EMHILLIE_BCEID'].get("/api/credit-transfers")
@@ -117,18 +117,26 @@ class TestTransfers(BaseTestCase):
 
 
     def test_transfer_pass(self):
-        """test that:
-         - a transfer is validated if supplier has enough credits,,
-         - organization balances are calculated correctly """
-        model_year=ModelYear.objects.get(name='2020')
-        credit_class=CreditClass.objects.get(credit_class="A")
-        give_org_credits(self.users['EMHILLIE_BCEID'].organization, 100, 4, model_year, credit_class)
+        """Test that:
+           - a transfer is validated if supplier has enough credits,
+           - organization balances are calculated correctly."""
+        model_year = ModelYear.objects.get(name='2020')
+        credit_class = CreditClass.objects.get(credit_class="A")
+        
+        give_org_credits(
+            self.users['EMHILLIE_BCEID'].organization, 
+            100, 
+            4, 
+            model_year, 
+            credit_class
+        )
+        
         transfer_enough = self.create_credit_transfer(
             self.users['RTAN_BCEID'].organization, 
             self.users['EMHILLIE_BCEID'].organization,
             'RECOMMEND_APPROVAL'
         )
-
+        
         self.create_credit_transfer_content(
             transfer_enough,
             model_year,
@@ -136,23 +144,19 @@ class TestTransfers(BaseTestCase):
             10,
             10
         )
-
+        
         validate_transfer(transfer_enough)
-
-        def check_balances():
-            seller_balance = Organization.objects.filter(
-                id=self.users['EMHILLIE_BCEID'].organization.id
-            ).first().balance['A']
-
-            buyer_balance = Organization.objects.filter(
-                id=self.users['RTAN_BCEID'].organization.id
-            ).first().balance['A']
-
-            self.assertEqual(seller_balance, 390)
-            self.assertEqual(buyer_balance, 10)
-
-        transaction.on_commit(check_balances)
-
+        
+        seller_balance = Organization.objects.get(
+            id=self.users['EMHILLIE_BCEID'].organization.id
+        ).balance['A']
+        
+        buyer_balance = Organization.objects.get(
+            id=self.users['RTAN_BCEID'].organization.id
+        ).balance['A']
+        
+        self.assertEqual(seller_balance, 390)
+        self.assertEqual(buyer_balance, 10)
 
     def test_credit_transfer_create(self):
         """tets that transfer can be created and email sent"""
@@ -300,3 +304,51 @@ class TestTransfers(BaseTestCase):
         org_deficits_list.sort(key=lambda x: (x['credit_class'], x['model_year']))
         org_deficits_new_list.sort(key=lambda x: (x['credit_class'], x['model_year']))
         self.assertEqual(org_deficits_list, org_deficits_new_list)
+
+    def test_aggr_credit_transfer_details(self):
+        """Test the aggregate_credit_transfer_details function."""
+        CreditTransferContent.objects.all().delete()
+        CreditTransfer.objects.all().delete()
+
+        model_year = ModelYear.objects.get(name='2020')
+        credit_class = CreditClass.objects.get(credit_class='A')
+        weight_class = WeightClass.objects.get(weight_class_code='LDV')
+
+        give_org_credits(self.org1, 100, 4, model_year, credit_class)
+
+        transfer1 = self.create_credit_transfer(self.org3, self.org1, 'APPROVED')
+        self.create_credit_transfer_content(transfer1, model_year, credit_class, 50, 500)
+
+        transfer2 = self.create_credit_transfer(self.org1, self.org3, 'RECOMMEND_APPROVAL')
+        self.create_credit_transfer_content(transfer2, model_year, credit_class, 30, 300)
+
+        balance = aggregate_credit_transfer_details(self.org1.id)
+
+        self.assertEqual(len(balance), 1)  
+        result = balance[0]
+        self.assertEqual(result['credit'], 30)  # Credits received by org1
+        self.assertEqual(result['debit'], 50)   # Debits sent by org1
+        self.assertEqual(result['credit_value'], -20)  # Net balance
+
+    def test_aggr_credit_transfer_invalid_status(self):
+        """Test that transfers with invalid statuses are ignored."""
+        CreditTransferContent.objects.all().delete()
+        CreditTransfer.objects.all().delete()
+
+        model_year = ModelYear.objects.get(name='2020')
+        credit_class = CreditClass.objects.get(credit_class='A')
+
+        transfer = self.create_credit_transfer(self.org1, self.org3, 'DRAFT')
+        self.create_credit_transfer_content(transfer, model_year, credit_class, 100, 1000)
+
+        balance = aggregate_credit_transfer_details(self.org1.id)
+
+        self.assertEqual(len(balance), 0)  
+
+    def test_aggr_credit_transfer_no_transfers(self):
+        """Test aggregate_credit_transfer_details with no transfers."""
+        CreditTransferContent.objects.all().delete()
+        CreditTransfer.objects.all().delete()
+
+        balance = aggregate_credit_transfer_details(self.org1.id)
+        self.assertEqual(len(balance), 0)  
