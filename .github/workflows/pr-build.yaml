@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [labeled, synchronize]
     branches:
-      - release-1.65.0
+      - release-1.66.0
     paths:
       - frontend/**
       - backend/**
@@ -33,7 +33,7 @@ jobs:
         id: cache
         uses: actions/cache@v4.2.0
         with:
-          path: /usr/local/bin/oc  # Path where the `oc` binary will be installed
+          path: /usr/local/bin/oc # Path where the `oc` binary will be installed
           key: oc-cli-${{ runner.os }}
 
       - name: Install OpenShift CLI (if not cached)
@@ -72,7 +72,7 @@ jobs:
         with:
           path: /usr/local/bin/oc
           key: oc-cli-${{ runner.os }}
-  
+
       - name: Log in to Openshift
         uses: redhat-actions/oc-login@v1.3
         with:
@@ -116,7 +116,7 @@ jobs:
         with:
           path: /usr/local/bin/oc
           key: oc-cli-${{ runner.os }}
-  
+
       - name: Log in to Openshift
         uses: redhat-actions/oc-login@v1.3
         with:
@@ -162,7 +162,7 @@ jobs:
         with:
           path: /usr/local/bin/oc
           key: oc-cli-${{ runner.os }}
-    
+
       - name: Log in to Openshift
         uses: redhat-actions/oc-login@v1.3
         with:
@@ -220,7 +220,7 @@ jobs:
           replace: "${{ env.PR_NUMBER }}"
           include: "zeva/values-dev-pr.yaml"
           regex: false
-          
+
       - name: Restore oc command from Cache
         uses: actions/cache@v4.2.0
         with:
