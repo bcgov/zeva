@@ -150,10 +150,11 @@ class CreditAgreementViewSet(
         comment_text = request.data.get("comment_text")
         username = request.user.username
         comment = get_comment(comment_id)
-        if username == comment.create_user:
-            updated_comment = update_comment_text(comment, comment_text)
-            serializer = CreditAgreementCommentSerializer(updated_comment)
-            return Response(serializer.data)
+        if comment:
+            if username == comment.create_user:
+                updated_comment = update_comment_text(comment, comment_text)
+                serializer = CreditAgreementCommentSerializer(updated_comment)
+                return Response(serializer.data)
         return Response(status=status.HTTP_403_FORBIDDEN)
 
     @action(detail=True, methods=["PATCH"])

@@ -1,17 +1,20 @@
-import axios from 'axios'
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import CONFIG from '../app/config'
-import history from '../app/History'
-import Loading from '../app/components/Loading'
-import ROUTES_COMPLIANCE from '../app/routes/Compliance'
-import CustomPropTypes from '../app/utilities/props'
-import ComplianceReportTabs from './components/ComplianceReportTabs'
-import ComplianceReportSummaryDetailsPage from './components/ComplianceReportSummaryDetailsPage'
-import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions'
-import deleteModelYearReport from '../app/utilities/deleteModelYearReport'
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useParams, useLocation } from "react-router-dom";
+import CONFIG from "../app/config";
+import history from "../app/History";
+import ROUTES_COMPLIANCE from "../app/routes/Compliance";
+import urlInsertIdAndYear from "../app/utilities/urlInsertIdAndYear";
+import CustomPropTypes from "../app/utilities/props";
+import ComplianceReportTabs from "./components/ComplianceReportTabs";
+import ComplianceReportSummaryDetailsPage from "./components/ComplianceReportSummaryDetailsPage";
+import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from "../app/routes/SigningAuthorityAssertions";
+import deleteModelYearReport from "../app/utilities/deleteModelYearReport";
+import qs from "qs";
 
 const ComplianceReportSummaryContainer = (props) => {
+  const location = useLocation();
+  const query = qs.parse(location.search, { ignoreQueryPrefix: true });
   const { user } = props
   const [loading, setLoading] = useState(true)
   const { id } = useParams()
@@ -24,7 +27,7 @@ const ComplianceReportSummaryContainer = (props) => {
   const [creditActivityDetails, setCreditActivityDetails] = useState({})
   const [pendingBalanceExist, setPendingBalanceExist] = useState(false)
   const [modelYear, setModelYear] = useState(
-    CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR
+    isNaN(query.year) ? CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR : parseInt(query.year)
   )
   const [assertions, setAssertions] = useState([])
 
@@ -49,7 +52,7 @@ const ComplianceReportSummaryContainer = (props) => {
 
     axios.patch(ROUTES_COMPLIANCE.REPORT_SUBMISSION.replace(':id', id), data).then(() => {
       history.push(ROUTES_COMPLIANCE.REPORTS)
-      history.replace(ROUTES_COMPLIANCE.REPORT_SUMMARY.replace(':id', id))
+      history.replace(urlInsertIdAndYear(ROUTES_COMPLIANCE.REPORT_SUMMARY, id, modelYear))
     })
   }
 
@@ -366,9 +369,6 @@ const ComplianceReportSummaryContainer = (props) => {
   useEffect(() => {
     refreshDetails()
   }, [id])
-  if (loading) {
-    return <Loading />
-  }
 
   return (
     <>

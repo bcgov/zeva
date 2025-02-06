@@ -1,18 +1,19 @@
-import React, { useState } from 'react'
-import PropTypes from 'prop-types'
-import CustomPropTypes from '../../app/utilities/props'
-import Loading from '../../app/components/Loading'
-import ComplianceReportAlert from './ComplianceReportAlert'
-import Button from '../../app/components/Button'
-import Modal from '../../app/components/Modal'
-import history from '../../app/History'
-import ComplianceReportSignOff from './ComplianceReportSignOff'
-import ConsumerSalesLDVModalTable from './ConsumerSalesLDVModelTable'
-import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
-import ComplianceReportDeleteModal from './ComplianceReportDeleteModal'
-import RecordsUpload from '../../salesforecast/components/RecordsUpload'
-import RecordsTable from '../../salesforecast/components/RecordsTable'
-import TotalsTable from '../../salesforecast/components/TotalsTable'
+import React, { useState } from "react";
+import PropTypes from "prop-types";
+import CustomPropTypes from "../../app/utilities/props";
+import Loading from "../../app/components/Loading";
+import ComplianceReportAlert from "./ComplianceReportAlert";
+import Button from "../../app/components/Button";
+import Modal from "../../app/components/Modal";
+import history from "../../app/History";
+import ComplianceReportSignOff from "./ComplianceReportSignOff";
+import ConsumerSalesLDVModalTable from "./ConsumerSalesLDVModelTable";
+import ROUTES_COMPLIANCE from "../../app/routes/Compliance";
+import urlInsertIdAndYear from "../../app/utilities/urlInsertIdAndYear";
+import ComplianceReportDeleteModal from "./ComplianceReportDeleteModal";
+import RecordsUpload from "../../salesforecast/components/RecordsUpload";
+import RecordsTable from "../../salesforecast/components/RecordsTable";
+import TotalsTable from "../../salesforecast/components/TotalsTable";
 
 const ConsumerSalesDetailsPage = (props) => {
   const {
@@ -34,7 +35,10 @@ const ConsumerSalesDetailsPage = (props) => {
     forecastRecords,
     setForecastRecords,
     forecastTotals,
-    setForecastTotals
+    setForecastTotals,
+    saveTooltip,
+    isSaveDisabled,
+    salesForecastDisplay
   } = props
 
   const [showModal, setShowModal] = useState(false)
@@ -87,12 +91,6 @@ const ConsumerSalesDetailsPage = (props) => {
     }
   }
 
-  const disableSave = () => {
-    if (checkboxes.length !== assertions.length) {
-      return true
-    }
-    return false
-  }
 
   return (
     <div id="compliance-consumer-sales-details" className="page">
@@ -188,7 +186,7 @@ const ConsumerSalesDetailsPage = (props) => {
               </div>
             </div>
           </div>
-          {modelYear >= 2023 &&
+          {salesForecastDisplay &&
             <div className="p-3 forecast-report">
               <label className="text-blue mr-4 font-weight-bold">
                 Forecast Report
@@ -223,6 +221,7 @@ const ConsumerSalesDetailsPage = (props) => {
           <div className="row">
             <div className="col-12 my-3">
             <ComplianceReportSignOff
+              salesForecastDisplay={salesForecastDisplay}
               assertions={assertions}
               checkboxes={checkboxes}
               handleCheckboxClick={handleCheckboxClick}
@@ -257,21 +256,21 @@ const ConsumerSalesDetailsPage = (props) => {
                     optionalClassname="button"
                     optionalText="Next"
                     action={() => {
-                      history.push(
-                        ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY.replace(
-                          ':id',
-                          id
-                        )
-                      )
+                      history.push(urlInsertIdAndYear(
+                        ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY,
+                        id,
+                        modelYear
+                      ))
                     }}
                   />
                   {!user.isGovernment && (
                     <Button
+                      buttonTooltip={saveTooltip}
                       buttonType="save"
                       disabled={ buttonClicked ||
                         ['SAVED', 'UNSAVED'].indexOf(
                           statuses.consumerSales.status
-                        ) < 0 || disableSave()
+                        ) < 0 || isSaveDisabled
                       }
                       optionalClassname="button primary"
                       action={(event) => {
@@ -296,7 +295,8 @@ const ConsumerSalesDetailsPage = (props) => {
 }
 ConsumerSalesDetailsPage.defaultProps = {
   assertions: [],
-  checkboxes: []
+  checkboxes: [],
+  salesForecastDisplay: false,
 }
 
 ConsumerSalesDetailsPage.propTypes = {
@@ -319,5 +319,8 @@ ConsumerSalesDetailsPage.propTypes = {
   modelYear: PropTypes.number.isRequired,
   statuses: PropTypes.shape().isRequired,
   handleDelete: PropTypes.func.isRequired,
+  saveTooltip: PropTypes.string.isRequired,
+  isSaveDisabled: PropTypes.bool.isRequired,
+  salesForecastDisplay: PropTypes.bool,
 }
 export default ConsumerSalesDetailsPage

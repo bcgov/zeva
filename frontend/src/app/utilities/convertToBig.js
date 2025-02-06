@@ -20,7 +20,7 @@ const convertCarryOverDeficits = (deficits) => {
     const bigZero = new Big(0)
     Object.keys(deficits).forEach((year) => {
       deficits[year].A = deficits[year].A ? new Big(deficits[year].A) : bigZero
-      deficits[year].unspecified = deficits[year].unspecified ? new Big(deficits[year].B) : bigZero
+      deficits[year].unspecified = deficits[year].unspecified ? new Big(deficits[year].unspecified) : bigZero
     })
 }
 

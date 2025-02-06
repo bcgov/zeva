@@ -1,15 +1,16 @@
-import PropTypes from 'prop-types'
-import React from 'react'
+import PropTypes from "prop-types";
+import React from "react";
 
-import ReactTable from '../../app/components/ReactTable'
-import CustomPropTypes from '../../app/utilities/props'
-import history from '../../app/History'
-import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
-import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport'
-import formatNumeric from '../../app/utilities/formatNumeric'
-import getClassAReduction from '../../app/utilities/getClassAReduction'
-import getTotalReduction from '../../app/utilities/getTotalReduction'
-import formatStatus from '../../app/utilities/formatStatus'
+import ReactTable from "../../app/components/ReactTable";
+import CustomPropTypes from "../../app/utilities/props";
+import history from "../../app/History";
+import ROUTES_COMPLIANCE from "../../app/routes/Compliance";
+import urlInsertIdAndYear from "../../app/utilities/urlInsertIdAndYear";
+import ROUTES_SUPPLEMENTARY from "../../app/routes/SupplementaryReport";
+import formatNumeric from "../../app/utilities/formatNumeric";
+import getClassAReduction from "../../app/utilities/getClassAReduction";
+import getTotalReduction from "../../app/utilities/getTotalReduction";
+import formatStatus from "../../app/utilities/formatStatus";
 
 const ComplianceReportsTable = (props) => {
   const { user, data, showSupplier, filtered, ratios, setFiltered } = props
@@ -184,23 +185,24 @@ const ComplianceReportsTable = (props) => {
 
   return (
     <ReactTable
-        className="compliance-reports-table"
-        columns={columns}
-        data={data}
-        filterable
-        filtered={filtered}
-        showPagination={true}
+      className="compliance-reports-table"
+      columns={columns}
+      data={data}
+      filterable
+      filtered={filtered}
+      showPagination={true}
       setFiltered={setFiltered}
-        getTrProps={(state, row) => {
-          if (row && row.original && user) {
-            return {
-              onClick: () => {
-                const {
-                  id,
-                  validationStatus,
-                  supplementalId,
-                  supplementalStatus
-                } = row.original
+      getTrProps={(state, row) => {
+        if (row && row.original && user) {
+          return {
+            onClick: () => {
+              const {
+                id,
+                modelYear,
+                validationStatus,
+                supplementalId,
+                supplementalStatus
+              } = row.original
 
               if (
                 supplementalStatus === 'SUPPLEMENTARY SUBMITTED' &&
@@ -232,12 +234,11 @@ const ComplianceReportsTable = (props) => {
                 )
               } else {
                 // Default show the supplier information page
-                history.push(
-                  ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(
-                    /:id/g,
-                    id
-                  )
-                )
+                history.push(urlInsertIdAndYear(
+                  ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION,
+                  id,
+                  modelYear.name
+                ))
               }
             },
             className: 'clickable'

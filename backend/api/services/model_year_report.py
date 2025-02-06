@@ -205,12 +205,15 @@ def adjust_credits_reassessment(id, request):
     organization_id = model_year_report.organization.id
     ldv_sales = reassessment.ldv_sales
     if ldv_sales:
+        model_year_int = int(model_year_report.model_year.name)
+        is_supplied = False if model_year_int < 2024 else True
         OrganizationLDVSales.objects.update_or_create(
             organization_id=organization_id,
             model_year_id=model_year_id,
+            is_supplied=is_supplied,
             defaults={
-            'ldv_sales': ldv_sales,
-            'update_user': request.user.username
+                'ldv_sales': ldv_sales,
+                'update_user': request.user.username
             }
         )
 
@@ -284,9 +287,11 @@ def adjust_credits(id, request):
         model_year_report_id=id
     ).order_by('-update_timestamp').first()
 
+    is_supplied = False if int(model_year) < 2024 else True
     OrganizationLDVSales.objects.update_or_create(
         organization_id=organization_id,
         model_year_id=model_year_id,
+        is_supplied=is_supplied,
         defaults={
             'ldv_sales': ldv_sales,
             'update_user': request.user.username
@@ -363,6 +368,8 @@ def adjust_credits(id, request):
                         credit_transaction_id=added_transaction.id
                     )
 
+    OrganizationDeficits.objects.filter(organization_id=organization_id).delete()
+
     deficits = ModelYearReportComplianceObligation.objects.filter(
         model_year_report_id=id,
         category='CreditDeficit',
@@ -370,41 +377,30 @@ def adjust_credits(id, request):
     )
 
     for deficit in deficits:
+        deficit_model_year_id = deficit.model_year_id
         if deficit.credit_a_value > 0:
             OrganizationDeficits.objects.update_or_create(
                 credit_class=credit_class_a,
                 organization_id=organization_id,
-                model_year_id=model_year_id,
+                model_year_id=deficit_model_year_id,
                 defaults={
                     'credit_value': deficit.credit_a_value,
                     'create_user': request.user.username,
                     'update_user': request.user.username
                 }
             )
-        else:
-            OrganizationDeficits.objects.filter(
-                credit_class=credit_class_a,
-                organization_id=organization_id,
-                model_year_id=model_year_id
-            ).delete()
-
         if deficit.credit_b_value > 0:
             OrganizationDeficits.objects.update_or_create(
                 credit_class=credit_class_b,
                 organization_id=organization_id,
-                model_year_id=model_year_id,
+                model_year_id=deficit_model_year_id,
                 defaults={
                     'credit_value': deficit.credit_b_value,
                     'create_user': request.user.username,
                     'update_user': request.user.username
                 }
             )
-        else:
-            OrganizationDeficits.objects.filter(
-                credit_class=credit_class_b,
-                organization_id=organization_id,
-                model_year_id=model_year_id
-            ).delete()
+
 
 def check_validation_status_change(old_status, updated_model_year_report):
         new_status = updated_model_year_report.validation_status

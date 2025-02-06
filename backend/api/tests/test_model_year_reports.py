@@ -5,6 +5,7 @@ from rest_framework.serializers import ValidationError
 
 from .base_test_case import BaseTestCase
 from ..models.model_year_report import ModelYearReport
+from ..models.model_year_report_compliance_obligation import ModelYearReportComplianceObligation
 from ..models.supplemental_report import SupplementalReport
 from ..models.model_year_report_statuses import ModelYearReportStatuses
 from ..models.model_year_report_assessment import ModelYearReportAssessment
@@ -12,7 +13,9 @@ from ..models.model_year_report_assessment_descriptions import ModelYearReportAs
 from ..models.model_year_report_ldv_sales import ModelYearReportLDVSales
 from ..models.organization import Organization
 from ..models.model_year import ModelYear
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
+
+from api.models import model_year
 
 CONTENT_TYPE = 'application/json'
 
@@ -33,25 +36,68 @@ class TestModelYearReports(BaseTestCase):
             model_year=ModelYear.objects.get(effective_date='2021-01-01'),
             credit_reduction_selection='A'
         )
+
+        self.report = model_year_report
+
         supplementary_report = SupplementalReport.objects.create(
             model_year_report=model_year_report,
             create_user='EMHILLIE_BCEID',
             status=ModelYearReportStatuses.DRAFT,
         )
+
         model_year_report_assessment_description = ModelYearReportAssessmentDescriptions.objects.create(
           description='test',
           display_order=1
         )
+
         model_year_report_assessment = ModelYearReportAssessment.objects.create(
             model_year_report=model_year_report,
             model_year_report_assessment_description=model_year_report_assessment_description,
             penalty=20.00
         )
+
         reassessment_report = SupplementalReport.objects.create(
             model_year_report=model_year_report,
             supplemental_id=supplementary_report.id,
             create_user='RTAN',
             status=ModelYearReportStatuses.DRAFT,
+        )
+
+        ModelYearReportComplianceObligation.objects.create(
+            model_year_report=model_year_report,
+            model_year = ModelYear.objects.get(effective_date='2021-01-01'),
+            category='ClassAReduction',
+            credit_a_value=100.00,
+            credit_b_value=50.00,
+            reduction_value=10.00,
+            from_gov=False
+        )
+
+        ModelYearReportComplianceObligation.objects.create(
+            model_year_report=model_year_report,
+            model_year = ModelYear.objects.get(effective_date='2021-01-01'),
+            category='CreditDeficit',
+            credit_a_value=200.00,
+            credit_b_value=100.00,
+            reduction_value=20.00,
+            from_gov=True
+        )
+
+        ModelYearReportComplianceObligation.objects.create(
+            model_year_report=model_year_report,
+            model_year = ModelYear.objects.get(effective_date='2021-01-01'),
+            category='UnrelatedCategory',  # This should be filtered out
+            credit_a_value=300.00,
+            credit_b_value=150.00,
+            reduction_value=30.00,
+            from_gov=False
+        )
+
+        self.ldv_sales = ModelYearReportLDVSales.objects.create(
+                model_year=model_year_report.model_year,
+                model_year_report=model_year_report,
+                ldv_sales=100,
+                from_gov=False
         )
 
     def test_status(self):
@@ -60,7 +106,30 @@ class TestModelYearReports(BaseTestCase):
         result = response.data
         self.assertEqual(len(result), 1)
 
-    
+    def test_get_ldv_sales_with_year_success(self):
+        result = self.report.get_ldv_sales_with_year()
+        self.assertIsNotNone(result)
+        self.assertEqual(result['sales'], 100)
+        self.assertEqual(result['year'], '2021')
+
+    def test_get_ldv_sales_with_year_no_match(self):
+        result = self.report.get_ldv_sales_with_year(from_gov=True)
+        self.assertIsNone(result)
+
+    def test_get_ldv_sales_with_year_gov_record(self):
+        ModelYearReportLDVSales.objects.create(
+            model_year = ModelYear.objects.get(effective_date='2021-01-01'),
+            model_year_report=self.report,
+            from_gov=True,
+            display=True,
+            ldv_sales=165
+        )
+        result = self.report.get_ldv_sales_with_year(from_gov=True)
+        self.assertIsNotNone(result)
+        self.assertEqual(result['sales'], 165)
+        self.assertEqual(result['year'], '2021')
+
+
     def test_assessment_patch_response(self):
         with patch('api.services.send_email.send_model_year_report_emails') as mock_send_model_year_report_emails:
         
@@ -132,3 +201,64 @@ class TestModelYearReports(BaseTestCase):
         # # check that second record is updated, and no new record created
         # self.assertEqual(sales_records.count(), 2)
         # self.assertEqual(sales_record.ldv_sales, 50)
+
+    
+    def test_get_avg_sales_with_organization_sales(self):
+        self.report.organization.get_avg_ldv_sales = MagicMock(return_value=300)
+
+        result = self.report.get_avg_sales()
+        self.assertEqual(result, 300)
+
+    def test_get_avg_sales_without_any_sales_data(self):
+        self.report.organization.get_avg_ldv_sales = MagicMock(return_value=None)
+        ModelYearReportLDVSales.objects.all().delete()
+
+        result = self.report.get_avg_sales()
+        self.assertIsNone(result)
+
+    def test_get_avg_sales_with_multiple_report_sales(self):
+        self.report.organization.get_avg_ldv_sales = MagicMock(return_value=None)
+
+        ModelYearReportLDVSales.objects.create(
+            model_year_report=self.report,
+            model_year=ModelYear.objects.get(effective_date='2021-01-01'),
+            display=True,
+            ldv_sales=400,
+            update_timestamp="2023-01-01 10:00:00"
+        )
+
+        latest_sales = ModelYearReportLDVSales.objects.create(
+            model_year_report=self.report,
+            model_year=ModelYear.objects.get(effective_date='2021-01-01'),
+            display=True,
+            ldv_sales=600,
+            update_timestamp="2023-02-01 10:00:00"
+        )
+
+        result = self.report.get_avg_sales()
+        self.assertEqual(result, latest_sales.ldv_sales)
+
+    def test_get_credit_reductions(self):
+        results = self.report.get_credit_reductions()
+
+        self.assertEqual(results.count(), 2) 
+        categories = [entry.category for entry in results]
+        self.assertIn('ClassAReduction', categories)
+        self.assertIn('CreditDeficit', categories)
+        self.assertNotIn('SomeOtherCategory', categories)
+
+    def test_get_credit_reductions_without_matching_categories(self):
+        ModelYearReportComplianceObligation.objects.all().delete()
+
+        ModelYearReportComplianceObligation.objects.create(
+            model_year_report=self.report,
+            model_year=ModelYear.objects.get(effective_date='2021-01-01'),
+            category='NonMatchingCategory',
+            credit_a_value=200.00,
+            credit_b_value=100.00
+        )
+
+        reductions = self.report.get_credit_reductions()
+
+        self.assertIsNone(reductions)
+

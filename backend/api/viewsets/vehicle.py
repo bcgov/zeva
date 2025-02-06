@@ -74,7 +74,7 @@ class VehicleViewSet(
     @method_decorator(permission_required('VIEW_ZEV'))
     def list(self, request):
         """
-        Get all the organizations
+        Get the vehicles
         """
         vehicles = self.get_queryset()
 

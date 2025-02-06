@@ -30,8 +30,14 @@ class CreditAgreementSerializer(UserSerializerMixin):
 
     def get_comments(self, obj):
         request = self.context.get('request')
-        agreement_comment = CreditAgreementComment.objects.filter(
+        if request.user.is_government:
+            agreement_comment = CreditAgreementComment.objects.filter(
             credit_agreement=obj
+        ).order_by('-create_timestamp')
+        else:
+            agreement_comment = CreditAgreementComment.objects.filter(
+            credit_agreement=obj,
+            to_director=False
         ).order_by('-create_timestamp')
 
         if agreement_comment.exists():

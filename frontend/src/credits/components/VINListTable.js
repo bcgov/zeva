@@ -323,6 +323,7 @@ const VINListTable = (props) => {
       page={page - 1}
       pages={calculateNumberOfPages(itemsCount, pageSize)}
       pageSize={pageSize}
+      minRows={1}
       sorted={sorts}
       filtered={filters}
       onPageChange={(pageIndex) => {
