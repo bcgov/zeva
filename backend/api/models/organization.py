@@ -139,23 +139,29 @@ class Organization(Auditable):
             if date.today().month < 10:
                 year -= 1
         is_supplied = False if year < 2024 else True
-
         sales = self.ldv_sales.filter(
             model_year__name__lte=year
         ).filter(is_supplied=is_supplied).values_list(
             'ldv_sales', flat=True
         )[:3]
-
-        if sales.count() < 3:
-            sales = self.ldv_sales.filter(model_year__name=year).filter(
-                is_supplied=is_supplied
-            ).values_list(
-                'ldv_sales', flat=True
-            )[:1]
+        if is_supplied == True and sales.count() < 3:
+            # If there aren't enough Supplied values, show Sales average
+            sales = self.ldv_sales.filter(
+                 model_year__name__lte=year
+                ).filter(is_supplied=False).values_list(
+                'ldv_sales', flat=True)[:3]
+            if sales.count() < 3:
+                # if there are less than 3 supplied or sales, show the 1 
+                # most recent supplied
+                sales = self.ldv_sales.filter(model_year__name=year).filter(
+                    is_supplied=is_supplied
+                ).values_list(
+                    'ldv_sales', flat=True
+                )[:1]
 
             if not sales:
                 return None
-
+        
         return sum(list(sales)) / len(sales)
 
     def get_current_class(self, year=None, avg_sales=None):
@@ -179,6 +185,33 @@ class Organization(Auditable):
             return 'L'
 
         return 'M'
+    
+    @property
+    def supplied_or_sales(self, year=None):
+        if not year:
+            year = date.today().year
+
+            if date.today().month < 10:
+                year -= 1
+        is_supplied = False if year < 2024 else True
+        sales = self.ldv_sales.filter(
+            model_year__name__lte=year
+        ).filter(is_supplied=is_supplied).values_list(
+            'ldv_sales', flat=True
+        )[:3]
+        if is_supplied == True and sales.count() < 3:
+            # If there aren't enough Supplied values, show Sales average
+            sales = self.ldv_sales.filter(
+                model_year__name__lte=year
+                ).filter(is_supplied=False).values_list(
+                'ldv_sales', flat=True)[:3]
+            if sales.count() < 3:
+                ## future manufacturers not have 3 sales or supplied
+                ## so fallback to supplied
+                return 'Supplied'
+            else:
+                return 'Sales'
+        return "Supplied" if is_supplied else "Sales"
 
     @property
     def supplier_class(self):
