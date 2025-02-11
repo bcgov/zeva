@@ -119,8 +119,8 @@ const VehicleSupplierDetailsPage = (props) => {
           </div>
 
           <div className="mt-3">
-            <h4 className="d-inline">3 Year Average Vehicles {details.suppliedOrSales}: </h4>
-            <span> {formatNumeric(Math.round(details.avgLdvSales), 0)} </span>
+            <h4 className="d-inline">3 Year Average Vehicles {details.avgLdvSales[1]}: </h4>
+            <span> {formatNumeric(Math.round(details.avgLdvSales[0]), 0)} </span>
           </div>
 
           <div className="mt-3">

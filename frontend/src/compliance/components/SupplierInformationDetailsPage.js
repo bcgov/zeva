@@ -213,7 +213,7 @@ const SupplierInformationDetailsPage = (props) => {
                       </h4>
                     </span>
                     <span className="col-6">
-                      {FormatNumeric(details.organization.avgLdvSales, 0)}
+                      {FormatNumeric(details.organization.avgLdvSales[0], 0)}
                     </span>
                   </div>
                 </div>

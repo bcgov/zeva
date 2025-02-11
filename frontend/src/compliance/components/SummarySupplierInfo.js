@@ -60,7 +60,7 @@ const SummarySupplierInfo = ({
           </div>
           <span className="text-black">
             {' '}
-            {formatNumeric(organization.avgLdvSales, 0)}{' '}
+            {formatNumeric(organization.avgLdvSales[0], 0)}{' '}
           </span>
         </div>
         <div className="d-block my-3">
