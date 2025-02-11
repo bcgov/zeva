@@ -160,7 +160,8 @@ class Organization(Auditable):
                 sales = self.filter_sales_supplied(year, is_supplied)[:1]
 
             if not sales:
-                return None
+                return None, None
+
         sales_or_supplied = 'Supplied' if is_supplied else 'Sales'
         
         return sum(list(sales)) / len(sales), sales_or_supplied

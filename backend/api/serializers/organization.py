@@ -26,10 +26,9 @@ class OrganizationSerializer(serializers.ModelSerializer):
     Loads most of the fields and the balance for the Supplier
     """
     organization_address = serializers.SerializerMethodField()
-    avg_ldv_sales = serializers.SerializerMethodField()
     ldv_sales = OrganizationLDVSalesSerializer(many=True)
     first_model_year = serializers.SerializerMethodField()
-
+    
     def get_organization_address(self, obj):
         """
         Loads the latest valid address for the organization
@@ -42,21 +41,25 @@ class OrganizationSerializer(serializers.ModelSerializer):
         )
 
         return serializer.data
-
-    def get_avg_ldv_sales(self, obj):
-        return obj.get_avg_ldv_sales()
     
     def get_first_model_year(self, obj):
         if obj.first_model_year is not None:
             return obj.first_model_year.name
         return None
-
+    
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        x, y = instance.get_avg_ldv_sales()
+        ret["avg_ldv_sales"] = x
+        ret["supplied_or_sales"] = y
+        return ret
+    
     class Meta:
         model = Organization
         fields = (
             'id', 'name', 'create_timestamp', 'organization_address',
             'balance', 'is_active', 'short_name', 'is_government',
-            'supplier_class', 'avg_ldv_sales', 'ldv_sales',
+            'supplier_class', 'ldv_sales',
             'has_submitted_report', 'first_model_year', 'has_report',
         )
 

@@ -170,9 +170,7 @@ class ModelYearReport(Auditable):
         ).first()
 
     def get_avg_sales(self):
-        avg_sales = self.organization.get_avg_ldv_sales(
-            year=self.model_year.name
-        )
+        avg_sales, _ = self.organization.get_avg_ldv_sales(year=self.model_year.name) or (None, None)
 
         # if this is empty that means we don't have enough ldv_sales to
         # get the average. our avg_sales at this point should be from the
