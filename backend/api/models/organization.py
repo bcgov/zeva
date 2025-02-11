@@ -122,7 +122,7 @@ class Organization(Auditable):
         return sales
 
     def get_ldv_sales(self, year):
-        is_supplied = False if year < 2024 else True
+        is_supplied = False if int(year) < 2024 else True
         sales = self.ldv_sales.filter(
             model_year__name__in=[
                 str(year - 1),
@@ -145,6 +145,9 @@ class Organization(Auditable):
 
             if date.today().month < 10:
                 year -= 1
+        else:
+            year = int(year)  # Ensure year is an integer
+
         is_supplied = False if year < 2024 else True
         
         sales = self.filter_sales_supplied(year, is_supplied)[:3]
