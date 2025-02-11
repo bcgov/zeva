@@ -1,0 +1,73 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: oc-cli-data
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: netapp-file-standard
+  volumeMode: Filesystem
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: 'oc-client'
+  annotations: {}
+spec:
+  selector:
+    matchLabels:
+      app: oc-client
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: oc-client
+    spec:
+      volumes:
+        - name: oc-cli-data
+          persistentVolumeClaim:
+            claimName: oc-cli-data
+      containers:
+        - name: oc-client
+          image: >-
+            image-registry.openshift-image-registry.svc:5000/e52f12-tools/zeva-cleanup:prod
+          command:
+            - "/bin/sleep"
+            - "7200"
+          env: []
+          livenessProbe:
+            failureThreshold: 10
+            initialDelaySeconds: 40
+            periodSeconds: 60
+            successThreshold: 1
+            exec:
+              command:
+                - pwd
+            timeoutSeconds: 3
+          readinessProbe:
+            failureThreshold: 10
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            exec:
+              command:
+                - pwd
+            timeoutSeconds: 3
+          resources:
+            limits:
+              cpu: 200m
+              memory: 400Mi
+            requests:
+              cpu: 100m
+              memory: 200Mi
+          volumeMounts:
+            - name: oc-cli-data
+              mountPath: /oc-cli-data
+      imagePullSecrets: []
+  strategy:
+    type: Recreate
+  paused: false
