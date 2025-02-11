@@ -178,7 +178,7 @@ class ModelYearReportViewset(
 
             org = request.user.organization
 
-            avg_sales, _ = org.get_avg_ldv_sales(year=model_year_int) or (None, None)
+            avg_sales, _ = org.get_avg_ldv_sales(year=model_year_int)
 
             ldv_sales_previous_list = org.get_ldv_sales(year=model_year_int)
             ldv_sales_previous = OrganizationLDVSalesSerializer(

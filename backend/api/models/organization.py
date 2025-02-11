@@ -176,7 +176,7 @@ class Organization(Auditable):
                 year -= 1
 
         if not avg_sales:
-            result = self.get_avg_ldv_sales(year) or (None, None)
+            result = self.get_avg_ldv_sales(year)
             avg_sales, _ = result
         if not avg_sales:
             avg_sales = 0
