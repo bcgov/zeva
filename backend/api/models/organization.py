@@ -145,6 +145,9 @@ class Organization(Auditable):
 
             if date.today().month < 10:
                 year -= 1
+        else:
+            year = int(year)  # Ensure year is an integer
+
         is_supplied = False if year < 2024 else True
         
         sales = self.filter_sales_supplied(year, is_supplied)[:3]
