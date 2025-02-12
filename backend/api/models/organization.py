@@ -122,7 +122,7 @@ class Organization(Auditable):
         return sales
 
     def get_ldv_sales(self, year):
-        is_supplied = False if year < 2024 else True
+        is_supplied = False if int(year) < 2024 else True
         sales = self.ldv_sales.filter(
             model_year__name__in=[
                 str(year - 1),
@@ -131,32 +131,43 @@ class Organization(Auditable):
             ]
         ).filter(is_supplied=is_supplied)
         return sales
-
+    
+    def filter_sales_supplied(self, year, is_supplied):
+        return self.ldv_sales.filter(
+            model_year__name__lte=year
+        ).filter(is_supplied=is_supplied).values_list(
+            'ldv_sales', flat=True
+        )
+    
     def get_avg_ldv_sales(self, year=None):
         if not year:
             year = date.today().year
 
             if date.today().month < 10:
                 year -= 1
+        else:
+            year = int(year)  # Ensure year is an integer
+
         is_supplied = False if year < 2024 else True
-
-        sales = self.ldv_sales.filter(
-            model_year__name__lte=year
-        ).filter(is_supplied=is_supplied).values_list(
-            'ldv_sales', flat=True
-        )[:3]
-
-        if sales.count() < 3:
-            sales = self.ldv_sales.filter(model_year__name=year).filter(
-                is_supplied=is_supplied
-            ).values_list(
-                'ldv_sales', flat=True
-            )[:1]
+        
+        sales = self.filter_sales_supplied(year, is_supplied)[:3]
+    
+        if is_supplied == True and sales.count() < 3:
+            is_supplied = False
+            # If there aren't enough Supplied values, show 'Sales' average
+            sales = self.filter_sales_supplied(year, is_supplied)[:3]
+            if sales.count() < 3:
+                # if there are less than 3 supplied or sales, show the 1 
+                # most recent supplied
+                is_supplied = True
+                sales = self.filter_sales_supplied(year, is_supplied)[:1]
 
             if not sales:
-                return None
+                return None, None
 
-        return sum(list(sales)) / len(sales)
+        sales_or_supplied = 'Supplied' if is_supplied else 'Sales'
+        
+        return sum(list(sales)) / len(sales), sales_or_supplied
 
     def get_current_class(self, year=None, avg_sales=None):
         # The logic below means that if we're past october, the past year
@@ -168,8 +179,8 @@ class Organization(Auditable):
                 year -= 1
 
         if not avg_sales:
-            avg_sales = self.get_avg_ldv_sales(year)
-
+            result = self.get_avg_ldv_sales(year) or (None, None)
+            avg_sales, _ = result
         if not avg_sales:
             avg_sales = 0
 
