@@ -119,7 +119,9 @@ const VehicleSupplierDetailsPage = (props) => {
           </div>
 
           <div className="mt-3">
-            <h4 className="d-inline">3 Year Average Vehicles {details.suppliedOrSales}: </h4>
+            <h4 className="d-inline">
+              3 Year Average Vehicles {details.suppliedOrSales}:{" "}
+            </h4>
             <span> {formatNumeric(Math.round(details.avgLdvSales), 0)} </span>
           </div>
 
@@ -134,9 +136,9 @@ const VehicleSupplierDetailsPage = (props) => {
               <Tooltip
                 tooltipId="supplied-tooltip"
                 tooltipText={suppliedTooltip}
+                infoCircle
                 placement="bottom"
               >
-                <FontAwesomeIcon icon="info-circle" className="info-icon" />
                 <h4 className="d-inline">Previous 3 Year Vehicles Supplied:</h4>
               </Tooltip>
             )}
@@ -245,11 +247,8 @@ const VehicleSupplierDetailsPage = (props) => {
                       tooltipId="sales-tooltip"
                       placement="top"
                       tooltipText={salesTooltip}
+                      infoCircle
                     >
-                      <FontAwesomeIcon
-                        icon="info-circle"
-                        className="info-icon"
-                      />
                       <b>Previous Years Vehicle Sales</b>
                     </Tooltip>
                     {salesToShow.length > 0 &&
