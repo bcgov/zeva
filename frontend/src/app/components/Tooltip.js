@@ -31,7 +31,7 @@ const Tooltip = ({
         width="16"
         height="16"
         viewBox="0 0 16 16"
-        style={{ marginBottom: "2px", marginRight: "2px" }}
+        style={{ marginBottom: "4px", marginRight: "2px" }}
       >
         <g transform="scale(0.8) translate(-1.6, -1.6)">
           <path
