@@ -191,7 +191,7 @@ def send_email(recipient_emails: List[str], email_type: str, direct_link: str, t
             "from": sender_info,
             "priority": "normal",
             "subject": subject,
-            "to": ["Undisclosed recipients<donotreply@gov.bc.ca>"],
+            "to": ["Undisclosed recipients<ZEVRegulationDoNotReply@gov.bc.ca>"],
             "tag": "email_1",
             "attachments": attachment
            }
