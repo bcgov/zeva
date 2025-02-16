@@ -2,7 +2,7 @@
 
 ## Setting up the development environment
 
-There is a docker-compose file in the root directory that will spin up the local development environment for you. If you don't have docker installed then head over to the docker homepage to get that started.
+There is a docker compose file in the root directory that will spin up the local development environment for you. If you don't have docker installed then head over to the docker homepage to get that started.
 
 There are 6 services that make up the ZEVA application:
 
@@ -65,7 +65,7 @@ to add your idir account:
 in a terminal window:
 
 ```
-docker-compose exec db psql -U postgres zeva
+docker compose exec db psql -U postgres zeva
 INSERT into user_profile (username, keycloak_email, is_active, create_user) VALUES ('your username', 'yourIdirEmail@gov.bc.ca', 't', 'your name');
 ```
 
@@ -136,7 +136,7 @@ Here are a few examples of branch names:
 ### Database Postgres
 
 to view the database via docker use:
-docker-compose exec db psql -U postgres zeva
+docker compose exec db psql -U postgres zeva
 
 #### Copy down dev data from local
 
