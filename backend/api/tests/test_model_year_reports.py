@@ -1,21 +1,25 @@
-from email import header
 import json
+from email import header
+from unittest.mock import MagicMock, patch
+
+from api.models import model_year
 from django.utils.datetime_safe import datetime
 from rest_framework.serializers import ValidationError
 
-from .base_test_case import BaseTestCase
-from ..models.model_year_report import ModelYearReport
-from ..models.model_year_report_compliance_obligation import ModelYearReportComplianceObligation
-from ..models.supplemental_report import SupplementalReport
-from ..models.model_year_report_statuses import ModelYearReportStatuses
-from ..models.model_year_report_assessment import ModelYearReportAssessment
-from ..models.model_year_report_assessment_descriptions import ModelYearReportAssessmentDescriptions
-from ..models.model_year_report_ldv_sales import ModelYearReportLDVSales
-from ..models.organization import Organization
 from ..models.model_year import ModelYear
-from unittest.mock import patch, MagicMock
-
-from api.models import model_year
+from ..models.model_year_report import ModelYearReport
+from ..models.model_year_report_assessment import ModelYearReportAssessment
+from ..models.model_year_report_assessment_comment import \
+    ModelYearReportAssessmentComment
+from ..models.model_year_report_assessment_descriptions import \
+    ModelYearReportAssessmentDescriptions
+from ..models.model_year_report_compliance_obligation import \
+    ModelYearReportComplianceObligation
+from ..models.model_year_report_ldv_sales import ModelYearReportLDVSales
+from ..models.model_year_report_statuses import ModelYearReportStatuses
+from ..models.organization import Organization
+from ..models.supplemental_report import SupplementalReport
+from .base_test_case import BaseTestCase
 
 CONTENT_TYPE = 'application/json'
 
@@ -204,20 +208,20 @@ class TestModelYearReports(BaseTestCase):
 
     
     def test_get_avg_sales_with_organization_sales(self):
-        self.report.organization.get_avg_ldv_sales = MagicMock(return_value=300)
+        self.report.organization.get_avg_ldv_sales = MagicMock(return_value=(300, None))
 
         result = self.report.get_avg_sales()
         self.assertEqual(result, 300)
 
     def test_get_avg_sales_without_any_sales_data(self):
-        self.report.organization.get_avg_ldv_sales = MagicMock(return_value=None)
+        self.report.organization.get_avg_ldv_sales = MagicMock(return_value=(None, None))
         ModelYearReportLDVSales.objects.all().delete()
 
         result = self.report.get_avg_sales()
         self.assertIsNone(result)
 
     def test_get_avg_sales_with_multiple_report_sales(self):
-        self.report.organization.get_avg_ldv_sales = MagicMock(return_value=None)
+        self.report.organization.get_avg_ldv_sales = MagicMock(return_value=(None, None))
 
         ModelYearReportLDVSales.objects.create(
             model_year_report=self.report,
@@ -262,3 +266,50 @@ class TestModelYearReports(BaseTestCase):
 
         self.assertIsNone(reductions)
 
+    def test_retrieve_report_summary(self):
+        response = self.clients['EMHILLIE_BCEID'].get("/api/compliance/reports/1?summary=true")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("organization_name", response.data)
+        self.assertIn("avg_sales", response.data)
+
+    def test_years_endpoint(self):
+        response = self.clients['EMHILLIE_BCEID'].get("/api/compliance/reports/years")
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.data, list)
+        if response.data:
+            self.assertIn("name", response.data[0])
+
+    def test_assessed_supplementals(self):
+        # Verify that the assessed_supplementals endpoint returns a list 
+        response = self.clients['EMHILLIE_BCEID'].get("/api/compliance/reports/1/assessed_supplementals")
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.data, list)
+
+    def test_comment_save_endpoint(self):
+        """
+        Test director and non-director comments.
+        """
+        # Test saving a director comment
+        director_data = {"comment": "Test director comment", "director": True}
+        response = self.clients['EMHILLIE_BCEID'].post(
+            "/api/compliance/reports/1/comment_save",
+            data=json.dumps(director_data),
+            content_type=CONTENT_TYPE
+        )
+        self.assertEqual(response.status_code, 200)
+        director_comment = ModelYearReportAssessmentComment.objects.filter(
+            model_year_report_id=1, to_director=True, comment="Test director comment"
+        ).first()
+        self.assertIsNotNone(director_comment)
+
+        non_director_data = {"comment": "Test non-director comment", "director": False}
+        response = self.clients['EMHILLIE_BCEID'].post(
+            "/api/compliance/reports/1/comment_save",
+            data=json.dumps(non_director_data),
+            content_type=CONTENT_TYPE
+        )
+        self.assertEqual(response.status_code, 200)
+        non_director_comment = ModelYearReportAssessmentComment.objects.filter(
+            model_year_report_id=1, to_director=False, comment="Test non-director comment"
+        ).first()
+        self.assertIsNotNone(non_director_comment)
