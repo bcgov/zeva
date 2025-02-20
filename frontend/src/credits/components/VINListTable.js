@@ -251,7 +251,7 @@ const VINListTable = (props) => {
           },
           className: 'text-center validated',
           filterable: false,
-          sortable: false,
+          sortable: true,
           Header: 'Validated',
           id: 'validated',
           show: user.isGovernment,
