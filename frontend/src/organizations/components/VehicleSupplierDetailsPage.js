@@ -4,9 +4,8 @@ import Button from "../../app/components/Button";
 import Loading from "../../app/components/Loading";
 import CustomPropTypes from "../../app/utilities/props";
 import ROUTES_ORGANIZATIONS from "../../app/routes/Organizations";
-import VehicleSupplierClass from "./VehicleSupplierClass";
 import formatNumeric from "../../app/utilities/formatNumeric";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import getSupplierClassDescription from "../../app/utilities/getSupplierClassDescription";
 import Tooltip from "../../app/components/Tooltip";
 
 const VehicleSupplierDetailsPage = (props) => {
@@ -106,10 +105,7 @@ const VehicleSupplierDetailsPage = (props) => {
           <div className="mt-3">
             <h4 className="d-inline">Vehicle Supplier Class: </h4>
             <span>
-              {" "}
-              <VehicleSupplierClass
-                supplierClass={details.supplierClass}
-              />{" "}
+              {getSupplierClassDescription(details.supplierClass)}
             </span>
           </div>
 
