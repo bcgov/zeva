@@ -5,7 +5,7 @@ from datetime import datetime
 from django.core.paginator import Paginator
 from django.core.exceptions import ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db.models import Subquery, Q
+from django.db.models import Subquery, Q, Case, When, IntegerField, Value
 from django.http import HttpResponse, HttpResponseForbidden
 from api.models.sales_submission_comment import SalesSubmissionComment
 from api.serializers.sales_submission_comment import SalesSubmissionCommentSerializer
@@ -372,6 +372,24 @@ class CreditRequestViewset(
             warnings_and_maps["map_of_vins_to_icbc_data"] = helping_objects["map_of_vins_to_icbc_data"]
             warnings_and_maps["map_of_sales_submission_content_ids_to_vehicles"] = helping_objects["map_of_sales_submission_content_ids_to_vehicles"]
 
+        selected_vins = Subquery(RecordOfSale.objects.filter(
+                submission_id=pk
+        ).values_list('vin', flat=True))
+
+        unselected_vins = SalesSubmissionContent.objects.filter(
+            submission_id=pk
+        ).exclude(
+            xls_vin__in=selected_vins
+        ).values_list('id', flat=True)
+
+        submission_content = submission_content.annotate(
+            validated=Case(
+                When(id__in=unselected_vins, then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField()
+            )
+        ) 
+
         try:
             page = int(page)
         except:
@@ -483,7 +501,8 @@ class CreditRequestViewset(
                     'xls_make', 'xls_model', 'xls_model_year',
                     'xls_sale_date', 'xls_vin',
                     '-xls_make', '-xls_model', '-xls_model_year',
-                    '-xls_sale_date', '-xls_vin'
+                    '-xls_sale_date', '-xls_vin',
+                    '-validated', 'validated'
                 ]:
                     order_by.append(sort_string)
 
