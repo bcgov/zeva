@@ -1,11 +1,11 @@
-import React from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { NavLink } from 'react-router-dom'
+import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { NavLink } from "react-router-dom";
 
-import CustomPropTypes from '../../app/utilities/props'
+import CustomPropTypes from "../../app/utilities/props";
 
 const UserSettings = (props) => {
-  const { details } = props
+  const { details } = props;
   return (
     <div id="user-settings" className="dashboard-fieldset">
       <h1>Welcome</h1>
@@ -23,7 +23,7 @@ const UserSettings = (props) => {
           {details.organization.organizationAddress &&
             details.organization.organizationAddress.map(
               (address) =>
-                address.addressType.addressType === 'Records' && (
+                address.addressType.addressType === "Records" && (
                   <dl key={address.id}>
                     <dd>{address.addressLine1}</dd>
                     <dd>{address.addressLine2}</dd>
@@ -36,7 +36,7 @@ const UserSettings = (props) => {
                     <dt />
                     <dd>{address.postalCode}</dd>
                   </dl>
-                )
+                ),
             )}
         </div>
       </div>
@@ -78,13 +78,13 @@ const UserSettings = (props) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-UserSettings.defaultProps = {}
+UserSettings.defaultProps = {};
 
 UserSettings.propTypes = {
-  details: CustomPropTypes.user.isRequired
-}
+  details: CustomPropTypes.user.isRequired,
+};
 
-export default UserSettings
+export default UserSettings;

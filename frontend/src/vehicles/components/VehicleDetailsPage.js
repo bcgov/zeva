@@ -316,9 +316,7 @@ useEffect(() => {
                   <h3>Request</h3>
                   <div className="request-changes-check">
                     <input type="checkbox" onChange={handleCheckboxClick} />
-                    Request proof of range and range test results and/or a
-                    change to the range value from vehicle supplier, specify
-                    below.
+                    Request proof of range and/or a change to the vehicle information from the supplier, specify below.
                   </div>
                   <div>Add a comment to the vehicle supplier for request.</div>
                   <textarea

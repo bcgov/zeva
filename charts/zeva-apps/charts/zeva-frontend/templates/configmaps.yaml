@@ -10,7 +10,7 @@ data:
   database_name: zeva
   database_service_name: {{ .Values.appConfigMap.databaseServiceName }}
   django_debug: '{{ .Values.appConfigMap.djangoDebug }}'
-  email_from_address: donotreply@gov.bc.ca
+  email_from_address: ZEVRegulationDoNotReply@gov.bc.ca
   email_sending_enabled: 'False'
   env_name: {{ .Values.envName }}
   keycloak_audience: zeva-on-gold-4543

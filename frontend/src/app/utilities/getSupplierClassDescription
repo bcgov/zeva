@@ -1,0 +1,14 @@
+const getSupplierClassDescription = (supplierClass) => {
+  switch (supplierClass) {
+    case "M":
+      return "Medium Volume Supplier (between 1,000 and 4,999 total vehicles supplied)";
+    case "L":
+      return "Large Volume Supplier (5,000 or more total vehicles supplied)";
+    case "S":
+      return "Small Volume Supplier (less than 1,000 total vehicles supplied)";
+    default:
+      return "";
+  }
+};
+
+export default getSupplierClassDescription;

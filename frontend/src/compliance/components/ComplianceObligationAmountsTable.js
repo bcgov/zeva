@@ -1,6 +1,5 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import formatNumeric from "../../app/utilities/formatNumeric";
 import Tooltip from "../../app/components/Tooltip";
 
@@ -46,11 +45,8 @@ const ComplianceObligationAmountsTable = (props) => {
                       tooltipId="supplied-tooltip"
                       tooltipText={tooltip}
                       placement="left"
+                      infoCircle
                     >
-                      <FontAwesomeIcon
-                        icon="info-circle"
-                        className="info-icon"
-                      />
                       {reportYear}{" "}
                       {reportYear < 2024
                         ? "Model Year LDV Sales"
@@ -63,14 +59,11 @@ const ComplianceObligationAmountsTable = (props) => {
                       statuses.assessment.status !== "ASSESSED" && (
                         <Tooltip
                           tooltipId="supplied-tooltip"
+                          infoCircle
                           tooltipText={tooltip}
                           placement="left"
                         >
                           <span id="obligation-sales-input">
-                            <FontAwesomeIcon
-                              icon="info-circle"
-                              className="info-icon"
-                            />
                             <input
                               className="form-control"
                               disabled={disabledInput}

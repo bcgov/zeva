@@ -28,7 +28,7 @@ Unfortunately we do not have a licence to use Docker Desktop at BC Gov. If you a
 The backend and all services are setup to run via docker. To start everything up you can run in the project folder:
 
 ```sh
-docker-compose up --build
+docker compose up --build
 ```
 
 This will start up a [postgres](https://www.postgresql.org/) database, a [Django](https://www.djangoproject.com/) web app, and a [MinIO](https://docs.min.io/docs/minio-quickstart-guide.html) service with a private bucket `zeva`
@@ -40,14 +40,14 @@ Add this entry to your `/etc/hosts` file:
 ```
 
 to view the database use:
-docker-compose exec db psql -U postgres postgres
+docker compose exec db psql -U postgres postgres
 
 #### Django
 
 Django offers many helpful [mangement commands](https://docs.djangoproject.com/en/4.0/ref/django-admin/) out of the box. To be able to use these with docker you can access the python environment with bash:
 
 ```sh
-docker-compose exec api bash
+docker compose exec api bash
 ```
 
 You can view Django Restframework's browseable api here: `http://localhost:8000/api/`

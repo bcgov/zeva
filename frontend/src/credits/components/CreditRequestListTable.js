@@ -1,21 +1,21 @@
 /*
  * Presentational component
  */
-import PropTypes from 'prop-types'
-import React from 'react'
+import PropTypes from "prop-types";
+import React from "react";
 
-import CustomPropTypes from '../../app/utilities/props'
-import ReactTable from 'react-table'
-import formatNumeric from '../../app/utilities/formatNumeric'
-import formatStatus from '../../app/utilities/formatStatus'
-import history from '../../app/History'
-import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests'
-import calculateNumberOfPages from '../../app/utilities/calculateNumberOfPages'
-import CustomFilterComponent from '../../app/components/CustomFilterComponent'
-import moment from 'moment-timezone'
-import ReactTooltip from 'react-tooltip'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { tooltipText } from '../constants/creditRequest'
+import CustomPropTypes from "../../app/utilities/props";
+import ReactTable from "react-table";
+import formatNumeric from "../../app/utilities/formatNumeric";
+import formatStatus from "../../app/utilities/formatStatus";
+import history from "../../app/History";
+import ROUTES_CREDIT_REQUESTS from "../../app/routes/CreditRequests";
+import calculateNumberOfPages from "../../app/utilities/calculateNumberOfPages";
+import CustomFilterComponent from "../../app/components/CustomFilterComponent";
+import moment from "moment-timezone";
+import ReactTooltip from "react-tooltip";
+import { tooltipText } from "../constants/creditRequest";
+import Tooltip from "../../app/components/Tooltip";
 
 const CreditRequestListTable = (props) => {
   const {
@@ -31,141 +31,143 @@ const CreditRequestListTable = (props) => {
     items,
     itemsCount,
     loading,
-    user
-  } = props
+    user,
+  } = props;
 
-  const filterPlaceholderText = 'Press "Enter" to search'
+  const filterPlaceholderText = 'Press "Enter" to search';
 
   const applyFilters = () => {
-    setPage(1)
+    setPage(1);
     setApplyFiltersCount((prev) => {
-      return prev + 1
-    })
-  }
+      return prev + 1;
+    });
+  };
 
   const columns = [
     {
-      id: 'id',
-      accessor: 'id',
-      className: 'text-center',
-      Header: 'ID',
+      id: "id",
+      accessor: "id",
+      className: "text-center",
+      Header: "ID",
       maxWidth: 200,
       sortMethod: (a, b) => {
-        return b.id - a.id
+        return b.id - a.id;
       },
       Cell: (item) => <span>CA-{item.original.id}</span>,
       Placeholder: filterPlaceholderText,
-      applyFilters
+      applyFilters,
     },
     {
-      id: 'date',
+      id: "date",
       accessor: (item) => {
-        if(item.submissionHistoryTimestamp) {
-          return moment(item.submissionHistoryTimestamp).format('YYYY-MM-DD')
+        if (item.submissionHistoryTimestamp) {
+          return moment(item.submissionHistoryTimestamp).format("YYYY-MM-DD");
         }
-        return ''
+        return "";
       },
-      className: 'text-center',
-      Header: 'Date',
+      className: "text-center",
+      Header: "Date",
       maxWidth: 150,
-      filterable: false
+      filterable: false,
     },
     {
       accessor: (item) =>
-        item.organization ? item.organization.shortName : '',
-      className: 'text-center',
-      Header: 'Supplier',
-      id: 'supplier',
+        item.organization ? item.organization.shortName : "",
+      className: "text-center",
+      Header: "Supplier",
+      id: "supplier",
       show: user.isGovernment,
       maxWidth: 200,
       Placeholder: filterPlaceholderText,
-      applyFilters
+      applyFilters,
     },
     {
       accessor: (item) => {
-        if (['DRAFT', 'SUBMITTED'].indexOf(item.validationStatus) >= 0) {
-          const totals = item.totals.vins + item.unselected
-          return totals > 0 ? totals : '-'
+        if (["DRAFT", "SUBMITTED"].indexOf(item.validationStatus) >= 0) {
+          const totals = item.totals.vins + item.unselected;
+          return totals > 0 ? totals : "-";
         }
 
-        return item.totals.vins > 0 ? item.totals.vins : '-'
+        return item.totals.vins > 0 ? item.totals.vins : "-";
       },
-      className: 'text-right',
+      className: "text-right",
       Header: () => (
         <div>
-          <ReactTooltip html={true} />
-          <span>
-            <FontAwesomeIcon data-tip={tooltipText} icon="info-circle" />
-          </span>
+          <Tooltip
+            tooltipText={tooltipText}
+            tooltipId="total-eligible-zevs-supplied"
+            placement="top"
+            infoCircle
+          />
           Total Eligible ZEVs Supplied
         </div>
       ),
       maxWidth: 250,
-      id: 'total-sales',
+      id: "total-sales",
       filterable: false,
-      sortable: false
+      sortable: false,
     },
     {
-      accessor: (item) => (item.totalWarnings > 0 ? item.totalWarnings : '-'),
-      className: 'text-right',
-      Header: 'Not Eligible for Credits',
-      id: 'warnings',
+      accessor: (item) => (item.totalWarnings > 0 ? item.totalWarnings : "-"),
+      className: "text-right",
+      Header: "Not Eligible for Credits",
+      id: "warnings",
       maxWidth: 250,
       filterable: false,
-      sortable: false
+      sortable: false,
     },
     {
       accessor: (item) =>
         item.totalCredits && item.totalCredits.a > 0
           ? formatNumeric(item.totalCredits.a)
-          : '-',
-      className: 'text-right',
-      Header: 'A-Credits',
-      id: 'credits-a',
+          : "-",
+      className: "text-right",
+      Header: "A-Credits",
+      id: "credits-a",
       maxWidth: 150,
       filterable: false,
-      sortable: false
+      sortable: false,
     },
     {
       accessor: (item) =>
         item.totalCredits && item.totalCredits.b > 0
           ? formatNumeric(item.totalCredits.b)
-          : '-',
-      className: 'text-right',
-      Header: 'B-Credits',
-      id: 'credits-b',
+          : "-",
+      className: "text-right",
+      Header: "B-Credits",
+      id: "credits-b",
       maxWidth: 150,
       filterable: false,
-      sortable: false
+      sortable: false,
     },
     {
       accessor: (item) => {
-        const { validationStatus } = item
-        const status = formatStatus(validationStatus)
+        const { validationStatus } = item;
+        const status = formatStatus(validationStatus);
 
-        if (status === 'checked') {
-          return 'validated'
+        if (status === "checked") {
+          return "validated";
         }
 
-        if (status === 'validated') {
-          return 'issued'
+        if (status === "validated") {
+          return "issued";
         }
 
-        if (status === 'recommend approval') {
-          return 'recommend issuance'
+        if (status === "recommend approval") {
+          return "recommend issuance";
         }
 
-        return status
+        return status;
       },
-      className: 'text-center text-capitalize',
-      Header: 'Status',
-      id: 'status',
+      className: "text-center text-capitalize",
+      Header: "Status",
+      id: "status",
       maxWidth: 250,
       sortable: false,
       Placeholder: filterPlaceholderText,
-      applyFilters
-    }
-  ]
+      applyFilters,
+    },
+  ];
 
   return (
     <ReactTable
@@ -182,20 +184,20 @@ const CreditRequestListTable = (props) => {
       sorted={sorts}
       filtered={filters}
       onPageChange={(pageIndex) => {
-        setPage(pageIndex + 1)
+        setPage(pageIndex + 1);
       }}
       onPageSizeChange={(pageSize) => {
-        setPage(1)
-        setPageSize(pageSize)
+        setPage(1);
+        setPageSize(pageSize);
       }}
       onSortedChange={(newSorted) => {
-        setPage(1)
-        setSorts(newSorted)
+        setPage(1);
+        setSorts(newSorted);
       }}
       onFilteredChange={(filtered, column, value) => {
-        setFilters(filtered)
+        setFilters(filtered);
         if (!value) {
-          applyFilters()
+          applyFilters();
         }
       }}
       FilterComponent={CustomFilterComponent}
@@ -203,25 +205,22 @@ const CreditRequestListTable = (props) => {
         if (row && row.original) {
           return {
             onClick: () => {
-              const { id } = row.original
-              history.push(
-                ROUTES_CREDIT_REQUESTS.DETAILS.replace(/:id/g, id),
-                {
-                  page,
-                  pageSize,
-                  filters,
-                  sorts
-                }
-              )
+              const { id } = row.original;
+              history.push(ROUTES_CREDIT_REQUESTS.DETAILS.replace(/:id/g, id), {
+                page,
+                pageSize,
+                filters,
+                sorts,
+              });
             },
-            className: 'clickable'
-          }
+            className: "clickable",
+          };
         }
-        return {}
+        return {};
       }}
     />
-  )
-}
+  );
+};
 
 CreditRequestListTable.propTypes = {
   page: PropTypes.number.isRequired,
@@ -236,7 +235,7 @@ CreditRequestListTable.propTypes = {
   items: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   itemsCount: PropTypes.number.isRequired,
   loading: PropTypes.bool.isRequired,
-  user: CustomPropTypes.user.isRequired
-}
+  user: CustomPropTypes.user.isRequired,
+};
 
-export default CreditRequestListTable
+export default CreditRequestListTable;

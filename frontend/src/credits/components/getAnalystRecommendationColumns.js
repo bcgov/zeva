@@ -1,108 +1,116 @@
-import React from 'react'
-import isLegacySubmission from "../../app/utilities/isLegacySubmission"
-import ReactTooltip from 'react-tooltip'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { tooltipText } from '../constants/creditRequest'
+import React from "react";
+import isLegacySubmission from "../../app/utilities/isLegacySubmission";
+import ReactTooltip from "react-tooltip";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { tooltipText } from "../constants/creditRequest";
+import Tooltip from "../../app/components/Tooltip";
 
 const analystRecommendationColumns = (props) => {
-  const { submission, user } = props
+  const { submission, user } = props;
 
   return [
     {
       accessor: (item) => {
         if (!submission.eligible) {
-          return '-'
+          return "-";
         }
 
         const eligibleSales = submission.eligible.find(
-          (eligible) => eligible.vehicleId === item.vehicle.id
-        )
+          (eligible) => eligible.vehicleId === item.vehicle.id,
+        );
 
         if (!eligibleSales) {
-          return '-'
+          return "-";
         }
 
-        return eligibleSales.vinCount
+        return eligibleSales.vinCount;
       },
-      className: 'text-right eligible-sales',
+      className: "text-right eligible-sales",
       Footer: (reactTable) => {
-        const sum = reactTable.data.map(item => {
-          if (isNaN(item['eligible-sales'])) {
-            return 0
-          }
-          return Number(item['eligible-sales'])
-        }).reduce((a, b) => a + b)
+        const sum = reactTable.data
+          .map((item) => {
+            if (isNaN(item["eligible-sales"])) {
+              return 0;
+            }
+            return Number(item["eligible-sales"]);
+          })
+          .reduce((a, b) => a + b);
 
         if (sum === 0) {
-          return '-'
+          return "-";
         }
 
-        return sum
+        return sum;
       },
       Header: () => {
         if (isLegacySubmission(submission)) {
-          return 'Eligible Sales'
+          return "Eligible Sales";
         }
         return (
           <div>
-            <ReactTooltip html={true} />
-            <span>
-              <FontAwesomeIcon data-tip={tooltipText} icon="info-circle" />
-            </span>
+            <Tooltip
+              tooltipId="zevSales"
+              tooltipText={tooltipText}
+              infoCircle
+            />
             Eligible ZEVs Supplied
           </div>
-        )
+        );
       },
-      headerClassName: ' eligible-sales',
-      id: 'eligible-sales',
+      headerClassName: " eligible-sales",
+      id: "eligible-sales",
       show: user.isGovernment,
-      width: 150
+      width: 150,
     },
     {
       accessor: (item) => {
-        const { vehicle } = item
+        const { vehicle } = item;
 
         if (!submission.eligible) {
-          return '-'
+          return "-";
         }
 
         const eligibleSales = submission.eligible.find(
-          (eligible) => eligible.vehicleId === vehicle.id
-        )
+          (eligible) => eligible.vehicleId === vehicle.id,
+        );
 
         if (!eligibleSales) {
-          return '-'
+          return "-";
         }
 
         if (vehicle && vehicle.creditValue && vehicle.creditValue !== 0) {
-          return (eligibleSales.vinCount *
-            (Math.round((vehicle.creditValue + Number.EPSILON) * 100) / 100)).toFixed(2)
+          return (
+            eligibleSales.vinCount *
+            (Math.round((vehicle.creditValue + Number.EPSILON) * 100) / 100)
+          ).toFixed(2);
         }
 
-        return '-'
+        return "-";
       },
-      className: 'text-right eligible-zev-credits',
+      className: "text-right eligible-zev-credits",
       Footer: (reactTable) => {
-        const sum = reactTable.data.map(item => {
-          if (isNaN(item['eligible-zev-credits'])) {
-            return 0
-          }
-          return Number(item['eligible-zev-credits'])
-        }).reduce((a, b) => a + b)
+        const sum = reactTable.data
+          .map((item) => {
+            if (isNaN(item["eligible-zev-credits"])) {
+              return 0;
+            }
+            return Number(item["eligible-zev-credits"]);
+          })
+          .reduce((a, b) => a + b);
 
         if (sum === 0) {
-          return '-'
+          return "-";
         }
 
-        return (Math.round((sum + Number.EPSILON) * 100) / 100).toFixed(2)
+        return (Math.round((sum + Number.EPSILON) * 100) / 100).toFixed(2);
       },
-      Header: 'Eligible ZEV Credits',
-      headerClassName: ' eligible-sales',
-      id: 'eligible-zev-credits',
-      show: user.isGovernment || submission.validationStatus === 'VALIDATED',
-      width: 200
-    }
-  ]
-}
+      Header: "Eligible ZEV Credits",
+      headerClassName: " eligible-sales",
+      id: "eligible-zev-credits",
+      show: user.isGovernment || submission.validationStatus === "VALIDATED",
+      width: 200,
+    },
+  ];
+};
 
-export default analystRecommendationColumns
+export default analystRecommendationColumns;
