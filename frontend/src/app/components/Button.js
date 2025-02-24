@@ -109,7 +109,7 @@ const Button = (props) => {
 
   return (
     <>
-      {tooltip && <ReactTooltip />}
+      {tooltip && <ReactTooltip className="button-tooltip" />}
       <span data-tip={tooltip}>
         <button
           data-testid={testid}
