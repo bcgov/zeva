@@ -8,8 +8,6 @@ import ReactTable from "../../app/components/ReactTable";
 import formatNumeric from "../../app/utilities/formatNumeric";
 import CustomPropTypes from "../../app/utilities/props";
 import isLegacySubmission from "../../app/utilities/isLegacySubmission";
-import ReactTooltip from "react-tooltip";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { tooltipText } from "../constants/creditRequest";
 import Tooltip from "../../app/components/Tooltip";
 
@@ -28,7 +26,6 @@ const CreditRequestSummaryTable = (props) => {
               tooltipText={tooltipText}
               infoCircle
             />
-            <ReactTooltip html={true} />
             ZEVs Supplied
           </div>
         );

@@ -109,16 +109,16 @@ p {
     background-color: transparent;
   }
 
-  > * {
+  >* {
     align-self: center;
     display: flex;
   }
 
-  .left-content > * {
+  .left-content>* {
     margin-right: 1rem;
   }
 
-  .right-content > * {
+  .right-content>* {
     margin-left: 1rem;
     white-space: nowrap;
     align-self: center;
@@ -134,7 +134,7 @@ p {
   }
 
   @media (max-width: 768px) {
-    .right-content > * {
+    .right-content>* {
       margin-left: 0;
     }
   }
@@ -342,7 +342,7 @@ p {
     margin-right: 0.5rem;
   }
 
-  > * {
+  >* {
     margin-left: 1rem;
     margin-right: 1rem;
     align-self: center;
@@ -388,6 +388,11 @@ button {
   }
 }
 
+.button-tooltip {
+  max-width: 500px;
+  opacity: 1;
+}
+
 .center-horizontal-content {
   display: flex;
   flex-direction: row;
@@ -399,6 +404,7 @@ button {
   height: inherit;
   margin-right: 6px;
 }
+
 .tooltip {
   background-color: #2D2D2D !important;
   opacity: 100% !important;
