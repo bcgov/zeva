@@ -25,7 +25,7 @@ class App extends Component {
   }
 
   componentDidMount () {
-    const keycloak = Keycloak({
+    const keycloak = new Keycloak({
       clientId: CONFIG.KEYCLOAK.CLIENT_ID,
       realm: CONFIG.KEYCLOAK.REALM,
       url: CONFIG.KEYCLOAK.AUTH_URL
