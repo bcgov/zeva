@@ -40,7 +40,6 @@
     "react-dropzone": "^10.2.1",
     "react-hooks-testing-library": "^0.6.0",
     "react-hot-loader": "^4.12.18",
-    "react-keycloak": "^8.0.0-191118",
     "react-quill": "^1.3.5",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
