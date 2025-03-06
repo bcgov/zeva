@@ -391,6 +391,8 @@ button {
 .button-tooltip {
   max-width: 500px;
   opacity: 1;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 .center-horizontal-content {
