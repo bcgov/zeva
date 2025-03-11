@@ -389,11 +389,14 @@ button {
 }
 
 .button-tooltip {
+  display: inline-block;
   max-width: 500px;
-  opacity: 1;
-  white-space: normal;
-  overflow-wrap: break-word;
+  white-space: pre-wrap !important;
+  overflow: break-word !important;
+  text-transform: none;
+  text-align: left;
 }
+
 
 .center-horizontal-content {
   display: flex;
