@@ -23,6 +23,7 @@ const Tooltip = ({
       className="tooltip"
       place={placement}
       effect="solid"
+      html={true}
     />
     {/* react-fontawesome does not have the desired icon */}
     {infoCircle && (
