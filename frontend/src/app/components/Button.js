@@ -109,8 +109,14 @@ const Button = (props) => {
 
   return (
     <>
-      {tooltip && <ReactTooltip className="button-tooltip" multiline={true} />}
-      <span data-tip={tooltip}>
+      {tooltip && (
+        <ReactTooltip
+          className="button-tooltip"
+          multiline={true}
+          id="btn-tip"
+        />
+      )}
+      <span data-tip={tooltip} data-for="btn-tip">
         <button
           data-testid={testid}
           className={classname}
