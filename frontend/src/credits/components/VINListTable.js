@@ -62,11 +62,19 @@ const VINListTable = (props) => {
 
   const filterPlaceholderText = 'Press "Enter" to search'
 
+  let rowNumber = (page - 1) * pageSize;
   const columns = [
     {
       Header: 'Supplier Information',
       headerClassName: 'header-group header-margin',
       columns: [
+        {
+          accessor: () => ++rowNumber,
+          className: "text-center",
+          filterable: false,
+          id: "row_number",
+          width: 50
+        },
         {
           accessor: (row) => {
             const { xlsModelYear } = row
@@ -243,7 +251,7 @@ const VINListTable = (props) => {
           },
           className: 'text-center validated',
           filterable: false,
-          sortable: false,
+          sortable: true,
           Header: 'Validated',
           id: 'validated',
           show: user.isGovernment,

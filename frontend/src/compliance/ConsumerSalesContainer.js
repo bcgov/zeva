@@ -161,7 +161,7 @@ const ConsumerSalesContainer = (props) => {
   useEffect(() => {
     const checkDisableSave = () => {
       if (checkboxes.length !== assertions.length) {
-        setSaveTooltip("Please ensure all confirmations checkboxes are checked");
+        setSaveTooltip("To enable the Save button, please ensure the Forecast Report is uploaded, all totals are filled out, and all confirmation check-boxes are checked");
         return true;
       }
       if (

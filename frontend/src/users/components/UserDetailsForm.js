@@ -1,12 +1,11 @@
-import React from 'react'
-import ReactTooltip from 'react-tooltip'
-import PropTypes from 'prop-types'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import React from "react";
+import PropTypes from "prop-types";
 
-import Button from '../../app/components/Button'
-import CustomPropTypes from '../../app/utilities/props'
-import Loading from '../../app/components/Loading'
-import TextInput from '../../app/components/TextInput'
+import Button from "../../app/components/Button";
+import CustomPropTypes from "../../app/utilities/props";
+import Loading from "../../app/components/Loading";
+import TextInput from "../../app/components/TextInput";
+import Tooltip from "../../app/components/Tooltip";
 
 const UserDetailsForm = (props) => {
   const {
@@ -16,29 +15,29 @@ const UserDetailsForm = (props) => {
     user,
     handleInputChange,
     handleSubmit,
-    roles
-  } = props
+    roles,
+  } = props;
 
   if (loading) {
-    return <Loading />
+    return <Loading />;
   }
 
   const disableEditing = (permissions) => {
-    let editPermission
+    let editPermission;
     if (permissions) {
       permissions.forEach((each) => {
-        if (each.permissionCode === 'EDIT_USERS') {
-          editPermission = true
+        if (each.permissionCode === "EDIT_USERS") {
+          editPermission = true;
         }
-      })
+      });
     } else if (
       !permissions &&
-      typeof user.hasPermission === 'function' &&
-      user.hasPermission('EDIT_USERS')
+      typeof user.hasPermission === "function" &&
+      user.hasPermission("EDIT_USERS")
     ) {
-      editPermission = true
+      editPermission = true;
     } else {
-      editPermission = false
+      editPermission = false;
     }
 
     if (
@@ -46,24 +45,24 @@ const UserDetailsForm = (props) => {
       details.username === user.username &&
       !user.isGovernment
     ) {
-      return true
+      return true;
     }
-    return false
-  }
+    return false;
+  };
 
   const checked = (role) => {
     if (!details || !details.roles) {
-      return false
+      return false;
     }
 
     return (
       details.roles.filter((detailRole) => detailRole.id === role.id).length > 0
-    )
-  }
+    );
+  };
 
   const rolesCheckboxes = roles
     .filter(
-      (role) => role.isGovernmentRole === details.organization.isGovernment
+      (role) => role.isGovernmentRole === details.organization.isGovernment,
     )
     .map((role) => (
       <ul key={role.id}>
@@ -74,23 +73,28 @@ const UserDetailsForm = (props) => {
           name="roles-manager"
           defaultChecked={checked(role)}
           disabled={disableEditing(role.permissions)}
-        />{' '}
-        {role.roleCode}{' '}
-        <FontAwesomeIcon data-tip={role.description} icon="info-circle" />
+        />{" "}
+        {role.roleCode}{" "}
+        <Tooltip
+          tooltipId={`role-${role.id}`}
+          tooltipText={role.description}
+          infoCircle
+        />
       </ul>
-    ))
+    ));
 
-  const accountType = details.organization.isGovernment ? 'IDIR' : 'BCeID'
+  const accountType = details.organization.isGovernment ? "IDIR" : "BCeID";
 
-  const activationText = details.isMapped ? 'User account is mapped.' : 'User account has not been mapped.'
+  const activationText = details.isMapped
+    ? "User account is mapped."
+    : "User account has not been mapped.";
 
   return (
     <div id="form" className="page">
-      <ReactTooltip />
       <div className="row mb-2">
         <div className="col-md-12">
           <h2 className="mb-2">{details.organization.name} User Management</h2>
-          <h3>{`${details && details.id ? 'Edit' : 'New'} User`}</h3>
+          <h3>{`${details && details.id ? "Edit" : "New"} User`}</h3>
         </div>
       </div>
       <form onSubmit={(event) => handleSubmit(event)}>
@@ -100,9 +104,9 @@ const UserDetailsForm = (props) => {
               <div className="form-layout row">
                 <span className="col-md-8">
                   <TextInput
-                    defaultValue={details.firstName || ''}
+                    defaultValue={details.firstName || ""}
                     errorMessage={
-                      'firstName' in errorFields && errorFields.firstName
+                      "firstName" in errorFields && errorFields.firstName
                     }
                     handleInputChange={handleInputChange}
                     id="firstName"
@@ -111,9 +115,9 @@ const UserDetailsForm = (props) => {
                     name="firstName"
                   />
                   <TextInput
-                    defaultValue={details.lastName || ''}
+                    defaultValue={details.lastName || ""}
                     errorMessage={
-                      'lastName' in errorFields && errorFields.lastName
+                      "lastName" in errorFields && errorFields.lastName
                     }
                     handleInputChange={handleInputChange}
                     id="lastName"
@@ -122,8 +126,8 @@ const UserDetailsForm = (props) => {
                     name="lastName"
                   />
                   <TextInput
-                    defaultValue={details.title || ''}
-                    errorMessage={'title' in errorFields && errorFields.title}
+                    defaultValue={details.title || ""}
+                    errorMessage={"title" in errorFields && errorFields.title}
                     handleInputChange={handleInputChange}
                     id="jobTitle"
                     label="Job Title"
@@ -131,9 +135,9 @@ const UserDetailsForm = (props) => {
                     name="title"
                   />
                   <TextInput
-                    defaultValue={details.username || ''}
+                    defaultValue={details.username || ""}
                     errorMessage={
-                      'username' in errorFields && errorFields.username
+                      "username" in errorFields && errorFields.username
                     }
                     handleInputChange={handleInputChange}
                     id="username"
@@ -142,38 +146,38 @@ const UserDetailsForm = (props) => {
                     name="username"
                   />
                   <TextInput
-                    defaultValue={details.keycloakEmail || ''}
+                    defaultValue={details.keycloakEmail || ""}
                     details={
-                      accountType === 'BCeID'
+                      accountType === "BCeID"
                         ? `the email associated with the ${accountType} account`
-                        : ''
+                        : ""
                     }
                     errorMessage={
-                      'keycloakEmail' in errorFields &&
+                      "keycloakEmail" in errorFields &&
                       errorFields.keycloakEmail
                     }
                     handleInputChange={handleInputChange}
                     id="email"
                     label={`${
-                      accountType === 'BCeID' ? accountType : ''
+                      accountType === "BCeID" ? accountType : ""
                     } Email`}
                     mandatory
                     name="keycloakEmail"
                   />
                   <TextInput
-                    defaultValue={details.email || ''}
+                    defaultValue={details.email || ""}
                     details="the email used to receive notifications, if different from above"
-                    errorMessage={'email' in errorFields && errorFields.email}
+                    errorMessage={"email" in errorFields && errorFields.email}
                     handleInputChange={handleInputChange}
                     id="notificationsEmail"
                     key="notificationsEmail"
                     label="Notifications Email"
                     name="email"
                   />
-                  {accountType === 'BCeID' && (
+                  {accountType === "BCeID" && (
                     <TextInput
-                      defaultValue={details.phone || ''}
-                      errorMessage={'phone' in errorFields && errorFields.phone}
+                      defaultValue={details.phone || ""}
+                      errorMessage={"phone" in errorFields && errorFields.phone}
                       handleInputChange={handleInputChange}
                       id="phone"
                       label="Phone"
@@ -183,8 +187,8 @@ const UserDetailsForm = (props) => {
                 </span>
 
                 <span className="col-md-4">
-                  {typeof user.hasPermission === 'function' &&
-                    user.hasPermission('EDIT_USERS') && (
+                  {typeof user.hasPermission === "function" &&
+                    user.hasPermission("EDIT_USERS") && (
                       <div className="form-group">
                         <div className="col-sm-4">
                           <label
@@ -218,10 +222,10 @@ const UserDetailsForm = (props) => {
                           Inactive, user cannot log in to ZEVA
                         </div>
                       </div>
-                  )}
-                  {typeof user.hasPermission === 'function' &&
-                    (user.hasPermission('ASSIGN_BCEID_ROLES') ||
-                      user.hasPermission('ASSIGN_IDIR_ROLES')) && (
+                    )}
+                  {typeof user.hasPermission === "function" &&
+                    (user.hasPermission("ASSIGN_BCEID_ROLES") ||
+                      user.hasPermission("ASSIGN_IDIR_ROLES")) && (
                       <div className="form-group">
                         <label
                           className="col-sm-4 col-form-label"
@@ -231,13 +235,9 @@ const UserDetailsForm = (props) => {
                         </label>
                         <div className="col-sm-8">{rolesCheckboxes}</div>
                       </div>
-                  )}
+                    )}
                   <div className="form-group">
-                    <label
-                      className="col-sm-4 col-form-label"
-                    >
-                      Account
-                    </label>
+                    <label className="col-sm-4 col-form-label">Account</label>
                     <div className="col-sm-8">{activationText}</div>
                   </div>
                 </span>
@@ -264,12 +264,12 @@ const UserDetailsForm = (props) => {
         </div>
       </form>
     </div>
-  )
-}
+  );
+};
 
 UserDetailsForm.defaultProps = {
-  errorFields: {}
-}
+  errorFields: {},
+};
 
 UserDetailsForm.propTypes = {
   details: PropTypes.shape({
@@ -281,12 +281,12 @@ UserDetailsForm.propTypes = {
     lastName: PropTypes.string,
     organization: PropTypes.shape({
       isGovernment: PropTypes.bool,
-      name: PropTypes.string
+      name: PropTypes.string,
     }),
     phone: PropTypes.string,
     roles: PropTypes.arrayOf(PropTypes.shape()),
     title: PropTypes.string,
-    username: PropTypes.string
+    username: PropTypes.string,
   }).isRequired,
   errorFields: PropTypes.shape(),
   handleInputChange: PropTypes.func.isRequired,
@@ -295,10 +295,10 @@ UserDetailsForm.propTypes = {
   roles: PropTypes.arrayOf(
     PropTypes.shape({
       description: PropTypes.string,
-      id: PropTypes.number
-    })
+      id: PropTypes.number,
+    }),
   ).isRequired,
-  user: CustomPropTypes.user.isRequired
-}
+  user: CustomPropTypes.user.isRequired,
+};
 
-export default UserDetailsForm
+export default UserDetailsForm;
