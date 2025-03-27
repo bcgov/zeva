@@ -75,9 +75,5 @@ objects:
           pullSecret:
             name: artifacts-pull-default-erhptx
         type: Docker
-      # triggers:
-      # - imageChange: {}
-      #   type: ImageChange
-      # - type: ConfigChange
     status:
       lastVersion: 0
