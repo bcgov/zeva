@@ -1,7 +1,8 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import ReactQuill from 'react-quill'
-import ReactTooltip from 'react-tooltip'
+import React from "react";
+import PropTypes from "prop-types";
+import ReactQuill from "react-quill";
+import ReactTooltip from "react-tooltip";
+import Tooltip from "./Tooltip";
 
 const CommentInput = (props) => {
   const {
@@ -14,8 +15,8 @@ const CommentInput = (props) => {
     buttonDisable,
     tooltip,
     testid,
-    buttontestid
-  } = props
+    buttontestid,
+  } = props;
   return (
     <div className="text-editor no-print">
       <label htmlFor="comment" className="text-blue">
@@ -24,49 +25,51 @@ const CommentInput = (props) => {
       <ReactQuill
         data-testid={testid}
         readOnly={disable}
-        defaultValue={defaultComment ? defaultComment.comment : ''}
+        defaultValue={defaultComment ? defaultComment.comment : ""}
         theme="snow"
         modules={{
           toolbar: [
-            ['bold', 'italic'],
-            [{ list: 'bullet' }, { list: 'ordered' }]
+            ["bold", "italic"],
+            [{ list: "bullet" }, { list: "ordered" }],
           ],
           keyboard: {
-            bindings: { tab: false }
-          }
+            bindings: { tab: false },
+          },
         }}
-        formats={['bold', 'italic', 'list', 'bullet']}
+        formats={["bold", "italic", "list", "bullet"]}
         onChange={handleCommentChange}
       />
       {!disable && buttonText && (
         <>
-          {tooltip !== '' && buttonDisable && <ReactTooltip />}
-          <span data-tip={(buttonDisable && tooltip) || ''}>
+          <Tooltip
+            tooltipId="comment-tip"
+            tooltipText={buttonDisable && tooltip}
+          >
             <button
               data-testid={buttontestid}
               className="button mt-2"
               onClick={() => {
-                handleAddComment()
+                handleAddComment();
               }}
               type="button"
               disabled={buttonDisable}
             >
               {buttonText}
             </button>
-          </span>
+          </Tooltip>
         </>
       )}
     </div>
-  )
-}
+  );
+};
 
 CommentInput.defaultProps = {
   buttonText: null,
   defaultComment: null,
   disable: false,
   handleAddComment: () => {},
-  tooltip: ''
-}
+  tooltip: "",
+};
 CommentInput.propTypes = {
   handleAddComment: PropTypes.func,
   handleCommentChange: PropTypes.func.isRequired,
@@ -76,6 +79,6 @@ CommentInput.propTypes = {
   disable: PropTypes.bool,
   tooltip: PropTypes.string,
   buttontestid: PropTypes.string,
-  testid: PropTypes.string
-}
-export default CommentInput
+  testid: PropTypes.string,
+};
+export default CommentInput;
