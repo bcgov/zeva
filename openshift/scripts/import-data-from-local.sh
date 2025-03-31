@@ -7,8 +7,7 @@ set -e
 
 # 1 Argument  = 'local container name or id'
 # example command
-# . ./import-data.sh 398cd4661173
-
+# . ./import-data-from-local.sh 398cd4661173
 if [ "$#" -ne 1 ]; then
     echo "Passed $# parameters. Expected 1."
     exit 1
