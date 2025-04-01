@@ -1,7 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
 import ReactQuill from "react-quill";
-import ReactTooltip from "react-tooltip";
 import Tooltip from "./Tooltip";
 
 const CommentInput = (props) => {
