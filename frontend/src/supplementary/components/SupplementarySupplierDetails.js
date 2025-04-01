@@ -88,17 +88,13 @@ const SupplementarySupplierDetails = (props) => {
     ? formatNumeric(details.assessment.assessmentPenalty, 0)
     : 0;
 
-  const assessmentDecision =
-    supplementaryAssessmentData.supplementaryAssessment.decision &&
-    supplementaryAssessmentData.supplementaryAssessment.decision.description
-      ? supplementaryAssessmentData.supplementaryAssessment.decision.description
-          .replace(
-            /{user.organization.name}/g,
-            details.assessmentData.legalName,
-          )
-          .replace(/{modelYear}/g, details.assessmentData.modelYear)
-          .replace(/{penalty}/g, `$${formattedPenalty} CAD`)
-      : "";
+  const assessmentDecision = !!supplementaryAssessmentData
+    .supplementaryAssessment.decision.description
+    ? supplementaryAssessmentData.supplementaryAssessment.decision.description
+        .replace(/{user.organization.name}/g, details.assessmentData.legalName)
+        .replace(/{modelYear}/g, details.assessmentData.modelYear)
+        .replace(/{penalty}/g, `$${formattedPenalty} CAD`)
+    : "";
 
   const modal = (
     <Modal
