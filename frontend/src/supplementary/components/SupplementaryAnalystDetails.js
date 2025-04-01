@@ -59,20 +59,21 @@ const SupplementaryAnalystDetails = (props) => {
     supplementaryReportIsReassessment,
   } = props;
 
-  if (loading) {
-    return <Loading />;
-  }
   // if user is bceid then only draft is editable
   // if user is idir then draft or submitted is editable
   const [showModal, setShowModal] = useState(false);
   const [showModalDraft, setShowModalDraft] = useState(false);
   const [showModalDelete, setShowModalDelete] = useState(false);
+
+  if (loading) {
+    return <Loading />;
+  }
   const reportYear = details.assessmentData?.modelYear;
 
   const supplierClass = details.assessmentData?.supplierClass[0];
 
   const creditReductionSelection =
-    details.assessmentData && details.assessmentData.creditReductionSelection;
+    details.assessmentData?.creditReductionSelection;
 
   const currentStatus = details.actualStatus
     ? details.actualStatus

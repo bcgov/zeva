@@ -54,21 +54,21 @@ const SupplementarySupplierDetails = (props) => {
     supplementaryReportIsReassessment,
   } = props;
 
-  if (loading) {
-    return <Loading />;
-  }
   // if user is bceid then only draft is editable
   // if user is idir then draft or submitted is editable
   const [showModal, setShowModal] = useState(false);
   const [showModalDelete, setShowModalDelete] = useState(false);
 
-  const reportYear = details.assessmentData && details.assessmentData.modelYear;
+  if (loading) {
+    return <Loading />;
+  }
 
-  const supplierClass =
-    details.assessmentData && details.assessmentData.supplierClass[0];
+  const reportYear = details.assessmentData?.modelYear;
+
+  const supplierClass = details.assessmentData?.supplierClass[0];
 
   const creditReductionSelection =
-    details.assessmentData && details.assessmentData.creditReductionSelection;
+    details.assessmentData?.creditReductionSelection;
 
   const currentStatus = details.actualStatus
     ? details.actualStatus
@@ -78,11 +78,10 @@ const SupplementarySupplierDetails = (props) => {
     currentStatus === "ASSESSED" || currentStatus === "REASSESSED";
 
   const tabNames = ["supplemental", "recommendation", "reassessment"];
-  const selectedTab = query?.tab
-    ? query.tab
-    : isAssessed
-      ? tabNames[2]
-      : tabNames[0];
+
+  const fallbackTab = isAssessed ? tabNames[2] : tabNames[1];
+  const selectedTab = query?.tab ? query.tab : fallbackTab;
+
   const isEditable = ["DRAFT", "RETURNED"].indexOf(currentStatus) >= 0;
 
   const formattedPenalty = details.assessment
