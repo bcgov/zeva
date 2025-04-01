@@ -67,10 +67,9 @@ const SupplementaryAnalystDetails = (props) => {
   const [showModal, setShowModal] = useState(false);
   const [showModalDraft, setShowModalDraft] = useState(false);
   const [showModalDelete, setShowModalDelete] = useState(false);
-  const reportYear = details.assessmentData && details.assessmentData.modelYear;
+  const reportYear = details.assessmentData?.modelYear;
 
-  const supplierClass =
-    details.assessmentData && details.assessmentData.supplierClass[0];
+  const supplierClass = details.assessmentData?.supplierClass[0];
 
   const creditReductionSelection =
     details.assessmentData && details.assessmentData.creditReductionSelection;
@@ -101,27 +100,15 @@ const SupplementaryAnalystDetails = (props) => {
   if (selectedTab === tabNames[2]) {
     isEditable = false;
   }
-  const assessmentDecision =
-    supplementaryAssessment &&
-    supplementaryAssessment.decision &&
-    supplementaryAssessment.decision.description
-      ? supplementaryAssessment.decision.description
-          .replace(
-            /{user.organization.name}/g,
-            details.assessmentData.legalName,
-          )
-          .replace(/{modelYear}/g, details.assessmentData.modelYear)
-          .replace(
-            /{penalty}/g,
-            `$${formatNumeric(supplementaryAssessment.assessmentPenalty, 0) || 0} CAD`,
-          )
-      : "";
-
+  const assessmentDecision = supplementaryAssessment?.decision?.description
+    .replace(/{user.organization.name}/g, details.assessmentData.legalName)
+    .replace(/{modelYear}/g, details.assessmentData.modelYear)
+    .replace(
+      /{penalty}/g,
+      `$${formatNumeric(supplementaryAssessment.assessmentPenalty, 0) || 0} CAD`,
+    );
   const showDescription = (each) => {
-    const selectedId =
-      supplementaryAssessment &&
-      supplementaryAssessment.decision &&
-      supplementaryAssessment.decision.id;
+    const selectedId = supplementaryAssessment?.decision?.id;
     return (
       <div className="mb-3" key={each.id}>
         <input
@@ -671,6 +658,7 @@ SupplementaryAnalystDetails.propTypes = {
   ratios: PropTypes.shape(),
   salesRows: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   setSupplementaryAssessmentData: PropTypes.func.isRequired,
+  supplementaryReportIsReassessment: PropTypes.bool,
   supplementaryAssessmentData: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
 };
