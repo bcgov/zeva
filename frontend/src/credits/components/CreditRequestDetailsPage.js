@@ -573,10 +573,9 @@ const CreditRequestDetailsPage = (props) => {
                   }}
                 />
               )}
-              {(submission.validationStatus === 'DRAFT' ||
-                submission.validationStatus === 'REJECTED') &&
+              {submission.validationStatus === 'DRAFT' &&
                 typeof user.hasPermission === 'function' &&
-                user.hasPermission('EDIT_SALES') && user.isGovernment && (
+                user.hasPermission('EDIT_SALES') && (
                   <Button
                     buttonType="delete"
                     action={() => {
