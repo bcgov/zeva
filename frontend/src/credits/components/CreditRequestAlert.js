@@ -150,6 +150,17 @@ const CreditRequestAlert = (props) => {
         historyMessage = `${excelUploadMessage}.  ${submissionMessage}`
       }
       break
+    case 'DELETED':
+      title = 'Deleted'
+      message = `CA-${id} deleted  ${moment(
+        statusFilter('DELETED').createTimestamp
+      ).format('MMM D, YYYY')} by ${
+        statusFilter('DELETED').createUser.displayName}.`
+      classname = 'alert-warning'
+      if (excelUploadMessage) {
+        historyMessage = `${excelUploadMessage}.  ${submissionMessage}`
+      }
+      break
     default:
       title = ''
   }
