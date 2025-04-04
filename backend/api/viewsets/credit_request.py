@@ -73,7 +73,6 @@ class CreditRequestViewset(
             qs = SalesSubmission.objects.exclude(validation_status__in=(
                 SalesSubmissionStatuses.DRAFT,
                 SalesSubmissionStatuses.NEW,
-                SalesSubmissionStatuses.DELETED,
             ))
         else:
             qs = SalesSubmission.objects.filter(
