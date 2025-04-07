@@ -329,6 +329,8 @@ def populate_already_awarded_warnings(
             if (
                 sale_record.submission.validation_status
                 != SalesSubmissionStatuses.REJECTED
+                and sale_record.submission.validation_status
+                != SalesSubmissionStatuses.DELETED
                 and sale_record.submission != content.submission
                 and sale_record.create_timestamp < content.update_timestamp
             ):
