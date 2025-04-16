@@ -1,25 +1,26 @@
-import axios from "axios";
-import React, { useState } from "react";
-import PropTypes from "prop-types";
+import axios from 'axios'
+import React, { useState } from 'react'
+import PropTypes from 'prop-types'
 
-import parse from "html-react-parser";
-import Loading from "../../app/components/Loading";
-import Modal from "../../app/components/Modal";
-import Button from "../../app/components/Button";
-import ZevSales from "./ZevSales";
-import SupplierInformation from "./SupplierInformation";
-import CreditActivity from "./CreditActivity";
-import CommentInput from "../../app/components/CommentInput";
-import ROUTES_COMPLIANCE from "../../app/routes/Compliance";
-import ROUTES_SUPPLEMENTARY from "../../app/routes/SupplementaryReport";
-import formatNumeric from "../../app/utilities/formatNumeric";
-import CustomPropTypes from "../../app/utilities/props";
-import ComplianceHistory from "../../compliance/components/ComplianceHistory";
-import CONFIG from "../../app/config";
-import ReassessmentDetailsPage from "./ReassessmentDetailsPage";
-import SupplementaryTab from "./SupplementaryTab";
-import EditableCommentList from "../../app/components/EditableCommentList";
-import CreateReassessmentHeader from "../../compliance/components/CreateReassessmentHeader";
+import parse from 'html-react-parser'
+import Loading from '../../app/components/Loading'
+import Modal from '../../app/components/Modal'
+import Button from '../../app/components/Button'
+import ZevSales from './ZevSales'
+import SupplierInformation from './SupplierInformation'
+import CreditActivity from './CreditActivity'
+import CommentInput from '../../app/components/CommentInput'
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
+import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport'
+import formatNumeric from '../../app/utilities/formatNumeric'
+import CustomPropTypes from '../../app/utilities/props'
+import ComplianceHistory from '../../compliance/components/ComplianceHistory'
+import CONFIG from '../../app/config'
+import ReassessmentDetailsPage from './ReassessmentDetailsPage'
+import SupplementaryTab from './SupplementaryTab'
+import ReactTooltip from 'react-tooltip'
+import EditableCommentList from '../../app/components/EditableCommentList'
+import CreateReassessmentHeader from '../../compliance/components/CreateReassessmentHeader'
 
 const SupplementaryDirectorDetails = (props) => {
   const {
@@ -53,45 +54,45 @@ const SupplementaryDirectorDetails = (props) => {
     supplementaryReportId,
     reassessmentReportId,
     supplementaryReportIsReassessment,
-    setReassessmentReductions,
-  } = props;
+    setReassessmentReductions
+  } = props
 
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
   // if user is bceid then only draft is editable
   // if user is idir then draft or submitted is editable
-  const [showModal, setShowModal] = useState(false);
-  const [showModalDraft, setShowModalDraft] = useState(false);
-  const [showModalDelete, setShowModalDelete] = useState(false);
-  const reportYear = details.assessmentData && details.assessmentData.modelYear;
+  const [showModal, setShowModal] = useState(false)
+  const [showModalDraft, setShowModalDraft] = useState(false)
+  const [showModalDelete, setShowModalDelete] = useState(false)
+  const reportYear = details.assessmentData && details.assessmentData.modelYear
   const supplierClass =
-    details.assessmentData && details.assessmentData.supplierClass[0];
+  details.assessmentData && details.assessmentData.supplierClass[0]
   const creditReductionSelection =
-    details.assessmentData && details.assessmentData.creditReductionSelection;
+  details.assessmentData && details.assessmentData.creditReductionSelection
   let currentStatus = details.actualStatus
     ? details.actualStatus
-    : details.status;
-  if (currentStatus === "ASSESSED" && newReport) {
-    currentStatus = "DRAFT";
+    : details.status
+  if (currentStatus === 'ASSESSED' && newReport) {
+    currentStatus = 'DRAFT'
   }
-  const { supplementaryAssessment } = supplementaryAssessmentData;
+  const { supplementaryAssessment } = supplementaryAssessmentData
 
   const isAssessed =
-    currentStatus === "ASSESSED" || currentStatus === "REASSESSED";
+    currentStatus === 'ASSESSED' || currentStatus === 'REASSESSED'
 
-  const isRecommended = currentStatus === "RECOMMENDED";
+  const isRecommended = currentStatus === 'RECOMMENDED'
 
-  const tabNames = ["supplemental", "recommendation", "reassessment"];
-  let selectedTab;
+  const tabNames = ['supplemental', 'recommendation', 'reassessment']
+  let selectedTab
 
   if (query?.tab) {
-    selectedTab = query.tab;
+    selectedTab = query.tab
   } else {
     if (isAssessed || isRecommended) {
-      selectedTab = tabNames[2];
+      selectedTab = tabNames[2]
     } else {
-      selectedTab = tabNames[1];
+      selectedTab = tabNames[1]
     }
   }
 
@@ -100,21 +101,18 @@ const SupplementaryDirectorDetails = (props) => {
     supplementaryAssessment.decision &&
     supplementaryAssessment.decision.description
       ? supplementaryAssessment.decision.description
-          .replace(
-            /{user.organization.name}/g,
-            details.assessmentData.legalName,
-          )
-          .replace(/{modelYear}/g, details.assessmentData.modelYear)
-          .replace(
-            /{penalty}/g,
-            `$${formatNumeric(supplementaryAssessment.assessmentPenalty, 0) || 0} CAD`,
-          )
-      : "";
+        .replace(
+          /{user.organization.name}/g,
+          details.assessmentData.legalName
+        )
+        .replace(/{modelYear}/g, details.assessmentData.modelYear)
+        .replace(/{penalty}/g, `$${formatNumeric(supplementaryAssessment.assessmentPenalty, 0) || 0} CAD`)
+      : ''
   const showDescription = (each) => {
     const selectedId =
       supplementaryAssessment &&
       supplementaryAssessment.decision &&
-      supplementaryAssessment.decision.id;
+      supplementaryAssessment.decision.id
 
     return (
       <div className="mb-3" key={each.id}>
@@ -123,40 +121,37 @@ const SupplementaryDirectorDetails = (props) => {
           className="mr-3"
           type="radio"
           name="assessment"
-          disabled={true}
+          disabled={ true }
         />
         {each.description && (
           <label className="d-inline text-blue" htmlFor="complied">
             {each.description
               .replace(
                 /{user.organization.name}/g,
-                details.assessmentData.legalName,
+                details.assessmentData.legalName
               )
               .replace(/{modelYear}/g, details.assessmentData.modelYear)
-              .replace(
-                /{penalty}/g,
-                `$${formatNumeric(supplementaryAssessment.assessmentPenalty, 0) || 0} CAD`,
-              )}
+              .replace(/{penalty}/g, `$${formatNumeric(supplementaryAssessment.assessmentPenalty, 0) || 0} CAD`)} CAD`)
           </label>
         )}
       </div>
-    );
-  };
+    )
+  }
 
   const handleGovSubmitDraft = (status) => {
-    handleSubmit(status, false);
-  };
+    handleSubmit(status, false)
+  }
 
   const modal = (
     <Modal
       cancelLabel="No"
       confirmLabel="Yes"
       handleCancel={() => {
-        setShowModal(false);
+        setShowModal(false)
       }}
       handleSubmit={() => {
-        setShowModal(false);
-        handleSubmit("RECOMMENDED", false);
+        setShowModal(false)
+        handleSubmit('RECOMMENDED', false)
       }}
       modalClass="w-75"
       showModal={showModal}
@@ -165,23 +160,23 @@ const SupplementaryDirectorDetails = (props) => {
       <div className="my-3">
         <h3>
           {isReassessment
-            ? "Are you sure you want to recommend this?"
-            : "This will create a reassessment report from the supplementary report"}
+            ? 'Are you sure you want to recommend this?'
+            : 'This will create a reassessment report from the supplementary report'}
         </h3>
       </div>
     </Modal>
-  );
+  )
 
   const modalDelete = (
     <Modal
       cancelLabel="No"
       confirmLabel="Yes"
       handleCancel={() => {
-        setShowModalDelete(false);
+        setShowModalDelete(false)
       }}
       handleSubmit={() => {
-        setShowModalDelete(false);
-        handleSubmit("DELETED");
+        setShowModalDelete(false)
+        handleSubmit('DELETED')
       }}
       modalClass="w-75"
       showModal={showModalDelete}
@@ -191,18 +186,18 @@ const SupplementaryDirectorDetails = (props) => {
         <h3>Are you sure you want to delete this?</h3>
       </div>
     </Modal>
-  );
+  )
 
   const modalDraft = (
     <Modal
       cancelLabel="No"
       confirmLabel="Yes"
       handleCancel={() => {
-        setShowModalDraft(false);
+        setShowModalDraft(false)
       }}
       handleSubmit={() => {
-        setShowModalDraft(false);
-        handleSubmit(currentStatus, newReport);
+        setShowModalDraft(false)
+        handleSubmit(currentStatus, newReport)
       }}
       modalClass="w-75"
       showModal={showModalDraft}
@@ -211,21 +206,21 @@ const SupplementaryDirectorDetails = (props) => {
       <div className="my-3">
         <h3>
           {isReassessment
-            ? "This will create a reassessment report"
-            : "This will create a reassessment report from the supplementary report"}
+            ? 'This will create a reassessment report'
+            : 'This will create a reassessment report from the supplementary report'}
         </h3>
       </div>
     </Modal>
-  );
+  )
 
   const tabUrl = (supplementalId, tabName) => {
     return (
-      ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(":id", id).replace(
-        ":supplementaryId",
-        supplementalId,
+      ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(
+        ':supplementaryId',
+        supplementalId
       ) + `?tab=${tabName}`
-    );
-  };
+    )
+  }
 
   const renderTabs = () => {
     return (
@@ -234,40 +229,54 @@ const SupplementaryDirectorDetails = (props) => {
         key="tabs"
         role="tablist"
       >
+        <ReactTooltip />
         {supplementaryReportId && (
           <SupplementaryTab
             selected={selectedTab === tabNames[0]}
-            title={"Supplementary Report"}
+            title={'Supplementary Report'}
             url={tabUrl(supplementaryReportId, tabNames[0])}
+            tooltip={
+              'No supplementary report found. Analyst initiated reassessment.'
+            }
             status={reassessmentStatus}
             assessed={isAssessed}
           />
         )}
         <SupplementaryTab
           selected={selectedTab === tabNames[1]}
-          title={"Reassessment Recommendation"}
+          title={'Reassessment Recommendation'}
           url={tabUrl(
             newReport ? supplementaryReportId : reassessmentReportId,
-            tabNames[1],
+            tabNames[1]
           )}
           disabled={false}
+          tooltip={
+            'No supplementary report found. Analyst initiated reassessment.'
+          }
           status={reassessmentStatus}
           assessed={isAssessed}
         />
         <SupplementaryTab
           selected={selectedTab === tabNames[2]}
-          title={"Reassessment"}
+          title={'Reassessment'}
           url={tabUrl(reassessmentReportId, tabNames[2])}
+          // disabled={!isAssessed}
+          tooltip={
+            'Reassessment visible once a director approves the recommendation.'
+          }
           status={reassessmentStatus}
           assessed={isAssessed}
         />
       </ul>
-    );
-  };
+    )
+  }
 
   return (
     <div id="supplementary" className="page">
-      <CreateReassessmentHeader user={user} id={id} />
+      <CreateReassessmentHeader 
+        user={user}
+        id={id}
+      />
       <ComplianceHistory
         activePage="supplementary"
         id={id}
@@ -293,15 +302,15 @@ const SupplementaryDirectorDetails = (props) => {
             commentArray.idirComment.length > 0 && (
               <div className="supplementary-form my-3">
                 <EditableCommentList
-                  enableEditing={currentStatus === "RECOMMENDED"}
+                  enableEditing={currentStatus === 'RECOMMENDED'}
                   comments={commentArray.idirComment}
                   user={user}
                   handleCommentEdit={handleEditIdirComment}
                   handleCommentDelete={handleDeleteIdirComment}
                 />
               </div>
-            )}
-          {currentStatus === "RECOMMENDED" && (
+          )}
+          {currentStatus === 'RECOMMENDED' && (
             <div id="comment-input">
               <CommentInput
                 handleCommentChange={handleCommentChangeIdir}
@@ -316,7 +325,8 @@ const SupplementaryDirectorDetails = (props) => {
       )}
       <div className="supplementary-form mt-2">
         <div>
-          {isReassessment && selectedTab === tabNames[2] ? (
+          {isReassessment && selectedTab === tabNames[2]
+            ? (
             <ReassessmentDetailsPage
               details={details}
               ldvSales={ldvSales}
@@ -327,7 +337,8 @@ const SupplementaryDirectorDetails = (props) => {
               user={user}
               setReassessmentReductions={setReassessmentReductions}
             />
-          ) : (
+              )
+            : (
             <>
               <SupplierInformation
                 isEditable={false}
@@ -358,7 +369,7 @@ const SupplementaryDirectorDetails = (props) => {
                 isEditable={false}
               />
             </>
-          )}
+              )}
         </div>
         {details &&
           ((details.fromSupplierComments &&
@@ -374,7 +385,7 @@ const SupplementaryDirectorDetails = (props) => {
                       {parse(details.fromSupplierComments[0].comment)}
                     </span>
                   </div>
-                )}
+              )}
               {details &&
                 details.attachments &&
                 details.attachments.length > 0 && (
@@ -382,7 +393,7 @@ const SupplementaryDirectorDetails = (props) => {
                     <h4>Attachments</h4>
                     {details.attachments
                       .filter(
-                        (attachment) => deleteFiles.indexOf(attachment.id) < 0,
+                        (attachment) => deleteFiles.indexOf(attachment.id) < 0
                       )
                       .map((attachment) => (
                         <div className="row" key={attachment.id}>
@@ -392,25 +403,25 @@ const SupplementaryDirectorDetails = (props) => {
                               onClick={() => {
                                 axios
                                   .get(attachment.url, {
-                                    responseType: "blob",
+                                    responseType: 'blob',
                                     headers: {
-                                      Authorization: null,
-                                    },
+                                      Authorization: null
+                                    }
                                   })
                                   .then((response) => {
                                     const objectURL =
                                       window.URL.createObjectURL(
-                                        new Blob([response.data]),
-                                      );
-                                    const link = document.createElement("a");
-                                    link.href = objectURL;
+                                        new Blob([response.data])
+                                      )
+                                    const link = document.createElement('a')
+                                    link.href = objectURL
                                     link.setAttribute(
-                                      "download",
-                                      attachment.filename,
-                                    );
-                                    document.body.appendChild(link);
-                                    link.click();
-                                  });
+                                      'download',
+                                      attachment.filename
+                                    )
+                                    document.body.appendChild(link)
+                                    link.click()
+                                  })
                               }}
                               type="button"
                             >
@@ -420,14 +431,14 @@ const SupplementaryDirectorDetails = (props) => {
                         </div>
                       ))}
                   </div>
-                )}
+              )}
             </div>
-          )}
+        )}
       </div>
       {supplementaryAssessment &&
         supplementaryAssessment.decision &&
         supplementaryAssessment.decision.description &&
-        ["ASSESSED", "RECOMMENDED"].indexOf(currentStatus) >= 0 && (
+        ['ASSESSED', 'RECOMMENDED'].indexOf(currentStatus) >= 0 && (
           <>
             <h3 className="mt-4 mb-1">Director Reassessment</h3>
             <div className="row mb-3">
@@ -442,16 +453,16 @@ const SupplementaryDirectorDetails = (props) => {
                         <div className="mt-2">
                           {parse(commentArray.bceidComment.comment)}
                         </div>
-                      )}
+                    )}
                   </div>
                 </div>
               </div>
             </div>
           </>
-        )}
+      )}
       {selectedTab === tabNames[2] && (
         <>
-          {currentStatus === "RECOMMENDED" && (
+          {currentStatus === 'RECOMMENDED' && (
             <div className="grey-border-area  p-3 mt-2">
               <div id="comment-input">
                 <CommentInput
@@ -470,34 +481,34 @@ const SupplementaryDirectorDetails = (props) => {
       )}
       {selectedTab === tabNames[1] && (
         <>
-          {["RECOMMENDED", "RETURNED"].indexOf(currentStatus) < 0 && (
+          {['RECOMMENDED', 'RETURNED'].indexOf(currentStatus) < 0 && (
             <h3 className="mt-4 mb-1">
               Analyst Recommended Director Assessment
             </h3>
           )}
           <div className="row mb-3">
             <div className="col-12">
-              {["RECOMMENDED", "RETURNED"].indexOf(currentStatus) < 0 && (
+              {['RECOMMENDED', 'RETURNED'].indexOf(currentStatus) < 0 && (
                 <>
                   <div className="grey-border-area  p-3 mt-2">
                     <div>
                       {radioDescriptions &&
                         radioDescriptions.map(
                           (each) =>
-                            each.displayOrder === 0 && showDescription(each),
+                            each.displayOrder === 0 && showDescription(each)
                         )}
                       {radioDescriptions &&
                         radioDescriptions.map(
                           (each) =>
-                            each.displayOrder > 0 && showDescription(each),
+                            each.displayOrder > 0 && showDescription(each)
                         )}
                       <label className="d-inline" htmlFor="penalty-radio">
                         <div>
                           <input
                             disabled={
-                              currentStatus === "RECOMMENDED" ||
+                              currentStatus === 'RECOMMENDED' ||
                               assessmentDecision.indexOf(
-                                "Section 10 (3) applies",
+                                'Section 10 (3) applies'
                               ) < 0
                             }
                             type="number"
@@ -528,45 +539,45 @@ const SupplementaryDirectorDetails = (props) => {
                 buttonType="back"
                 locationRoute={ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(
                   /:id/g,
-                  id,
+                  id
                 )}
               />
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
                 selectedTab === tabNames[2] &&
-                currentStatus === "RECOMMENDED" && (
+                currentStatus === 'RECOMMENDED' && (
                   <button
                     className="button text-danger"
                     onClick={() => {
-                      handleSubmit("RETURNED");
+                      handleSubmit('RETURNED')
                     }}
                     type="button"
                   >
                     Return to Analyst
                   </button>
-                )}
+              )}
             </span>
             <span className="right-content">
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
-                currentStatus === "RECOMMENDED" &&
+                currentStatus === 'RECOMMENDED' && 
                 selectedTab === tabNames[2] && (
                   <Button
                     tooltip="only analysts can save reports at this stage"
                     buttonType="save"
                     action={() => {
-                      handleGovSubmitDraft(currentStatus);
+                      handleGovSubmitDraft(currentStatus)
                     }}
                   />
-                )}
+              )}
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
-                currentStatus === "RECOMMENDED" &&
+                currentStatus === 'RECOMMENDED' &&
                 selectedTab === tabNames[2] && (
                   <Button
                     buttonType="submit"
                     optionalClassname="button primary"
                     optionalText="Issue Assessment"
-                    action={() => handleSubmit("ASSESSED")}
+                    action={() => handleSubmit('ASSESSED')}
                   />
-                )}
+              )}
             </span>
           </div>
         </div>
@@ -575,8 +586,8 @@ const SupplementaryDirectorDetails = (props) => {
       {modalDraft}
       {modalDelete}
     </div>
-  );
-};
+  )
+}
 
 SupplementaryDirectorDetails.defaultProps = {
   isReassessment: undefined,
@@ -584,8 +595,8 @@ SupplementaryDirectorDetails.defaultProps = {
   newReport: false,
   obligationDetails: [],
   query: {},
-  ratios: {},
-};
+  ratios: {}
+}
 
 SupplementaryDirectorDetails.propTypes = {
   addSalesRow: PropTypes.func.isRequired,
@@ -616,7 +627,7 @@ SupplementaryDirectorDetails.propTypes = {
   setSupplementaryAssessmentData: PropTypes.func.isRequired,
   supplementaryAssessmentData: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
-  setReassessmentReductions: PropTypes.func.isRequired,
-};
+  setReassessmentReductions: PropTypes.func.isRequired
+}
 
-export default SupplementaryDirectorDetails;
+export default SupplementaryDirectorDetails
