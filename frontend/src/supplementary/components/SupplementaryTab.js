@@ -1,43 +1,38 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
+import React from 'react'
+import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
 
 const SupplementaryTab = (props) => {
-  const {
-    selected,
-    title,
-    url,
-    disabled,
-    status = "",
-    assessed = false,
-  } = props;
+  const { selected, title, url, disabled, status = '', assessed = false } = props
 
   return (
     <>
       <li
-        className={`nav-item ${selected ? "active" : ""} ${status} ${assessed ? "ASSESSED" : ""}`}
+        className={`nav-item ${selected ? 'active' : ''} ${status} ${assessed ? 'ASSESSED' : ''}`}
         role="presentation"
       >
-        {selected ? (
+        {selected
+          ? (
           <span>{title}</span>
-        ) : (
+            )
+          : (
           <>
-            <span className={`${disabled ? "disabled" : ""}`}>
+            <span className={`${disabled ? 'disabled' : ''}`}>
               <Link
                 to={url}
-                style={disabled ? { pointerEvents: "none" } : null}
+                style={disabled ? { pointerEvents: 'none' } : null}
               >
                 {title}
               </Link>
             </span>
           </>
-        )}
+            )}
       </li>
     </>
-  );
-};
+  )
+}
 
-SupplementaryTab.defaultProps = {};
+SupplementaryTab.defaultProps = {}
 
 SupplementaryTab.propTypes = {
   selected: PropTypes.bool.isRequired,
@@ -46,7 +41,7 @@ SupplementaryTab.propTypes = {
   status: PropTypes.string,
   assessed: PropTypes.bool,
   disabled: PropTypes.bool,
-  tooltip: PropTypes.string,
-};
+  tooltip: PropTypes.string
+}
 
-export default SupplementaryTab;
+export default SupplementaryTab
