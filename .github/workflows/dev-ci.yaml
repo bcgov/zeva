@@ -17,7 +17,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-
   install-oc:
     runs-on: ubuntu-latest
     outputs:
@@ -30,7 +29,7 @@ jobs:
         id: cache
         uses: actions/cache@v4.2.0
         with:
-          path: /usr/local/bin/oc  # Path where the `oc` binary will be installed
+          path: /usr/local/bin/oc # Path where the `oc` binary will be installed
           key: oc-cli-${{ runner.os }}
 
       - name: Install OpenShift CLI (if not cached)
@@ -78,7 +77,7 @@ jobs:
     name: Get the version
     runs-on: ubuntu-latest
     needs: verify-pr
-    
+
     outputs:
       output1: ${{ steps.get-version.outputs.VERSION }}
 
@@ -88,9 +87,9 @@ jobs:
           echo "VERSION=$(echo "${{ github.event.pull_request.head.ref }}" | grep -oP '\d+\.\d+\.\d+')" >> $GITHUB_OUTPUT
 
   verify-build-suffix:
-    name: Verify-build-suffix 
+    name: Verify-build-suffix
     runs-on: ubuntu-latest
-    needs: [set-pre-release,get-version]
+    needs: [set-pre-release, get-version]
 
     env:
       BUILD_SUFFIX: ${{ needs.get-version.outputs.output1 }}-${{ needs.set-pre-release.outputs.output1 }}
@@ -109,7 +108,7 @@ jobs:
   build-backend:
     name: Build Zeva Backend
     runs-on: ubuntu-latest
-    needs: [set-pre-release,get-version,verify-build-suffix]
+    needs: [set-pre-release, get-version, verify-build-suffix]
     timeout-minutes: 60
 
     env:
@@ -153,7 +152,7 @@ jobs:
   build-frontend:
     name: Build Zeva Frontend
     runs-on: ubuntu-latest
-    needs: [set-pre-release,get-version,verify-build-suffix]
+    needs: [set-pre-release, get-version, verify-build-suffix]
     timeout-minutes: 60
 
     env:
@@ -196,7 +195,7 @@ jobs:
     name: Deploy Zeva on Dev
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    needs: [set-pre-release,get-version,build-backend, build-frontend]
+    needs: [set-pre-release, get-version, build-backend, build-frontend]
 
     env:
       PRE_RELEASE: ${{ needs.set-pre-release.outputs.output1 }}
@@ -225,26 +224,3 @@ jobs:
           git add zeva/values-dev.yaml
           git commit -m "Update the image tag to ${{ env.VERSION }}-${{ env.PRE_RELEASE }} on Dev"
           git push
-
-      # the following steps are commented out because they are replaced by ArgoCD
-      # - name: Restore oc command from Cache
-      #   uses: actions/cache@v4.2.0
-      #   with:
-      #     path: /usr/local/bin/oc
-      #     key: oc-cli-${{ runner.os }}
-
-      # - name: Log in to Openshift
-      #   uses: redhat-actions/oc-login@v1.3
-      #   with:
-      #     openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
-      #     openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
-      #     insecure_skip_tls_verify: true
-      #     namespace: ${{ env.TOOLS_NAMESPACE }}
-
-      # - name: Tag and deploy to Dev
-      #   run: |
-      #     helm -n ${{ env.DEV_NAMESPACE }} list
-      #     oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.DEV_NAMESPACE }}/zeva-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
-      #     oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.DEV_NAMESPACE }}/zeva-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
-      #     cd zeva
-      #     helm -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml upgrade --install zeva-dev .
