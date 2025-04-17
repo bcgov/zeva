@@ -1,0 +1,44 @@
+---
+data_management_roles:
+  data_custodian: James Donald
+  product_owner: Daniel Clancy
+product_external_dependencies:
+  identity_authorization:
+    - IDIR
+  notification_standard:
+    - Common-Hosted-Email-Service
+product_information:
+  api_specifications: []
+  ministry:
+    - Energy, Mines and Low Carbon Innovation
+  product_acronym: ZEVA
+  product_description: >-
+    A reporting and approval system for processing all Zero Emission Vehicle Act
+    (ZEVA) related issues, including compliance reporting, credit transactions,
+    and sales validation.
+  product_name: Zero Emission Vehicle Reporting System
+  product_urls: []
+  program_area: Clean Transporation Branch
+product_technology_information:
+  backend_frameworks:
+    - name: Django
+      version: 3.2.25
+  backend_languages_version:
+    - name: Python
+      version: 3.9
+  ci_cd_tools:
+    - GitHub-Actions
+  data_storage_platforms:
+    - Postgresql
+  frontend_frameworks:
+    - name: React
+      version: 16.12.0
+    - name: Node.js
+      version: 16.20.0
+  frontend_languages:
+    - name: JavaScript
+      version: current
+  hosting_platforms:
+    - Private-Cloud-Openshift
+  other_tools: JEST (29.4.3), MinIO (current)
+version: 1

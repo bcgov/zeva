@@ -1,6 +1,6 @@
 # How to build a pull request and deploy on Openshift Dev environment
 
-## Register the redirect url on SSO Console
+## Register the redirect url for PR build on SSO Console
 
 - Open a brower to https://bcgov.github.io/sso-requests
 - My Dashboard -> My Projects: edit project "Zeva on Gold"
@@ -21,7 +21,7 @@ Notes: the change may take about 20 minutes to be promoted to Zeva development e
 
 - cleanup-cron-workflow-runs.yaml (Scheduled cleanup old workflow runs): a cron job running periodically to cleanup old workflow runs
 - cleanup-workflow-runs.yaml (Cleanup old workflow runs): manually cleanup the workflow runs
-- emergency-release-build.yaml (Emergency Release Build 1.47.1): the pipeline built for emergency release 1.47.1
+- emergency-release-build-\*.yaml: the pipelines built for emergency releases
 
 # Post production release
 
@@ -29,8 +29,8 @@ Notes: the change may take about 20 minutes to be promoted to Zeva development e
 
 - Squash and merge the tracking pull request to master
 - Create the release on GitHub from master branch
-- Create the new release branch from master branch (this is done automatically by pipeline create-release.yaml)
-- Change the new release branch as the default branch in the repo and update the branch protection rules https://github.com/bcgov/zeva/settings/branches
+- Create the new release branch from master branch
+- Change the new release branch as the default branch in the repo and update the branch protection rules
 
 ## Updates for the new release branch
 

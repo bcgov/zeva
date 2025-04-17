@@ -103,28 +103,9 @@ Once the squashed migration file has been run in all environments (check the dja
 
 # Project Pipeline
 
-The project uses pull request based pipeline is supported by [BCDK](https://github.com/BCDevOps/bcdk) and follow the instructions at [here](https://github.com/bcgov/zeva/tree/release-1.26.0/openshift/README.md) to setup the pipeline.
+The project uses pull request based pipeline is supported by GitHub Action
 
-# Build and deploy
-
-## Application Setup on Openshift platforms
-
-- All templates are located under openshift/templates folder.
-- Follow the instructions [here](https://github.com/bcgov/zeva/tree/release-1.26.0/openshift/templates/README.md) to setup The application on Openshift.
-
-## CI/CD
-
-### Build and deploy in Jenkins
-
-Once Jenkins is up and running, it automatically builds pull requests and promote to dev, test and prod with confirmation. The Jenkins url can be found in Openshift under project's Networking->Routers.
-
-### Build and deploy in command line
-
-- Cd to .pipeline folder and run the following command line to build pull requests and deploy to environment.
-  - $ npm run build -- --pr=pull-request-number --env=build
-  - $ npm run deploy -- --pr=pull-request-number --env=dev/test/prod
-- When a pull request is closed or merged, all resources created for the pull request is removed by Jenkins automatically. They also can be remove the the following command.
-  - $ npm run clean -- --pr=pull-request-number --env=build/dev/test/prod
+Please refer to the [readme](https://github.com/bcgov/zeva/blob/master/.github/readme.md) for mpre details.
 
 # License
 
