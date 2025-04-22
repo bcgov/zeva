@@ -13,7 +13,6 @@ import ROUTES_CREDIT_REQUESTS from "../../app/routes/CreditRequests";
 import calculateNumberOfPages from "../../app/utilities/calculateNumberOfPages";
 import CustomFilterComponent from "../../app/components/CustomFilterComponent";
 import moment from "moment-timezone";
-import ReactTooltip from "react-tooltip";
 import { tooltipText } from "../constants/creditRequest";
 import Tooltip from "../../app/components/Tooltip";
 

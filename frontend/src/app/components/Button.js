@@ -1,8 +1,8 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PropTypes from "prop-types";
-import ReactTooltip from "react-tooltip";
 import history from "../History";
+import Tooltip from "./Tooltip";
 
 const Button = (props) => {
   const {
@@ -106,31 +106,25 @@ const Button = (props) => {
   if (optionalClassname) {
     classname = optionalClassname;
   }
+  const button = (
+    <button
+      data-testid={testid}
+      className={classname}
+      disabled={disabled}
+      onClick={onclick}
+      type="button"
+    >
+      {icon && <FontAwesomeIcon icon={icon} />}
+      {text}
+    </button>
+);
 
-  return (
-    <>
-      {tooltip && (
-        <ReactTooltip
-          className="button-tooltip"
-          multiline={true}
-          id="btn-tip"
-        />
-      )}
-      <span data-tip={tooltip} data-for="btn-tip">
-        <button
-          data-testid={testid}
-          className={classname}
-          disabled={disabled}
-          onClick={(e) => {
-            onclick(e);
-          }}
-          type="button"
-        >
-          {icon && <FontAwesomeIcon icon={icon} />}
-          {text}
-        </button>
-      </span>
-    </>
+return tooltip ? (
+  <Tooltip tooltipText={tooltip} tooltipId="btn-tip">
+    {button}
+  </Tooltip>
+) : (
+  button
   );
 };
 
