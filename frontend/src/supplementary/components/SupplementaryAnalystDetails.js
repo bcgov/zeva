@@ -101,13 +101,16 @@ const SupplementaryAnalystDetails = (props) => {
   if (selectedTab === tabNames[2]) {
     isEditable = false;
   }
-  const assessmentDecision = supplementaryAssessment?.decision?.description
-    .replace(/{user.organization.name}/g, details.assessmentData.legalName)
-    .replace(/{modelYear}/g, details.assessmentData.modelYear)
-    .replace(
+  const assessmentDecision =
+    supplementaryAssessment && supplementaryAssessment.decision && supplementaryAssessment.decision.description
+      ? supplementaryAssessment.decision.description
+        .replace(/{user.organization.name}/g, details.assessmentData.legalName)
+        .replace(/{modelYear}/g, details.assessmentData.modelYear)
+        .replace(
       /{penalty}/g,
       `$${formatNumeric(supplementaryAssessment.assessmentPenalty, 0) || 0} CAD`,
-    );
+    )
+      : ''
   const showDescription = (each) => {
     const selectedId = supplementaryAssessment?.decision?.id;
     return (

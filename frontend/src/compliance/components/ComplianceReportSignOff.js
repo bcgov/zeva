@@ -15,7 +15,6 @@ const ComplianceReportSignOff = (props) => {
   } = props;
   return (
     <div id="compliance-sign-off" className="my-3">
-      <ReactTooltip />
       <Tooltip tooltipId="compliance-sign-off-tooltip" tooltipText={hoverText}>
         {assertions
           .filter(

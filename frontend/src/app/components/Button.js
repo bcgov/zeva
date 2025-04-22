@@ -106,28 +106,25 @@ const Button = (props) => {
   if (optionalClassname) {
     classname = optionalClassname;
   }
+  const button = (
+    <button
+      data-testid={testid}
+      className={classname}
+      disabled={disabled}
+      onClick={onclick}
+      type="button"
+    >
+      {icon && <FontAwesomeIcon icon={icon} />}
+      {text}
+    </button>
+);
 
-  return (
-    <>
-      <Tooltip
-        className="button-tooltip"
-        tooltipText={tooltip}
-        tooltipId="btn-tip"
-      >
-        <button
-          data-testid={testid}
-          className={classname}
-          disabled={disabled}
-          onClick={(e) => {
-            onclick(e);
-          }}
-          type="button"
-        >
-          {icon && <FontAwesomeIcon icon={icon} />}
-          {text}
-        </button>
-      </Tooltip>
-    </>
+return tooltip ? (
+  <Tooltip tooltipText={tooltip} tooltipId="btn-tip">
+    {button}
+  </Tooltip>
+) : (
+  button
   );
 };
 
