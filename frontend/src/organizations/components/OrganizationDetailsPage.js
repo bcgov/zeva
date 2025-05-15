@@ -56,7 +56,7 @@ const OrganizationDetailsPage = (props) => {
               ))}
               <div className="row">
                 <div className="offset-md-3 col-md-9 col-sm-12">
-                  <a href="mailto:CEVEnquiries@gov.bc.ca?subject=ZEVA supplier address change request">
+                  <a href="mailto:ZEVRegulation@gov.bc.ca?subject=ZEVA supplier address change request">
                     Request change to name or address
                   </a>
                 </div>
