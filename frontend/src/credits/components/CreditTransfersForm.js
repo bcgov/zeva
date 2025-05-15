@@ -1,17 +1,16 @@
-import PropTypes from 'prop-types'
-import React, { useState } from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import ReactTooltip from 'react-tooltip'
-import Button from '../../app/components/Button'
-import Modal from '../../app/components/Modal'
-import CustomPropTypes from '../../app/utilities/props'
-import TransferFormRow from './TransferFormRow'
-import FormDropdown from './FormDropdown'
-import CreditTransferSignoff from './CreditTransfersSignOff'
-import CreditTransfersAlert from './CreditTransfersAlert'
-import Alert from '../../app/components/Alert'
-import formatNumeric from '../../app/utilities/formatNumeric'
-import DisplayComment from '../../app/components/DisplayComment'
+import PropTypes from "prop-types";
+import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Button from "../../app/components/Button";
+import Modal from "../../app/components/Modal";
+import CustomPropTypes from "../../app/utilities/props";
+import TransferFormRow from "./TransferFormRow";
+import FormDropdown from "./FormDropdown";
+import CreditTransferSignoff from "./CreditTransfersSignOff";
+import CreditTransfersAlert from "./CreditTransfersAlert";
+import Alert from "../../app/components/Alert";
+import formatNumeric from "../../app/utilities/formatNumeric";
+import DisplayComment from "../../app/components/DisplayComment";
 
 const CreditTransfersForm = (props) => {
   const {
@@ -34,45 +33,43 @@ const CreditTransfersForm = (props) => {
     user,
     years,
     transferComments,
-    submission
-  } = props
+    submission,
+  } = props;
 
-  const [showModal, setShowModal] = useState(false)
+  const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState({
-    type: '',
-    buttonText: '',
-    message: ''
-  })
+    type: "",
+    buttonText: "",
+    message: "",
+  });
   let submitTooltip =
-    'You must acknowledge the three confirmation checkboxes prior to submitting this transfer.'
+    "You must acknowledge the three confirmation checkboxes prior to submitting this transfer.";
 
-  if (!user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')) {
-    submitTooltip = 'You do not have the permission to submit this transfer.'
+  if (!user.hasPermission("SUBMIT_CREDIT_TRANSFER_PROPOSAL")) {
+    submitTooltip = "You do not have the permission to submit this transfer.";
   }
 
   const modal = (
     <Modal
       confirmLabel={modalType.buttonText}
       handleCancel={() => {
-        setShowModal(false)
+        setShowModal(false);
       }}
       handleSubmit={() => {
-        setShowModal(false)
-        handleSubmit(modalType.type)
+        setShowModal(false);
+        handleSubmit(modalType.type);
       }}
       modalClass="w-75"
       showModal={showModal}
       confirmClass={
-        modalType.type === 'SUBMITTED' ? 'button primary' : 'btn-outline-danger'
+        modalType.type === "SUBMITTED" ? "button primary" : "btn-outline-danger"
       }
       icon={
-        modalType.type === 'SUBMITTED'
-          ? (
+        modalType.type === "SUBMITTED" ? (
           <FontAwesomeIcon icon="paper-plane" />
-            )
-          : (
+        ) : (
           <FontAwesomeIcon icon="trash" />
-            )
+        )
       }
     >
       <div>
@@ -87,7 +84,7 @@ const CreditTransfersForm = (props) => {
         </div>
       </div>
     </Modal>
-  )
+  );
 
   const actionbar = (
     <div className="row">
@@ -95,64 +92,63 @@ const CreditTransfersForm = (props) => {
         <div className="action-bar">
           <span className="left-content">
             <Button buttonType="back" locationRoute="/credit-transfers" />
-            {['DRAFT', 'RESCIND_PRE_APPROVAL', 'RESCINDED'].indexOf(
-              submission.status
+            {["DRAFT", "RESCIND_PRE_APPROVAL", "RESCINDED"].indexOf(
+              submission.status,
             ) >= 0 && (
               <Button
                 buttonType="delete"
                 action={() => {
                   setModalType({
-                    type: 'DELETED',
-                    buttonText: ' Delete Notice',
+                    type: "DELETED",
+                    buttonText: " Delete Notice",
                     message:
-                      'Delete transfer notice? WARNING: this action cannot be undone.'
-                  })
-                  setShowModal(true)
+                      "Delete transfer notice? WARNING: this action cannot be undone.",
+                  });
+                  setShowModal(true);
                 }}
               />
             )}
           </span>
           <span className="right-content">
-            {user.hasPermission('CREATE_CREDIT_TRANSFERS') && (
+            {user.hasPermission("CREATE_CREDIT_TRANSFERS") && (
               <Button
-                disabled={unfilledRow || fields.transferPartner === ''}
+                disabled={unfilledRow || fields.transferPartner === ""}
                 buttonTooltip={
-                  unfilledRow || fields.transferPartner === ''
-                    ? 'please fill out all the rows to save'
-                    : ''
+                  unfilledRow || fields.transferPartner === ""
+                    ? "please fill out all the rows to save"
+                    : ""
                 }
                 buttonType="save"
                 action={() => {
-                  handleSave()
+                  handleSave();
                 }}
               />
             )}
             <Button
               buttonType="submit"
               action={() => {
-                setShowModal(true)
+                setShowModal(true);
                 setModalType({
-                  type: 'SUBMITTED',
-                  buttonText: ' Submit Notice',
-                  message: 'Submit credit transfer notice to trade partner?'
-                })
+                  type: "SUBMITTED",
+                  buttonText: " Submit Notice",
+                  message: "Submit credit transfer notice to trade partner?",
+                });
               }}
               optionalText="Submit Notice"
               buttonTooltip={submitTooltip}
               disabled={
                 checkboxes.length < assertions.length ||
                 unfilledRow ||
-                !user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')
+                !user.hasPermission("SUBMIT_CREDIT_TRANSFER_PROPOSAL")
               }
             />
           </span>
         </div>
       </div>
     </div>
-  )
+  );
   return (
     <div id="credit-requests-list" className="page">
-      <ReactTooltip />
       <div className="row mt-3 mb-2">
         <div className="col-sm-12">
           <h2>Light Duty Vehicle Credit Transfer</h2>
@@ -199,7 +195,7 @@ const CreditTransfersForm = (props) => {
                     dropdownData={organizations}
                     fieldName="transferPartner"
                     handleInputChange={handleInputChange}
-                    selectedOption={fields.transferPartner || '--'}
+                    selectedOption={fields.transferPartner || "--"}
                     labelClassname="mr-2 d-inline-block"
                     inputClassname="d-inline-block"
                     rowClassname="mr-5 d-inline-block align-middle"
@@ -219,7 +215,7 @@ const CreditTransfersForm = (props) => {
                   type="button"
                   className="transfer-add-line my-2"
                   onClick={() => {
-                    addRow()
+                    addRow();
                   }}
                 >
                   <h4>
@@ -234,13 +230,13 @@ const CreditTransfersForm = (props) => {
                   checkboxes={checkboxes}
                   disableCheckboxes={
                     unfilledRow ||
-                    !user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')
+                    !user.hasPermission("SUBMIT_CREDIT_TRANSFER_PROPOSAL")
                   }
                   handleCheckboxClick={handleCheckboxClick}
                   hoverText={
-                    user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')
+                    user.hasPermission("SUBMIT_CREDIT_TRANSFER_PROPOSAL")
                       ? hoverText
-                      : 'You do not have permission to check the boxes.'
+                      : "You do not have permission to check the boxes."
                   }
                   user={user}
                 />
@@ -252,23 +248,23 @@ const CreditTransfersForm = (props) => {
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
 CreditTransfersForm.defaultProps = {
   assertions: [],
   checkboxes: [],
   unfilledRow: true,
-  hoverText: '',
+  hoverText: "",
   transferComments: [{}],
-  errorMessage: []
-}
+  errorMessage: [],
+};
 
 CreditTransfersForm.propTypes = {
   addRow: PropTypes.func.isRequired,
   assertions: PropTypes.arrayOf(PropTypes.shape()),
   checkboxes: PropTypes.arrayOf(
-    PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+    PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   ),
   fields: PropTypes.shape().isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
@@ -286,7 +282,7 @@ CreditTransfersForm.propTypes = {
   user: CustomPropTypes.user.isRequired,
   years: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   transferComments: PropTypes.arrayOf(PropTypes.shape()),
-  errorMessage: PropTypes.arrayOf(PropTypes.string)
-}
+  errorMessage: PropTypes.arrayOf(PropTypes.string),
+};
 
-export default CreditTransfersForm
+export default CreditTransfersForm;

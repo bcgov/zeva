@@ -1,7 +1,7 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import ReactQuill from 'react-quill'
-import ReactTooltip from 'react-tooltip'
+import React from "react";
+import PropTypes from "prop-types";
+import ReactQuill from "react-quill";
+import Tooltip from "../../app/components/Tooltip";
 
 const AssessmentEditableCommentInput = (props) => {
   const {
@@ -16,8 +16,8 @@ const AssessmentEditableCommentInput = (props) => {
     disable,
     buttonDisable,
     tooltip,
-    value
-  } = props
+    value,
+  } = props;
   return (
     <div className="text-editor no-print">
       <label htmlFor="comment" className="text-blue">
@@ -29,29 +29,31 @@ const AssessmentEditableCommentInput = (props) => {
         theme="snow"
         modules={{
           toolbar: [
-            ['bold', 'italic'],
-            [{ list: 'bullet' }, { list: 'ordered' }]
+            ["bold", "italic"],
+            [{ list: "bullet" }, { list: "ordered" }],
           ],
           keyboard: {
-            bindings: { tab: false }
-          }
+            bindings: { tab: false },
+          },
         }}
-        formats={['bold', 'italic', 'list', 'bullet']}
+        formats={["bold", "italic", "list", "bullet"]}
         onChange={handleCommentChange}
       />
       {!disable && buttonText && (
         <>
-          {tooltip !== '' && buttonDisable && <ReactTooltip />}
-          <span data-tip={(buttonDisable && tooltip) || ''}>
+          <Tooltip
+            tooltipId="assessment-comment-tip"
+            tooltipText={buttonDisable && tooltip}
+          >
             <button
               className="button mt-2"
               onClick={() => {
-                if (editing && (value && value !== '<p><br></p>')) {
-                  saveEditableComment()
-                } else if (editing && (!value || value === '<p><br></p>')) {
-                  deleteEditableComment()
+                if (editing && value && value !== "<p><br></p>") {
+                  saveEditableComment();
+                } else if (editing && (!value || value === "<p><br></p>")) {
+                  deleteEditableComment();
                 } else {
-                  handleAddComment()
+                  handleAddComment();
                 }
               }}
               type="button"
@@ -64,27 +66,27 @@ const AssessmentEditableCommentInput = (props) => {
               <button
                 className="button mt-2 ml-2"
                 onClick={() => {
-                  cancelEditableComment()
+                  cancelEditableComment();
                 }}
                 type="button"
               >
-                {'Cancel'}
+                {"Cancel"}
               </button>
             )}
-          </span>
+          </Tooltip>
         </>
       )}
     </div>
-  )
-}
+  );
+};
 
 AssessmentEditableCommentInput.defaultProps = {
   buttonText: null,
   editing: false,
   disable: false,
   handleAddComment: () => {},
-  tooltip: ''
-}
+  tooltip: "",
+};
 AssessmentEditableCommentInput.propTypes = {
   handleAddComment: PropTypes.func,
   handleCommentChange: PropTypes.func.isRequired,
@@ -93,6 +95,6 @@ AssessmentEditableCommentInput.propTypes = {
   buttonText: PropTypes.string,
   title: PropTypes.string.isRequired,
   disable: PropTypes.bool,
-  tooltip: PropTypes.string
-}
-export default AssessmentEditableCommentInput
+  tooltip: PropTypes.string,
+};
+export default AssessmentEditableCommentInput;
