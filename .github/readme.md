@@ -36,3 +36,14 @@ Notes: the change may take about 20 minutes to be promoted to Zeva development e
 
 - Update frontend/package.json version in the new release branch
 - Create the new tracking pull request to merge the nre release branch to master
+
+# Emergency Release process sample
+
+- Create emergency release branch release-1.68.1 from master (master is at release-1.68.0)
+- Create pipeline emergency-release-build-1.68.1.yaml on release-1.68.1
+- Update frontend.package.json: "version": "1.68.1"
+- Make the emergency changes
+- Commit the changes to release-1.68.1
+- Monitor the pipelin
+- Create new tracking pull request merge release-1.68.1 to master
+- Merge the pr after prod deployment is done
