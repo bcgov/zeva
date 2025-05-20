@@ -1,7 +1,5 @@
 import React from "react";
 import isLegacySubmission from "../../app/utilities/isLegacySubmission";
-import ReactTooltip from "react-tooltip";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { tooltipText } from "../constants/creditRequest";
 import Tooltip from "../../app/components/Tooltip";
 

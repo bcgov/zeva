@@ -50,12 +50,8 @@ const AssessmentDetailsPage = (props) => {
     unspecifiedReductions,
     deductions,
     updatedBalances,
-    supplementaryStatus,
-    supplementaryId,
     createdByGov,
     handleCancelConfirmation,
-    reassessmentExists,
-    reassessmentTooltip
   } = props
 
   const [showModal, setShowModal] = useState(false)

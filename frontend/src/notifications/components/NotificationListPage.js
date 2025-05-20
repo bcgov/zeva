@@ -1,7 +1,6 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-import ReactTooltip from 'react-tooltip'
-import Loading from '../../app/components/Loading'
+import PropTypes from "prop-types";
+import React from "react";
+import Loading from "../../app/components/Loading";
 
 const NotificationListPage = (props) => {
   const {
@@ -12,11 +11,11 @@ const NotificationListPage = (props) => {
     displayList,
     subscribe,
     unsubscribe,
-    loading
-  } = props
+    loading,
+  } = props;
 
   if (loading) {
-    return <Loading />
+    return <Loading />;
   }
 
   return (
@@ -26,7 +25,7 @@ const NotificationListPage = (props) => {
           type="radio"
           id="Unsubscribe"
           onChange={(event) => {
-            handleChange(event)
+            handleChange(event);
           }}
           name="Subscription"
           value="Unsubscribe"
@@ -40,7 +39,7 @@ const NotificationListPage = (props) => {
           type="radio"
           id="Subscribe"
           onChange={(event) => {
-            handleChange(event)
+            handleChange(event);
           }}
           name="Subscription"
           value="Subscribe"
@@ -50,7 +49,6 @@ const NotificationListPage = (props) => {
           Subscribe to receive immediate email (one email per notification)
         </label>
       </div>
-      <ReactTooltip />
       {displayList &&
         notifications.map((notification) => (
           <div className="col-sm-12 ml-3" key={notification.id}>
@@ -59,13 +57,13 @@ const NotificationListPage = (props) => {
                 checked={
                   checkboxes.findIndex(
                     (checkbox) =>
-                      parseInt(checkbox, 10) === parseInt(notification.id, 10)
+                      parseInt(checkbox, 10) === parseInt(notification.id, 10),
                   ) >= 0
                 }
                 id={notification.id}
                 name="notifications"
                 onChange={(event) => {
-                  handleCheckboxClick(event)
+                  handleCheckboxClick(event);
                 }}
                 type="checkbox"
               />
@@ -80,27 +78,27 @@ const NotificationListPage = (props) => {
           </div>
         ))}
     </div>
-  )
-}
+  );
+};
 
 NotificationListPage.defaultProps = {
   notifications: [],
   checkboxes: [],
   subscribe: false,
-  unsubscribe: false
-}
+  unsubscribe: false,
+};
 
 NotificationListPage.propTypes = {
   notifications: PropTypes.arrayOf(PropTypes.shape()),
   checkboxes: PropTypes.arrayOf(
-    PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+    PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   ),
   handleCheckboxClick: PropTypes.func.isRequired,
   handleChange: PropTypes.func.isRequired,
   displayList: PropTypes.bool.isRequired,
   subscribe: PropTypes.bool,
   unsubscribe: PropTypes.bool,
-  loading: PropTypes.bool.isRequired
-}
+  loading: PropTypes.bool.isRequired,
+};
 
-export default NotificationListPage
+export default NotificationListPage;
