@@ -35,7 +35,7 @@ const CreditTransferSignOff = (props) => {
               />
             </div>
             <label
-              className={disableCheckboxes ? "text-grey" : "d-inline"}
+              className={disableCheckboxes ? "text-grey d-inline" : "d-inline"}
               htmlFor={assertion.id}
               id="transfer-text"
             >
