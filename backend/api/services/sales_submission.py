@@ -1,5 +1,6 @@
 from django.db import connection
 from api.models.sales_submission import SalesSubmission
+from api.models.sales_submission_content import SalesSubmissionContent
 from api.services.credit_transaction import get_map_of_credit_transactions
 from api.models.sales_submission_statuses import SalesSubmissionStatuses
 from api.services.send_email import notifications_credit_application
@@ -482,3 +483,32 @@ def get_warnings_and_maps(
         "map_of_vins_to_icbc_data": map_of_vins_to_icbc_data,
         "map_of_sales_submission_content_ids_to_vehicles": map_of_sales_submission_content_ids_to_vehicles,
     }
+
+
+# returns {model_name -> {icbc_model_name -> count}}
+def get_model_mismatches_map(sales_submission_id):
+    result = {}
+    records = SalesSubmissionContent.objects.only("xls_vin", "xls_model").filter(
+        submission_id=sales_submission_id
+    )
+    icbc_records_map = {}
+    icbc_records = (
+        IcbcRegistrationData.objects.only("vin", "icbc_vehicle")
+        .filter(vin__in=[record.xls_vin for record in records])
+        .select_related("icbc_vehicle")
+    )
+    for icbc_record in icbc_records:
+        icbc_records_map[icbc_record.vin] = icbc_record.icbc_vehicle.model_name
+    for record in records:
+        vin = record.xls_vin
+        model_name = record.xls_model
+        icbc_model_name = icbc_records_map.get(vin)
+        if not vin or not model_name or not icbc_model_name:
+            continue
+        if model_name not in result:
+            result[model_name] = {}
+            result[model_name][icbc_model_name] = 0
+        if icbc_model_name not in result[model_name]:
+            result[model_name][icbc_model_name] = 0
+        result[model_name][icbc_model_name] = result[model_name][icbc_model_name] + 1
+    return result

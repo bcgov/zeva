@@ -43,7 +43,7 @@ import numpy as np
 from api.paginations import BasicPagination
 from api.services.filter_utilities import get_search_terms, get_search_q_object
 from api.services.sales_submission import get_map_of_sales_submission_ids_to_timestamps
-from api.services.sales_submission import get_warnings_and_maps, get_helping_objects
+from api.services.sales_submission import get_warnings_and_maps, get_helping_objects, get_model_mismatches_map
 from api.utilities.generic import get_inverse_map
 from api.permissions.same_organization import SameOrganizationPermissions
 
@@ -667,3 +667,11 @@ class CreditRequestViewset(
             comment.delete()
             return Response(status=status.HTTP_200_OK)
         return Response(status=status.HTTP_403_FORBIDDEN)
+
+    @action(detail=True, methods=["GET"])
+    def model_mismatches(self, request, pk):
+        if not request.user.is_government:
+            return HttpResponseForbidden()
+        data = get_model_mismatches_map(pk)
+        return Response(data)
+        

@@ -1,9 +1,11 @@
-import React from 'react'
+import React, { useMemo, useState } from 'react'
 import PropTypes from 'prop-types'
 import Button from '../../app/components/Button'
 import CustomPropTypes from '../../app/utilities/props'
 import VINListTable from './VINListTable'
 import isLegacySubmission from '../../app/utilities/isLegacySubmission'
+import { ModelMismatchesTable } from './ModelMismatchesTable'
+import { CreditApplicationModelMismatchesTab, CreditApplicationTabs, CreditApplicationVinsListTab } from './CreditApplicationTabs'
 
 const CreditRequestVINListPage = (props) => {
   const {
@@ -30,6 +32,8 @@ const CreditRequestVINListPage = (props) => {
     setSorts,
     setApplyFiltersCount
   } = props
+
+  const [view, setView] = useState(CreditApplicationVinsListTab)
 
   const handleSelect = (event) => {
     const { value } = event.target
@@ -87,8 +91,8 @@ const CreditRequestVINListPage = (props) => {
     </div>
   )
 
-  return (
-    <div id="sales-details" className="page">
+  const header = useMemo(() => {
+    return (
       <div className="row">
         <div className="col-sm-12">
           <h1>
@@ -99,9 +103,25 @@ const CreditRequestVINListPage = (props) => {
           </h2>
         </div>
       </div>
+    )
+  }, [submission])
 
-      <div className="row mb-2">
-        <div className="col-sm-12 text-right">
+  if (view === CreditApplicationModelMismatchesTab) {
+    return (
+      <div id="modelMismatches" className="page">
+        {header}
+        <CreditApplicationTabs active={CreditApplicationModelMismatchesTab} setActive={setView}/>
+        <ModelMismatchesTable salesSubmissionId={submission.id}/>
+      </div>
+    )
+  }
+
+  return (
+    <div id="sales-details" className="page">
+      {header}
+      <div className="row mb-2 credit-application-header">
+        <CreditApplicationTabs active={CreditApplicationVinsListTab} setActive={setView}/>
+        <div className="text-right">
           <span className="d-inline-block mr-3 align-middle">
             <select
               className="form-control h-auto py-2"
