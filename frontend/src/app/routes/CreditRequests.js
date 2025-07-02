@@ -19,7 +19,8 @@ const CREDIT_REQUESTS = {
   VALIDATED: `${API_BASE_PATH}/:id/validated`,
   VALIDATED_DETAILS: `${API_BASE_PATH}/:id/validated-details`,
   UPDATE_COMMENT: `${API_BASE_PATH}/:id/update_comment`,
-  DELETE_COMMENT: `${API_BASE_PATH}/:id/delete_comment`
+  DELETE_COMMENT: `${API_BASE_PATH}/:id/delete_comment`,
+  MODEL_MISMATCHES: `${API_BASE_PATH}/:id/model_mismatches`
 }
 
 export default CREDIT_REQUESTS

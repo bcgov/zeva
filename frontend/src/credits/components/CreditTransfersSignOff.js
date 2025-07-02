@@ -1,7 +1,7 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-import ReactTooltip from 'react-tooltip'
-import CustomPropTypes from '../../app/utilities/props'
+import PropTypes from "prop-types";
+import React from "react";
+import CustomPropTypes from "../../app/utilities/props";
+import Tooltip from "../../app/components/Tooltip";
 
 const CreditTransferSignOff = (props) => {
   const {
@@ -10,12 +10,11 @@ const CreditTransferSignOff = (props) => {
     disableCheckboxes,
     handleCheckboxClick,
     hoverText,
-    user
-  } = props
+    user,
+  } = props;
   return (
     <>
-      {hoverText && <ReactTooltip />}
-      <div id="transfer-sign-off" data-tip={hoverText}>
+      <Tooltip tooltipId="transfer-sign-off" tooltipText={hoverText}>
         {assertions.map((assertion) => (
           <div key={assertion.id}>
             <div className="d-inline-block align-middle my-2 ml-2 mr-1">
@@ -23,50 +22,50 @@ const CreditTransferSignOff = (props) => {
                 checked={
                   checkboxes.findIndex(
                     (checkbox) =>
-                      parseInt(checkbox, 10) === parseInt(assertion.id, 10)
+                      parseInt(checkbox, 10) === parseInt(assertion.id, 10),
                   ) >= 0
                 }
                 disabled={disableCheckboxes}
                 id={assertion.id}
                 name="terms"
                 onChange={(event) => {
-                  handleCheckboxClick(event)
+                  handleCheckboxClick(event);
                 }}
                 type="checkbox"
               />
             </div>
             <label
-              className={disableCheckboxes ? 'text-grey' : 'd-inline'}
+              className={disableCheckboxes ? "text-grey d-inline" : "d-inline"}
               htmlFor={assertion.id}
               id="transfer-text"
             >
               {assertion.description.replace(
                 /{user.organization.name}/g,
-                user.organization.name
+                user.organization.name,
               )}
             </label>
           </div>
         ))}
-      </div>
+      </Tooltip>
     </>
-  )
-}
+  );
+};
 
 CreditTransferSignOff.defaultProps = {
   assertions: [],
   checkboxes: [],
   disableCheckboxes: false,
-  hoverText: ''
-}
+  hoverText: "",
+};
 CreditTransferSignOff.propTypes = {
   assertions: PropTypes.arrayOf(PropTypes.shape()),
   checkboxes: PropTypes.arrayOf(
-    PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+    PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   ),
   disableCheckboxes: PropTypes.bool,
   handleCheckboxClick: PropTypes.func.isRequired,
   hoverText: PropTypes.string,
-  user: CustomPropTypes.user.isRequired
-}
+  user: CustomPropTypes.user.isRequired,
+};
 
-export default CreditTransferSignOff
+export default CreditTransferSignOff;

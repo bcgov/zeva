@@ -21,8 +21,8 @@ const CreditTransfersEditContainer = (props) => {
   const emptyRow = {
     creditType: '',
     modelYear: '',
-    quantity: 0,
-    value: 0
+    quantity: '',
+    value: ''
   }
   const emptyForm = {
     transferPartner: ''
@@ -41,23 +41,29 @@ const CreditTransfersEditContainer = (props) => {
   const checkboxText = 'Please complete all fields in the transfer.'
   const [hoverText, setHoverText] = useState(checkboxText)
   const [loading, setLoading] = useState(true)
-  const checkFilled = (input, partner = fields) => {
-    Object.entries(input).forEach(([key, val]) => {
-      if (
-        val.creditType === '' ||
-        val.modelYear === '' ||
-        val.quantity === 0 ||
-        val.value === 0 ||
-        fields.transferPartner === ''
-      ) {
-        setUnfilledRow(true)
-        // setCheckboxes(emptyCheckboxes);
-        setHoverText(checkboxText)
-      } else {
-        setUnfilledRow(false)
-        setHoverText('')
-      }
-    })
+
+  const updateRows = (newRows) => {
+    setRows(newRows);
+    checkFilled(newRows);
+  };
+
+  const checkFilled = (inputRows) => {
+    const hasUnfilledEntry = Object.values(inputRows).some(row =>
+      row.creditType.length === 0 ||
+      row.modelYear.length === 0 ||
+      row.quantity.length === 0 ||
+      parseInt(row.quantity) === 0 ||
+      row.value.length === 0
+      // User can enter 0 for the value for transfering credit for free,
+      //   so we don't check for it.
+    ) || inputRows.length === 0 || fields.transferPartner.length === 0;
+    setUnfilledRow(hasUnfilledEntry);
+    if (hasUnfilledEntry) {
+      setCheckboxes([]);
+      setHoverText(checkboxText);
+    } else {
+      setHoverText('');
+    }
   }
 
   const handleInputChange = (event) => {
@@ -89,19 +95,16 @@ const CreditTransfersEditContainer = (props) => {
         rowsCopy[rowId][name] = parseFloat(value).toFixed(0)
       }
     }
-    setRows(rowsCopy)
-    checkFilled(rowsCopy)
+    updateRows(rowsCopy)
   }
 
   const addRow = () => {
-    setRows([...rows, emptyRow])
-    setHoverText(checkboxText)
+    updateRows([...rows, emptyRow])
   }
 
   const removeRow = (rowId) => {
     const filteredRows = rows.filter((item, index) => index !== rowId)
-    setRows(filteredRows)
-    checkFilled(filteredRows)
+    updateRows(filteredRows)
   }
 
   const submitOrSave = (status) => {

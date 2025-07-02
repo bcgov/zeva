@@ -155,7 +155,6 @@
   }
 }
 #transfer-sign-off {
-  color: $default-text-blue;
   .text-grey {
     color: grey;
   }
@@ -596,4 +595,10 @@
       background-color: $default-background-grey;
     }
   }
+}
+
+.credit-application-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
