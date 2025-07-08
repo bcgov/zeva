@@ -124,38 +124,32 @@ class UserAuthentication(authentication.BaseAuthentication):
             raise Exception('identity provider invalid')
 
         # fall through to here if no mapped user is found
-        if 'email' in user_token:
-            # we map users by email and external_username
-            user_profile = UserProfile.objects.filter(
-                keycloak_email__iexact=user_token['email']
-            ).filter(
-              username__iexact=external_username
-            )
+        # we map users by the external_username
+        user_profile = UserProfile.objects.filter(
+            username__iexact=external_username
+        )
 
-            # Ensure that idir users can only be mapped to bcgov org
-            # and external users are mapped only to supplier orgs
-            if user_token['identity_provider'] == 'idir':
-                user_profile.filter(organization=1)
-            elif user_token['identity_provider'] == 'bceidbusiness':
-                user_profile.filter(~Q(organization=1))
-            else:
-                raise Exception('unknown identity provider')
-
-            # filter out if the user has already been mapped
-            user = user_profile.filter(keycloak_user_id=None).first()
-
-            if not user:
-                print("No User with that configuration exists.")
-                raise exceptions.AuthenticationFailed(
-                    "No User with that configuration exists.")
-
-            # map keycloak user to tfrs user
-            user.keycloak_user_id = user_token['preferred_username']
-            user.save()
+        # Ensure that idir users can only be mapped to bcgov org
+        # and external users are mapped only to supplier orgs
+        if user_token['identity_provider'] == 'idir':
+            user_profile.filter(organization=1)
+        elif user_token['identity_provider'] == 'bceidbusiness':
+            user_profile.filter(~Q(organization=1))
         else:
+            raise Exception('unknown identity provider')
+
+        # filter out if the user has already been mapped
+        user = user_profile.filter(keycloak_user_id=None).first()
+
+        if not user:
+            print("No User with that configuration exists.")
             raise exceptions.AuthenticationFailed(
-                'preffered_username or email is required in jwt payload')
-        
+                "No User with that configuration exists.")
+
+        # map keycloak user to tfrs user
+        user.keycloak_user_id = user_token['preferred_username']
+        user.save()
+
         try:
             user = UserProfile.objects.get(keycloak_user_id=user_token['preferred_username'])
             if not user.is_active:
