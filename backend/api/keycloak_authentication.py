@@ -10,6 +10,7 @@ from rest_framework import exceptions
 
 from api.models.user_profile import UserProfile
 from zeva.settings import WELL_KNOWN_ENDPOINT
+from datetime import datetime
 
 cache = caches['keycloak']
 FILTERED_ROLES = ['uma_authorization', 'offline_access']
@@ -111,6 +112,8 @@ class UserAuthentication(authentication.BaseAuthentication):
             except UserProfile.DoesNotExist: 
                 print("User does not exist, falling through")
                 pass
+
+        print("At", datetime.now(), "encountered the following unmapped keycloak profile:", user_token)
 
         try:
             # Which provider is user logging in with
