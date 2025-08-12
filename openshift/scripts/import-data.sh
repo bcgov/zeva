@@ -18,7 +18,7 @@ fi
 
 # defaults set to dev
 project_name='e52f12-dev'
-pod_name='zeva-crunchy-dev-zeva-spxf-0'
+pod_name='zeva-dev-crunchy-zeva-p4bq-0'
 env='dev'
 
 local_container=$2 
@@ -32,7 +32,7 @@ echo
 # prod variables
 if [ $1 = "prod" ]; then
   project_name='e52f12-prod'
-  pod_name='zeva-spilo-prod-0'
+  pod_name='zeva-prod-crunchy-zeva-xst5-0'
   env='prod'
 else
   echo '** Using dev variables'
@@ -52,12 +52,12 @@ oc rsync $pod_name:/tmp/zeva.tar ./
 echo
 
 echo "** Copying .tar to local database container $local_container"
-docker cp zeva.tar $local_container:/tmp/zeva.tar
+podman cp zeva.tar $local_container:/tmp/zeva.tar
 echo
 
 echo "** Restoring local database"
-docker exec $local_container bash -c 'pg_restore -U postgres -F t --no-privileges --no-owner -c -d zeva < /tmp/zeva.tar' || true
-docker exec $local_container bash -c 'pg_restore -U postgres -F t --no-privileges --no-owner -c -d zeva < /tmp/zeva.tar'
+podman exec $local_container bash -c 'pg_restore -U postgres -F t --no-privileges --no-owner -c -d zeva < /tmp/zeva.tar' || true
+podman exec $local_container bash -c 'pg_restore -U postgres -F t --no-privileges --no-owner -c -d zeva < /tmp/zeva.tar'
 echo
 
 echo "** Cleaning up"
