@@ -1,5 +1,4 @@
 # Stage 1: Use yarn to build the app
-# FROM artifacts.developer.gov.bc.ca/docker-remote/node:16.20.0 as builder
 FROM artifacts.developer.gov.bc.ca/docker-remote/node:20.18.1 as builder
 WORKDIR /usr/src/app
 COPY ./ ./
@@ -9,8 +8,7 @@ RUN npm install -g npm@9.1.1 \
 RUN yes | npm run dist
 
 # Stage 2: Copy the JS React SPA into the Nginx HTML directory
-# FROM artifacts.developer.gov.bc.ca/docker-remote/bitnami/nginx:1.21.6
-FROM artifacts.developer.gov.bc.ca/docker-remote/bitnami/nginx:1.21.6
+FROM docker.io/nginxinc/nginx-unprivileged:1.29.1-alpine
 COPY ./nginx.conf /opt/bitnami/nginx/conf/
 COPY --from=builder /usr/src/app/public/build /app
 
