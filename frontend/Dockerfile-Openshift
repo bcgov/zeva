@@ -8,8 +8,8 @@ RUN npm install -g npm@9.1.1 \
 RUN yes | npm run dist
 
 # Stage 2: Copy the JS React SPA into the Nginx HTML directory
-FROM artifacts.developer.gov.bc.ca/docker-remote/bitnami/nginx:latest
-COPY ./nginx.conf /opt/bitnami/nginx/conf/
+FROM docker.io/nginxinc/nginx-unprivileged:1.29.1-alpine
+COPY ./nginx.conf /etc/nginx/nginx.conf
 COPY --from=builder /usr/src/app/public/build /app
 
 EXPOSE 8080
