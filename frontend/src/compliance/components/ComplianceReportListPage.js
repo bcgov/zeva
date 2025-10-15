@@ -21,10 +21,11 @@ const ComplianceReportListPage = (props) => {
   } = props
 
   let modelYearOfNewReport
-  if (!user.organization.hasSubmittedReport) {
+  if (availableYears.length > 0) {
+    // Use the most recent (highest) available year
+    modelYearOfNewReport = availableYears[availableYears.length - 1]
+  } else if (!user.organization.hasSubmittedReport) {
     modelYearOfNewReport = user.organization.firstModelYear
-  } else if (availableYears.length > 0) {
-    modelYearOfNewReport = availableYears[0]
   }
 
   if (loading) {
