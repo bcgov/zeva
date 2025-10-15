@@ -455,13 +455,6 @@ class ModelYearReportComplianceObligationViewset(viewsets.GenericViewSet):
                         'model_year__name'
                     )
 
-            # Track whether we're using an ending balance from a previous report as our starting point.
-            # When we use ending balances from previous reports (assessed or supplemental), those balances
-            # already account for any deficits that existed - they're "baked in" to the balance values.
-            # So we should NOT also load deficits separately from the organization_deficits table,
-            # or we'll double-count them.
-            has_starting_balance_from_previous_report = False
-
             if starting_balances:
                 for balance in starting_balances:
                     if balance and (
@@ -477,43 +470,35 @@ class ModelYearReportComplianceObligationViewset(viewsets.GenericViewSet):
                             }
                         })
 
-                # If we loaded starting_balances from ANY of the three scenarios above
-                # it means we're using a previous report's ending balance as our starting point.
-                # Mark this so we don't double-count deficits.
-                has_starting_balance_from_previous_report = True
+            deficits = OrganizationDeficits.objects.filter(
+                organization_id=organization.id
+            ).order_by('model_year__name')
 
-            # Only load deficits from organization_deficits table if we don't have a starting balance
-            # from a previous report. If we do have a previous balance, deficits are already reflected in it.
-            if not has_starting_balance_from_previous_report:
-                deficits = OrganizationDeficits.objects.filter(
-                    organization_id=organization.id
-                ).order_by('model_year__name')
+            for deficit in deficits:
+                index = 0
+                found = False
 
-                for deficit in deficits:
-                    index = 0
-                    found = False
+                for each in content:
+                    if each.get('category') == 'deficit' and \
+                            each.get('model_year').get('name') == deficit.model_year.name:
+                        found = True
+                        break
+                    index += 1
 
-                    for each in content:
-                        if each.get('category') == 'deficit' and \
-                                each.get('model_year').get('name') == deficit.model_year.name:
-                            found = True
-                            break
-                        index += 1
-
-                    if found:
-                        if deficit.credit_class.credit_class == 'A':
-                            content[index]['credit_a_value'] += deficit.credit_value
-                        else:
-                            content[index]['credit_b_value'] += deficit.credit_value
+                if found:
+                    if deficit.credit_class.credit_class == 'A':
+                        content[index]['credit_a_value'] += deficit.credit_value
                     else:
-                        content.append({
-                            'credit_a_value': deficit.credit_value if deficit.credit_class.credit_class == 'A' else 0,
-                            'credit_b_value': deficit.credit_value if deficit.credit_class.credit_class == 'B' else 0,
-                            'category': 'deficit',
-                            'model_year': {
-                                'name': deficit.model_year.name
-                            }
-                        })
+                        content[index]['credit_b_value'] += deficit.credit_value
+                else:
+                    content.append({
+                        'credit_a_value': deficit.credit_value if deficit.credit_class.credit_class == 'A' else 0,
+                        'credit_b_value': deficit.credit_value if deficit.credit_class.credit_class == 'B' else 0,
+                        'category': 'deficit',
+                        'model_year': {
+                            'name': deficit.model_year.name
+                        }
+                    })
 
             report_year_balance_a = get_current_year_balance(organization.id, report_year, 'A')
             report_year_balance_b = get_current_year_balance(organization.id, report_year, 'B')
