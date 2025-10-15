@@ -52,9 +52,14 @@ const ComplianceReportsContainer = (props) => {
           allRecords.sort((a, b) => parseFloat(a.year) - parseFloat(b.year))
           // if validation status exists but is not assessed for one year
           // do not add any further years to filtered years/available years
+          // Note: DRAFT reports that were never submitted should not block new reports
           let unfinishedFlag = false
           const completedYears = []
           allRecords.every((record) => {
+            // Ignore DRAFT status - these are abandoned/incomplete reports
+            if (record.status === 'DRAFT') {
+              return true
+            }
             if (record.status !== 'ASSESSED') {
               unfinishedFlag = true
               return false
@@ -65,15 +70,18 @@ const ComplianceReportsContainer = (props) => {
           let filteredYears = []
           const mostRecentCompleted = completedYears.pop()
 
-          let nextYear = 2020
-
           if (mostRecentCompleted) {
-            nextYear = Number(mostRecentCompleted) + 1
-          }
-
-          if (availableYears.length > 0) {
-            // show only the next year if all previous reports have been assessed
-            filteredYears = availableYears.filter((year) => year === nextYear)
+            // If there are completed reports, allow reporting on the next year
+            const nextYear = Number(mostRecentCompleted) + 1
+            if (availableYears.length > 0) {
+              filteredYears = availableYears.filter((year) => year === nextYear)
+            }
+          } else if (availableYears.length > 0) {
+            // No completed reports yet - allow reporting on any available year
+            // up to and including the current year
+            const today = new Date()
+            const currentYear = today.getFullYear()
+            filteredYears = availableYears.filter((year) => year <= currentYear)
           } else if (availableYears.length === 0) {
             const { ldvSales } = user.organization
             if (ldvSales.length > 0) {

@@ -166,7 +166,11 @@ class Organization(Auditable):
                 return None, None
 
         sales_or_supplied = 'Supplied' if is_supplied else 'Sales'
-        
+
+        # Check if sales is empty to avoid division by zero
+        if len(sales) == 0:
+            return None, None
+
         return sum(list(sales)) / len(sales), sales_or_supplied
 
     def get_current_class(self, year=None, avg_sales=None):

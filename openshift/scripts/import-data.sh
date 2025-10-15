@@ -32,7 +32,7 @@ echo
 # prod variables
 if [ $1 = "prod" ]; then
   project_name='e52f12-prod'
-  pod_name='zeva-spilo-prod-0'
+  pod_name='zeva-prod-crunchy-zeva-v4tr-0'
   env='prod'
 else
   echo '** Using dev variables'
