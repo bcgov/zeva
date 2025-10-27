@@ -90,7 +90,7 @@ jobs:
         uses: trstringer/manual-approval@v1.6.0
         with:
           secret: ${{ github.TOKEN }}
-          approvers: emi-hi,tim738745,kuanfandevops,JulianForeman,rogerlcleung,micheal-w-wells,AlexZorkin
+          approvers: emi-hi,tim738745,kuanfandevops,JulianForeman
           minimum-approvals: 1
           issue-title: "ZEVA ${{ env.BUILD_SUFFIX }} Test Deployment"
 
