@@ -1,19 +1,15 @@
 import inspect
 import logging
-import pika
 import pkgutil
-import smtplib
 import sys
 
 from collections import namedtuple
-from amqp import AMQPError
 from django.apps import AppConfig
 from django.db.models.signals import post_migrate
 
 from db_comments.db_actions import create_db_comments, \
     create_db_comments_from_models
-from zeva.settings import RUNSERVER, AMQP_CONNECTION_PARAMETERS, KEYCLOAK, \
-    EMAIL, DEBUG
+from zeva.settings import RUNSERVER, DEBUG
 
 logger = logging.getLogger('zeva.apps')
 
@@ -44,17 +40,7 @@ class ApiConfig(AppConfig):
 
 def check_external_services():
     """Called after initialization. Use it to validate settings"""
-
-    logger.info('Checking AMQP connection')
-
-    try:
-        parameters = AMQP_CONNECTION_PARAMETERS
-        connection = pika.BlockingConnection(parameters)
-        connection.channel()
-        connection.close()
-    except AMQPError as _error:
-        logger.error(_error)
-        raise RuntimeError('AMQP connection failed')
+    pass
 
 
 def post_migration_callback(sender, **kwargs):
