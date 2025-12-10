@@ -188,7 +188,7 @@ class ModelYearReportViewset(
             # if this is empty that means we don't have enough ldv_sales to
             # get the average. our avg_sales at this point should be from the
             # current report ldv_sales
-            if not avg_sales:
+            if (not avg_sales) and (avg_sales != 0):
                 report_ldv_sales = (
                     ModelYearReportLDVSales.objects.filter(
                         model_year_report_id=pk, model_year__name=model_year_int, display=True
