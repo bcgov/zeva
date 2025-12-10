@@ -3,7 +3,7 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.http import HttpResponse
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from django.utils.decorators import method_decorator
 from django.shortcuts import get_object_or_404
 
@@ -449,8 +449,9 @@ class ModelYearReportComplianceObligationViewset(viewsets.GenericViewSet):
                 else:
                     starting_balances = ModelYearReportComplianceObligation.objects.filter(
                         model_year_report_id=previous_report.id,
-                        category='ProvisionalBalanceAfterCreditReduction',
                         from_gov=True
+                    ).filter(
+                        Q(category='ProvisionalBalanceAfterCreditReduction') | Q(category='CreditDeficit')
                     ).order_by(
                         'model_year__name'
                     )
@@ -468,10 +469,11 @@ class ModelYearReportComplianceObligationViewset(viewsets.GenericViewSet):
                             balance.credit_a_value > 0 or
                             balance.credit_b_value > 0
                     ):
+                        category = balance.category
                         content.append({
                             'credit_a_value': balance.credit_a_value,
                             'credit_b_value': balance.credit_b_value,
-                            'category': 'creditBalanceStart',
+                            'category': 'deficit' if category == 'CreditDeficit' else 'creditBalanceStart',
                             'model_year': {
                                 'name': balance.model_year.name
                             }
