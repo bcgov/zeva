@@ -437,12 +437,12 @@ class SalesSubmissionSerializer(
         if request.user.is_government:
             sales_submission_comment = SalesSubmissionComment.objects.filter(
                 sales_submission=obj
-            ).order_by('-create_timestamp')
+            ).order_by('create_timestamp')
         else:
             sales_submission_comment = SalesSubmissionComment.objects.filter(
                 sales_submission=obj,
                 to_govt=False
-            ).order_by('-create_timestamp')
+            ).order_by('create_timestamp')
 
         if sales_submission_comment.exists():
             serializer = SalesSubmissionCommentSerializer(
