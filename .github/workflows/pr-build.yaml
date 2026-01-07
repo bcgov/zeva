@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [labeled, synchronize]
     branches:
-      - release-1.71.0
+      - release-1.72.0
     paths:
       - frontend/**
       - backend/**

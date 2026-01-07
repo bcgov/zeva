@@ -148,13 +148,13 @@ class ModelYearReportAssessmentSerializer(
         assessment_comment = ModelYearReportAssessmentComment.objects.filter(
             model_year_report=obj,
             display=True
-        ).order_by('-create_timestamp')
+        ).order_by('create_timestamp')
         if not request.user.is_government:
             assessment_comment = ModelYearReportAssessmentComment.objects.filter(
                 model_year_report=obj,
                 to_director=False,
                 display=True
-            ).order_by('-create_timestamp')
+            ).order_by('create_timestamp')
         if not assessment_comment:
             return []
         serializer = ModelYearReportAssessmentCommentSerializer(

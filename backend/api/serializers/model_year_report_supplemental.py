@@ -194,13 +194,13 @@ class SupplementalReportAssessmentSerializer(
         request = self.context.get('request')
         assessment_comment = SupplementalReportAssessmentComment.objects.filter(
             supplemental_report_id=obj
-        ).order_by('-create_timestamp')
+        ).order_by('create_timestamp')
 
         if not request.user.is_government:
             assessment_comment = SupplementalReportAssessmentComment.objects.filter(
                 supplemental_report_id=obj,
                 to_director=False
-            ).order_by('-create_timestamp')
+            ).order_by('create_timestamp')
         if not assessment_comment:
             return []
         serializer = SupplementalReportAssessmentCommentSerializer(
@@ -319,7 +319,7 @@ class ModelYearReportSupplementalSerializer(UserSerializerMixin):
         
         comments = SupplementalReportComment.objects.filter(
             Q(supplemental_report_id=obj.id) | Q(supplemental_report_id=obj.supplemental_id)
-                ).order_by('-create_timestamp')
+                ).order_by('create_timestamp')
         if comments.exists():
             serializer = ModelYearReportSupplementalCommentSerializer(comments, many=True)
             return serializer.data
