@@ -29,8 +29,8 @@ from api.services.credit_transaction import (
     get_timestamp_of_most_recent_reduction
 )
 from api.services.model_year_report import (
-    get_most_recent_myr_id,
-    get_most_recent_supplemental
+    get_most_recent_supplemental,
+    get_most_recent_myr_id_with_reduction
 )
 from api.models.model_year_report_statuses import ModelYearReportStatuses
 from api.services.model_year import get_model_years
@@ -225,9 +225,9 @@ class OrganizationViewSet(
 
     @action(detail=True, methods=["get"])
     def most_recent_myr_id(self, request, pk=None):
-        model_year_report = get_most_recent_myr_id(pk, ModelYearReportStatuses.ASSESSED, ModelYearReportStatuses.REASSESSED)
-        if model_year_report:
-            supplemental = get_most_recent_supplemental(model_year_report.id, ModelYearReportStatuses.ASSESSED, ModelYearReportStatuses.REASSESSED)
+        myr_id = get_most_recent_myr_id_with_reduction(pk)
+        if myr_id:
+            supplemental = get_most_recent_supplemental(myr_id, ModelYearReportStatuses.ASSESSED, ModelYearReportStatuses.REASSESSED)
             if supplemental:
                 return Response({
                     "is_supplementary": True,
@@ -235,7 +235,7 @@ class OrganizationViewSet(
                 })
             return Response({
                 "is_supplementary": False,
-                "id": model_year_report.id
+                "id": myr_id
             })
         return Response(None)
     

@@ -468,3 +468,22 @@ def get_supplemental_credit_activity(supplemental_id, *select_related):
         supplemental_report_id=supplemental_id
     ).select_related(*select_related)
     return list(credit_activity)
+
+
+def get_most_recent_myr_id_with_reduction(org_id):
+    most_recent_reduction = (
+        CreditTransaction.objects.filter(debit_from_id=org_id)
+        .filter(transaction_type__transaction_type="Reduction")
+        .order_by("-transaction_timestamp")
+        .first()
+    )
+    if most_recent_reduction:
+        compliance_year = most_recent_reduction.transaction_timestamp.year - 1
+        report = (
+            ModelYearReport.objects.filter(organization_id=org_id)
+            .filter(model_year__name=compliance_year)
+            .filter(validation_status="ASSESSED")
+            .get()
+        )
+        return report.id
+    return None
