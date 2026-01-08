@@ -21,6 +21,8 @@ const UploadICBCVerificationContainer = (props) => {
   const [showProcessing, setShowProcessing] = useState(false)
   const [showProgressBar, setShowProgressBar] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
+  const [progressStatus, setProgressStatus] = useState('')
+  const [pollingInterval, setPollingInterval] = useState(null)
 
   const today = new Date()
   const date = `${today.getFullYear()}-${
@@ -43,10 +45,69 @@ const UploadICBCVerificationContainer = (props) => {
       (100 * progressEvent.loaded) / progressEvent.total
     )
     setUploadProgress(percentage)
+    setProgressStatus('Uploading file to storage...')
+  }
+
+  const pollProgress = (uploadId) => {
+    const interval = setInterval(() => {
+      axios
+        .get(ROUTES_ICBCVERIFICATION.PROGRESS, {
+          params: { upload_id: uploadId }
+        })
+        .then((response) => {
+          const { progress, status: statusText, complete, error, results } = response.data
+          
+          setUploadProgress(progress)
+          setProgressStatus(statusText)
+          
+          if (complete) {
+            clearInterval(interval)
+            setPollingInterval(null)
+            
+            if (error) {
+              setAlertMessage(error)
+              setShowProcessing(false)
+              setShowProgressBar(false)
+            } else if (results) {
+              const { createdRecords, updatedRecords } = results
+              setPreviousDateCurrentTo(results.dateCurrentTo)
+              
+              if (createdRecords === 0 && updatedRecords === 0) {
+                setAlertMessage('upload successful - no new records were found.')
+              } else {
+                setAlertMessage('upload successful - ' +
+                  createdRecords + ' new records were created and ' +
+                  updatedRecords + ' records were updated.')
+              }
+              
+              toastr.success('upload successful!', '', {
+                positionClass: 'toast-bottom-right'
+              })
+              
+              setShowProcessing(false)
+              setShowProgressBar(false)
+            }
+            
+            setFiles([])
+          }
+        })
+        .catch((error) => {
+          console.error('Polling error:', error)
+          clearInterval(interval)
+          setPollingInterval(null)
+          setAlertMessage('An error occurred while checking upload progress.')
+          setShowProcessing(false)
+          setShowProgressBar(false)
+        })
+    }, 1000) // Poll every second
+    
+    setPollingInterval(interval)
   }
 
   const doUpload = () => {
     setShowProgressBar(true)
+    setUploadProgress(0)
+    setProgressStatus('Preparing upload...')
 
     files.forEach((file) => {
       axios.get(ROUTES_UPLOADS.MINIO_URL).then((response) => {
@@ -62,41 +123,31 @@ const UploadICBCVerificationContainer = (props) => {
             }
           })
           .then(() => {
+            // File uploaded to storage, now start processing
             setShowProcessing(true)
+            setUploadProgress(0)
+            setProgressStatus('Starting data processing...')
 
             axios
               .post(ROUTES_ICBCVERIFICATION.UPLOAD, {
                 filename,
-                submissionCurrentDate: dateCurrentTo
+                submission_current_date: dateCurrentTo
               })
               .then((postResponse) => {
-                const { dateCurrentTo: updatedDateCurrentTo, createdRecords, updatedRecords } =
-                  postResponse.data
-                setPreviousDateCurrentTo(updatedDateCurrentTo)
-                if (createdRecords === 0 && updatedRecords === 0) {
-                  setAlertMessage('upload successful - no new records were found.')
-                } else {
-                  setAlertMessage('upload successful - ' +
-                    createdRecords + ' new records were created and ' +
-                      updatedRecords + ' records were updated.')
-                }
-                toastr.success('upload successful!', '', {
-                  positionClass: 'toast-bottom-right'
-                })
+                const { upload_id: uploadId } = postResponse.data
+                // Start polling for progress
+                pollProgress(uploadId)
               })
               .catch((error) => {
                 console.error(error)
                 const { response: errorResponse } = error
-                if (errorResponse.status === 400) {
+                if (errorResponse && errorResponse.status === 400) {
                   setAlertMessage(errorResponse.data)
                 } else {
                   setAlertMessage(
                     'An error has occurred while uploading. Please try again later.'
                   )
                 }
-              })
-              .finally(() => {
-                setFiles([])
                 setShowProcessing(false)
                 setShowProgressBar(false)
               })
@@ -106,6 +157,8 @@ const UploadICBCVerificationContainer = (props) => {
             setAlertMessage(
               'An error has occurred while uploading. Please try again later.'
             )
+            setShowProcessing(false)
+            setShowProgressBar(false)
           })
       })
     })
@@ -113,6 +166,13 @@ const UploadICBCVerificationContainer = (props) => {
 
   useEffect(() => {
     refreshList(true)
+    
+    // Cleanup polling interval on unmount
+    return () => {
+      if (pollingInterval) {
+        clearInterval(pollingInterval)
+      }
+    }
   }, [])
 
   if (loading) {
@@ -134,6 +194,7 @@ const UploadICBCVerificationContainer = (props) => {
       title="Upload ICBC Registration Data"
       upload={doUpload}
       uploadProgress={uploadProgress}
+      progressStatus={progressStatus}
       user={user}
     />
   ]

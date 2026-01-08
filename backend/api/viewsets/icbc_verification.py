@@ -1,5 +1,8 @@
 import json
 import os
+import threading
+import uuid
+import time
 
 from django.http import HttpResponse
 from rest_framework import viewsets, status
@@ -11,6 +14,30 @@ from api.services.icbc_upload import ingest_icbc_spreadsheet
 from api.services.minio import get_minio_object, minio_remove_object
 from api.models.icbc_upload_date import IcbcUploadDate
 from api.serializers.icbc_upload_date import IcbcUploadDateSerializer
+
+# Global dictionary to track upload progress
+_upload_progress = {}
+
+def get_upload_progress(upload_id):
+    """Get the current progress for an upload"""
+    return _upload_progress.get(upload_id, {'progress': 0, 'status': 'Starting...', 'complete': False})
+
+def set_upload_progress(upload_id, progress, status_text, current_page=0, total_pages=0, complete=False, error=None):
+    """Set the progress for an upload"""
+    _upload_progress[upload_id] = {
+        'progress': progress,
+        'status': status_text,
+        'current_page': current_page,
+        'total_pages': total_pages,
+        'complete': complete,
+        'error': error,
+        'timestamp': time.time()
+    }
+
+def clear_upload_progress(upload_id):
+    """Clear progress after completion (called after client retrieves final result)"""
+    if upload_id in _upload_progress:
+        del _upload_progress[upload_id]
 
 
 class IcbcVerificationViewSet(viewsets.GenericViewSet):
@@ -56,56 +83,117 @@ class IcbcVerificationViewSet(viewsets.GenericViewSet):
             return Response(status=status.HTTP_403_FORBIDDEN)
         
         filename = request.data.get('filename')
-        try:
-            try:
-                # get previous upload file so we can compare
-                last_icbc_date = IcbcUploadDate.objects \
-                  .exclude(filename__isnull=True).latest('create_timestamp')
-            except IcbcUploadDate.DoesNotExist:
-              raise Exception(
-                """ 
-                No previous IcbcUploadDate found with filename. Update previous Date with current filename.
-                """)
-
-            print("Last upload date", last_icbc_date.upload_date)
-            
-            # get previous file
-            previous_filename = last_icbc_date.filename
-            print("Downloading previous file", previous_filename)
-            previous_file = get_minio_object(previous_filename)
-            
-            # get latest file
-            print("Downloading latest file", filename)
-            current_file = get_minio_object(filename)
-
-            print("Starting Ingest")
-            date_current_to = request.data.get('submission_current_date')
-            try:
-                done = ingest_icbc_spreadsheet(current_file, filename, user, date_current_to, previous_file)
-            except:
-                return HttpResponse(status=400, content='Error processing data file. Please contact your administrator for assistance.')
-
-            if done[0]:
-                # We remove the previous file from minio but keep the 
-                # latest one so we can use it for compare on next upload
-                minio_remove_object(previous_filename)
-                print('Done processing')
-
-        except Exception as error:
-            return HttpResponse(status=400, content=error)
+        date_current_to = request.data.get('submission_current_date')
         
-        finally:
-            previous_file.close()
-            previous_file.release_conn()
-            current_file.close()
-            current_file.release_conn()
+        # Generate unique upload ID
+        upload_id = str(uuid.uuid4())
+        
+        # Initialize progress
+        set_upload_progress(upload_id, 0, 'Initializing...', 0, 0, False)
+        
+        # Define the processing function to run in background thread
+        def process_upload():
+            previous_file = None
+            current_file = None
+            try:
+                try:
+                    # get previous upload file so we can compare
+                    set_upload_progress(upload_id, 5, 'Getting previous upload data...', 0, 0, False)
+                    last_icbc_date = IcbcUploadDate.objects \
+                      .exclude(filename__isnull=True).latest('create_timestamp')
+                except IcbcUploadDate.DoesNotExist:
+                    raise Exception(
+                        """ 
+                        No previous IcbcUploadDate found with filename. Update previous Date with current filename.
+                        """)
 
+                print("Last upload date", last_icbc_date.upload_date)
+                
+                # get previous file
+                previous_filename = last_icbc_date.filename
+                print("Downloading previous file", previous_filename)
+                set_upload_progress(upload_id, 10, 'Downloading previous file...', 0, 0, False)
+                previous_file = get_minio_object(previous_filename)
+                
+                # get latest file
+                print("Downloading latest file", filename)
+                set_upload_progress(upload_id, 15, 'Downloading latest file...', 0, 0, False)
+                current_file = get_minio_object(filename)
+
+                print("Starting Ingest")
+                set_upload_progress(upload_id, 20, 'Starting data processing...', 0, 0, False)
+                
+                done = ingest_icbc_spreadsheet(
+                    current_file, 
+                    filename, 
+                    user, 
+                    date_current_to, 
+                    previous_file,
+                    upload_id=upload_id  # Pass upload_id for progress tracking
+                )
+
+                if done[0]:
+                    # We remove the previous file from minio but keep the 
+                    # latest one so we can use it for compare on next upload
+                    minio_remove_object(previous_filename)
+                    print('Done processing')
+                    
+                    # Mark as complete with results
+                    set_upload_progress(
+                        upload_id, 
+                        100, 
+                        'Processing complete!', 
+                        0, 
+                        0, 
+                        True,
+                        error=None
+                    )
+                    
+                    # Store results in progress dict for retrieval
+                    _upload_progress[upload_id]['results'] = {
+                        'dateCurrentTo': date_current_to,
+                        'createdRecords': done[1],
+                        'updatedRecords': done[2]
+                    }
+
+            except Exception as error:
+                print(f"Upload error: {error}")
+                set_upload_progress(
+                    upload_id, 
+                    0, 
+                    'Error occurred', 
+                    0, 
+                    0, 
+                    True,
+                    error=str(error)
+                )
+            
+            finally:
+                if previous_file:
+                    previous_file.close()
+                    previous_file.release_conn()
+                if current_file:
+                    current_file.close()
+                    current_file.release_conn()
+        
+        # Start processing in background thread
+        thread = threading.Thread(target=process_upload)
+        thread.daemon = True
+        thread.start()
+        
+        # Return immediately with upload_id for polling
         return HttpResponse(
-            status=201,
-            content=json.dumps({
-                'dateCurrentTo': date_current_to,
-                'createdRecords': done[1],
-                'updatedRecords': done[2]
-            }),
+            status=202,
+            content=json.dumps({'upload_id': upload_id}),
             content_type='application/json'
         )
+    
+    @action(detail=False, methods=['get'])
+    def progress(self, request):
+        """Endpoint to poll for upload progress"""
+        upload_id = request.query_params.get('upload_id')
+        if not upload_id:
+            return Response({'error': 'upload_id required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        progress_data = get_upload_progress(upload_id)
+        return Response(progress_data)

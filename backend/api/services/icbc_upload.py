@@ -41,9 +41,13 @@ def format_dataframe(df):
 
 
 @transaction.atomic
-def ingest_icbc_spreadsheet(current_excelfile, current_excelfile_name, requesting_user, dateCurrentTo, previous_excelfile):
+def ingest_icbc_spreadsheet(current_excelfile, current_excelfile_name, requesting_user, dateCurrentTo, previous_excelfile, upload_id=None):
     try:
         start_time = time.time()
+        
+        # Import progress tracking function if upload_id provided
+        if upload_id:
+            from api.viewsets.icbc_verification import set_upload_progress
 
         current_to_date = IcbcUploadDate.objects.create(
             upload_date=dateCurrentTo,
@@ -54,6 +58,8 @@ def ingest_icbc_spreadsheet(current_excelfile, current_excelfile_name, requestin
         page_count = 0
 
         print("Processing Started")
+        if upload_id:
+            set_upload_progress(upload_id, 25, 'Reading previous file...', 0, 0, False)
 
         # Previous file processing
         df_p = []
@@ -67,6 +73,9 @@ def ingest_icbc_spreadsheet(current_excelfile, current_excelfile_name, requestin
 
         print("Read previous file", time.time() - start_time)
         print("Previous file rows", len(df_p))
+        
+        if upload_id:
+            set_upload_progress(upload_id, 30, 'Reading latest file...', 0, 0, False)
 
         # Latest file processing
         df_l = []
@@ -80,6 +89,9 @@ def ingest_icbc_spreadsheet(current_excelfile, current_excelfile_name, requestin
 
         print("Read latest file", time.time() - start_time)
         print("Latest file rows", len(df_l))
+        
+        if upload_id:
+            set_upload_progress(upload_id, 35, 'Comparing files...', 0, 0, False)
 
         df_p = pd.DataFrame(df_p, columns=['MODEL_YEAR', 'MAKE', 'MODEL', 'VIN', 'SOURCE'])
         df_l = pd.DataFrame(df_l, columns=['MODEL_YEAR', 'MAKE', 'MODEL', 'VIN', 'SOURCE'])
@@ -100,7 +112,11 @@ def ingest_icbc_spreadsheet(current_excelfile, current_excelfile_name, requestin
             return (True, 0, 0)
 
         chunks = np.array_split(c_result, int(math.ceil(c_result.shape[0] / 25000)))
-        print("Number of Pages to process", len(chunks))
+        total_pages = len(chunks)
+        print("Number of Pages to process", total_pages)
+        
+        if upload_id:
+            set_upload_progress(upload_id, 40, f'Processing {total_pages} pages...', 0, total_pages, False)
 
         icbc_vehicles = IcbcVehicle.objects.all()
         print("icbc_vehicles count:", len(icbc_vehicles))
@@ -118,6 +134,18 @@ def ingest_icbc_spreadsheet(current_excelfile, current_excelfile_name, requestin
             print('Processing page: ' + str(page_count))
             print('Row Count: ' + str(df_ch.shape[0]))
             page_count += 1
+            
+            # Update progress for each page (40% to 95% range)
+            if upload_id:
+                progress = 40 + int((page_count / total_pages) * 55)
+                set_upload_progress(
+                    upload_id, 
+                    progress, 
+                    f'Processing page {page_count} of {total_pages}...', 
+                    page_count, 
+                    total_pages, 
+                    False
+                )
 
             if df_ch.shape[0] <= 0:
                 continue
@@ -212,6 +240,9 @@ def ingest_icbc_spreadsheet(current_excelfile, current_excelfile_name, requestin
         next upload """
         current_to_date.filename = current_excelfile_name
         current_to_date.save()
+        
+        if upload_id:
+            set_upload_progress(upload_id, 95, 'Finalizing...', total_pages, total_pages, False)
 
         print("Total processing time: ", time.time() - start_time)
 
