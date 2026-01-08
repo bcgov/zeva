@@ -49,6 +49,10 @@ const UploadICBCVerificationContainer = (props) => {
   }
 
   const pollProgress = (uploadId) => {
+    // Store upload_id in localStorage for persistence across page refreshes
+    localStorage.setItem('icbc_upload_id', uploadId)
+    localStorage.setItem('icbc_upload_active', 'true')
+    
     const interval = setInterval(() => {
       axios
         .get(ROUTES_ICBCVERIFICATION.PROGRESS, {
@@ -63,6 +67,10 @@ const UploadICBCVerificationContainer = (props) => {
           if (complete) {
             clearInterval(interval)
             setPollingInterval(null)
+            
+            // Clear localStorage when complete
+            localStorage.removeItem('icbc_upload_id')
+            localStorage.removeItem('icbc_upload_active')
             
             if (error) {
               setAlertMessage(error)
@@ -95,11 +103,16 @@ const UploadICBCVerificationContainer = (props) => {
           console.error('Polling error:', error)
           clearInterval(interval)
           setPollingInterval(null)
+          
+          // Clear localStorage on error
+          localStorage.removeItem('icbc_upload_id')
+          localStorage.removeItem('icbc_upload_active')
+          
           setAlertMessage('An error occurred while checking upload progress.')
           setShowProcessing(false)
           setShowProgressBar(false)
         })
-    }, 1000) // Poll every second
+    }, 10000) // Poll every 10 seconds
     
     setPollingInterval(interval)
   }
@@ -166,6 +179,20 @@ const UploadICBCVerificationContainer = (props) => {
 
   useEffect(() => {
     refreshList(true)
+    
+    // Check if there's an active upload from a previous session
+    const activeUploadId = localStorage.getItem('icbc_upload_id')
+    const isUploadActive = localStorage.getItem('icbc_upload_active') === 'true'
+    
+    if (activeUploadId && isUploadActive) {
+      // Resume showing progress bar and processing status
+      setShowProgressBar(true)
+      setShowProcessing(true)
+      setProgressStatus('Resuming upload monitoring...')
+      
+      // Resume polling for the active upload
+      pollProgress(activeUploadId)
+    }
     
     // Cleanup polling interval on unmount
     return () => {
