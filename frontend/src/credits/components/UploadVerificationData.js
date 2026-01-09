@@ -190,7 +190,8 @@ UploadVerificationData.propTypes = {
   title: PropTypes.string.isRequired,
   upload: PropTypes.func.isRequired,
   uploadProgress: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
-    .isRequired
+    .isRequired,
+  progressStatus: PropTypes.string.isRequired
 }
 
 export default UploadVerificationData
