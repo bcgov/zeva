@@ -154,7 +154,7 @@ const UploadICBCVerificationContainer = (props) => {
               .catch((error) => {
                 console.error(error)
                 const { response: errorResponse } = error
-                if (errorResponse && errorResponse.status === 400) {
+                if (errorResponse?.status === 400) {
                   setAlertMessage(errorResponse.data)
                 } else {
                   setAlertMessage(
