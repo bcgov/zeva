@@ -187,7 +187,7 @@ def process_chunk_rows(df_ch, model_years, icbc_vehicles, current_to_date, reque
 
 
 @transaction.atomic
-def ingest_icbc_spreadsheet(current_excelfile, current_excelfile_name, requesting_user, dateCurrentTo, previous_excelfile, upload_id=None):
+def ingest_icbc_spreadsheet(current_excelfile, current_excelfile_name, requesting_user, date_current_to, previous_excelfile, upload_id=None):
     try:
         start_time = time.time()
         
@@ -196,7 +196,7 @@ def ingest_icbc_spreadsheet(current_excelfile, current_excelfile_name, requestin
             from api.viewsets.icbc_verification import set_upload_progress
 
         current_to_date = IcbcUploadDate.objects.create(
-            upload_date=dateCurrentTo,
+            upload_date=date_current_to,
             create_user=requesting_user.username,
             update_user=requesting_user.username,
         )
