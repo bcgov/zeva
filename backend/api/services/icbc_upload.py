@@ -40,6 +40,152 @@ def format_dataframe(df):
     return df
 
 
+def read_csv_file(filepath, source_label):
+    """
+    Read CSV file in chunks and return as list of values.
+    """
+    df_list = []
+    for df in pd.read_csv(
+        filepath, sep=",", error_bad_lines=False, iterator=True, low_memory=True,
+        chunksize=50000, header=0
+    ):
+        df['SOURCE'] = source_label
+        df_list.extend(df.values.tolist())
+    return df_list
+
+
+def compare_dataframes(df_previous, df_latest):
+    """
+    Compare two dataframes and return rows that are new or changed in the latest.
+    """
+    c_result = pd.concat([df_previous, df_latest]).drop_duplicates(
+        subset=['MODEL_YEAR', 'MAKE', 'MODEL', 'VIN']
+    ).reset_index(drop=True)
+    return c_result[c_result['SOURCE'] == 'LATEST']
+
+
+def create_or_get_model_years(unique_model_years, requesting_user):
+    """
+    Create or get ModelYear objects for the given years.
+    """
+    model_years = []
+    for unique_model_year in unique_model_years:
+        eff_date = datetime.strptime(str(unique_model_year), '%Y')
+        exp_date = eff_date + relativedelta(years=1) - relativedelta(days=1)
+        (model_year, _) = ModelYear.objects.get_or_create(
+            name=unique_model_year,
+            defaults={
+                'create_user': requesting_user.username,
+                'update_user': requesting_user.username,
+                'effective_date': eff_date,
+                'expiration_date': exp_date
+            }
+        )
+        model_years.append(model_year)
+    return model_years
+
+
+def find_model_year_id(model_years, icbc_vehicle_year):
+    """
+    Find the model year ID from the list of model years.
+    """
+    for model_year in model_years:
+        if model_year.name == icbc_vehicle_year:
+            return model_year.id
+    return None
+
+
+def find_vehicle_id(icbc_vehicles, icbc_vehicle_model, icbc_vehicle_year, icbc_vehicle_make):
+    """
+    Find the vehicle ID from the list of ICBC vehicles.
+    """
+    for vh in icbc_vehicles:
+        if (vh.model_name == icbc_vehicle_model and 
+            vh.model_year == icbc_vehicle_year and 
+            vh.make == icbc_vehicle_make):
+            return vh.id
+    return None
+
+
+def create_or_get_vehicle(icbc_vehicle_model, icbc_vehicle_year_id, icbc_vehicle_make, requesting_user):
+    """
+    Create or get an IcbcVehicle.
+    """
+    (vehicle, _) = IcbcVehicle.objects.get_or_create(
+        model_name=icbc_vehicle_model,
+        model_year_id=icbc_vehicle_year_id,
+        make=icbc_vehicle_make,
+        defaults={
+            'create_user': requesting_user.username,
+            'update_user': requesting_user.username
+        }
+    )
+    return vehicle.id
+
+
+def process_registration_record(icbc_vehicle_vin, vehicle_id, current_to_date, requesting_user):
+    """
+    Create or update an ICBC registration data record.
+    Returns (created_count, updated_count)
+    """
+    (row, created) = IcbcRegistrationData.objects.get_or_create(
+        vin=icbc_vehicle_vin,
+        defaults={
+            'create_user': requesting_user.username,
+            'update_user': requesting_user.username,
+            'icbc_vehicle_id': vehicle_id,
+            'icbc_upload_date_id': current_to_date.id
+        }
+    )
+    
+    if created:
+        return (1, 0)
+    
+    # if vehicle id doesn't match then update id, date, username
+    if row.icbc_vehicle_id != vehicle_id:
+        row.icbc_vehicle_id = vehicle_id
+        row.icbc_upload_date_id = current_to_date.id
+        row.update_user = requesting_user.username
+        row.save()
+        return (0, 1)
+    
+    return (0, 0)
+
+
+def process_chunk_rows(df_ch, model_years, icbc_vehicles, current_to_date, requesting_user):
+    """
+    Process all rows in a dataframe chunk.
+    Returns (created_count, updated_count)
+    """
+    created_count = 0
+    updated_count = 0
+    
+    for _, row in df_ch.iterrows():
+        icbc_vehicle_year = str(int(row['MODEL_YEAR'])).strip()
+        icbc_vehicle_model = str(row['MODEL']).upper().strip()
+        icbc_vehicle_make = str(row['MAKE']).upper().strip()
+        icbc_vehicle_vin = str(row['VIN']).upper().strip()
+
+        # Find Model Year ID
+        icbc_vehicle_year_id = find_model_year_id(model_years, icbc_vehicle_year)
+
+        # Find or create Vehicle
+        vehicle_id = find_vehicle_id(icbc_vehicles, icbc_vehicle_model, icbc_vehicle_year, icbc_vehicle_make)
+        if vehicle_id is None:
+            vehicle_id = create_or_get_vehicle(
+                icbc_vehicle_model, icbc_vehicle_year_id, icbc_vehicle_make, requesting_user
+            )
+        
+        # Process registration record
+        (created, updated) = process_registration_record(
+            icbc_vehicle_vin, vehicle_id, current_to_date, requesting_user
+        )
+        created_count += created
+        updated_count += updated
+    
+    return (created_count, updated_count)
+
+
 @transaction.atomic
 def ingest_icbc_spreadsheet(current_excelfile, current_excelfile_name, requesting_user, dateCurrentTo, previous_excelfile, upload_id=None):
     try:
@@ -55,38 +201,20 @@ def ingest_icbc_spreadsheet(current_excelfile, current_excelfile_name, requestin
             update_user=requesting_user.username,
         )
 
-        page_count = 0
-
         print("Processing Started")
         if upload_id:
             set_upload_progress(upload_id, 25, 'Reading previous file...', 0, 0, False)
 
-        # Previous file processing
-        df_p = []
-        for df in pd.read_csv(
-            previous_excelfile, sep=",", error_bad_lines=False, iterator=True, low_memory=True,
-            chunksize=50000, header=0
-        ):
-            # df = format_dataframe(df) # pre-processing manually for now
-            df['SOURCE'] = 'PREVIOUS'
-            df_p.extend(df.values.tolist())
-
+        # Read previous file
+        df_p = read_csv_file(previous_excelfile, 'PREVIOUS')
         print("Read previous file", time.time() - start_time)
         print("Previous file rows", len(df_p))
         
         if upload_id:
             set_upload_progress(upload_id, 30, 'Reading latest file...', 0, 0, False)
 
-        # Latest file processing
-        df_l = []
-        for df in pd.read_csv(
-            current_excelfile, sep=",", error_bad_lines=False, iterator=True, low_memory=True,
-            chunksize=50000, header=0
-        ):
-            # df = format_dataframe(df) # pre-processing manually for now
-            df['SOURCE'] = 'LATEST'
-            df_l.extend(df.values.tolist())
-
+        # Read latest file
+        df_l = read_csv_file(current_excelfile, 'LATEST')
         print("Read latest file", time.time() - start_time)
         print("Latest file rows", len(df_l))
         
@@ -96,15 +224,12 @@ def ingest_icbc_spreadsheet(current_excelfile, current_excelfile_name, requestin
         df_p = pd.DataFrame(df_p, columns=['MODEL_YEAR', 'MAKE', 'MODEL', 'VIN', 'SOURCE'])
         df_l = pd.DataFrame(df_l, columns=['MODEL_YEAR', 'MAKE', 'MODEL', 'VIN', 'SOURCE'])
 
-        # calculate any changes in the data between the latest file and the previously uploaded file
-        c_result = pd.concat([df_p, df_l]).drop_duplicates(subset=['MODEL_YEAR', 'MAKE', 'MODEL', 'VIN']).reset_index(drop=True)
-        c_result = c_result[c_result['SOURCE'] == 'LATEST']
+        # Calculate any changes in the data between files
+        c_result = compare_dataframes(df_p, df_l)
         print("Compared files", time.time() - start_time)
         print("Changed rows", c_result.shape)
 
-        # If no changes detected then we end here
-        # and update the IcbcUploadDate Filename to the
-        # latest filename
+        # If no changes detected, update filename and return
         if c_result.empty:
             print("No file changes detected.")
             current_to_date.filename = current_excelfile_name
@@ -121,21 +246,21 @@ def ingest_icbc_spreadsheet(current_excelfile, current_excelfile_name, requestin
         icbc_vehicles = IcbcVehicle.objects.all()
         print("icbc_vehicles count:", len(icbc_vehicles))
 
-        # stats variables
+        # Process chunks
         created_records_count = 0
         updated_records_count = 0
+        page_count = 0
+        
         for df_ch in chunks:
             chunk_time = time.time()
-            # This tells postgres to keep the db connection alive
-            _ = IcbcUploadDate.objects.get(
-                id=current_to_date.id
-            )
+            # Keep the db connection alive
+            _ = IcbcUploadDate.objects.get(id=current_to_date.id)
 
             print('Processing page: ' + str(page_count))
             print('Row Count: ' + str(df_ch.shape[0]))
             page_count += 1
             
-            # Update progress for each page (40% to 95% range)
+            # Update progress for each page
             if upload_id:
                 progress = 40 + int((page_count / total_pages) * 55)
                 set_upload_progress(
@@ -151,93 +276,21 @@ def ingest_icbc_spreadsheet(current_excelfile, current_excelfile_name, requestin
                 continue
 
             unique_model_years = df_ch['MODEL_YEAR'].unique()
-            # unique_models = df_ch['MODEL'].unique()
-            # unique_makes = df_ch['MAKE'].unique()
-            # unique_vins = df_ch['VIN'].unique()
-            # print("unique_model_years", unique_model_years.shape[0])
-            # print("unique_models", unique_models.shape[0])
-            # print("unique_makes", unique_makes.shape[0])
-            # print("unique_vins", unique_vins.shape[0])
-
-            model_years = []
-
-            for unique_model_year in unique_model_years:
-                eff_date = datetime.strptime(str(unique_model_year), '%Y')
-                exp_date = eff_date + relativedelta(years=1) - relativedelta(days=1)
-                (model_year, _) = ModelYear.objects.get_or_create(
-                            name=unique_model_year,
-                            defaults={
-                                'create_user': requesting_user.username,
-                                'update_user': requesting_user.username,
-                                'effective_date': eff_date,
-                                'expiration_date': exp_date
-                            })
-                model_years.append(model_year)
+            model_years = create_or_get_model_years(unique_model_years, requesting_user)
 
             try:
                 with transaction.atomic():
-                    for _, row in df_ch.iterrows():
-                        icbc_vehicle_year = str(int(row['MODEL_YEAR'])).strip()
-                        icbc_vehicle_model = str(row['MODEL']).upper().strip()
-                        icbc_vehicle_make = str(row['MAKE']).upper().strip()
-                        icbc_vehicle_vin = str(row['VIN']).upper().strip()
-
-                        # Searching for Model Year
-                        for model_year in model_years:
-                            if model_year.name == icbc_vehicle_year:
-                                icbc_vehicle_year_id = model_year.id
-
-                        # Searching for Vehicle Id
-                        vehicle_id = None
-                        for vh in icbc_vehicles:
-                            if vh.model_name == icbc_vehicle_model \
-                              and vh.model_year == icbc_vehicle_year \
-                                and vh.make == icbc_vehicle_make:
-                                    vehicle_id = vh.id
-                                    break
-                        
-                        # Create new vehicle
-                        if vehicle_id == None:
-                            (vehicle, _) = IcbcVehicle.objects.get_or_create(
-                                    model_name=icbc_vehicle_model,
-                                    model_year_id=icbc_vehicle_year_id,
-                                    make=icbc_vehicle_make,
-                                    defaults={
-                                        'create_user': requesting_user.username,
-                                        'update_user': requesting_user.username
-                                    })
-                            vehicle_id = vehicle.id
-                        
-                        # Create new vin record
-                        (row, created) = IcbcRegistrationData.objects.get_or_create(
-                            vin=icbc_vehicle_vin,
-                            defaults={
-                                'create_user': requesting_user.username,
-                                'update_user': requesting_user.username,
-                                'icbc_vehicle_id': vehicle_id,
-                                'icbc_upload_date_id': current_to_date.id
-                            })
-                        
-                        if created:
-                            created_records_count += 1
-
-                        # if vehicle id doesn't match then update id, date, username
-                        if not created and row.icbc_vehicle_id != vehicle_id:
-                            row.icbc_vehicle_id = vehicle_id
-                            row.icbc_upload_date_id = current_to_date.id
-                            row.update_user = requesting_user.username
-                            row.save()
-                            updated_records_count += 1
-
+                    (created, updated) = process_chunk_rows(
+                        df_ch, model_years, icbc_vehicles, current_to_date, requesting_user
+                    )
+                    created_records_count += created
+                    updated_records_count += updated
             except Exception as e:
                 print(e)
 
             print("Page Time: ", time.time() - chunk_time)
 
-        """ Update IcbcUploadDate filename now that processing 
-        has completed. If the upload failed then the IcbcUploadDate
-        object will have an empty filename which we can skip on
-        next upload """
+        # Update filename after successful processing
         current_to_date.filename = current_excelfile_name
         current_to_date.save()
         
