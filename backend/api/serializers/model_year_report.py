@@ -74,7 +74,8 @@ class ModelYearReportSerializer(ModelSerializer):
             model_year_report_id=obj.id,
             from_gov=False,
             model_year__name__lt=obj.model_year.name,
-            display=True
+            display=True,
+            ldv_sales__gt=0,
         ).values_list("ldv_sales", flat=True)[:3]
 
         avg_sales = 0
