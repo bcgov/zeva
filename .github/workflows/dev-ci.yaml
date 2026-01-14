@@ -290,8 +290,8 @@ jobs:
           set -euo pipefail
           REPO_BASE="docker://${ARTIFACTORY_REGISTRY}/${ARTIFACTORY_REPO}"
           REPO_PATHS=(
-            "lcfs/prod/lcfs-backend"
-            "lcfs/prod/lcfs-frontend"
+            "zeva/prod/zeva-backend"
+            "zeva/prod/zeva-frontend"
           )
           for REPO_PATH in "${REPO_PATHS[@]}"; do
             REPO_REF="${REPO_BASE}/${REPO_PATH}"
