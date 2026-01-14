@@ -136,3 +136,19 @@ jobs:
           git add zeva/values-test.yaml
           git commit -m "Update the image tag to ${{ env.BUILD_SUFFIX }} on Zeva Test Environment"
           git push
+
+  push-to-artifactory:
+    name: Push images to Artifactory (${{ matrix.image_stream }})
+    needs: [get-build-suffix, deploy-on-test]
+    strategy:
+      matrix:
+        image_stream:
+          - zeva-backend
+          - zeva-frontend
+    uses: ./.github/workflows/push-images-to-artifactory.yaml
+    with:
+      env: test
+      app_name: zeva
+      image_stream: ${{ matrix.image_stream }}
+      image_tag: ${{ needs.get-build-suffix.outputs.output1 }}
+    secrets: inherit
