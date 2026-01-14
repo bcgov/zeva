@@ -54,7 +54,7 @@ jobs:
       IMAGE_TAG: ${{ inputs.image_tag }}
 
     steps:
-      - name: Install skopeo app
+      - name: Install skopeo
         run: |
           sudo apt-get update
           sudo apt-get install -y skopeo
