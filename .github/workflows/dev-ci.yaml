@@ -340,5 +340,5 @@ jobs:
             "docker://${ARTIFACTORY_REGISTRY}/${ARTIFACTORY_REPO}/zeva/dev/zeva-backend:1.74.0-20260113220122"
           skopeo copy --src-tls-verify=false --dest-tls-verify=true \
             --src-authfile /tmp/openshift-auth.json --dest-authfile /tmp/artifactory-auth.json \
-            "docker://${OPENSHIFT_REGISTRY}/${{ env.DEV_NAMESPACE }}/deva-frontend:1.74.0-20260113220122" \
+            "docker://${OPENSHIFT_REGISTRY}/${{ env.DEV_NAMESPACE }}/zeva-frontend:1.74.0-20260113220122" \
             "docker://${ARTIFACTORY_REGISTRY}/${ARTIFACTORY_REPO}/zeva/dev/zeva-frontend:1.74.0-20260113220122"
