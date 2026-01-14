@@ -247,5 +247,6 @@ jobs:
       env: dev
       app_name: zeva
       image_stream: ${{ matrix.image_stream }}
-      image_tag: ${{ needs.get-version.outputs.output1 }}-${{ needs.set-pre-release.outputs.output1 }}
+      # image_tag: ${{ needs.get-version.outputs.output1 }}-${{ needs.set-pre-release.outputs.output1 }}
+      image_tag: 1.74.0-20260113220122
     secrets: inherit
