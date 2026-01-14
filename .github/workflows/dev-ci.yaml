@@ -1,5 +1,7 @@
 name: Zeva new-pipeline Dev CI
 
+# A sample  url in articatory is https://ARTIFACTORY_REGISTRY/artifactory/ARTIFACTORY_REPO/zeva/dev/zeva-backend:1.74.0-20260113220133/
+
 on:
   # pull_request:
   #   # Trigger only on PRs targeting the master branch
@@ -243,7 +245,6 @@ jobs:
     with:
       env: dev
       app_name: zeva
-      source_namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
       image_stream: ${{ matrix.image_stream }}
       image_tag: ${{ needs.get-version.outputs.output1 }}-${{ needs.set-pre-release.outputs.output1 }}
     secrets: inherit

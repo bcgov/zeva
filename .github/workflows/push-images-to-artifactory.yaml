@@ -11,10 +11,6 @@ on:
         description: Application name used in Artifactory paths.
         required: true
         type: string
-      source_namespace:
-        description: OpenShift namespace hosting the images to copy.
-        required: true
-        type: string
       image_stream:
         description: Image stream name to copy (e.g. zeva-backend).
         required: true
@@ -36,6 +32,8 @@ on:
         required: true
       OPENSHIFT_TOKEN:
         required: true
+      OPENSHIFT_NAMESPACE_PLATE:
+        required: true
 
 jobs:
   push-images-to-artifactory:
@@ -51,7 +49,7 @@ jobs:
       OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
       DEPLOY_ENV: ${{ inputs.env }}
       APP_NAME: ${{ inputs.app_name }}
-      SOURCE_NAMESPACE: ${{ inputs.source_namespace }}
+      SOURCE_NAMESPACE: ${{ format('{0}-{1}', secrets.OPENSHIFT_NAMESPACE_PLATE, inputs.env) }}
       IMAGE_STREAM: ${{ inputs.image_stream }}
       IMAGE_TAG: ${{ inputs.image_tag }}
 
