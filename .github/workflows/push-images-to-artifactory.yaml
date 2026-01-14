@@ -35,6 +35,10 @@ on:
       OPENSHIFT_NAMESPACE_PLATE:
         required: true
 
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   push-images-to-artifactory:
     name: Push images to Artifactory

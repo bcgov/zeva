@@ -5,6 +5,10 @@ name: Zeva new-pipeline Prod CI
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+  issues: write
+
 env:
   GIT_URL: https://github.com/bcgov/zeva.git
   TEST_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-test
