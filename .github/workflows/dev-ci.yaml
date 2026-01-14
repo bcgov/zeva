@@ -247,10 +247,21 @@ jobs:
           set -euo pipefail
           AUTH_CURL_FLAGS=(-H "X-JFrog-Art-Api: ${ARTIFACTORY_API_KEY}")
           AUTH_PASSWORD="${ARTIFACTORY_API_KEY}"
-          curl -fsS "${AUTH_CURL_FLAGS[@]}" \
-            "https://${ARTIFACTORY_REGISTRY}/artifactory/api/system/ping"
-          REPO_INFO="$(curl -fsS "${AUTH_CURL_FLAGS[@]}" \
-            "https://${ARTIFACTORY_REGISTRY}/artifactory/api/repositories/${ARTIFACTORY_REPO}")"
+          PING_URL="https://${ARTIFACTORY_REGISTRY}/artifactory/api/system/ping"
+          REPO_URL="https://${ARTIFACTORY_REGISTRY}/artifactory/api/repositories/${ARTIFACTORY_REPO}"
+          if ! curl -fsS "${AUTH_CURL_FLAGS[@]}" "${PING_URL}"; then
+            echo "Artifactory ping failed: ${PING_URL}"
+            exit 1
+          fi
+          REPO_HTTP_STATUS="$(curl -sS -o /tmp/artifactory-repo-info.txt -w "%{http_code}" \
+            "${AUTH_CURL_FLAGS[@]}" "${REPO_URL}")"
+          if [ "${REPO_HTTP_STATUS}" -ge 200 ] && [ "${REPO_HTTP_STATUS}" -lt 300 ]; then
+            REPO_INFO="$(cat /tmp/artifactory-repo-info.txt)"
+          else
+            echo "Artifactory repo query failed: ${REPO_URL} (HTTP ${REPO_HTTP_STATUS})"
+            cat /tmp/artifactory-repo-info.txt
+            exit 1
+          fi
           echo "${REPO_INFO}" | tr -d '\n' | grep -Eq '"packageType"[[:space:]]*:[[:space:]]*"docker"' || \
             { echo "Repo ${ARTIFACTORY_REPO} is not a Docker repo."; exit 1; }
           echo "${REPO_INFO}" | tr -d '\n' | grep -Eq '"rclass"[[:space:]]*:[[:space:]]*"(local|virtual|federated)"' || \
