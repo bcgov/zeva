@@ -1,16 +1,19 @@
 name: Zeva new-pipeline Dev CI
 
 on:
-  pull_request:
-    # Trigger only on PRs targeting the master branch
+  push:
     branches:
-      - master
-    types: [opened, synchronize, reopened]
+      - devops/artifactory-1.74.0
+  workflow_dispatch:
 
 env:
   GIT_URL: https://github.com/bcgov/zeva.git
   TOOLS_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
   DEV_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
+  ARTIFACTORY_REGISTRY: ${{ secrets.ARTIFACTORY_REGISTRY }}
+  ARTIFACTORY_REPO: ${{ secrets.ARTIFACTORY_REPO }}
+  ARTIFACTORY_API_KEY: ${{ secrets.ARTIFACTORY_API_KEY }}
+  ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -125,29 +128,29 @@ jobs:
           path: /usr/local/bin/oc
           key: oc-cli-${{ runner.os }}
 
-      - name: Log in to Openshift
-        uses: redhat-actions/oc-login@v1.3
-        with:
-          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
-          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
-          insecure_skip_tls_verify: true
-          namespace: ${{ env.TOOLS_NAMESPACE }}
+      # - name: Log in to Openshift
+      #   uses: redhat-actions/oc-login@v1.3
+      #   with:
+      #     openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+      #     openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+      #     insecure_skip_tls_verify: true
+      #     namespace: ${{ env.TOOLS_NAMESPACE }}
 
-      - name: Build Zeva Backend
-        run: |
-          echo ${{ env.PRE_RELEASE }}
-          echo ${{ env.VERSION }}
-          cd openshift/templates/backend
-          oc process -f ./backend-bc-docker.yaml NAME=zeva SUFFIX=-${{ env.VERSION }}-${{ env.PRE_RELEASE }} VERSION=${{ env.VERSION }}-${{ env.PRE_RELEASE }} GIT_URL=${{ env.GIT_URL }} GIT_REF=release-${{ env.VERSION }} | oc apply --wait=true -f - -n ${{ env.TOOLS_NAMESPACE }}
-          # sleep 2s
-          # for build in $(oc -n ${{ env.TOOLS_NAMESPACE }} get builds -l buildconfig=zeva-backend-${{ env.VERSION }}-${{ env.PRE_RELEASE }} -o jsonpath='{.items[?(@.status.phase=="Running")].metadata.name}'); do
-          #   echo "canceling $build"
-          #   oc -n ${{ env.TOOLS_NAMESPACE }} cancel-build $build
-          # done
-          # sleep 2s
-          oc -n ${{ env.TOOLS_NAMESPACE }} start-build zeva-backend-${{ env.VERSION }}-${{ env.PRE_RELEASE }} --wait=true
-          # sleep 2s
-          oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.DEV_NAMESPACE }}/zeva-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
+      # - name: Build Zeva Backend
+      #   run: |
+      #     echo ${{ env.PRE_RELEASE }}
+      #     echo ${{ env.VERSION }}
+      #     cd openshift/templates/backend
+      #     oc process -f ./backend-bc-docker.yaml NAME=zeva SUFFIX=-${{ env.VERSION }}-${{ env.PRE_RELEASE }} VERSION=${{ env.VERSION }}-${{ env.PRE_RELEASE }} GIT_URL=${{ env.GIT_URL }} GIT_REF=release-${{ env.VERSION }} | oc apply --wait=true -f - -n ${{ env.TOOLS_NAMESPACE }}
+      #     # sleep 2s
+      #     # for build in $(oc -n ${{ env.TOOLS_NAMESPACE }} get builds -l buildconfig=zeva-backend-${{ env.VERSION }}-${{ env.PRE_RELEASE }} -o jsonpath='{.items[?(@.status.phase=="Running")].metadata.name}'); do
+      #     #   echo "canceling $build"
+      #     #   oc -n ${{ env.TOOLS_NAMESPACE }} cancel-build $build
+      #     # done
+      #     # sleep 2s
+      #     oc -n ${{ env.TOOLS_NAMESPACE }} start-build zeva-backend-${{ env.VERSION }}-${{ env.PRE_RELEASE }} --wait=true
+      #     # sleep 2s
+      #     oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.DEV_NAMESPACE }}/zeva-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
 
   build-frontend:
     name: Build Zeva Frontend
@@ -163,33 +166,33 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4.1.1
 
-      - name: Restore oc command from Cache
-        uses: actions/cache@v4.2.0
-        with:
-          path: /usr/local/bin/oc
-          key: oc-cli-${{ runner.os }}
+      # - name: Restore oc command from Cache
+      #   uses: actions/cache@v4.2.0
+      #   with:
+      #     path: /usr/local/bin/oc
+      #     key: oc-cli-${{ runner.os }}
 
-      - name: Log in to Openshift
-        uses: redhat-actions/oc-login@v1.3
-        with:
-          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
-          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
-          insecure_skip_tls_verify: true
-          namespace: ${{ env.TOOLS_NAMESPACE }}
+      # - name: Log in to Openshift
+      #   uses: redhat-actions/oc-login@v1.3
+      #   with:
+      #     openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+      #     openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+      #     insecure_skip_tls_verify: true
+      #     namespace: ${{ env.TOOLS_NAMESPACE }}
 
-      - name: Build ZEVA Frontend
-        run: |
-          cd openshift/templates/frontend
-          oc process -f ./frontend-bc-docker.yaml NAME=zeva SUFFIX=-${{ env.VERSION }}-${{ env.PRE_RELEASE }} VERSION=${{ env.VERSION }}-${{ env.PRE_RELEASE }} GIT_URL=${{ env.GIT_URL }} GIT_REF=release-${{ env.VERSION }} | oc apply --wait=true -f - -n ${{ env.TOOLS_NAMESPACE }}    
-          # sleep 2s
-          # for build in $(oc -n ${{ env.TOOLS_NAMESPACE }} get builds -l buildconfig=zeva-frontend-${{ env.VERSION }}-${{ env.PRE_RELEASE }} -o jsonpath='{.items[?(@.status.phase=="Running")].metadata.name}'); do
-          #   echo "canceling $build"
-          #   oc -n ${{ env.TOOLS_NAMESPACE }} cancel-build $build
-          # done
-          # sleep 2s
-          oc -n ${{ env.TOOLS_NAMESPACE }} start-build zeva-frontend-${{ env.VERSION }}-${{ env.PRE_RELEASE }} --wait=true
-          # sleep 2s
-          oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.DEV_NAMESPACE }}/zeva-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
+      # - name: Build ZEVA Frontend
+      #   run: |
+      #     cd openshift/templates/frontend
+      #     oc process -f ./frontend-bc-docker.yaml NAME=zeva SUFFIX=-${{ env.VERSION }}-${{ env.PRE_RELEASE }} VERSION=${{ env.VERSION }}-${{ env.PRE_RELEASE }} GIT_URL=${{ env.GIT_URL }} GIT_REF=release-${{ env.VERSION }} | oc apply --wait=true -f - -n ${{ env.TOOLS_NAMESPACE }}
+      #     # sleep 2s
+      #     # for build in $(oc -n ${{ env.TOOLS_NAMESPACE }} get builds -l buildconfig=zeva-frontend-${{ env.VERSION }}-${{ env.PRE_RELEASE }} -o jsonpath='{.items[?(@.status.phase=="Running")].metadata.name}'); do
+      #     #   echo "canceling $build"
+      #     #   oc -n ${{ env.TOOLS_NAMESPACE }} cancel-build $build
+      #     # done
+      #     # sleep 2s
+      #     oc -n ${{ env.TOOLS_NAMESPACE }} start-build zeva-frontend-${{ env.VERSION }}-${{ env.PRE_RELEASE }} --wait=true
+      #     # sleep 2s
+      #     oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.DEV_NAMESPACE }}/zeva-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
 
   deploy:
     name: Deploy Zeva on Dev
@@ -209,18 +212,122 @@ jobs:
           ref: main
           ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
 
-      - name: Update tags
-        uses: mikefarah/yq@v4.40.5
-        with:
-          cmd: |
-            yq -i '.frontend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-dev.yaml
-            yq -i '.backend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-dev.yaml
+      # - name: Update tags
+      #   uses: mikefarah/yq@v4.40.5
+      #   with:
+      #     cmd: |
+      #       yq -i '.frontend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-dev.yaml
+      #       yq -i '.backend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' zeva/values-dev.yaml
 
-      - name: GitHub Commit & Push
-        shell: bash {0}
+      # - name: GitHub Commit & Push
+      #   shell: bash {0}
+      #   run: |
+      #     git config --global user.email "actions@github.com"
+      #     git config --global user.name "GitHub Actions"
+      #     git add zeva/values-dev.yaml
+      #     git commit -m "Update the image tag to ${{ env.VERSION }}-${{ env.PRE_RELEASE }} on Dev"
+      #     git push
+
+  push-to-artifactory:
+    name: Push images to artifactopry
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs: [set-pre-release, deploy]
+    env:
+      PRE_RELEASE: ${{ needs.set-pre-release.outputs.output1 }}
+
+    steps:
+      - name: Install skopeo
         run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
-          git add zeva/values-dev.yaml
-          git commit -m "Update the image tag to ${{ env.VERSION }}-${{ env.PRE_RELEASE }} on Dev"
-          git push
+          sudo apt-get update
+          sudo apt-get install -y skopeo
+
+      - name: Login to Artifactory
+        run: |
+          set -euo pipefail
+          AUTH_CURL_FLAGS=(-H "X-JFrog-Art-Api: ${ARTIFACTORY_API_KEY}")
+          AUTH_PASSWORD="${ARTIFACTORY_API_KEY}"
+          curl -fsS "${AUTH_CURL_FLAGS[@]}" \
+            "https://${ARTIFACTORY_REGISTRY}/artifactory/api/system/ping"
+          REPO_INFO="$(curl -fsS "${AUTH_CURL_FLAGS[@]}" \
+            "https://${ARTIFACTORY_REGISTRY}/artifactory/api/repositories/${ARTIFACTORY_REPO}")"
+          echo "${REPO_INFO}" | tr -d '\n' | grep -Eq '"packageType"[[:space:]]*:[[:space:]]*"docker"' || \
+            { echo "Repo ${ARTIFACTORY_REPO} is not a Docker repo."; exit 1; }
+          echo "${REPO_INFO}" | tr -d '\n' | grep -Eq '"rclass"[[:space:]]*:[[:space:]]*"(local|virtual|federated)"' || \
+            { echo "Repo ${ARTIFACTORY_REPO} must be local or virtual or federated."; exit 1; }
+          skopeo login --authfile /tmp/artifactory-auth.json \
+            --username "${ARTIFACTORY_USERNAME}" \
+            --password "${AUTH_PASSWORD}" \
+            "${ARTIFACTORY_REGISTRY}"
+
+      - name: Restore oc command from Cache
+        uses: actions/cache@v4.2.0
+        with:
+          path: /usr/local/bin/oc
+          key: oc-cli-${{ runner.os }}
+
+      - name: Log in to Openshift
+        uses: redhat-actions/oc-login@v1.3
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          insecure_skip_tls_verify: true
+          namespace: ${{ env.TOOLS_NAMESPACE }}
+
+      - name: Copy Metabase image from Docker Hub
+        run: |
+          set -euo pipefail
+          REPO_BASE="docker://${ARTIFACTORY_REGISTRY}/${ARTIFACTORY_REPO}"
+          REPO_PATHS=(
+            "lcfs/prod/lcfs-backend"
+            "lcfs/prod/lcfs-frontend"
+          )
+          for REPO_PATH in "${REPO_PATHS[@]}"; do
+            REPO_REF="${REPO_BASE}/${REPO_PATH}"
+            echo "Fetching tags for ${REPO_PATH}..."
+            if ! TAGS_JSON="$(skopeo list-tags --authfile /tmp/artifactory-auth.json "${REPO_REF}")"; then
+              echo "Repository ${REPO_PATH} not found; skipping."
+              continue
+            fi
+            export TAGS_JSON
+            TAGS="$(python3 - <<'PY'
+          import json
+          import os
+          import sys
+
+          raw = os.environ.get("TAGS_JSON", "")
+          try:
+              data = json.loads(raw)
+          except json.JSONDecodeError:
+              print("::error::Failed to parse tag list JSON from skopeo.", file=sys.stderr)
+              sys.exit(1)
+
+          tags = data.get("Tags")
+          if not isinstance(tags, list):
+              print("::error::Tag list response missing Tags array.", file=sys.stderr)
+              sys.exit(1)
+
+          print("\n".join(tag for tag in tags if tag))
+          PY
+          )"
+            if [ -z "${TAGS// }" ]; then
+              echo "No tags found for ${REPO_PATH}."
+            else
+              echo "Deleting tags for ${REPO_PATH}..."
+              echo "${TAGS}" | while IFS= read -r tag; do
+                [ -z "${tag}" ] && continue
+                skopeo delete --authfile /tmp/artifactory-auth.json "${REPO_REF}:${tag}"
+              done
+            fi
+          done
+          OPENSHIFT_REGISTRY="$(oc registry info --public)"
+          oc registry login --registry="${OPENSHIFT_REGISTRY}" --to=/tmp/openshift-auth.json
+
+          skopeo copy --src-tls-verify=false --dest-tls-verify=true \
+            --src-authfile /tmp/openshift-auth.json --dest-authfile /tmp/artifactory-auth.json \
+            "docker://${OPENSHIFT_REGISTRY}/${{ env.DEV_NAMESPACE }}/zeva-backend:1.74.0-20260113220122" \
+            "docker://${ARTIFACTORY_REGISTRY}/${ARTIFACTORY_REPO}/zeva/dev/zeva-backend:1.74.0-20260113220122"
+          skopeo copy --src-tls-verify=false --dest-tls-verify=true \
+            --src-authfile /tmp/openshift-auth.json --dest-authfile /tmp/artifactory-auth.json \
+            "docker://${OPENSHIFT_REGISTRY}/${{ env.DEV_NAMESPACE }}/deva-frontend:1.74.0-20260113220122" \
+            "docker://${ARTIFACTORY_REGISTRY}/${ARTIFACTORY_REPO}/zeva/dev/zeva-frontend:1.74.0-20260113220122"
