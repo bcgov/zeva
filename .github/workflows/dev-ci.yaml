@@ -1,10 +1,13 @@
 name: Zeva new-pipeline Dev CI
 
 on:
+  # pull_request:
+  #   # Trigger only on PRs targeting the master branch
+  #   branches:
+  #     - master
+  #   types: [opened, synchronize, reopened]
   push:
-    branches:
-      - devops/artifactory-1.74.0
-  workflow_dispatch:
+    branches: [(devops/artifactory-1.74.0]
 
 env:
   GIT_URL: https://github.com/bcgov/zeva.git
@@ -229,116 +232,18 @@ jobs:
       #     git push
 
   push-to-artifactory:
-    name: Push images to artifactopry
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    needs: [set-pre-release, deploy]
-    env:
-      PRE_RELEASE: ${{ needs.set-pre-release.outputs.output1 }}
-
-    steps:
-      - name: Install skopeo
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y skopeo
-
-      - name: Login to Artifactory
-        run: |
-          set -euo pipefail
-          AUTH_CURL_FLAGS=(-H "X-JFrog-Art-Api: ${ARTIFACTORY_API_KEY}")
-          AUTH_PASSWORD="${ARTIFACTORY_API_KEY}"
-          PING_URL="https://${ARTIFACTORY_REGISTRY}/artifactory/api/system/ping"
-          REPO_URL="https://${ARTIFACTORY_REGISTRY}/artifactory/api/repositories/${ARTIFACTORY_REPO}"
-          if ! curl -fsS "${AUTH_CURL_FLAGS[@]}" "${PING_URL}"; then
-            echo "Artifactory ping failed: ${PING_URL}"
-            exit 1
-          fi
-          REPO_HTTP_STATUS="$(curl -sS -o /tmp/artifactory-repo-info.txt -w "%{http_code}" \
-            "${AUTH_CURL_FLAGS[@]}" "${REPO_URL}")"
-          if [ "${REPO_HTTP_STATUS}" -ge 200 ] && [ "${REPO_HTTP_STATUS}" -lt 300 ]; then
-            REPO_INFO="$(cat /tmp/artifactory-repo-info.txt)"
-          else
-            echo "Artifactory repo query failed: ${REPO_URL} (HTTP ${REPO_HTTP_STATUS})"
-            cat /tmp/artifactory-repo-info.txt
-            exit 1
-          fi
-          echo "${REPO_INFO}" | tr -d '\n' | grep -Eq '"packageType"[[:space:]]*:[[:space:]]*"docker"' || \
-            { echo "Repo ${ARTIFACTORY_REPO} is not a Docker repo."; exit 1; }
-          echo "${REPO_INFO}" | tr -d '\n' | grep -Eq '"rclass"[[:space:]]*:[[:space:]]*"(local|virtual|federated)"' || \
-            { echo "Repo ${ARTIFACTORY_REPO} must be local or virtual or federated."; exit 1; }
-          skopeo login --authfile /tmp/artifactory-auth.json \
-            --username "${ARTIFACTORY_USERNAME}" \
-            --password "${AUTH_PASSWORD}" \
-            "${ARTIFACTORY_REGISTRY}"
-
-      - name: Restore oc command from Cache
-        uses: actions/cache@v4.2.0
-        with:
-          path: /usr/local/bin/oc
-          key: oc-cli-${{ runner.os }}
-
-      - name: Log in to Openshift
-        uses: redhat-actions/oc-login@v1.3
-        with:
-          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
-          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
-          insecure_skip_tls_verify: true
-          namespace: ${{ env.TOOLS_NAMESPACE }}
-
-      - name: Copy Metabase image from Docker Hub
-        run: |
-          set -euo pipefail
-          REPO_BASE="docker://${ARTIFACTORY_REGISTRY}/${ARTIFACTORY_REPO}"
-          REPO_PATHS=(
-            "zeva/prod/zeva-backend"
-            "zeva/prod/zeva-frontend"
-          )
-          for REPO_PATH in "${REPO_PATHS[@]}"; do
-            REPO_REF="${REPO_BASE}/${REPO_PATH}"
-            echo "Fetching tags for ${REPO_PATH}..."
-            if ! TAGS_JSON="$(skopeo list-tags --authfile /tmp/artifactory-auth.json "${REPO_REF}")"; then
-              echo "Repository ${REPO_PATH} not found; skipping."
-              continue
-            fi
-            export TAGS_JSON
-            TAGS="$(python3 - <<'PY'
-          import json
-          import os
-          import sys
-
-          raw = os.environ.get("TAGS_JSON", "")
-          try:
-              data = json.loads(raw)
-          except json.JSONDecodeError:
-              print("::error::Failed to parse tag list JSON from skopeo.", file=sys.stderr)
-              sys.exit(1)
-
-          tags = data.get("Tags")
-          if not isinstance(tags, list):
-              print("::error::Tag list response missing Tags array.", file=sys.stderr)
-              sys.exit(1)
-
-          print("\n".join(tag for tag in tags if tag))
-          PY
-          )"
-            if [ -z "${TAGS// }" ]; then
-              echo "No tags found for ${REPO_PATH}."
-            else
-              echo "Deleting tags for ${REPO_PATH}..."
-              echo "${TAGS}" | while IFS= read -r tag; do
-                [ -z "${tag}" ] && continue
-                skopeo delete --authfile /tmp/artifactory-auth.json "${REPO_REF}:${tag}"
-              done
-            fi
-          done
-          OPENSHIFT_REGISTRY="$(oc registry info --public)"
-          oc registry login --registry="${OPENSHIFT_REGISTRY}" --to=/tmp/openshift-auth.json
-
-          skopeo copy --src-tls-verify=false --dest-tls-verify=true \
-            --src-authfile /tmp/openshift-auth.json --dest-authfile /tmp/artifactory-auth.json \
-            "docker://${OPENSHIFT_REGISTRY}/${{ env.DEV_NAMESPACE }}/zeva-backend:1.74.0-20260113220122" \
-            "docker://${ARTIFACTORY_REGISTRY}/${ARTIFACTORY_REPO}/zeva/dev/zeva-backend:1.74.0-20260113220122"
-          skopeo copy --src-tls-verify=false --dest-tls-verify=true \
-            --src-authfile /tmp/openshift-auth.json --dest-authfile /tmp/artifactory-auth.json \
-            "docker://${OPENSHIFT_REGISTRY}/${{ env.DEV_NAMESPACE }}/zeva-frontend:1.74.0-20260113220122" \
-            "docker://${ARTIFACTORY_REGISTRY}/${ARTIFACTORY_REPO}/zeva/dev/zeva-frontend:1.74.0-20260113220122"
+    name: Push images to Artifactory (${{ matrix.image_stream }})
+    needs: [set-pre-release, get-version, deploy]
+    strategy:
+      matrix:
+        image_stream:
+          - zeva-backend
+          - zeva-frontend
+    uses: ./.github/workflows/push-images-to-artifactory.yaml
+    with:
+      env: dev
+      app_name: zeva
+      source_namespace: ${{ env.DEV_NAMESPACE }}
+      image_stream: ${{ matrix.image_stream }}
+      image_tag: ${{ needs.get-version.outputs.output1 }}-${{ needs.set-pre-release.outputs.output1 }}
+    secrets: inherit
