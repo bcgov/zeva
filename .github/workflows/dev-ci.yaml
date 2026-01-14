@@ -243,7 +243,7 @@ jobs:
     with:
       env: dev
       app_name: zeva
-      source_namespace: ${{ env.DEV_NAMESPACE }}
+      source_namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
       image_stream: ${{ matrix.image_stream }}
       image_tag: ${{ needs.get-version.outputs.output1 }}-${{ needs.set-pre-release.outputs.output1 }}
     secrets: inherit
