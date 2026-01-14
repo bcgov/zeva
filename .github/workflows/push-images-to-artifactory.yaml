@@ -1,0 +1,151 @@
+name: Push images to Artifactory
+
+on:
+  workflow_call:
+    inputs:
+      env:
+        description: Deployment environment (dev, test, prod).
+        required: true
+        type: string
+      app_name:
+        description: Application name used in Artifactory paths.
+        required: true
+        type: string
+      image_stream:
+        description: Image stream name to copy (e.g. zeva-backend).
+        required: true
+        type: string
+      image_tag:
+        description: Image tag to copy to Artifactory.
+        required: true
+        type: string
+    secrets:
+      ARTIFACTORY_REGISTRY:
+        required: true
+      ARTIFACTORY_REPO:
+        required: true
+      ARTIFACTORY_API_KEY:
+        required: true
+      ARTIFACTORY_USERNAME:
+        required: true
+      OPENSHIFT_SERVER:
+        required: true
+      OPENSHIFT_TOKEN:
+        required: true
+      OPENSHIFT_NAMESPACE_PLATE:
+        required: true
+
+jobs:
+  push-images-to-artifactory:
+    name: Push images to Artifactory
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      ARTIFACTORY_REGISTRY: ${{ secrets.ARTIFACTORY_REGISTRY }}
+      ARTIFACTORY_REPO: ${{ secrets.ARTIFACTORY_REPO }}
+      ARTIFACTORY_API_KEY: ${{ secrets.ARTIFACTORY_API_KEY }}
+      ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+      OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
+      OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
+      DEPLOY_ENV: ${{ inputs.env }}
+      APP_NAME: ${{ inputs.app_name }}
+      SOURCE_NAMESPACE: ${{ format('{0}-{1}', secrets.OPENSHIFT_NAMESPACE_PLATE, inputs.env) }}
+      IMAGE_STREAM: ${{ inputs.image_stream }}
+      IMAGE_TAG: ${{ inputs.image_tag }}
+
+    steps:
+      - name: Install skopeo
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y skopeo
+
+      - name: Login to Artifactory
+        run: |
+          set -euo pipefail
+          AUTH_CURL_FLAGS=(-H "X-JFrog-Art-Api: ${ARTIFACTORY_API_KEY}")
+          AUTH_PASSWORD="${ARTIFACTORY_API_KEY}"
+          PING_URL="https://${ARTIFACTORY_REGISTRY}/artifactory/api/system/ping"
+          REPO_URL="https://${ARTIFACTORY_REGISTRY}/artifactory/api/repositories/${ARTIFACTORY_REPO}"
+          if ! curl -fsS "${AUTH_CURL_FLAGS[@]}" "${PING_URL}"; then
+            echo "Artifactory ping failed: ${PING_URL}"
+            exit 1
+          fi
+          REPO_HTTP_STATUS="$(curl -sS -o /tmp/artifactory-repo-info.txt -w "%{http_code}" \
+            "${AUTH_CURL_FLAGS[@]}" "${REPO_URL}")"
+          if [ "${REPO_HTTP_STATUS}" -ge 200 ] && [ "${REPO_HTTP_STATUS}" -lt 300 ]; then
+            REPO_INFO="$(cat /tmp/artifactory-repo-info.txt)"
+          else
+            echo "Artifactory repo query failed: ${REPO_URL} (HTTP ${REPO_HTTP_STATUS})"
+            cat /tmp/artifactory-repo-info.txt
+            exit 1
+          fi
+          echo "${REPO_INFO}" | tr -d '\n' | grep -Eq '"packageType"[[:space:]]*:[[:space:]]*"docker"' || \
+            { echo "Repo ${ARTIFACTORY_REPO} is not a Docker repo."; exit 1; }
+          echo "${REPO_INFO}" | tr -d '\n' | grep -Eq '"rclass"[[:space:]]*:[[:space:]]*"(local|virtual|federated)"' || \
+            { echo "Repo ${ARTIFACTORY_REPO} must be local or virtual or federated."; exit 1; }
+          skopeo login --authfile /tmp/artifactory-auth.json \
+            --username "${ARTIFACTORY_USERNAME}" \
+            --password "${AUTH_PASSWORD}" \
+            "${ARTIFACTORY_REGISTRY}"
+
+      - name: Restore oc command from Cache
+        uses: actions/cache@v4.2.0
+        with:
+          path: /usr/local/bin/oc
+          key: oc-cli-${{ runner.os }}
+
+      - name: Log in to Openshift
+        uses: redhat-actions/oc-login@v1.3
+        with:
+          openshift_server_url: ${{ env.OPENSHIFT_SERVER }}
+          openshift_token: ${{ env.OPENSHIFT_TOKEN }}
+          insecure_skip_tls_verify: true
+          namespace: ${{ env.SOURCE_NAMESPACE }}
+
+      - name: Copy OpenShift image to Artifactory
+        run: |
+          set -euo pipefail
+          REPO_REF="docker://${ARTIFACTORY_REGISTRY}/${ARTIFACTORY_REPO}/${APP_NAME}/${DEPLOY_ENV}/${IMAGE_STREAM}"
+          echo "Fetching tags for ${APP_NAME}/${DEPLOY_ENV}/${IMAGE_STREAM}..."
+          if TAGS_JSON="$(skopeo list-tags --authfile /tmp/artifactory-auth.json "${REPO_REF}")"; then
+            export TAGS_JSON
+            TAGS="$(python3 - <<'PY'
+          import json
+          import os
+          import sys
+
+          raw = os.environ.get("TAGS_JSON", "")
+          try:
+              data = json.loads(raw)
+          except json.JSONDecodeError:
+              print("::error::Failed to parse tag list JSON from skopeo.", file=sys.stderr)
+              sys.exit(1)
+
+          tags = data.get("Tags")
+          if not isinstance(tags, list):
+              print("::error::Tag list response missing Tags array.", file=sys.stderr)
+              sys.exit(1)
+
+          print("\n".join(tag for tag in tags if tag))
+          PY
+          )"
+            if [ -z "${TAGS// }" ]; then
+              echo "No tags found for ${APP_NAME}/${DEPLOY_ENV}/${IMAGE_STREAM}."
+            else
+              echo "Deleting tags for ${APP_NAME}/${DEPLOY_ENV}/${IMAGE_STREAM}..."
+              echo "${TAGS}" | while IFS= read -r tag; do
+                [ -z "${tag}" ] && continue
+                skopeo delete --authfile /tmp/artifactory-auth.json "${REPO_REF}:${tag}"
+              done
+            fi
+          else
+            echo "Repository ${APP_NAME}/${DEPLOY_ENV}/${IMAGE_STREAM} not found; skipping tag cleanup."
+          fi
+
+          OPENSHIFT_REGISTRY="$(oc registry info --public)"
+          oc registry login --registry="${OPENSHIFT_REGISTRY}" --to=/tmp/openshift-auth.json
+
+          skopeo copy --src-tls-verify=false --dest-tls-verify=true \
+            --src-authfile /tmp/openshift-auth.json --dest-authfile /tmp/artifactory-auth.json \
+            "docker://${OPENSHIFT_REGISTRY}/${SOURCE_NAMESPACE}/${IMAGE_STREAM}:${IMAGE_TAG}" \
+            "${REPO_REF}:${IMAGE_TAG}"
