@@ -2,9 +2,9 @@ import json
 import os
 import threading
 import uuid
-import time
 
 from django.http import HttpResponse
+from django.db import connection
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
@@ -13,31 +13,70 @@ from rest_framework.response import Response
 from api.services.icbc_upload import ingest_icbc_spreadsheet
 from api.services.minio import get_minio_object, minio_remove_object
 from api.models.icbc_upload_date import IcbcUploadDate
+from api.models.icbc_upload_progress import IcbcUploadProgress
 from api.serializers.icbc_upload_date import IcbcUploadDateSerializer
+from api.serializers.icbc_upload_progress import IcbcUploadProgressSerializer
 
-# Global dictionary to track upload progress
-_upload_progress = {}
 
 def get_upload_progress(upload_id):
-    """Get the current progress for an upload"""
-    return _upload_progress.get(upload_id, {'progress': 0, 'status': 'Starting...', 'complete': False})
+    try:
+        progress_obj = IcbcUploadProgress.objects.get(upload_id=upload_id)
+        serializer = IcbcUploadProgressSerializer(progress_obj)
+        return serializer.data
+    except IcbcUploadProgress.DoesNotExist:
+        return {'progress': 0, 'status': 'Upload not found', 'complete': False, 'error': 'Upload ID not found'}
+
 
 def set_upload_progress(upload_id, progress, status_text, current_page=0, total_pages=0, complete=False, error=None):
-    """Set the progress for an upload"""
-    _upload_progress[upload_id] = {
-        'progress': progress,
-        'status': status_text,
-        'current_page': current_page,
-        'total_pages': total_pages,
-        'complete': complete,
-        'error': error,
-        'timestamp': time.time()
-    }
+    try:
+        from django.conf import settings
+        import psycopg2
+        
+        db_settings = settings.DATABASES['default']
+        
+        conn = psycopg2.connect(
+            dbname=db_settings['NAME'],
+            user=db_settings['USER'],
+            password=db_settings['PASSWORD'],
+            host=db_settings['HOST'],
+            port=db_settings.get('PORT', 5432)
+        )
+        conn.autocommit = True
+        
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            INSERT INTO icbc_upload_progress 
+            (upload_id, progress, status_text, current_page, total_pages, complete, error, results, created_at, updated_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
+            ON CONFLICT (upload_id) 
+            DO UPDATE SET 
+                progress = EXCLUDED.progress,
+                status_text = EXCLUDED.status_text,
+                current_page = EXCLUDED.current_page,
+                total_pages = EXCLUDED.total_pages,
+                complete = EXCLUDED.complete,
+                error = EXCLUDED.error,
+                updated_at = NOW()
+        """, [upload_id, progress, status_text, current_page, total_pages, complete, error, None])
+        
+        cursor.close()
+        conn.close()
+        
+        print(f"Progress updated: {upload_id} - {progress}% - {status_text} - Page {current_page}/{total_pages}")
+        return True
+    except Exception as e:
+        print(f"Error updating progress for {upload_id}: {e}")
+        import traceback
+        traceback.print_exc()
+        return None
+
 
 def clear_upload_progress(upload_id):
-    """Clear progress after completion (called after client retrieves final result)"""
-    if upload_id in _upload_progress:
-        del _upload_progress[upload_id]
+    try:
+        IcbcUploadProgress.objects.filter(upload_id=upload_id).delete()
+    except Exception as e:
+        print(f"Error clearing progress for {upload_id}: {e}")
 
 
 class IcbcVerificationViewSet(viewsets.GenericViewSet):
@@ -93,6 +132,9 @@ class IcbcVerificationViewSet(viewsets.GenericViewSet):
         
         # Define the processing function to run in background thread
         def process_upload():
+            from django.db import connection
+            connection.close()
+            
             previous_file = None
             current_file = None
             try:
@@ -138,7 +180,19 @@ class IcbcVerificationViewSet(viewsets.GenericViewSet):
                     minio_remove_object(previous_filename)
                     print('Done processing')
                     
-                    # Mark as complete with results
+                    from django.db import connection
+                    with connection.cursor() as cursor:
+                        cursor.execute("""
+                            UPDATE icbc_upload_progress 
+                            SET results = %s, updated_at = NOW()
+                            WHERE upload_id = %s
+                        """, [json.dumps({
+                            'dateCurrentTo': date_current_to,
+                            'createdRecords': done[1],
+                            'updatedRecords': done[2]
+                        }), upload_id])
+                        connection.commit()
+                    
                     set_upload_progress(
                         upload_id, 
                         100, 
@@ -148,13 +202,6 @@ class IcbcVerificationViewSet(viewsets.GenericViewSet):
                         True,
                         error=None
                     )
-                    
-                    # Store results in progress dict for retrieval
-                    _upload_progress[upload_id]['results'] = {
-                        'dateCurrentTo': date_current_to,
-                        'createdRecords': done[1],
-                        'updatedRecords': done[2]
-                    }
 
             except Exception as error:
                 print(f"Upload error: {error}")
@@ -175,6 +222,9 @@ class IcbcVerificationViewSet(viewsets.GenericViewSet):
                 if current_file:
                     current_file.close()
                     current_file.release_conn()
+                
+                from django.db import connection
+                connection.close()
         
         # Start processing in background thread
         thread = threading.Thread(target=process_upload)
