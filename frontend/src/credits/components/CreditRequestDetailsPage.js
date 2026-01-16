@@ -60,18 +60,22 @@ const CreditRequestDetailsPage = (props) => {
   }
 
   const fetchReports = () => {
-    axios.get(`${ROUTES_COMPLIANCE.REPORTS}?organization_id=${submission.organization.id}`)
-    .then(response => {
-      setReports(response.data)
-
-      if(response.data.some(report => reportBlocksIssuance(report))){
+    Promise.all([
+      axios.get(`${ROUTES_COMPLIANCE.REPORTS}?organization_id=${submission.organization.id}`),
+      axios.get(`${ROUTES_COMPLIANCE.RETURNED_TO_SUPPLIER_REPORTS}?organization_id=${submission.organization.id}`)
+    ]).then(([reports, returnToSupplierReports]) => {
+      const reportsToSet = [...returnToSupplierReports.data, ...reports.data]
+      setReports(reportsToSet)
+      if(reportsToSet.some(report => reportBlocksIssuance(report))){
         setShowWarning(true)
       }
     })
   }
 
   useEffect(() => {
-    fetchReports()
+    if (user.isGovernment) {
+      fetchReports()
+    }
   }, [])
 
   const conflictingReport = () => {
