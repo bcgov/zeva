@@ -448,6 +448,15 @@ class ModelYearReportListSerializer(ModelSerializer, EnumSupportSerializerMixin)
                 return obj.supplier_class
             return obj.supplier_class
 
+        def is_returned_to_supplier(obj):
+            if obj.validation_status != ModelYearReportStatuses.DRAFT:
+                return False
+
+            return any(
+                history.validation_status == ModelYearReportStatuses.SUBMITTED
+                for history in obj.model_year_report_history.all()
+            )
+
         return {
             "id": instance.id,
             "organization_name": instance.organization_name,
@@ -461,6 +470,7 @@ class ModelYearReportListSerializer(ModelSerializer, EnumSupportSerializerMixin)
             "obligation_credits": 0,
             "supplemental_status": get_supplemental_status(instance),
             "supplemental_id": get_supplemental_id(instance),
+            "returned_to_supplier": is_returned_to_supplier(instance),
         }
 
     class Meta:

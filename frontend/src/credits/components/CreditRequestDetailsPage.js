@@ -52,12 +52,19 @@ const CreditRequestDetailsPage = (props) => {
   const [comment, setComment] = useState('')
   const [reports, setReports] = useState([])
 
+  const reportBlocksIssuance = (report) => {
+    return (
+      ['SUBMITTED', 'RETURNED', 'RECOMMENDED'].includes(report.validationStatus) ||
+      report.returnedToSupplier
+    )
+  }
+
   const fetchReports = () => {
     axios.get(`${ROUTES_COMPLIANCE.REPORTS}?organization_id=${submission.organization.id}`)
     .then(response => {
       setReports(response.data)
 
-      if(response.data.some(report => ['SUBMITTED', 'RETURNED', 'RECOMMENDED'].includes(report.validationStatus))){
+      if(response.data.some(report => reportBlocksIssuance(report))){
         setShowWarning(true)
       }
     })
@@ -69,7 +76,7 @@ const CreditRequestDetailsPage = (props) => {
 
   const conflictingReport = () => {
     return reports.find(report => 
-      ['SUBMITTED', 'RETURNED', 'RECOMMENDED'].includes(report.validationStatus)
+      reportBlocksIssuance(report)
     );
   }
   
