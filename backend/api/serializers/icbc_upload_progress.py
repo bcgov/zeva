@@ -16,7 +16,7 @@ class IcbcUploadProgressSerializer(serializers.ModelSerializer):
             'complete',
             'error',
             'results',
-            'created_at',
-            'updated_at'
+            'create_timestamp',
+            'update_timestamp'
         ]
-        read_only_fields = ['created_at', 'updated_at']
+        read_only_fields = ['create_timestamp', 'update_timestamp']

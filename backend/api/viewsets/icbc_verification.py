@@ -122,7 +122,7 @@ class IcbcVerificationViewSet(viewsets.GenericViewSet):
                     with connection.cursor() as cursor:
                         cursor.execute("""
                             UPDATE icbc_upload_progress 
-                            SET results = %s, updated_at = NOW()
+                            SET results = %s, update_timestamp = NOW()
                             WHERE upload_id = %s
                         """, [json.dumps({
                             'dateCurrentTo': date_current_to,

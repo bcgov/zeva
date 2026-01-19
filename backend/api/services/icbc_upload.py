@@ -41,8 +41,8 @@ def set_upload_progress(upload_id, progress, status_text, current_page=0, total_
         
         cursor.execute("""
             INSERT INTO icbc_upload_progress 
-            (upload_id, progress, status_text, current_page, total_pages, complete, error, results, created_at, updated_at)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
+            (upload_id, progress, status_text, current_page, total_pages, complete, error, results, create_timestamp, create_user, update_timestamp, update_user)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NOW(), 'SYSTEM', NOW(), NULL)
             ON CONFLICT (upload_id) 
             DO UPDATE SET 
                 progress = EXCLUDED.progress,
@@ -51,7 +51,7 @@ def set_upload_progress(upload_id, progress, status_text, current_page=0, total_
                 total_pages = EXCLUDED.total_pages,
                 complete = EXCLUDED.complete,
                 error = EXCLUDED.error,
-                updated_at = NOW()
+                update_timestamp = NOW()
         """, [upload_id, progress, status_text, current_page, total_pages, complete, error, None])
         
         cursor.close()

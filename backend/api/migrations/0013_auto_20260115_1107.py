@@ -15,6 +15,10 @@ class Migration(migrations.Migration):
             name='IcbcUploadProgress',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('create_timestamp', models.DateTimeField(auto_now_add=True, blank=True, null=True)),
+                ('create_user', models.CharField(default='SYSTEM', max_length=130)),
+                ('update_timestamp', models.DateTimeField(auto_now=True, blank=True, null=True)),
+                ('update_user', models.CharField(max_length=130, null=True)),
                 ('upload_id', models.CharField(db_index=True, max_length=36, unique=True)),
                 ('progress', models.IntegerField(default=0)),
                 ('status_text', models.CharField(default='Starting...', max_length=255)),
@@ -23,12 +27,9 @@ class Migration(migrations.Migration):
                 ('complete', models.BooleanField(default=False)),
                 ('error', models.TextField(blank=True, null=True)),
                 ('results', models.JSONField(blank=True, null=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
             ],
             options={
                 'db_table': 'icbc_upload_progress',
-                'ordering': ['-created_at'],
             },
         ),
     ]
