@@ -9,6 +9,69 @@ from api.models.icbc_registration_data import IcbcRegistrationData
 from api.models.icbc_vehicle import IcbcVehicle
 from api.models.model_year import ModelYear
 from api.models.icbc_upload_date import IcbcUploadDate
+from api.models.icbc_upload_progress import IcbcUploadProgress
+from api.serializers.icbc_upload_progress import IcbcUploadProgressSerializer
+
+def get_upload_progress(upload_id):
+    try:
+        progress_obj = IcbcUploadProgress.objects.get(upload_id=upload_id)
+        serializer = IcbcUploadProgressSerializer(progress_obj)
+        return serializer.data
+    except IcbcUploadProgress.DoesNotExist:
+        return {'progress': 0, 'status': 'Upload not found', 'complete': False, 'error': 'Upload ID not found'}
+
+
+def set_upload_progress(upload_id, progress, status_text, current_page=0, total_pages=0, complete=False, error=None):
+    try:
+        from django.conf import settings
+        import psycopg2
+        
+        db_settings = settings.DATABASES['default']
+        
+        conn = psycopg2.connect(
+            dbname=db_settings['NAME'],
+            user=db_settings['USER'],
+            password=db_settings['PASSWORD'],
+            host=db_settings['HOST'],
+            port=db_settings.get('PORT', 5432)
+        )
+        conn.autocommit = True
+        
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            INSERT INTO icbc_upload_progress 
+            (upload_id, progress, status_text, current_page, total_pages, complete, error, results, created_at, updated_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
+            ON CONFLICT (upload_id) 
+            DO UPDATE SET 
+                progress = EXCLUDED.progress,
+                status_text = EXCLUDED.status_text,
+                current_page = EXCLUDED.current_page,
+                total_pages = EXCLUDED.total_pages,
+                complete = EXCLUDED.complete,
+                error = EXCLUDED.error,
+                updated_at = NOW()
+        """, [upload_id, progress, status_text, current_page, total_pages, complete, error, None])
+        
+        cursor.close()
+        conn.close()
+        
+        print(f"Progress updated: {upload_id} - {progress}% - {status_text} - Page {current_page}/{total_pages}")
+        return True
+    except Exception as e:
+        print(f"Error updating progress for {upload_id}: {e}")
+        import traceback
+        traceback.print_exc()
+        return None
+
+
+def clear_upload_progress(upload_id):
+    try:
+        IcbcUploadProgress.objects.filter(upload_id=upload_id).delete()
+    except Exception as e:
+        print(f"Error clearing progress for {upload_id}: {e}")
+
 
 
 def trim_all_columns(df):
@@ -190,10 +253,6 @@ def process_chunk_rows(df_ch, model_years, icbc_vehicles, current_to_date, reque
 def ingest_icbc_spreadsheet(current_excelfile, current_excelfile_name, requesting_user, date_current_to, previous_excelfile, upload_id=None):
     try:
         start_time = time.time()
-        
-        # Import progress tracking function if upload_id provided
-        if upload_id:
-            from api.viewsets.icbc_verification import set_upload_progress
 
         current_to_date = IcbcUploadDate.objects.create(
             upload_date=date_current_to,

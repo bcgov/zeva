@@ -10,74 +10,12 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from api.services.icbc_upload import ingest_icbc_spreadsheet
+from api.services.icbc_upload import ingest_icbc_spreadsheet, get_upload_progress, set_upload_progress
 from api.services.minio import get_minio_object, minio_remove_object
 from api.models.icbc_upload_date import IcbcUploadDate
 from api.models.icbc_upload_progress import IcbcUploadProgress
 from api.serializers.icbc_upload_date import IcbcUploadDateSerializer
 from api.serializers.icbc_upload_progress import IcbcUploadProgressSerializer
-
-
-def get_upload_progress(upload_id):
-    try:
-        progress_obj = IcbcUploadProgress.objects.get(upload_id=upload_id)
-        serializer = IcbcUploadProgressSerializer(progress_obj)
-        return serializer.data
-    except IcbcUploadProgress.DoesNotExist:
-        return {'progress': 0, 'status': 'Upload not found', 'complete': False, 'error': 'Upload ID not found'}
-
-
-def set_upload_progress(upload_id, progress, status_text, current_page=0, total_pages=0, complete=False, error=None):
-    try:
-        from django.conf import settings
-        import psycopg2
-        
-        db_settings = settings.DATABASES['default']
-        
-        conn = psycopg2.connect(
-            dbname=db_settings['NAME'],
-            user=db_settings['USER'],
-            password=db_settings['PASSWORD'],
-            host=db_settings['HOST'],
-            port=db_settings.get('PORT', 5432)
-        )
-        conn.autocommit = True
-        
-        cursor = conn.cursor()
-        
-        cursor.execute("""
-            INSERT INTO icbc_upload_progress 
-            (upload_id, progress, status_text, current_page, total_pages, complete, error, results, created_at, updated_at)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
-            ON CONFLICT (upload_id) 
-            DO UPDATE SET 
-                progress = EXCLUDED.progress,
-                status_text = EXCLUDED.status_text,
-                current_page = EXCLUDED.current_page,
-                total_pages = EXCLUDED.total_pages,
-                complete = EXCLUDED.complete,
-                error = EXCLUDED.error,
-                updated_at = NOW()
-        """, [upload_id, progress, status_text, current_page, total_pages, complete, error, None])
-        
-        cursor.close()
-        conn.close()
-        
-        print(f"Progress updated: {upload_id} - {progress}% - {status_text} - Page {current_page}/{total_pages}")
-        return True
-    except Exception as e:
-        print(f"Error updating progress for {upload_id}: {e}")
-        import traceback
-        traceback.print_exc()
-        return None
-
-
-def clear_upload_progress(upload_id):
-    try:
-        IcbcUploadProgress.objects.filter(upload_id=upload_id).delete()
-    except Exception as e:
-        print(f"Error clearing progress for {upload_id}: {e}")
-
 
 class IcbcVerificationViewSet(viewsets.GenericViewSet):
     permission_classes = [AllowAny]
