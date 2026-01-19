@@ -1,15 +1,17 @@
 from django.db import models
 from auditable.models import Auditable
+from api.models.icbc_upload_date import IcbcUploadDate
 
 
 class IcbcUploadProgress(Auditable):
     """
     Tracks the progress of ICBC data uploads.
     """
-    upload_id = models.CharField(
-        max_length=36,
-        unique=True,
-        db_index=True
+    upload = models.OneToOneField(
+        IcbcUploadDate,
+        on_delete=models.CASCADE,
+        related_name='progress',
+        db_column='upload_id'
     )
     progress = models.IntegerField(
         default=0
@@ -40,4 +42,4 @@ class IcbcUploadProgress(Auditable):
         db_table = 'icbc_upload_progress'
 
     def __str__(self):
-        return f"Upload {self.upload_id}: {self.progress}% - {self.status_text}"
+        return f"Upload {self.upload.id}: {self.progress}% - {self.status_text}"

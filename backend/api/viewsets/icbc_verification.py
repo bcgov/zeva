@@ -1,7 +1,6 @@
 import json
 import os
 import threading
-import uuid
 
 from django.http import HttpResponse
 from django.db import connection
@@ -62,11 +61,15 @@ class IcbcVerificationViewSet(viewsets.GenericViewSet):
         filename = request.data.get('filename')
         date_current_to = request.data.get('submission_current_date')
         
-        # Generate unique upload ID
-        upload_id = str(uuid.uuid4())
+        # Create IcbcUploadDate object first
+        upload_obj = IcbcUploadDate.objects.create(
+            upload_date=date_current_to,
+            create_user=user.username,
+            update_user=user.username,
+        )
         
-        # Initialize progress
-        set_upload_progress(upload_id, 0, 'Initializing...', 0, 0, False)
+        # Initialize progress with the upload object
+        set_upload_progress(upload_obj, 0, 'Initializing...', 0, 0, False)
         
         # Define the processing function to run in background thread
         def process_upload():
@@ -78,9 +81,9 @@ class IcbcVerificationViewSet(viewsets.GenericViewSet):
             try:
                 try:
                     # get previous upload file so we can compare
-                    set_upload_progress(upload_id, 5, 'Getting previous upload data...', 0, 0, False)
+                    set_upload_progress(upload_obj, 5, 'Getting previous upload data...', 0, 0, False)
                     last_icbc_date = IcbcUploadDate.objects \
-                      .exclude(filename__isnull=True).latest('create_timestamp')
+                      .exclude(filename__isnull=True).exclude(id=upload_obj.id).latest('create_timestamp')
                 except IcbcUploadDate.DoesNotExist:
                     raise Exception(
                         """ 
@@ -92,16 +95,16 @@ class IcbcVerificationViewSet(viewsets.GenericViewSet):
                 # get previous file
                 previous_filename = last_icbc_date.filename
                 print("Downloading previous file", previous_filename)
-                set_upload_progress(upload_id, 10, 'Downloading previous file...', 0, 0, False)
+                set_upload_progress(upload_obj, 10, 'Downloading previous file...', 0, 0, False)
                 previous_file = get_minio_object(previous_filename)
                 
                 # get latest file
                 print("Downloading latest file", filename)
-                set_upload_progress(upload_id, 15, 'Downloading latest file...', 0, 0, False)
+                set_upload_progress(upload_obj, 15, 'Downloading latest file...', 0, 0, False)
                 current_file = get_minio_object(filename)
 
                 print("Starting Ingest")
-                set_upload_progress(upload_id, 20, 'Starting data processing...', 0, 0, False)
+                set_upload_progress(upload_obj, 20, 'Starting data processing...', 0, 0, False)
                 
                 done = ingest_icbc_spreadsheet(
                     current_file, 
@@ -109,7 +112,7 @@ class IcbcVerificationViewSet(viewsets.GenericViewSet):
                     user, 
                     date_current_to, 
                     previous_file,
-                    upload_id=upload_id  # Pass upload_id for progress tracking
+                    upload_obj=upload_obj  # Pass upload_obj for progress tracking
                 )
 
                 if done[0]:
@@ -128,11 +131,11 @@ class IcbcVerificationViewSet(viewsets.GenericViewSet):
                             'dateCurrentTo': date_current_to,
                             'createdRecords': done[1],
                             'updatedRecords': done[2]
-                        }), upload_id])
+                        }), upload_obj.id])
                         connection.commit()
                     
                     set_upload_progress(
-                        upload_id, 
+                        upload_obj, 
                         100, 
                         'Processing complete!', 
                         0, 
@@ -144,7 +147,7 @@ class IcbcVerificationViewSet(viewsets.GenericViewSet):
             except Exception as error:
                 print(f"Upload error: {error}")
                 set_upload_progress(
-                    upload_id, 
+                    upload_obj, 
                     0, 
                     'Error occurred', 
                     0, 
@@ -172,7 +175,7 @@ class IcbcVerificationViewSet(viewsets.GenericViewSet):
         # Return immediately with upload_id for polling
         return HttpResponse(
             status=202,
-            content=json.dumps({'upload_id': upload_id}),
+            content=json.dumps({'upload_id': upload_obj.id}),
             content_type='application/json'
         )
     
@@ -183,5 +186,9 @@ class IcbcVerificationViewSet(viewsets.GenericViewSet):
         if not upload_id:
             return Response({'error': 'upload_id required'}, status=status.HTTP_400_BAD_REQUEST)
         
-        progress_data = get_upload_progress(upload_id)
-        return Response(progress_data)
+        try:
+            upload_obj = IcbcUploadDate.objects.get(id=upload_id)
+            progress_data = get_upload_progress(upload_obj)
+            return Response(progress_data)
+        except IcbcUploadDate.DoesNotExist:
+            return Response({'error': 'Upload not found'}, status=status.HTTP_404_NOT_FOUND)

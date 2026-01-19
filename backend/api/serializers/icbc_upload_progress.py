@@ -4,6 +4,7 @@ from api.models.icbc_upload_progress import IcbcUploadProgress
 
 class IcbcUploadProgressSerializer(serializers.ModelSerializer):
     status = serializers.CharField(source='status_text', read_only=True)
+    upload_id = serializers.IntegerField(source='upload.id', read_only=True)
     
     class Meta:
         model = IcbcUploadProgress

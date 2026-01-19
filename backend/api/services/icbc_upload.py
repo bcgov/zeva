@@ -12,16 +12,16 @@ from api.models.icbc_upload_date import IcbcUploadDate
 from api.models.icbc_upload_progress import IcbcUploadProgress
 from api.serializers.icbc_upload_progress import IcbcUploadProgressSerializer
 
-def get_upload_progress(upload_id):
+def get_upload_progress(upload_obj):
     try:
-        progress_obj = IcbcUploadProgress.objects.get(upload_id=upload_id)
+        progress_obj = IcbcUploadProgress.objects.get(upload=upload_obj)
         serializer = IcbcUploadProgressSerializer(progress_obj)
         return serializer.data
     except IcbcUploadProgress.DoesNotExist:
-        return {'progress': 0, 'status': 'Upload not found', 'complete': False, 'error': 'Upload ID not found'}
+        return {'progress': 0, 'status': 'Upload not found', 'complete': False, 'error': 'Upload not found'}
 
 
-def set_upload_progress(upload_id, progress, status_text, current_page=0, total_pages=0, complete=False, error=None):
+def set_upload_progress(upload_obj, progress, status_text, current_page=0, total_pages=0, complete=False, error=None):
     try:
         from django.conf import settings
         import psycopg2
@@ -52,25 +52,25 @@ def set_upload_progress(upload_id, progress, status_text, current_page=0, total_
                 complete = EXCLUDED.complete,
                 error = EXCLUDED.error,
                 update_timestamp = NOW()
-        """, [upload_id, progress, status_text, current_page, total_pages, complete, error, None])
+        """, [upload_obj.id, progress, status_text, current_page, total_pages, complete, error, None])
         
         cursor.close()
         conn.close()
         
-        print(f"Progress updated: {upload_id} - {progress}% - {status_text} - Page {current_page}/{total_pages}")
+        print(f"Progress updated: {upload_obj.id} - {progress}% - {status_text} - Page {current_page}/{total_pages}")
         return True
     except Exception as e:
-        print(f"Error updating progress for {upload_id}: {e}")
+        print(f"Error updating progress for {upload_obj.id}: {e}")
         import traceback
         traceback.print_exc()
         return None
 
 
-def clear_upload_progress(upload_id):
+def clear_upload_progress(upload_obj):
     try:
-        IcbcUploadProgress.objects.filter(upload_id=upload_id).delete()
+        IcbcUploadProgress.objects.filter(upload=upload_obj).delete()
     except Exception as e:
-        print(f"Error clearing progress for {upload_id}: {e}")
+        print(f"Error clearing progress for {upload_obj.id}: {e}")
 
 
 
@@ -250,35 +250,41 @@ def process_chunk_rows(df_ch, model_years, icbc_vehicles, current_to_date, reque
 
 
 @transaction.atomic
-def ingest_icbc_spreadsheet(current_excelfile, current_excelfile_name, requesting_user, date_current_to, previous_excelfile, upload_id=None):
+def ingest_icbc_spreadsheet(current_excelfile, current_excelfile_name, requesting_user, date_current_to, previous_excelfile, upload_obj=None):
     try:
         start_time = time.time()
 
-        current_to_date = IcbcUploadDate.objects.create(
-            upload_date=date_current_to,
-            create_user=requesting_user.username,
-            update_user=requesting_user.username,
-        )
+        # Use the provided upload_obj if it exists, otherwise create a new one
+        if upload_obj:
+            current_to_date = upload_obj
+            current_to_date.upload_date = date_current_to
+            current_to_date.save()
+        else:
+            current_to_date = IcbcUploadDate.objects.create(
+                upload_date=date_current_to,
+                create_user=requesting_user.username,
+                update_user=requesting_user.username,
+            )
 
         print("Processing Started")
-        if upload_id:
-            set_upload_progress(upload_id, 25, 'Reading previous file...', 0, 0, False)
+        if upload_obj:
+            set_upload_progress(upload_obj, 25, 'Reading previous file...', 0, 0, False)
 
         # Read previous file
         df_p = read_csv_file(previous_excelfile, 'PREVIOUS')
         print("Read previous file", time.time() - start_time)
         print("Previous file rows", len(df_p))
         
-        if upload_id:
-            set_upload_progress(upload_id, 30, 'Reading latest file...', 0, 0, False)
+        if upload_obj:
+            set_upload_progress(upload_obj, 30, 'Reading latest file...', 0, 0, False)
 
         # Read latest file
         df_l = read_csv_file(current_excelfile, 'LATEST')
         print("Read latest file", time.time() - start_time)
         print("Latest file rows", len(df_l))
         
-        if upload_id:
-            set_upload_progress(upload_id, 35, 'Comparing files...', 0, 0, False)
+        if upload_obj:
+            set_upload_progress(upload_obj, 35, 'Comparing files...', 0, 0, False)
 
         df_p = pd.DataFrame(df_p, columns=['MODEL_YEAR', 'MAKE', 'MODEL', 'VIN', 'SOURCE'])
         df_l = pd.DataFrame(df_l, columns=['MODEL_YEAR', 'MAKE', 'MODEL', 'VIN', 'SOURCE'])
@@ -299,8 +305,8 @@ def ingest_icbc_spreadsheet(current_excelfile, current_excelfile_name, requestin
         total_pages = len(chunks)
         print("Number of Pages to process", total_pages)
         
-        if upload_id:
-            set_upload_progress(upload_id, 40, f'Processing {total_pages} pages...', 0, total_pages, False)
+        if upload_obj:
+            set_upload_progress(upload_obj, 40, f'Processing {total_pages} pages...', 0, total_pages, False)
 
         icbc_vehicles = IcbcVehicle.objects.all()
         print("icbc_vehicles count:", len(icbc_vehicles))
@@ -320,10 +326,10 @@ def ingest_icbc_spreadsheet(current_excelfile, current_excelfile_name, requestin
             page_count += 1
             
             # Update progress for each page
-            if upload_id:
+            if upload_obj:
                 progress = 40 + int((page_count / total_pages) * 55)
                 set_upload_progress(
-                    upload_id, 
+                    upload_obj, 
                     progress, 
                     f'Processing page {page_count} of {total_pages}...', 
                     page_count, 
@@ -353,8 +359,8 @@ def ingest_icbc_spreadsheet(current_excelfile, current_excelfile_name, requestin
         current_to_date.filename = current_excelfile_name
         current_to_date.save()
         
-        if upload_id:
-            set_upload_progress(upload_id, 95, 'Finalizing...', total_pages, total_pages, False)
+        if upload_obj:
+            set_upload_progress(upload_obj, 95, 'Finalizing...', total_pages, total_pages, False)
 
         print("Total processing time: ", time.time() - start_time)
 
