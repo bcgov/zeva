@@ -23,39 +23,28 @@ def get_upload_progress(upload_obj):
 
 def set_upload_progress(upload_obj, progress, status_text, current_page=0, total_pages=0, complete=False, error=None):
     try:
-        from django.conf import settings
-        import psycopg2
-        
-        db_settings = settings.DATABASES['default']
-        
-        conn = psycopg2.connect(
-            dbname=db_settings['NAME'],
-            user=db_settings['USER'],
-            password=db_settings['PASSWORD'],
-            host=db_settings['HOST'],
-            port=db_settings.get('PORT', 5432)
+        # Get or create the progress status object
+        progress_obj, created = IcbcUploadProgress.objects.get_or_create(
+            upload=upload_obj,
+            defaults={
+                'progress': progress,
+                'status_text': status_text,
+                'current_page': current_page,
+                'total_pages': total_pages,
+                'complete': complete,
+                'error': error
+            }
         )
-        conn.autocommit = True
         
-        cursor = conn.cursor()
-        
-        cursor.execute("""
-            INSERT INTO icbc_upload_progress 
-            (upload_id, progress, status_text, current_page, total_pages, complete, error, results, create_timestamp, create_user, update_timestamp, update_user)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NOW(), 'SYSTEM', NOW(), NULL)
-            ON CONFLICT (upload_id) 
-            DO UPDATE SET 
-                progress = EXCLUDED.progress,
-                status_text = EXCLUDED.status_text,
-                current_page = EXCLUDED.current_page,
-                total_pages = EXCLUDED.total_pages,
-                complete = EXCLUDED.complete,
-                error = EXCLUDED.error,
-                update_timestamp = NOW()
-        """, [upload_obj.id, progress, status_text, current_page, total_pages, complete, error, None])
-        
-        cursor.close()
-        conn.close()
+        # If it already exists, update it
+        if not created:
+            progress_obj.progress = progress
+            progress_obj.status_text = status_text
+            progress_obj.current_page = current_page
+            progress_obj.total_pages = total_pages
+            progress_obj.complete = complete
+            progress_obj.error = error
+            progress_obj.save()
         
         print(f"Progress updated: {upload_obj.id} - {progress}% - {status_text} - Page {current_page}/{total_pages}")
         return True
@@ -249,7 +238,6 @@ def process_chunk_rows(df_ch, model_years, icbc_vehicles, current_to_date, reque
     return (created_count, updated_count)
 
 
-@transaction.atomic
 def ingest_icbc_spreadsheet(current_excelfile, current_excelfile_name, requesting_user, date_current_to, previous_excelfile, upload_obj=None):
     try:
         start_time = time.time()
@@ -324,18 +312,6 @@ def ingest_icbc_spreadsheet(current_excelfile, current_excelfile_name, requestin
             print('Processing page: ' + str(page_count))
             print('Row Count: ' + str(df_ch.shape[0]))
             page_count += 1
-            
-            # Update progress for each page
-            if upload_obj:
-                progress = 40 + int((page_count / total_pages) * 55)
-                set_upload_progress(
-                    upload_obj, 
-                    progress, 
-                    f'Processing page {page_count} of {total_pages}...', 
-                    page_count, 
-                    total_pages, 
-                    False
-                )
 
             if df_ch.shape[0] <= 0:
                 continue
@@ -350,6 +326,18 @@ def ingest_icbc_spreadsheet(current_excelfile, current_excelfile_name, requestin
                     )
                     created_records_count += created
                     updated_records_count += updated
+                
+                # Update progress AFTER transaction commits so it's immediately visible
+                if upload_obj:
+                    progress = 40 + int((page_count / total_pages) * 55)
+                    set_upload_progress(
+                        upload_obj, 
+                        progress, 
+                        f'Processing page {page_count} of {total_pages}...', 
+                        page_count, 
+                        total_pages, 
+                        False
+                    )
             except Exception as e:
                 print(e)
 

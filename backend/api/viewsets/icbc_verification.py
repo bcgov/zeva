@@ -96,12 +96,18 @@ class IcbcVerificationViewSet(viewsets.GenericViewSet):
                 previous_filename = last_icbc_date.filename
                 print("Downloading previous file", previous_filename)
                 set_upload_progress(upload_obj, 10, 'Downloading previous file...', 0, 0, False)
-                previous_file = get_minio_object(previous_filename)
+                try:
+                    previous_file = get_minio_object(previous_filename)
+                except Exception as e:
+                    raise Exception(f"Failed to download previous file '{previous_filename}' from MinIO: {str(e)}")
                 
                 # get latest file
                 print("Downloading latest file", filename)
                 set_upload_progress(upload_obj, 15, 'Downloading latest file...', 0, 0, False)
-                current_file = get_minio_object(filename)
+                try:
+                    current_file = get_minio_object(filename)
+                except Exception as e:
+                    raise Exception(f"Failed to download current file '{filename}' from MinIO: {str(e)}")
 
                 print("Starting Ingest")
                 set_upload_progress(upload_obj, 20, 'Starting data processing...', 0, 0, False)
