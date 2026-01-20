@@ -326,18 +326,17 @@ def ingest_icbc_spreadsheet(current_excelfile, current_excelfile_name, requestin
                     )
                     created_records_count += created
                     updated_records_count += updated
-                
-                # Update progress AFTER transaction commits so it's immediately visible
-                if upload_obj:
-                    progress = 40 + int((page_count / total_pages) * 55)
-                    set_upload_progress(
-                        upload_obj, 
-                        progress, 
-                        f'Processing page {page_count} of {total_pages}...', 
-                        page_count, 
-                        total_pages, 
-                        False
-                    )
+                    
+                    if upload_obj:
+                        progress = 40 + int((page_count / total_pages) * 55)
+                        set_upload_progress(
+                            upload_obj, 
+                            progress, 
+                            f'Processing page {page_count} of {total_pages}...', 
+                            page_count, 
+                            total_pages, 
+                            False
+                        )
             except Exception as e:
                 print(e)
 
