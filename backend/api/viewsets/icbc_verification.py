@@ -4,6 +4,7 @@ import threading
 
 from django.http import HttpResponse
 from django.db import connection
+from django.utils import timezone
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
@@ -73,7 +74,6 @@ class IcbcVerificationViewSet(viewsets.GenericViewSet):
         
         # Define the processing function to run in background thread
         def process_upload():
-            from django.db import connection
             connection.close()
             
             previous_file = None
@@ -127,18 +127,14 @@ class IcbcVerificationViewSet(viewsets.GenericViewSet):
                     minio_remove_object(previous_filename)
                     print('Done processing')
                     
-                    from django.db import connection
-                    with connection.cursor() as cursor:
-                        cursor.execute("""
-                            UPDATE icbc_upload_progress 
-                            SET results = %s, update_timestamp = NOW()
-                            WHERE upload_id = %s
-                        """, [json.dumps({
+                    IcbcUploadProgress.objects.filter(upload=upload_obj).update(
+                        results={
                             'dateCurrentTo': date_current_to,
                             'createdRecords': done[1],
                             'updatedRecords': done[2]
-                        }), upload_obj.id])
-                        connection.commit()
+                        },
+                        update_timestamp=timezone.now()
+                    )
                     
                     set_upload_progress(
                         upload_obj, 
@@ -170,7 +166,6 @@ class IcbcVerificationViewSet(viewsets.GenericViewSet):
                     current_file.close()
                     current_file.release_conn()
                 
-                from django.db import connection
                 connection.close()
         
         # Start processing in background thread
