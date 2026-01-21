@@ -12,66 +12,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='credittransfer',
-            name='credit_to',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='+', to='api.organization'),
-        ),
-        migrations.AlterField(
-            model_name='credittransfer',
-            name='debit_from',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='+', to='api.organization'),
-        ),
-        migrations.AlterField(
-            model_name='credittransfercomment',
-            name='credit_transfer_history',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='credit_transfer_comments', to='api.credittransferhistory'),
-        ),
-        migrations.AlterField(
-            model_name='credittransfercontent',
-            name='credit_class',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='+', to='api.creditclass'),
-        ),
-        migrations.AlterField(
-            model_name='credittransfercontent',
-            name='credit_value',
-            field=models.DecimalField(decimal_places=2, max_digits=20),
-        ),
-        migrations.AlterField(
-            model_name='credittransfercontent',
-            name='dollar_value',
-            field=models.DecimalField(decimal_places=2, max_digits=20),
-        ),
-        migrations.AlterField(
-            model_name='credittransfercontent',
-            name='model_year',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='api.modelyear'),
-        ),
-        migrations.AlterField(
-            model_name='credittransfercontent',
-            name='weight_class',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='+', to='api.weightclass'),
-        ),
-        migrations.AlterField(
-            model_name='icbcregistrationdata',
-            name='icbc_vehicle',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.icbcvehicle'),
-        ),
-        migrations.AlterField(
-            model_name='modelyearreport',
-            name='organization',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='api.organization'),
-        ),
-        migrations.AlterField(
-            model_name='modelyearreportassessmentdescriptions',
-            name='display_order',
-            field=models.IntegerField(),
-        ),
-        migrations.AlterField(
-            model_name='modelyearreportvehicle',
-            name='model_year_report',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='api.modelyearreport'),
-        ),
         migrations.CreateModel(
             name='IcbcUploadProgress',
             fields=[
