@@ -105,7 +105,9 @@ WSGI_APPLICATION = 'wsgi.application'
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
-    'default': database.config()
+    'default': database.config(),
+    # currently used to exclude certain db operations inside a transaction from being part of said transaction
+    'other': database.config()
 }
 
 KEYCLOAK = keycloak.config()

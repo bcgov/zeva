@@ -70,15 +70,12 @@ class IcbcVerificationViewSet(viewsets.GenericViewSet):
             create_user=user.username,
             update_user=user.username,
         )
-        print(type(upload_obj.upload_date))
-        print(type(upload_obj.create_user))
 
         # Initialize progress with the upload object
         set_upload_progress(upload_obj, 0, "Initializing...", 0, 0, False)
 
         # Start processing in background thread
         thread = threading.Thread(target=process_upload, args=(upload_obj, filename))
-        thread.daemon = True
         thread.start()
 
         # Return immediately with upload_id for polling
