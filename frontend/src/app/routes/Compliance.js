@@ -32,7 +32,8 @@ const COMPLIANCE = {
   STATUSES_ALLOW_REASSESSMENT: `${API_BASE_PATH}/reports/:id/statuses_allow_reassessment`,
   SUPPLEMENTAL_CREDIT_ACTIVITY: `${API_BASE_PATH}/reports/:supp_id/supplemental_credit_activity`,
   PREVIOUS_REASSESSMENT_CREDIT_ACTIVITY: `${API_BASE_PATH}/compliance-activity-details/:id/previous_reassessment_credit_activity`,
-  REASSESSMENT_CREDIT_ACTIVITY: `${API_BASE_PATH}/compliance-activity-details/:supp_id/reassessment_credit_activity`
+  REASSESSMENT_CREDIT_ACTIVITY: `${API_BASE_PATH}/compliance-activity-details/:supp_id/reassessment_credit_activity`,
+  RETURNED_TO_SUPPLIER_REPORTS: `${API_BASE_PATH}/reports/returned_to_supplier_reports`,
 }
 
 export default COMPLIANCE

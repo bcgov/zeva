@@ -1,5 +1,7 @@
 name: Zeva new-pipeline Dev CI
 
+# A sample  url in articatory is https://ARTIFACTORY_REGISTRY/artifactory/ARTIFACTORY_REPO/zeva/dev/zeva-backend:1.74.0-20260113220133/
+
 on:
   pull_request:
     # Trigger only on PRs targeting the master branch
@@ -7,10 +9,18 @@ on:
       - master
     types: [opened, synchronize, reopened]
 
+permissions:
+  contents: read
+  issues: write
+
 env:
   GIT_URL: https://github.com/bcgov/zeva.git
   TOOLS_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
   DEV_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
+  ARTIFACTORY_REGISTRY: ${{ secrets.ARTIFACTORY_REGISTRY }}
+  ARTIFACTORY_REPO: ${{ secrets.ARTIFACTORY_REPO }}
+  ARTIFACTORY_API_KEY: ${{ secrets.ARTIFACTORY_API_KEY }}
+  ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -180,7 +190,7 @@ jobs:
       - name: Build ZEVA Frontend
         run: |
           cd openshift/templates/frontend
-          oc process -f ./frontend-bc-docker.yaml NAME=zeva SUFFIX=-${{ env.VERSION }}-${{ env.PRE_RELEASE }} VERSION=${{ env.VERSION }}-${{ env.PRE_RELEASE }} GIT_URL=${{ env.GIT_URL }} GIT_REF=release-${{ env.VERSION }} | oc apply --wait=true -f - -n ${{ env.TOOLS_NAMESPACE }}    
+          oc process -f ./frontend-bc-docker.yaml NAME=zeva SUFFIX=-${{ env.VERSION }}-${{ env.PRE_RELEASE }} VERSION=${{ env.VERSION }}-${{ env.PRE_RELEASE }} GIT_URL=${{ env.GIT_URL }} GIT_REF=release-${{ env.VERSION }} | oc apply --wait=true -f - -n ${{ env.TOOLS_NAMESPACE }}
           # sleep 2s
           # for build in $(oc -n ${{ env.TOOLS_NAMESPACE }} get builds -l buildconfig=zeva-frontend-${{ env.VERSION }}-${{ env.PRE_RELEASE }} -o jsonpath='{.items[?(@.status.phase=="Running")].metadata.name}'); do
           #   echo "canceling $build"
@@ -224,3 +234,19 @@ jobs:
           git add zeva/values-dev.yaml
           git commit -m "Update the image tag to ${{ env.VERSION }}-${{ env.PRE_RELEASE }} on Dev"
           git push
+
+  push-to-artifactory:
+    name: Push images to Artifactory (${{ matrix.image_stream }})
+    needs: [set-pre-release, get-version, deploy]
+    strategy:
+      matrix:
+        image_stream:
+          - zeva-backend
+          - zeva-frontend
+    uses: ./.github/workflows/push-images-to-artifactory.yaml
+    with:
+      env: dev
+      app_name: zeva
+      image_stream: ${{ matrix.image_stream }}
+      image_tag: ${{ needs.get-version.outputs.output1 }}-${{ needs.set-pre-release.outputs.output1 }}
+    secrets: inherit

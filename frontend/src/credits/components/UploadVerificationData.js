@@ -19,7 +19,8 @@ const UploadVerificationData = (props) => {
     showProgressBar,
     title,
     upload,
-    uploadProgress
+    uploadProgress,
+    progressStatus
   } = props
 
   const removeFile = (removedFile) => {
@@ -39,6 +40,11 @@ const UploadVerificationData = (props) => {
         <div className="row mt-3">
           <div className="col-12">
             <h2 className="mb-2">Uploading:</h2>
+            {progressStatus && (
+              <div className="mb-2 text-muted">
+                {progressStatus}
+              </div>
+            )}
             <div
               aria-valuemax="100"
               aria-valuemin="0"
@@ -184,7 +190,8 @@ UploadVerificationData.propTypes = {
   title: PropTypes.string.isRequired,
   upload: PropTypes.func.isRequired,
   uploadProgress: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
-    .isRequired
+    .isRequired,
+  progressStatus: PropTypes.string.isRequired
 }
 
 export default UploadVerificationData

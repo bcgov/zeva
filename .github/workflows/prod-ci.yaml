@@ -5,6 +5,10 @@ name: Zeva new-pipeline Prod CI
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+  issues: write
+
 env:
   GIT_URL: https://github.com/bcgov/zeva.git
   TEST_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-test
@@ -136,3 +140,19 @@ jobs:
           git add zeva/values-prod.yaml
           git commit -m "Update the image tag to ${{ env.BUILD_SUFFIX }} on Zeva Prod Environment"
           git push
+
+  push-to-artifactory:
+    name: Push images to Artifactory (${{ matrix.image_stream }})
+    needs: [get-build-suffix, deploy-on-prod]
+    strategy:
+      matrix:
+        image_stream:
+          - zeva-backend
+          - zeva-frontend
+    uses: ./.github/workflows/push-images-to-artifactory.yaml
+    with:
+      env: prod
+      app_name: zeva
+      image_stream: ${{ matrix.image_stream }}
+      image_tag: ${{ needs.get-build-suffix.outputs.output1 }}
+    secrets: inherit

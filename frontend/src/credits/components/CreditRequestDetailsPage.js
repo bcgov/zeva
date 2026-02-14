@@ -52,24 +52,35 @@ const CreditRequestDetailsPage = (props) => {
   const [comment, setComment] = useState('')
   const [reports, setReports] = useState([])
 
-  const fetchReports = () => {
-    axios.get(`${ROUTES_COMPLIANCE.REPORTS}?organization_id=${submission.organization.id}`)
-    .then(response => {
-      setReports(response.data)
+  const reportBlocksIssuance = (report) => {
+    return (
+      ['SUBMITTED', 'RETURNED', 'RECOMMENDED'].includes(report.validationStatus) ||
+      report.returnedToSupplier
+    )
+  }
 
-      if(response.data.some(report => ['SUBMITTED', 'RETURNED', 'RECOMMENDED'].includes(report.validationStatus))){
+  const fetchReports = () => {
+    Promise.all([
+      axios.get(`${ROUTES_COMPLIANCE.REPORTS}?organization_id=${submission.organization.id}`),
+      axios.get(`${ROUTES_COMPLIANCE.RETURNED_TO_SUPPLIER_REPORTS}?organization_id=${submission.organization.id}`)
+    ]).then(([reports, returnToSupplierReports]) => {
+      const reportsToSet = [...returnToSupplierReports.data, ...reports.data]
+      setReports(reportsToSet)
+      if(reportsToSet.some(report => reportBlocksIssuance(report))){
         setShowWarning(true)
       }
     })
   }
 
   useEffect(() => {
-    fetchReports()
+    if (user.isGovernment) {
+      fetchReports()
+    }
   }, [])
 
   const conflictingReport = () => {
     return reports.find(report => 
-      ['SUBMITTED', 'RETURNED', 'RECOMMENDED'].includes(report.validationStatus)
+      reportBlocksIssuance(report)
     );
   }
   

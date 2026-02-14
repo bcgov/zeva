@@ -97,7 +97,7 @@ class ModelYearReportViewset(
             "noa_history", "supplemental_history", "makes", "submission_confirmation",
             "assessment_patch", "comment_patch", "comment_delete", "assessment",
             "supplemental", "minio_url", "supplemental_comment_edit", "supplemental_comment_delete",
-            "supplemental_credit_activity"
+            "supplemental_credit_activity", "returned_to_supplier_reports"
         ]
     }
     http_method_names = ["get", "post", "patch", "delete"]
@@ -1265,3 +1265,18 @@ class ModelYearReportViewset(
                 if user_org != activity.supplemental_report.model_year_report.organization:
                     return Response(status=status.HTTP_403_FORBIDDEN)
             return Response(serializer.data)
+
+    @action(detail=False, methods=["get"])
+    def returned_to_supplier_reports(self, request):
+        if not request.user.organization.is_government:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        organization_id = request.query_params.get("organization_id", None)
+        if not organization_id:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        reports = ModelYearReport.objects.filter(
+            organization_id=organization_id,
+            validation_status=ModelYearReportStatuses.DRAFT,
+            model_year_report_history__validation_status=ModelYearReportStatuses.SUBMITTED,
+        )
+        serializer = ModelYearReportListSerializer(reports, many=True, context={'request': request})
+        return Response(serializer.data)
