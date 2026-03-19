@@ -25,11 +25,11 @@ jobs:
       cache-hit: ${{ steps.cache.outputs.cache-hit }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v6.0.2
 
       - name: Set up cache for OpenShift CLI
         id: cache
-        uses: actions/cache@v4.2.0
+        uses: actions/cache@v5.0.4
         with:
           path: /usr/local/bin/oc # Path where the `oc` binary will be installed
           key: oc-cli-${{ runner.os }}
@@ -55,7 +55,7 @@ jobs:
 
     steps:
       - name: Restore oc command from Cache
-        uses: actions/cache@v4.2.0
+        uses: actions/cache@v5.0.4
         with:
           path: /usr/local/bin/oc
           key: oc-cli-${{ runner.os }}
@@ -91,7 +91,7 @@ jobs:
 
     steps:
       - name: Ask for approval for ZEVA ${{ env.BUILD_SUFFIX }} Test deployment
-        uses: trstringer/manual-approval@v1.6.0
+        uses: trstringer/manual-approval@v1.12.0
         with:
           secret: ${{ github.TOKEN }}
           approvers: emi-hi,tim738745,kuanfandevops,JulianForeman
@@ -99,7 +99,7 @@ jobs:
           issue-title: "ZEVA ${{ env.BUILD_SUFFIX }} Test Deployment"
 
       - name: Restore oc command from Cache
-        uses: actions/cache@v4.2.0
+        uses: actions/cache@v5.0.4
         with:
           path: /usr/local/bin/oc
           key: oc-cli-${{ runner.os }}
@@ -119,7 +119,7 @@ jobs:
           oc tag ${{ env.DEV_NAMESPACE }}/zeva-frontend:${{ env.BUILD_SUFFIX }} ${{ env.TEST_NAMESPACE }}/zeva-frontend:${{ env.BUILD_SUFFIX }}
 
       - name: Checkout Manifest repository
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v6.0.2
         with:
           repository: bcgov-c/tenant-gitops-e52f12
           ref: main

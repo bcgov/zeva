@@ -93,7 +93,7 @@ jobs:
             "${ARTIFACTORY_REGISTRY}"
 
       - name: Restore oc command from Cache
-        uses: actions/cache@v4.2.0
+        uses: actions/cache@v5.0.4
         with:
           path: /usr/local/bin/oc
           key: oc-cli-${{ runner.os }}
