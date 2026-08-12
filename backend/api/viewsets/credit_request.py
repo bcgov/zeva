@@ -248,7 +248,7 @@ class CreditRequestViewset(
             organization_name = user.organization.short_name
 
         response['Content-Disposition'] = (
-            'attachment; filename="BC-ZEVA_Sales_Template_{org}_{date}.xls"'
+            'attachment; filename="BC-ZEVA_Credit_Application_Template_{org}_{date}.xls"'
             .format(
                 org=organization_name.replace(' ', '_'),
                 date=datetime.now().strftime(
