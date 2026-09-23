@@ -650,7 +650,6 @@ const CreditRequestDetailsPage = (props) => {
                         setShowModal(true)
                       }}
                       type="button"
-                      disabled={!issueAsMY}
                     >
                       Recommend Issuance
                     </button>
