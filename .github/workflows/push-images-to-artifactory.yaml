@@ -93,18 +93,15 @@ jobs:
             "${ARTIFACTORY_REGISTRY}"
 
       - name: Restore oc command from Cache
-        uses: actions/cache@v4.2.0
+        uses: actions/cache@v5.0.4
         with:
           path: /usr/local/bin/oc
           key: oc-cli-${{ runner.os }}
 
       - name: Log in to Openshift
-        uses: redhat-actions/oc-login@v1.3
-        with:
-          openshift_server_url: ${{ env.OPENSHIFT_SERVER }}
-          openshift_token: ${{ env.OPENSHIFT_TOKEN }}
-          insecure_skip_tls_verify: true
-          namespace: ${{ env.SOURCE_NAMESPACE }}
+        run: |
+          oc login --server="${{ env.OPENSHIFT_SERVER }}" --token="${{ env.OPENSHIFT_TOKEN }}" --insecure-skip-tls-verify=true
+          oc project "${{ env.SOURCE_NAMESPACE }}"
 
       - name: Copy OpenShift image to Artifactory
         run: |

@@ -248,7 +248,7 @@ class CreditRequestViewset(
             organization_name = user.organization.short_name
 
         response['Content-Disposition'] = (
-            'attachment; filename="BC-ZEVA_Sales_Template_{org}_{date}.xls"'
+            'attachment; filename="BC-ZEVA_Credit_Application_Template_{org}_{date}.xls"'
             .format(
                 org=organization_name.replace(' ', '_'),
                 date=datetime.now().strftime(
@@ -479,10 +479,10 @@ class CreditRequestViewset(
                 string = value.replace('%', '')
                 extra_filter_params.append('%' + string.upper() + '%')
 
+        order_by = []
         extra_order_by = []
 
         if sorts:
-            order_by = []
             for sort in sorts:
                 sort_id = sort.get("id")
                 desc = sort.get("desc")
@@ -505,8 +505,8 @@ class CreditRequestViewset(
                 ]:
                     order_by.append(sort_string)
 
-            if order_by:
-                submission_content = submission_content.order_by(*order_by)
+        order_by.append("id")
+        submission_content = submission_content.order_by(*order_by)
 
         if extra_order_by or extra_filter_by:
             where_clause = [
@@ -516,6 +516,9 @@ class CreditRequestViewset(
             ]
 
             where_clause.extend(extra_filter_by)
+
+            if extra_order_by:
+                extra_order_by.append("id")
 
             submission_content = submission_content.extra(
                 tables=[

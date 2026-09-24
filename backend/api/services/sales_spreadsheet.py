@@ -72,7 +72,7 @@ def add_instructions_sheet(**kwargs):
     })
 
     row = 0
-    worksheet.write(row, 0, 'Recording sales for {organization}'.format(
+    worksheet.write(row, 0, 'Recording ZEVs supplied for consumer sale by {organization}'.format(
         organization=organization.name
     ), style=BOLD)
 
