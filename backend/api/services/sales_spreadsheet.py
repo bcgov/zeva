@@ -389,7 +389,7 @@ def validate_spreadsheet(data, user_organization=None, skip_authorization=False)
     return True
 
 
-def get_error(content):
+def get_error(content, include_reason=True):
     warnings = content.warnings_list.split(",") if content.warnings_list is not None else []
     error = ''
     if 'ROW_NOT_SELECTED' in warnings and content.reason:
@@ -427,7 +427,7 @@ def get_error(content):
     if 'WRONG_MODEL_YEAR' in warnings:
         error += 'Wrong model year to be issued with compliance report; '
     
-    if content.reason is not None:
+    if include_reason and content.reason is not None:
         error += content.reason
         error += '; '
     return error
@@ -614,13 +614,13 @@ def create_details_spreadsheet(submission_id, stream):
     worksheet.write(row, 0, 'Model Year', style=BOLD)
     worksheet.write(row, 1, 'Make', style=BOLD)
     worksheet.write(row, 2, 'Vehicle Model', style=BOLD)
-    worksheet.write(row, 3, 'Retail Sale', style=BOLD)
+    worksheet.write(row, 3, 'Date', style=BOLD)
     worksheet.write(row, 4, 'VIN', style=BOLD)
     worksheet.write(row, 5, 'ICBC Model Year', style=BOLD)
     worksheet.write(row, 6, 'ICBC Make', style=BOLD)
     worksheet.write(row, 7, 'ICBC Model', style=BOLD)
     worksheet.write(row, 8, 'Validated', style=BOLD)
-    worksheet.write(row, 9, 'Warning', style=BOLD)
+    worksheet.write(row, 9, 'Warnings', style=BOLD)
     worksheet.write(row, 10, 'Reason', style=BOLD)  # why validated
 
     submission_content = SalesSubmissionContent.objects.filter(
@@ -649,7 +649,7 @@ def create_details_spreadsheet(submission_id, stream):
             icbc_match = False
 
         row += 1
-        error = get_error(content)
+        error = get_error(content, False)
 
         date = get_date(
             content.xls_sale_date,

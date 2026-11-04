@@ -677,4 +677,18 @@ class CreditRequestViewset(
             return HttpResponseForbidden()
         data = get_model_mismatches_map(pk)
         return Response(data)
+
+    @action(detail=True)
+    def download_ca(self, request, pk):
+        if not request.user.is_government:
+            return HttpResponseForbidden()
+        response = HttpResponse(content_type='application/ms-excel')
+        create_details_spreadsheet(pk, response)
+        response['Content-Disposition'] = (
+            'attachment; filename="CA_{pk}.xls"'
+            .format(
+                pk=pk,
+            )
+        )
+        return response
         

@@ -1,6 +1,6 @@
 {
   "name": "zeva-frontend",
-  "version": "1.75.0",
+  "version": "1.76.0",
   "private": true,
   "dependencies": {
     "@babel/eslint-parser": "^7.19.1",
@@ -27,8 +27,8 @@
     "jwks-rsa": "^1.8.0",
     "keycloak-js": "^26.2.0",
     "keycode-js": "^3.0.0",
-    "moment": "^2.26.0",
-    "moment-timezone": "^0.5.31",
+    "moment": "^2.31.0",
+    "moment-timezone": "^0.6.6",
     "morgan": "^1.10.0",
     "node": "^16.20.0",
     "prop-types": "^15.7.2",

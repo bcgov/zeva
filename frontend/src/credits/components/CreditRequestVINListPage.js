@@ -6,6 +6,8 @@ import VINListTable from './VINListTable'
 import isLegacySubmission from '../../app/utilities/isLegacySubmission'
 import { ModelMismatchesTable } from './ModelMismatchesTable'
 import { CreditApplicationModelMismatchesTab, CreditApplicationTabs, CreditApplicationVinsListTab } from './CreditApplicationTabs'
+import download from '../../app/utilities/download'
+import CREDIT_REQUESTS from '../../app/routes/CreditRequests'
 
 const CreditRequestVINListPage = (props) => {
   const {
@@ -91,10 +93,24 @@ const CreditRequestVINListPage = (props) => {
     </div>
   )
 
+  const handleDownload = (e) => {
+    const element = e.currentTarget
+    const original = element.innerHTML
+    element.innerText = 'Downloading...'
+    element.disabled = true
+    download(
+      CREDIT_REQUESTS.DOWNLOAD_CA.replace(':id', submission.id),
+      {}
+    ).then(() => {
+      element.innerHTML = original
+      element.disabled = false
+    })
+  }
+
   const header = useMemo(() => {
     return (
-      <div className="row">
-        <div className="col-sm-12">
+      <div className="d-flex justify-content-between align-items-center">
+        <div className="d-flex flex-column">
           <h1>
             {submission.organization && `${submission.organization.name} `}
           </h1>
@@ -102,6 +118,13 @@ const CreditRequestVINListPage = (props) => {
             {isLegacySubmission(submission) ? 'ZEV Sales Submission' : 'VIN Submission'} {submission.submissionDate}
           </h2>
         </div>
+        <Button 
+          buttonType="download"
+          optionalText="Download All Records"
+          action={(e) => {
+            handleDownload(e)
+          }}
+        />
       </div>
     )
   }, [submission])
