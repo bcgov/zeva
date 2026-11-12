@@ -209,7 +209,7 @@ const SupplierInformationDetailsPage = (props) => {
                   <div className="mt-2 row">
                     <span className="col-4">
                       <h4 className="d-inline">
-                        3 Year Average {modelYear < 2024 ? "LDV Sales" : "Vehicles Supplied"}
+                        {modelYear < 2024 ? "Total Sales Volume" : "Average Supply Volume"}
                       </h4>
                     </span>
                     <span className="col-6">
